@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 858b1ffea40cd48f1a9784021393da33, type: 3}
+  m_Name: Backpack
+  m_EditorClassIdentifier: 
+  itemName: Backpack
+  itemDescription: Worn out, holds a number of items
+  tags:
+  - Backpack
+  - Inventory
+  spriteLocation: {x: 32, y: 32}
+  spriteSheet: {fileID: 2800000, guid: 96e5b82273236487c90736d3905c5ab2, type: 3}
+  itemMax: 15
+  inventory:
+  - {fileID: 11400000, guid: f7c449ad9e432409caae84c643e2c56f, type: 2}
+  - {fileID: 11400000, guid: f7c449ad9e432409caae84c643e2c56f, type: 2}
+  - {fileID: 11400000, guid: f7c449ad9e432409caae84c643e2c56f, type: 2}
+  - {fileID: 11400000, guid: af8db5d65db68460abbd99b9799c3c67, type: 2}
+  - {fileID: 11400000, guid: af8db5d65db68460abbd99b9799c3c67, type: 2}
+  blacklist:
+  - Inventory

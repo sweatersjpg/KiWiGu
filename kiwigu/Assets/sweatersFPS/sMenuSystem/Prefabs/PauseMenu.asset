@@ -1,0 +1,52 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c021db99e5c7347b08353cf1d9cc0273, type: 3}
+  m_Name: PauseMenu
+  m_EditorClassIdentifier: 
+  title: pause
+  versionNumber: v0.01
+  pages:
+  - title: resume
+    onClick: TogglePaused
+    settings: []
+  - title: settings
+    onClick: 
+    settings:
+    - title: volume
+      type: 0
+      content: []
+      callBack: UpdateVolume
+    - title: FOV
+      type: 0
+      content: []
+      callBack: UpdateFOV
+    - title: mouse
+      type: 0
+      content: []
+      callBack: UpdateSensitivity
+    - title: fullscreen
+      type: 1
+      content: []
+      callBack: SetFullscreen
+  - title: about
+    onClick: 
+    settings:
+    - title: About
+      type: 3
+      content:
+      - This screen system is used for loading custom 'programs' that display on
+        a virtual screen
+      - This menu system for example is a Screen Program that uses scriptable objects
+        to display custom menus
+      - Pressing tab lets you switch to another Screen Program that has a cat that
+        you can pickup and drag around :)
+      callBack: 
