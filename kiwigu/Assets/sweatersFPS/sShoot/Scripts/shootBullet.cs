@@ -9,6 +9,9 @@ public class shootBullet : MonoBehaviour
 
     // this script is in charge of all the perameters for the guns
 
+
+
+
     // Start is called before the first frame update
     void Start()
     {
