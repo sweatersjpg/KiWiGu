@@ -28,7 +28,7 @@ public class GunHand : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    void LateUpdate()
     {
         //if (Input.GetMouseButtonDown(1)) ToggleDownSights();
         //if (Input.GetMouseButtonDown(0)) AnimateShoot();
