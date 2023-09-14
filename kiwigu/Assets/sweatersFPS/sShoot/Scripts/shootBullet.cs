@@ -2,10 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class shootBullet : MonoBehaviour
+public class ShootBullet : MonoBehaviour
 {
-    public GameObject bulletPrefab;
-    public GunHand hand;
+    public GunHand anim;
+    public GunInfo info;
 
     // this script is in charge of all the perameters for the guns
 
@@ -21,12 +21,15 @@ public class shootBullet : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetMouseButtonUp(hand.mouseButton)) SpawnBullet();
+        if (Input.GetMouseButtonUp(anim.mouseButton)) SpawnBullet();
     }
 
     void SpawnBullet()
     {
-        GameObject bullet = Instantiate(bulletPrefab);
+        GameObject bullet = Instantiate(info.bulletPrefab);
         bullet.transform.SetPositionAndRotation(transform.position, Quaternion.LookRotation(transform.forward));
+
+        Bullet b = bullet.GetComponent<Bullet>();
+
     }
 }
