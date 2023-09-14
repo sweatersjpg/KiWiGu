@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class MiniRenderer : MonoBehaviour
 {
+    ScreenSystem screenSystem;
+
     public Texture spriteSheet;
 
     [SerializeField]
@@ -61,6 +63,11 @@ public class MiniRenderer : MonoBehaviour
 
     Stack<Spr>[] spr_buffer; // array of stacks of Sprs
 
+    private void Awake()
+    {
+        screenSystem = FindObjectOfType<ScreenSystem>();
+    }
+
     // Start is called before the first frame update
     void Start()
     {
@@ -104,7 +111,7 @@ public class MiniRenderer : MonoBehaviour
             spr_buffer[i] = new Stack<Spr>();
         }
 
-        gameObject.SendMessage("Init", this);
+        GetComponent<ScreenSystem>().Init(this);
 
         //if(!useCoroutine)
         InvokeRepeating(nameof(Render), 0f, 1f/frameRate);
@@ -134,7 +141,7 @@ public class MiniRenderer : MonoBehaviour
         GL.LoadPixelMatrix(0, width, height, 0);
 
         // sprite drawing goes here
-        gameObject.SendMessage("FrameUpdate");
+        GetComponent<ScreenSystem>().FrameUpdate();
 
         //Display();
 
