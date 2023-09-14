@@ -15,7 +15,7 @@ public class MiniMenuSystem : ScreenProgram
     {
         buttons = new();
 
-        foreach(MiniMenu.Page page in menu.pages)
+        foreach (MiniMenu.Page page in menu.pages)
         {
             buttons.Add(new(this, page));
         }
@@ -32,7 +32,7 @@ public class MiniMenuSystem : ScreenProgram
 
         for (int i = 0; i < buttons.Count; i++)
         {
-            buttons[i].Draw(2+i*3);
+            buttons[i].Draw(2 + i * 3);
         }
 
         drawBox(14, 1, 24, 29);
@@ -59,12 +59,12 @@ public class MiniMenuSystem : ScreenProgram
             size = new Vector2(w, h);
 
             adjustables = new();
-            foreach(MiniMenu.Settings s in settings) adjustables.Add(SpawnAdjustable(s));
+            foreach (MiniMenu.Settings s in settings) adjustables.Add(SpawnAdjustable(s));
         }
 
         public void Draw()
         {
-            for (int i = 0; i < adjustables.Count; i++) adjustables[i].Draw((int) (pos.x + size.x/2) + 1, 3 + i * 2);
+            for (int i = 0; i < adjustables.Count; i++) adjustables[i].Draw((int)(pos.x + size.x / 2) + 1, 3 + i * 2);
 
             M.drawBox(pos.x, pos.y, size.x, size.y, true);
             M.put(title, pos.x + 2, pos.y);
@@ -114,7 +114,7 @@ public class MiniMenuSystem : ScreenProgram
             if (MouseOver(y)) titleX += (1 - titleX) / 4;
             else titleX -= titleX / 4;
 
-            M.drawBox(2, y, (M.window != null && M.window.title == page.title) ? 12:11, 2);
+            M.drawBox(2, y, (M.window != null && M.window.title == page.title) ? 12 : 11, 2);
             M.put(page.title, 3 + titleX, y + 1);
 
             if (MouseOver(y)) M.mouseIcon = HAND_POINTER;
@@ -171,7 +171,7 @@ public class MiniMenuSystem : ScreenProgram
                     PauseSystem.pauseSystem.mouseSensitivityMin,
                     PauseSystem.pauseSystem.mouseSensitivityMax, PauseSystem.mouseSensitivity);
             }
-            else if(setting.title == "FOV")
+            else if (setting.title == "FOV")
             {
                 value = Mathf.InverseLerp(
                     PauseSystem.pauseSystem.FOVmin,
@@ -188,7 +188,7 @@ public class MiniMenuSystem : ScreenProgram
         {
             M.put(setting.title, x - setting.title.Length - 1, y);
             //M.put("----------", x, y);
-            for (int i = 0; i < 10; i++) M.tile(24 + (value*10 <= i ? 8:0), 0, x + i, y);
+            for (int i = 0; i < 10; i++) M.tile(24 + (value * 10 <= i ? 8 : 0), 0, x + i, y);
 
             if (MouseOver(x, y)) M.mouseIcon = HAND_OPEN;
 
@@ -197,22 +197,23 @@ public class MiniMenuSystem : ScreenProgram
             if (M.mouseButton)
             {
                 if (holding) M.mouseIcon = HAND_CLOSED;
-            } else holding = false;
+            }
+            else holding = false;
 
-            if(holding)
+            if (holding)
             {
                 value = Mathf.InverseLerp(x * 8, (x + 10) * 8, M.mouse.x);
                 if (value < 0) value = 0;
                 if (value > 1) value = 1;
 
                 M.listener.SendMessage(setting.callBack, value);
-                if(setting.callBack == "UpdateFOV") M.gameObject.SendMessage(setting.callBack, value);
+                if (setting.callBack == "UpdateFOV") M.gameObject.SendMessage(setting.callBack, value);
             }
         }
 
         bool MouseOver(int x, int y)
         {
-            return M.mouse.x / 8 > x && M.mouse.x / 8 < x + 10 && M.mouse.y/8 > y-0.5f && M.mouse.y/8 < y + 1.5f;
+            return M.mouse.x / 8 > x && M.mouse.x / 8 < x + 10 && M.mouse.y / 8 > y - 0.5f && M.mouse.y / 8 < y + 1.5f;
         }
     }
 
@@ -229,7 +230,7 @@ public class MiniMenuSystem : ScreenProgram
         {
             M.put(setting.title, x - setting.title.Length - 1, y);
 
-            M.tile(24 + (value ? 8:0), 8, x, y);
+            M.tile(24 + (value ? 8 : 0), 8, x, y);
 
             if (M.MouseOver(x, y)) M.mouseIcon = HAND_POINTER;
             if (M.MouseOver(x, y) && M.mouseButton) M.mouseIcon = HAND_CLOSED;
@@ -249,7 +250,7 @@ public class MiniMenuSystem : ScreenProgram
 
         public Dropdown(MiniMenuSystem M, MiniMenu.Settings setting) : base(M, setting)
         {
-            
+
         }
 
         public override void Draw(int x, int y)
@@ -301,16 +302,16 @@ public class MiniMenuSystem : ScreenProgram
             int count = 0;
             int lastSpace = 0;
 
-            for(int i = 0; i < s.Length; i++)
+            for (int i = 0; i < s.Length; i++)
             {
                 count++;
 
                 if (s[i] == '\n') count = 0;
                 if (s[i] == ' ') lastSpace = i;
 
-                if(count >= w)
+                if (count >= w)
                 {
-                    s = s[..lastSpace] + '\n' + s[(lastSpace+1)..];
+                    s = s[..lastSpace] + '\n' + s[(lastSpace + 1)..];
                     i = lastSpace;
                     count = 0;
                 }
