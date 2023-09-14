@@ -45,10 +45,11 @@ public class Bullet : MonoBehaviour
 
         if (hasHit)
         {
-            Debug.Log(hit.transform.name);
+            // Debug.Log(hit.transform.name);
 
             Transform hole = Instantiate(bulletHolePrefab).transform;
             hole.SetPositionAndRotation(hit.point, Quaternion.LookRotation(-hit.normal));
+            hole.parent = hit.transform;
 
             Destroy(gameObject);
         }
