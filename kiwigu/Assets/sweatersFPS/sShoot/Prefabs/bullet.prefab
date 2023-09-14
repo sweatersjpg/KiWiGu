@@ -9,7 +9,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 745279074493107226}
-  - component: {fileID: 745279074493107229}
   - component: {fileID: 745279074493107228}
   m_Layer: 0
   m_Name: bullet
@@ -34,20 +33,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &745279074493107229
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 745279074493107227}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 31ce34620e1d64fb3beb0a92e34115d9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  speed: 370
-  gravity: -9.8
 --- !u!114 &745279074493107228
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -64,7 +49,7 @@ MonoBehaviour:
   gravity: -9.8
   lifeTime: 3
   bulletMesh: {fileID: 745279075975203939}
-  bulletHolePrefab: {fileID: 7839328679860194084, guid: 9d2b8ecfb40704715a30c7f2ce0be044, type: 3}
+  bulletHolePrefab: {fileID: 7839328679860194084, guid: a8f58d7ed020d4940b3a031616ccfaa5, type: 3}
 --- !u!1 &745279075975203939
 GameObject:
   m_ObjectHideFlags: 0
