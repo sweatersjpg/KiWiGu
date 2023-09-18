@@ -20,8 +20,8 @@ public class EnemyBase : MonoBehaviour
     private Transform player;
     private NavMeshAgent agent;
 
-    private float currentHealth;
-    private float currentShield;
+    public float currentHealth;
+    public float currentShield;
 
     private void Start()
     {
@@ -30,9 +30,6 @@ public class EnemyBase : MonoBehaviour
 
         agent.speed = MovementSpeed;
         agent.stoppingDistance = StoppingDistance;
-
-        currentHealth = MaxHealth;
-        currentShield = MaxShield;
     }
 
     private void Update()
