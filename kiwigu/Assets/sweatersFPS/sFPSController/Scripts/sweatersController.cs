@@ -170,13 +170,21 @@ public class sweatersController : MonoBehaviour
         if (isGrounded && !isSliding)
         {
             Vector3 v = new(velocity.x, 0, velocity.z);
-            float mag = v.magnitude - deceleration * Time.deltaTime * (1-input.magnitude);
-            if (mag < 0) mag = 0;
+            //float mag = v.magnitude - deceleration * Time.deltaTime * (1-input.magnitude);
+            //if (mag < 0) mag = 0;
 
-            v = v.normalized * mag;
+            //v = v.normalized * mag;
 
-            velocity.x = v.x;
-            velocity.z = v.z;
+            //velocity.x = v.x;
+            //velocity.z = v.z;
+
+            // x component
+            if(Mathf.Abs(v.x - input.x) >= Mathf.Abs(v.x) + Mathf.Abs(input.x)) v.x -= Mathf.Sign(v.x) * deceleration * deltaTime;
+
+            // z
+            if(Mathf.Abs(v.z - input.z) >= Mathf.Abs(v.z) + Mathf.Abs(input.z)) v.z -= Mathf.Sign(v.z) * deceleration * deltaTime;
+
+            velocity = new(v.x, velocity.y, v.z);
         }
 
         force.y -= gravity;
