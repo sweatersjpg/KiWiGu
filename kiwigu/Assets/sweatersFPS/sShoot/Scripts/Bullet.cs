@@ -12,6 +12,8 @@ public class Bullet : MonoBehaviour
     public GameObject bulletMesh;
     public GameObject bulletHolePrefab;
 
+    bool dead = false;
+
     Vector3 velocity;
 
     float startTime;
@@ -28,9 +30,9 @@ public class Bullet : MonoBehaviour
     {
         float time = Time.time - startTime;
 
-        CastRay(time);
+        if(!dead) CastRay(time);
 
-        if (time > 3) Destroy(gameObject);
+        if (time > lifeTime) Destroy(gameObject);
     }
 
     void CastRay(float time)
@@ -51,7 +53,9 @@ public class Bullet : MonoBehaviour
             hole.SetPositionAndRotation(hit.point, Quaternion.LookRotation(-hit.normal));
             hole.parent = hit.transform;
 
-            Destroy(gameObject);
+            //Destroy(gameObject);
+            lifeTime = Time.time - startTime + 0.5f;
+            dead = true;
         }
     }
 

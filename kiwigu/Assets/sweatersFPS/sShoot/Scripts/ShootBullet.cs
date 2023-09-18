@@ -28,14 +28,19 @@ public class ShootBullet : MonoBehaviour
         anim.canShoot = canShoot;
 
         bool doShoot = info.canAim ? Input.GetMouseButtonUp(anim.mouseButton) : Input.GetMouseButtonDown(anim.mouseButton);
-        if (info.fireType == GunInfo.FireType.Auto) doShoot = Input.GetMouseButton(anim.mouseButton);
+        if (info.fullAuto) doShoot = Input.GetMouseButton(anim.mouseButton);
 
         if (doShoot && canShoot)
         {
-            for(int i = 0; i < info.projectiles; i++) SpawnBullet();
             shotTimer = Time.time;
-            anim.AnimateShoot();
+            for(int i = 0; i < info.burstSize; i++) Invoke(nameof(Shoot), i * 1/info.autoRate);
         }
+    }
+
+    void Shoot()
+    {
+        for (int i = 0; i < info.projectiles; i++) SpawnBullet();
+        anim.AnimateShoot();
     }
 
     void SpawnBullet()
