@@ -179,10 +179,12 @@ public class sweatersController : MonoBehaviour
             //velocity.z = v.z;
 
             // x component
-            if(Mathf.Abs(v.x - input.x) >= Mathf.Abs(v.x) + Mathf.Abs(input.x)) v.x -= Mathf.Sign(v.x) * deceleration * deltaTime;
+            float d = Mathf.Min(deceleration * deltaTime, Mathf.Abs(v.x));
+            if(Mathf.Abs(v.x - input.x) >= Mathf.Abs(v.x) + Mathf.Abs(input.x)) v.x -= Mathf.Sign(v.x) * d;
 
             // z
-            if(Mathf.Abs(v.z - input.z) >= Mathf.Abs(v.z) + Mathf.Abs(input.z)) v.z -= Mathf.Sign(v.z) * deceleration * deltaTime;
+            d = Mathf.Min(deceleration * deltaTime, Mathf.Abs(v.z)); ;
+            if (Mathf.Abs(v.z - input.z) >= Mathf.Abs(v.z) + Mathf.Abs(input.z)) v.z -= Mathf.Sign(v.z) * d;
 
             velocity = new(v.x, velocity.y, v.z);
         }
