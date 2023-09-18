@@ -1,55 +1,67 @@
 using UnityEngine;
 using UnityEngine.AI;
+using static UnityEngine.GraphicsBuffer;
 
 public class EnemyBase : MonoBehaviour
 {
-    [Header("Base")]
+    [Header("Enemy Main Variables")]
     public float MaxHealth;
     public float MaxShield;
     public GameObject GunObject;
 
-    [Header("Movement")]
+    [Header("Enemy Movement")]
     public float MovementSpeed;
     public float StoppingDistance;
+    public float RotationSpeed;
 
-    [Header("Stats")]
-    public float AttackSpeed;
-    public float AttackDamage;
-    public float AttackCooldown;
+    [Header("Enemy Gun Stats")]
+    [Range(1,10)]
+    public float EnemyFireRate;
+    public GunInfo info;
 
-    // Other Variables
-    private Transform player;
-    private NavMeshAgent agent;
+    // Other Shared Variables
+    [HideInInspector] public Transform player;
+    [HideInInspector] public NavMeshAgent agent;
 
-    private float currentHealth;
-    private float currentShield;
+    [HideInInspector] public float currentHealth;
+    [HideInInspector] public float currentShield;
+    [HideInInspector] public bool isHoldingGun;
 
-    private void Start()
+
+    protected virtual void Start()
     {
+        if (GunObject.transform.parent != null)
+        {
+            isHoldingGun = true;
+        }
+
         player = GameObject.FindGameObjectWithTag("Player").transform;
         agent = GetComponent<NavMeshAgent>();
 
         agent.speed = MovementSpeed;
         agent.stoppingDistance = StoppingDistance;
+        agent.angularSpeed = RotationSpeed;
     }
 
-    private void Update()
+    protected virtual void Update()
     {
-        if (agent.enabled)
+        if (agent.enabled && CheckPlayerVisibility())
         {
             EnemyMovement();
+        }
+        else
+        {
+            agent.ResetPath();
         }
     }
 
     public virtual void EnemyMovement()
     {
-        agent.SetDestination(player.position);
+
     }
 
     public virtual void TakeDamage(float bulletDamage)
     {
-        //Debug.Log("Hit");
-
         if (currentShield < MaxShield)
         {
             currentShield = Mathf.Min(currentShield + bulletDamage, MaxShield);
@@ -66,9 +78,26 @@ public class EnemyBase : MonoBehaviour
     {
         if (currentHealth >= MaxHealth)
         {
+            isHoldingGun = false;
             GunObject.GetComponent<Rigidbody>().isKinematic = false;
             GunObject.transform.parent = null;
+            Destroy(GunObject, 60);
             Destroy(gameObject);
         }
+    }
+
+    public virtual bool CheckPlayerVisibility()
+    {
+        Vector3 direction = player.position - transform.position + new Vector3(0, 0.5f, 0);
+        RaycastHit hit;
+
+        if (Physics.Raycast(transform.position, direction, out hit))
+        {
+            if (hit.transform.CompareTag("Player"))
+            {
+                return true;
+            }
+        }
+        return false;
     }
 }
