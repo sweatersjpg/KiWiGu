@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class bulletDecay : MonoBehaviour
+public class BulletDecay : MonoBehaviour
 {
     public float lifeSpan = 5;
     public AnimationCurve positon;
