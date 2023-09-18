@@ -6,6 +6,7 @@ public class EnemyBase : MonoBehaviour
     [Header("Base")]
     public float MaxHealth;
     public float MaxShield;
+    public GameObject GunObject;
 
     [Header("Movement")]
     public float MovementSpeed;
@@ -20,8 +21,8 @@ public class EnemyBase : MonoBehaviour
     private Transform player;
     private NavMeshAgent agent;
 
-    public float currentHealth;
-    public float currentShield;
+    private float currentHealth;
+    private float currentShield;
 
     private void Start()
     {
@@ -65,6 +66,8 @@ public class EnemyBase : MonoBehaviour
     {
         if (currentHealth >= MaxHealth)
         {
+            GunObject.GetComponent<Rigidbody>().isKinematic = false;
+            GunObject.transform.parent = null;
             Destroy(gameObject);
         }
     }
