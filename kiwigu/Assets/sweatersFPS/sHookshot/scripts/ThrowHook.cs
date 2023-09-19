@@ -66,7 +66,8 @@ public class ThrowHook : MonoBehaviour
         hook.GetComponent<MoveHook>().home = this;
 
         hookView.SetActive(false);
-        transform.localPosition += new Vector3(0, 0, 0.2f);
+        transform.localPosition += new Vector3(0, 0, 0.4f);
+        startPosition += new Vector3(0, 0, 0.2f);
 
         hasHook = false;
     }
@@ -75,7 +76,8 @@ public class ThrowHook : MonoBehaviour
     {
         hookView.SetActive(true);
 
-        transform.localPosition += new Vector3(0, 0, -0.2f);
+        transform.localPosition += new Vector3(0, 0, -0.4f);
+        startPosition -= new Vector3(0, 0, 0.2f);
 
         hasHook = true;
     }

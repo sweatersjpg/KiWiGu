@@ -66,5 +66,28 @@ public class MoveHook : MonoBehaviour
     void DoPhysics()
     {
         // raycast from ppos to pos
+
+        bool hasHit = Physics.Raycast(pPosition, transform.position - pPosition, 
+            out RaycastHit hit, (transform.position - pPosition).magnitude, ~LayerMask.GetMask("GunHand", "Player"));
+
+        if(hasHit)
+        {
+            ResolveCollision(hit);
+        }
+
+    }
+
+    void ResolveCollision(RaycastHit hit)
+    {
+        if (speed > 0) return;
+
+        transform.position = hit.point;
+
+        Vector3 d = velocity;
+        Vector3 n = hit.normal;
+
+        Vector3 r = d - 2 * Vector3.Dot(d, n) * n;
+
+        velocity = r;
     }
 }
