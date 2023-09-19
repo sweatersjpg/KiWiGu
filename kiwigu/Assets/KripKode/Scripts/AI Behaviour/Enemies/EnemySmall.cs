@@ -6,7 +6,8 @@ public class EnemySmall : EnemyBase
 
     float shotTimer = 0;
     float lastShotTime = 0;
-    public bool canShoot;
+
+    [HideInInspector] public bool canShoot;
 
     protected override void Start()
     {
@@ -24,11 +25,11 @@ public class EnemySmall : EnemyBase
             direction.y = 0;
             transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(direction), RotationSpeed * Time.deltaTime);
 
-            GunObject.transform.LookAt(player);
+            GunObject.transform.LookAt(player.position + new Vector3(Random.Range(-GunInaccuracy, GunInaccuracy), 1.5f, Random.Range(-GunInaccuracy, GunInaccuracy)));
         }
         else
         {
-            GunObject.transform.LookAt(player);
+            GunObject.transform.LookAt(player.position + new Vector3(Random.Range(-GunInaccuracy, GunInaccuracy), 1.5f, Random.Range(-GunInaccuracy, GunInaccuracy)));
             agent.SetDestination(player.position);
         }
 

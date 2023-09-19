@@ -19,6 +19,8 @@ public class EnemyBase : MonoBehaviour
     [Header("Enemy Gun Stats")]
     [Range(1,10)]
     public float EnemyFireRate;
+    [Range(0, 10)]
+    public float GunInaccuracy;
     public GunInfo info;
 
     // Other Shared Variables
