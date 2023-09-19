@@ -18,21 +18,6 @@ public class EnemySmall : EnemyBase
     public override void EnemyMovement()
     {
         base.EnemyMovement();
-
-        if (Vector3.Distance(transform.position, player.position) <= StoppingDistance)
-        {
-            Vector3 direction = player.position - transform.position;
-            direction.y = 0;
-            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(direction), RotationSpeed * Time.deltaTime);
-
-            GunObject.transform.LookAt(player.position + new Vector3(Random.Range(-GunInaccuracy, GunInaccuracy), 1.5f, Random.Range(-GunInaccuracy, GunInaccuracy)));
-        }
-        else
-        {
-            GunObject.transform.LookAt(player.position + new Vector3(Random.Range(-GunInaccuracy, GunInaccuracy), 1.5f, Random.Range(-GunInaccuracy, GunInaccuracy)));
-            agent.SetDestination(player.position);
-        }
-
     }
     protected override void Update()
     {
