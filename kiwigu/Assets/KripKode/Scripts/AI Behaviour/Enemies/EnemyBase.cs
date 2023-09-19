@@ -13,6 +13,8 @@ public class EnemyBase : MonoBehaviour
     public float MovementSpeed;
     public float StoppingDistance;
     public float RotationSpeed;
+    [Range(1, 50)]
+    public float EnemyViewDistance;
 
     [Header("Enemy Gun Stats")]
     [Range(1,10)]
@@ -26,7 +28,7 @@ public class EnemyBase : MonoBehaviour
     [HideInInspector] public float currentHealth;
     [HideInInspector] public float currentShield;
     [HideInInspector] public bool isHoldingGun;
-
+    [HideInInspector] public bool wasHit;
 
     protected virtual void Start()
     {
@@ -45,7 +47,7 @@ public class EnemyBase : MonoBehaviour
 
     protected virtual void Update()
     {
-        if (agent.enabled && CheckPlayerVisibility())
+        if (agent.enabled && (CheckPlayerVisibility() || wasHit))
         {
             EnemyMovement();
         }
@@ -62,6 +64,7 @@ public class EnemyBase : MonoBehaviour
 
     public virtual void TakeDamage(float bulletDamage)
     {
+        wasHit = true;
         if (currentShield < MaxShield)
         {
             currentShield = Mathf.Min(currentShield + bulletDamage, MaxShield);
@@ -91,7 +94,7 @@ public class EnemyBase : MonoBehaviour
         Vector3 direction = player.position - transform.position + new Vector3(0, 0.5f, 0);
         RaycastHit hit;
 
-        if (Physics.Raycast(transform.position, direction, out hit))
+        if (Physics.Raycast(transform.position, direction, out hit, EnemyViewDistance))
         {
             if (hit.transform.CompareTag("Player"))
             {
