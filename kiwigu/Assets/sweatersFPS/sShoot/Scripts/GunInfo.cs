@@ -21,6 +21,7 @@ public class GunInfo : ScriptableObject
     public float fireRate = 1;
 
     [Header("Metrics")]
+    public float damage;
     public float spread = 0; // works also as accuracy
     public float recoil = 45;
 
