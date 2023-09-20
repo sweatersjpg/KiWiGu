@@ -77,8 +77,13 @@ public class ThrowHook : MonoBehaviour
         hookView.SetActive(true);
 
         transform.localPosition += new Vector3(0, 0, -0.4f);
-        startPosition -= new Vector3(0, 0, 0.2f);
+        startPosition += new Vector3(0, 0, 0.3f);
 
         hasHook = true;
+    }
+
+    public void PullBack()
+    {
+        startPosition -= new Vector3(0, 0, 0.5f);
     }
 }

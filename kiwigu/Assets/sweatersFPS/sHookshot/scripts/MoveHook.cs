@@ -3,12 +3,15 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Windows;
+using static UnityEditor.PlayerSettings;
 
 public class MoveHook : MonoBehaviour
 {
     // Start is called before the first frame update
 
     public ThrowHook home;
+
+    public LineRenderer chain;
 
     public float startingSpeed = 8;
     public float trackingAcceleration = 6;
@@ -18,12 +21,17 @@ public class MoveHook : MonoBehaviour
 
     bool canCatch = false;
 
+    bool headingBack = false;
+
     public float speed;
     public Vector3 velocity;
 
     float deltaTime = 0;
 
     Vector3 pPosition; // past position
+
+    float chainPointTimer;
+    public float timeBetweenChainNodes;
 
     void Start()
     {
@@ -49,11 +57,20 @@ public class MoveHook : MonoBehaviour
         {
             home.CatchHook();
             Destroy(gameObject);
+            return;
         } else if(heading.magnitude > catchDistance) {
             canCatch = true;
         }
 
-        if(speed > 0) velocity = heading.normalized;
+        if (speed > 0)
+        {
+            velocity = heading.normalized;
+            if(!headingBack)
+            {
+                headingBack = true;
+                home.PullBack();
+            }
+        }
 
         speed += trackingAcceleration * deltaTime * 0.5f;
         velocity = velocity.normalized * Mathf.Abs(speed);
@@ -61,6 +78,7 @@ public class MoveHook : MonoBehaviour
         speed += trackingAcceleration * deltaTime * 0.5f;
 
         DoPhysics();
+        UpdateChain();
     }
 
     void DoPhysics()
@@ -73,13 +91,14 @@ public class MoveHook : MonoBehaviour
         if(hasHit)
         {
             ResolveCollision(hit);
+            AddChainSegment(hit.point);
         }
 
     }
 
     void ResolveCollision(RaycastHit hit)
     {
-        if (speed > 0) return;
+        if (headingBack) return;
 
         transform.position = hit.point;
 
@@ -89,5 +108,48 @@ public class MoveHook : MonoBehaviour
         Vector3 r = d - 2 * Vector3.Dot(d, n) * n;
 
         velocity = r;
+    }
+
+    void UpdateChain()
+    {
+
+        chainPointTimer += deltaTime;
+        if(!headingBack && chainPointTimer > timeBetweenChainNodes)
+        {
+            chainPointTimer = 0;
+            AddChainSegment(transform.position + Random.insideUnitSphere * 0.1f - velocity.normalized * 0.1f);
+        }
+        
+        chain.SetPosition(chain.positionCount - 1, home.transform.position);
+        chain.SetPosition(0, transform.position);
+
+        for(int i = 1; i < chain.positionCount-1; i++)
+        {
+            Vector3 p = chain.GetPosition(i);
+
+            Vector3 r = home.transform.position;
+            Vector3 h = transform.position;
+
+            Vector3 d = r - h;
+            //Vector3 v = Vector3.Project(p - h, r - h) + h;
+            Vector3 v = (d.magnitude / chain.positionCount) * i * d.normalized + h;
+
+            p += 50 * deltaTime * ((v - p) / (headingBack ? 2 : 16));
+
+            chain.SetPosition(i, p);
+        }
+    }
+
+    void AddChainSegment(Vector3 pos)
+    {
+        chain.positionCount++;
+
+        // shift positions down
+        for(int i = chain.positionCount-2; i >= 1; i--)
+        {
+            chain.SetPosition(i + 1, chain.GetPosition(i));
+        }
+
+        chain.SetPosition(1, pos);
     }
 }
