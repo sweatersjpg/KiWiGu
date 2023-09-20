@@ -9,7 +9,7 @@ public class MoveHook : MonoBehaviour
 {
     // Start is called before the first frame update
 
-    public ThrowHook home;
+    [HideInInspector] public ThrowHook home;
 
     public LineRenderer chain;
 
@@ -24,15 +24,15 @@ public class MoveHook : MonoBehaviour
 
     bool headingBack = false;
 
-    public float speed;
-    public Vector3 velocity;
+    float speed;
+    [HideInInspector] public Vector3 velocity;
 
     float deltaTime = 0;
 
     Vector3 pPosition; // past position
 
     float chainPointTimer;
-    public float timeBetweenChainNodes;
+    public float chainSegmentSize = 0.5f;
 
     void Start()
     {
@@ -73,7 +73,6 @@ public class MoveHook : MonoBehaviour
             velocity = heading.normalized;
             if(!headingBack)
             {
-                Debug.Log((transform.position - home.transform.position).magnitude);
                 headingBack = true;
                 home.PullBack();
             }
@@ -120,11 +119,16 @@ public class MoveHook : MonoBehaviour
     void UpdateChain()
     {
 
-        chainPointTimer += deltaTime;
-        if(!headingBack && chainPointTimer > timeBetweenChainNodes)
+        //chainPointTimer += deltaTime;
+        //if(!headingBack && chainPointTimer > timeBetweenChainNodes)
+        //{
+        //    chainPointTimer = 0;
+        //    AddChainSegment(transform.position + Random.insideUnitSphere * 0.1f - velocity.normalized * 0.1f);
+        //}
+        if(!headingBack && (chain.GetPosition(0) - chain.GetPosition(1)).magnitude > chainSegmentSize)
         {
-            chainPointTimer = 0;
             AddChainSegment(transform.position + Random.insideUnitSphere * 0.1f - velocity.normalized * 0.1f);
+            Debug.Log(chain.positionCount);
         }
         
         chain.SetPosition(chain.positionCount - 1, home.transform.position);
@@ -141,7 +145,7 @@ public class MoveHook : MonoBehaviour
             //Vector3 v = Vector3.Project(p - h, r - h) + h;
             Vector3 v = (d.magnitude / chain.positionCount) * i * d.normalized + h;
 
-            p += 50 * deltaTime * ((v - p) / (headingBack ? 2 : 16));
+            p += 50 * deltaTime * ((v - p) / (headingBack ? 2 : 8));
 
             chain.SetPosition(i, p);
         }

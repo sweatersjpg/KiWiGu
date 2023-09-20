@@ -14,12 +14,15 @@ public class ThrowHook : MonoBehaviour
     bool hasHook = true;
 
     Vector3 targetPosition;
+
     Vector3 startPosition;
+    Vector3 homePosition;
     
     // Start is called before the first frame update
     void Start()
     {
         startPosition = transform.localPosition;
+        homePosition = startPosition;
         targetPosition = startPosition;
     }
 
@@ -54,7 +57,7 @@ public class ThrowHook : MonoBehaviour
             return;
         }
 
-        targetPosition = startPosition;
+        targetPosition = homePosition;
 
     }
 
@@ -67,7 +70,7 @@ public class ThrowHook : MonoBehaviour
 
         hookView.SetActive(false);
         transform.localPosition += new Vector3(0, 0, 0.4f);
-        startPosition += new Vector3(0, 0, 0.2f);
+        homePosition = startPosition + new Vector3(0, 0, 0.2f);
 
         hasHook = false;
     }
@@ -77,13 +80,13 @@ public class ThrowHook : MonoBehaviour
         hookView.SetActive(true);
 
         transform.localPosition += new Vector3(0, 0, -0.4f);
-        startPosition += new Vector3(0, 0, 0.3f);
+        homePosition = startPosition;
 
         hasHook = true;
     }
 
     public void PullBack()
     {
-        startPosition -= new Vector3(0, 0, 0.5f);
+        homePosition = startPosition - new Vector3(0, 0, 0.5f);
     }
 }
