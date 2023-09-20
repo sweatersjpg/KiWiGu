@@ -13,7 +13,8 @@ public class MoveHook : MonoBehaviour
 
     public LineRenderer chain;
 
-    public float startingSpeed = 8;
+    //public float startingSpeed = 8;
+    public float hookRange = 5;
     public float trackingAcceleration = 6;
     // public float deceleration = 32;
 
@@ -35,8 +36,13 @@ public class MoveHook : MonoBehaviour
 
     void Start()
     {
-        speed = -startingSpeed;
+        float startingSpeed = Mathf.Sqrt(2 * trackingAcceleration * hookRange);
+
         velocity = transform.forward * startingSpeed;
+        velocity += sweatersController.instance.velocity;
+
+        speed = -velocity.magnitude;
+
     }
 
     // Update is called once per frame
@@ -67,6 +73,7 @@ public class MoveHook : MonoBehaviour
             velocity = heading.normalized;
             if(!headingBack)
             {
+                Debug.Log((transform.position - home.transform.position).magnitude);
                 headingBack = true;
                 home.PullBack();
             }
