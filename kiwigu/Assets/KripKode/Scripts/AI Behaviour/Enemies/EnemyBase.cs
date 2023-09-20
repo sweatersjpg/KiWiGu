@@ -1,6 +1,6 @@
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
-using static UnityEngine.GraphicsBuffer;
 
 public class EnemyBase : MonoBehaviour
 {
@@ -14,13 +14,15 @@ public class EnemyBase : MonoBehaviour
     [Header("Enemy Movement")]
     [Range(1, 15)]
     public int MovementSpeed;
-    [Range(5, 20)]
+    [Range(5, 10)]
     public int AvoidPlayerDistance;
     [Range(100, 200)]
     public int RotationSpeed;
-    [Range(10, 50)]
+    [Range(10, 20)]
     public int EnemyAwareDistance;
-    public bool CanTakeCover;
+    [Range(4, 15)]
+    public int WanderRadius;
+    public bool TakeCover;
 
     [Header("Enemy Gun Stats")]
     [Range(1, 10)]
@@ -38,8 +40,15 @@ public class EnemyBase : MonoBehaviour
     [HideInInspector] public bool isHoldingGun;
     [HideInInspector] public bool wasHit;
 
+    private float wanderTimer = 5f;
+    private Vector3 wanderTarget;
+    private Vector3 initialPosition;
+    private bool isWandering;
+
     protected virtual void Start()
     {
+        initialPosition = transform.position;
+
         if (GunObject.transform.parent != null)
         {
             isHoldingGun = true;
@@ -57,40 +66,58 @@ public class EnemyBase : MonoBehaviour
     {
         if (agent.enabled && (CheckPlayerVisibility() || wasHit))
         {
+            isWandering = false;
             EnemyMovement();
         }
         else
         {
-            agent.ResetPath();
+            isWandering = true;
+            Wander();
         }
+    }
+
+    private void Wander()
+    {
+        if (isWandering)
+        {
+            wanderTimer -= Time.deltaTime;
+
+            if (wanderTimer <= 0)
+            {
+                wanderTarget = RandomWanderPoint();
+                wanderTimer = 5f;
+            }
+
+            agent.SetDestination(wanderTarget);
+        }
+    }
+
+    private Vector3 RandomWanderPoint()
+    {
+        Vector3 randomDirection = Random.insideUnitSphere * WanderRadius;
+        randomDirection += initialPosition;
+        NavMeshHit hit;
+        NavMesh.SamplePosition(randomDirection, out hit, WanderRadius, NavMesh.AllAreas);
+
+        return hit.position;
     }
 
     public virtual void EnemyMovement()
     {
-        if (CanTakeCover)
+        if (TakeCover)
         {
             if (Vector3.Distance(transform.position, player.position) <= AvoidPlayerDistance)
             {
                 Vector3 direction = player.position - transform.position;
                 direction.y = 0;
+                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(direction), RotationSpeed * Time.deltaTime);
 
-                Vector3 coverPosition = FindClosestCover();
-
-                // KEEP working on this uwu
-                if (transform.position != coverPosition)
-                {
-                    agent.SetDestination(coverPosition);
-                }
-                else
-                {
-                    transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(direction), RotationSpeed * Time.deltaTime);
-                    GunObject.transform.LookAt(player.position + new Vector3(Random.Range(-GunInaccuracy, GunInaccuracy), 1.5f, Random.Range(-GunInaccuracy, GunInaccuracy)));
-                }
+                GunObject.transform.LookAt(player.position + new Vector3(Random.Range(-GunInaccuracy, GunInaccuracy), 1.5f, Random.Range(-GunInaccuracy, GunInaccuracy)));
             }
             else
             {
                 GunObject.transform.LookAt(player.position + new Vector3(Random.Range(-GunInaccuracy, GunInaccuracy), 1.5f, Random.Range(-GunInaccuracy, GunInaccuracy)));
-                agent.SetDestination(player.position);
+                agent.SetDestination(FindClosestEdgeOnNavMesh());
             }
         }
         else
@@ -152,14 +179,16 @@ public class EnemyBase : MonoBehaviour
         }
         return false;
     }
-
-    public virtual Vector3 FindClosestCover()
+    Vector3 FindClosestEdgeOnNavMesh()
     {
         NavMeshHit hit;
+        Vector3 position = transform.position;
+
         if (NavMesh.FindClosestEdge(transform.position, out hit, NavMesh.AllAreas))
         {
-            return hit.position;
+            position = hit.position;
         }
-        return Vector3.zero;
+
+        return position;
     }
 }
