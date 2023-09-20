@@ -54,6 +54,10 @@ public class Bullet : MonoBehaviour
             {
                 hit.transform.gameObject.GetComponent<EnemyBase>().TakeDamage(bulletDamage);
             }
+            else if(hit.transform.gameObject.CompareTag("RigidTarget"))
+            {
+                hit.transform.gameObject.GetComponent<PhysicsHit>().Hit(hit.point, velocity);
+            }
             else
             {
                 // Debug.Log(hit.transform.name);

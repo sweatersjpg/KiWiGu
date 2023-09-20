@@ -84,7 +84,7 @@ public class GunHand : MonoBehaviour
         }
 
         targetPosition = startPosition;
-        if(downSights) targetPosition = new(0, -0.19f, startPosition.z);
+        if(downSights) targetPosition = new(0, -0.17f, startPosition.z);
         targetAngle = 0;
 
     }
