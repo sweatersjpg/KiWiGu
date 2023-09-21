@@ -5,8 +5,6 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "New GunInfo", menuName = "GunInfo")]
 public class GunInfo : ScriptableObject
 {
-    public enum FireType {Burst, Single, Auto}
-
     [Header("Aiming")]
     public bool canAim = true;
     public bool hasToAim = false;
@@ -14,7 +12,7 @@ public class GunInfo : ScriptableObject
     public float aimTime = 0.3f;
 
     [Header("Shooting")]
-    public FireType fireType = FireType.Single;
+    public bool fullAuto = false;
     public float projectiles = 1;
 
     [Space]
@@ -23,6 +21,7 @@ public class GunInfo : ScriptableObject
     public float fireRate = 1;
 
     [Header("Metrics")]
+    public float damage;
     public float spread = 0; // works also as accuracy
     public float recoil = 45;
 

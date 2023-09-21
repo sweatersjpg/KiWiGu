@@ -15,10 +15,13 @@ public class GunHand : MonoBehaviour
     public int mouseButton;
     public float aimDelay = 0.4f;
 
+    public GunInfo info;
     float gunAngle = 0;
     float targetAngle = 0;
 
     float aimTimer = 0;
+
+    public bool canShoot;
 
     // Start is called before the first frame update
     void Start()
@@ -39,18 +42,21 @@ public class GunHand : MonoBehaviour
         if (!Input.GetMouseButton(mouseButton) && aimTimer >= 0) aimTimer -= Time.deltaTime;
 
         if (aimTimer <= 0 && downSights) ToggleDownSights();
-        if (aimTimer >= aimDelay && !downSights) ToggleDownSights();
+        if (aimTimer >= aimDelay && !downSights && info.canAim) ToggleDownSights();
 
-        if (Input.GetMouseButtonUp(mouseButton))
-        {
-            //if(downSights) Invoke(nameof(ToggleDownSights), 0.1f);
-            //aimTimer = 0;
-            AnimateShoot();
-        }
+        //if (Input.GetMouseButtonUp(mouseButton))
+        //{
+        //    //if(downSights) Invoke(nameof(ToggleDownSights), 0.1f);
+        //    //aimTimer = 0;
+        //    AnimateShoot();
+        //}
 
         transform.localPosition += 50 * ((targetPosition - transform.localPosition) / 4) * Time.deltaTime;
 
-        gunAngle += 50 * ((targetAngle - gunAngle) / 2) * Time.deltaTime;
+        if (!canShoot) targetAngle = 5;
+        else targetAngle = 0;
+
+        gunAngle += 50 * ((targetAngle - gunAngle) / 8) * Time.deltaTime;
         transform.localEulerAngles = new(gunAngle, 0, 0);
     }
 
@@ -78,7 +84,7 @@ public class GunHand : MonoBehaviour
         }
 
         targetPosition = startPosition;
-        if(downSights) targetPosition = new(0, -0.19f, startPosition.z);
+        if(downSights) targetPosition = new(0, -0.17f, startPosition.z);
         targetAngle = 0;
 
     }
@@ -93,7 +99,7 @@ public class GunHand : MonoBehaviour
 
     public void AnimateShoot()
     {
-        gunAngle = -45;
+        gunAngle -= info.recoil;
 
         transform.localPosition += new Vector3(0, 0, -0.1f);
     }

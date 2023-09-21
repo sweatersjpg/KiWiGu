@@ -13,15 +13,21 @@ public class sweatersController : MonoBehaviour
     //public static bool paused = false;
 
     [Header("Movement Metrics")]
-    public float walkingAcceleration = 30;
-    public float runningAcceleration = 60;
-    public float crouchAcceleration = 15;
+    public float maxJumpDistance = 4;
+    public float maxJumpHeight = 2;
+    public float runningSpeed = 7.5f;
+    public float crouchSpeed = 3.75f;
+    public float acceleration = 3.75f;
+    [Space]
     public float deceleration = 4;
+    public float slopeSpeed = 175;
+    public float maxSpeedDecay = 16;
+
+    [Space]
     public float gravity = 20f;
     public float jumpSpeed = 8.0f;
-    public float slopeSpeed = 175;
 
-    float acceleration;
+    float maxSpeed;
 
     [Space]
     public float lookSpeed = 2.0f;
@@ -35,7 +41,7 @@ public class sweatersController : MonoBehaviour
 
     [HideInInspector] public Vector2 mouseLook;
     public Vector3 velocity;
-    Vector3 input;
+    public Vector3 input;
 
     float rotationX = 0;
 
@@ -82,6 +88,9 @@ public class sweatersController : MonoBehaviour
         instance = this;
 
         velocity = new Vector3();
+
+
+
     }
 
     // Start is called before the first frame update
@@ -96,9 +105,28 @@ public class sweatersController : MonoBehaviour
         charController.height = standingHeight;
         targetHeight = charController.height;
 
-        acceleration = walkingAcceleration;
-
         spawnPoint = transform.position;
+
+        float a = (acceleration * 0.25f); // 1/2a
+
+        float airTime = (-runningSpeed + Mathf.Sqrt((runningSpeed * runningSpeed) - 2 * a * (-maxJumpDistance))) / a;
+
+        Debug.Log(airTime);
+        //float airTime = (-runningSpeed + Mathf.Sqrt(runningSpeed * runningSpeed - 2 * a * -maxJumpDistance)) / a;
+        //float airTime = Mathf.Sqrt(maxJumpDistance / (0.5f * a));
+
+        airTime /= 2;
+
+        //gravity = 2 * (maxJumpHeight / (airTime * airTime));
+
+
+        //jumpSpeed = Mathf.Sqrt(2 * gravity * maxJumpHeight);
+        jumpSpeed = 2 * (maxJumpHeight / airTime);
+
+        gravity = jumpSpeed / airTime;
+
+        Debug.Log(gravity);
+        Debug.Log(jumpSpeed);
 
         //playerCamera = Camera.main;
     }
@@ -137,16 +165,31 @@ public class sweatersController : MonoBehaviour
         input = (forward * input.x) + (right * input.z);
         if (!isGrounded || isSliding) input /= 4; // reduce acceleration in air
 
-        acceleration = Input.GetKey(KeyCode.LeftShift) ? runningAcceleration : walkingAcceleration;
-        acceleration = Input.GetKey(KeyCode.LeftControl) ? crouchAcceleration : acceleration;
-
-        velocity += acceleration * deltaTime * input;
+        Vector3 force = acceleration * input;
 
         if (isGrounded && !isSliding)
         {
-            velocity.x -= velocity.x * deceleration * deltaTime;
-            velocity.z -= velocity.z * deceleration * deltaTime;
+            Vector3 v = new(velocity.x, 0, velocity.z);
+            //float mag = v.magnitude - deceleration * Time.deltaTime * (1-input.magnitude);
+            //if (mag < 0) mag = 0;
+
+            //v = v.normalized * mag;
+
+            //velocity.x = v.x;
+            //velocity.z = v.z;
+
+            // x component
+            float d = Mathf.Min(deceleration * deltaTime, Mathf.Abs(v.x));
+            if(Mathf.Abs(v.x - input.x) >= Mathf.Abs(v.x) + Mathf.Abs(input.x)) v.x -= Mathf.Sign(v.x) * d;
+
+            // z
+            d = Mathf.Min(deceleration * deltaTime, Mathf.Abs(v.z)); ;
+            if (Mathf.Abs(v.z - input.z) >= Mathf.Abs(v.z) + Mathf.Abs(input.z)) v.z -= Mathf.Sign(v.z) * d;
+
+            velocity = new(v.x, velocity.y, v.z);
         }
+
+        force.y -= gravity;
 
         if (Input.GetButtonDown("Jump") && isGrounded)
         {
@@ -161,14 +204,24 @@ public class sweatersController : MonoBehaviour
             velocity.z += jumpVector.z;
         }
 
-        velocity.y -= gravity * deltaTime;
+        if (isSliding) force += slopeSpeed * new Vector3(groundNormal.x, -groundNormal.y, groundNormal.z);
 
-        if (isSliding)
+        velocity += 0.5f * deltaTime * force; // add half before moving
+
+        float targetSpeed = Input.GetKey(KeyCode.LeftControl) ? crouchSpeed : runningSpeed;
+        if (isGrounded && !isSliding)
         {
-            velocity += deltaTime * slopeSpeed * new Vector3(groundNormal.x, -groundNormal.y, groundNormal.z);
-        }
+            maxSpeed -= maxSpeedDecay * deltaTime;
+            if (maxSpeed < targetSpeed) maxSpeed = targetSpeed;
 
-        charController.Move(velocity * deltaTime);
+            Vector3 v = new(velocity.x, 0, velocity.z);
+            v = Vector3.ClampMagnitude(v, maxSpeed);
+
+            velocity = new(v.x, velocity.y, v.z);
+        } else if (velocity.magnitude > maxSpeed) maxSpeed = velocity.magnitude;
+
+        charController.Move(velocity * deltaTime); // move player
+        velocity += 0.5f * deltaTime * force; // add other half after moving
 
         rotationX += -Input.GetAxis("Mouse Y") * lookSpeed;
         rotationX = Mathf.Clamp(rotationX, -lookXLimit, lookXLimit);
