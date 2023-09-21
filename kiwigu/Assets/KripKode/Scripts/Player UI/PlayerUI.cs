@@ -7,7 +7,7 @@ public class PlayerUI : MonoBehaviour
 {
     [Header("Radar")]
     [SerializeField][Range(50, 200)] float radarSpeed;
-    [SerializeField][Range(5, 100)] float radarRadius = 50f;
+    [SerializeField][Range(50, 500)] float radarRadius = 50f;
     [SerializeField] RectTransform radarCone;
     [SerializeField] GameObject enemyDotPrefab;
     [SerializeField] RectTransform radarEnemySpots;
@@ -16,6 +16,9 @@ public class PlayerUI : MonoBehaviour
     [Header("Shared Variables")]
     [HideInInspector] public Transform player;
 
+    private Dictionary<Transform, GameObject> spawnedEnemyDots = new Dictionary<Transform, GameObject>();
+
+
     private void Start()
     {
         player = GameObject.FindGameObjectWithTag("Player")?.transform;
@@ -23,37 +26,48 @@ public class PlayerUI : MonoBehaviour
 
     private void Update()
     {
-        ScanEnemySnapshot();
-
+        Radar();
         radarCone.Rotate(0f, 0f, -radarSpeed * Time.deltaTime);
     }
 
-    void ScanEnemySnapshot()
+    void Radar()
     {
-        Vector3 offset = new Vector3(player.position.x, player.position.y + 1, player.position.z);
+        Vector3 radarDirection = Quaternion.Euler(0, -radarCone.rotation.eulerAngles.z, 0) * player.forward;
 
-        Ray ray = new Ray(offset, player.forward * radarRadius);
-        ray.direction = Quaternion.Euler(0, -radarCone.rotation.eulerAngles.z + 45, 0) * ray.direction;
-        Debug.DrawRay(ray.origin, ray.direction * radarRadius, Color.red);
+        Collider[] colliders = Physics.OverlapSphere(player.position, radarRadius);
 
-        if (Physics.Raycast(ray, out RaycastHit hit, radarRadius))
+        foreach (var collider in colliders)
         {
-            if (hit.collider.CompareTag("Enemy"))
+            if (collider.CompareTag("Enemy"))
             {
-                Vector3 radarPos = (hit.transform.position - player.position) / radarRadius;
-                radarPos = Quaternion.Euler(0, -player.eulerAngles.y, 0) * radarPos;
+                Transform enemyTransform = collider.transform;
 
-                Vector3 UIpos = new(radarPos.x, radarPos.z, 0f);
+                Vector3 directionToEnemy = (enemyTransform.position - player.position).normalized;
 
-                GameObject enemyDot = Instantiate(enemyDotPrefab, radarEnemySpots);
+                float dotProduct = Vector3.Dot(directionToEnemy, radarDirection);
 
+                if (dotProduct >= Mathf.Cos(Mathf.Deg2Rad * 45))
+                {
+                    if (!spawnedEnemyDots.ContainsKey(enemyTransform))
+                    {
+                        Vector3 radarPos = (enemyTransform.position - player.position) / radarRadius;
+                        radarPos = Quaternion.Euler(0, -player.eulerAngles.y, 0) * radarPos;
 
-                enemyDot.GetComponent<RectTransform>().anchoredPosition = UIpos * ActualSize(radarEnemySpots, GetComponent<Canvas>());
-                enemyDot.GetComponent<Image>().color = enemyDotColor;
-                StartCoroutine(DeleteRatActivity(enemyDot.GetComponent<Image>()));
+                        Vector3 UIpos = new Vector3(radarPos.x, radarPos.z, 0f);
+
+                        GameObject enemyDot = Instantiate(enemyDotPrefab, radarEnemySpots);
+                        enemyDot.GetComponent<RectTransform>().anchoredPosition = UIpos * ActualSize(radarEnemySpots, GetComponent<Canvas>());
+                        enemyDot.GetComponent<Image>().color = enemyDotColor;
+
+                        spawnedEnemyDots.Add(enemyTransform, enemyDot);
+
+                        StartCoroutine(SpotBehaviour(enemyDot.GetComponent<Image>(), enemyTransform));
+                    }
+                }
             }
         }
     }
+
 
     public Vector2 ActualSize(RectTransform trans, Canvas can)
     {
@@ -62,7 +76,7 @@ public class PlayerUI : MonoBehaviour
         return RectTransformUtility.PixelAdjustRect(trans, can).size;
     }
 
-    IEnumerator DeleteRatActivity(Image spot)
+    IEnumerator SpotBehaviour(Image spot, Transform enemyTransform)
     {
         float t = 0f;
         while (t < 0.15f)
@@ -79,7 +93,7 @@ public class PlayerUI : MonoBehaviour
             yield return null;
         }
 
+        spawnedEnemyDots.Remove(enemyTransform);
         Destroy(spot.gameObject);
     }
-
 }

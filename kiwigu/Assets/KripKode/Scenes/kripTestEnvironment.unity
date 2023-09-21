@@ -1683,7 +1683,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 749136423508660672, guid: 8bf9a24137b47f840862100d05abfa24, type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 749136423508660673, guid: 8bf9a24137b47f840862100d05abfa24, type: 3}
       propertyPath: m_RootOrder
@@ -1739,7 +1739,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 749136423508660677, guid: 8bf9a24137b47f840862100d05abfa24, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8bf9a24137b47f840862100d05abfa24, type: 3}
@@ -2886,11 +2886,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   radarSpeed: 200
-  radarRadius: 50
+  radarRadius: 100
   radarCone: {fileID: 1573890516}
   enemyDotPrefab: {fileID: 2821100375419610890, guid: 3882b91aebdeb3e4e82b1921dd3e381f, type: 3}
   radarEnemySpots: {fileID: 150181237}
-  enemyDotColor: {r: 1, g: 0, b: 0, a: 1}
+  enemyDotColor: {r: 1, g: 0, b: 0.19129372, a: 1}
   player: {fileID: 0}
 --- !u!1 &1494978729
 GameObject:
@@ -2908,7 +2908,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1494978730
 Transform:
   m_ObjectHideFlags: 0
@@ -3411,7 +3411,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.9843137}
+  m_Color: {r: 0.7264151, g: 0.7264151, b: 0.7264151, a: 0.78431374}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
