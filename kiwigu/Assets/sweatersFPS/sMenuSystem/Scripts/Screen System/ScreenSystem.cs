@@ -66,7 +66,7 @@ public class ScreenSystem : MonoBehaviour
         // open pause menu
         if (!PauseSystem.paused && (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.P))) Resume(0);
         // open inventory
-        if (!PauseSystem.paused && Input.GetKeyDown(KeyCode.E)) Resume(1);
+        if (!PauseSystem.paused && Input.GetKeyDown(KeyCode.I)) Resume(1);
 
         mouseButton = Input.GetMouseButton(0);
         mouseScrollDelta += Input.mouseScrollDelta.y;

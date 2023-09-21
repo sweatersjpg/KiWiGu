@@ -251,6 +251,19 @@ public class sweatersController : MonoBehaviour
 
     void OnControllerColliderHit(ControllerColliderHit hit)
     {
+        Rigidbody body = hit.rigidbody;
+
+        if (body != null && !body.isKinematic)
+        {
+            if (hit.moveDirection.y > -0.3)
+            {
+                Vector3 pushDir = new(hit.moveDirection.x, 0, hit.moveDirection.z);
+
+                body.velocity = pushDir * 5;
+                return;
+            }
+        }
+
         Debug.DrawRay(hit.point, hit.normal, Color.red);
 
         hitPointNormal = hit.normal;
@@ -260,6 +273,7 @@ public class sweatersController : MonoBehaviour
 
         float angle = Vector3.Angle(velocity, hitPointNormal);
         if (angle >= 90) velocity -= Vector3.Project(velocity, hitPointNormal);
+
     }
 
 }

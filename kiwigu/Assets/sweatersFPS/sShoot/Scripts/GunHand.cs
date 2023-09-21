@@ -12,6 +12,8 @@ public class GunHand : MonoBehaviour
     Vector3 startPosition; // local
     Vector3 targetPosition; // local
 
+    Vector3 sightsPosition;
+
     public int mouseButton;
     public float aimDelay = 0.4f;
 
@@ -23,11 +25,16 @@ public class GunHand : MonoBehaviour
 
     public bool canShoot;
 
+    public GameObject thrownGunPrefab;
+
     // Start is called before the first frame update
     void Start()
     {
         startPosition = transform.localPosition;
         targetPosition = startPosition;
+
+        Transform sights = transform.Find("Sights");
+        sightsPosition = sights.localPosition;
     }
 
     // Update is called once per frame
@@ -40,6 +47,8 @@ public class GunHand : MonoBehaviour
 
         if (Input.GetMouseButton(mouseButton) && aimTimer <= aimDelay) aimTimer += Time.deltaTime;
         if (!Input.GetMouseButton(mouseButton) && aimTimer >= 0) aimTimer -= Time.deltaTime;
+
+        if (Input.GetKeyDown(mouseButton == 0 ? KeyCode.Q : KeyCode.E)) ThrowGun();
 
         if (aimTimer <= 0 && downSights) ToggleDownSights();
         if (aimTimer >= aimDelay && !downSights && info.canAim) ToggleDownSights();
@@ -84,8 +93,24 @@ public class GunHand : MonoBehaviour
         }
 
         targetPosition = startPosition;
-        if(downSights) targetPosition = new(0, -0.17f, startPosition.z);
+        // if(downSights) targetPosition = new(0, -0.17f, startPosition.z);
+        if (downSights) targetPosition = new(0, -sightsPosition.y, startPosition.z);
         targetAngle = 0;
+
+    }
+
+    void ThrowGun()
+    {
+        ThrownGun gun = Instantiate(thrownGunPrefab).GetComponent<ThrownGun>();
+
+        gun.transform.SetPositionAndRotation(transform.position, Quaternion.LookRotation(transform.forward));
+
+        Transform gunView = transform.Find("GunView");
+
+        gun.SetMesh(gunView.GetComponent<MeshFilter>().mesh);
+        gun.info = info;
+
+        gunView.gameObject.SetActive(false);
 
     }
 
