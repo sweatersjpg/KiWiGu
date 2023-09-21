@@ -11,12 +11,13 @@ GameObject:
   - component: {fileID: 679884176724708218}
   - component: {fileID: 4521812604701295839}
   - component: {fileID: 1811647522922967061}
+  - component: {fileID: 2868656791513580735}
   m_Layer: 0
   m_Name: BaseWall8x6
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &679884176724708218
 Transform:
@@ -40,7 +41,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 154458993511993792}
-  m_Mesh: {fileID: 4744572698772090878, guid: dd44bf681d9d8cb428f2dc72178a5fcb, type: 3}
+  m_Mesh: {fileID: -8701341183550247909, guid: a8560a98fa1a8934486e2aa3e4ae28dc, type: 3}
 --- !u!23 &1811647522922967061
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -49,7 +50,7 @@ MeshRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 154458993511993792}
   m_Enabled: 1
-  m_CastShadows: 1
+  m_CastShadows: 2
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
   m_StaticShadowCaster: 0
@@ -83,3 +84,16 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!65 &2868656791513580735
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 154458993511993792}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 8, y: 6.013394, z: 0.5}
+  m_Center: {x: -4, y: 3.006697, z: 0.25}

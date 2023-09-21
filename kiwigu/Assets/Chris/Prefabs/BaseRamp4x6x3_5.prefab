@@ -11,12 +11,13 @@ GameObject:
   - component: {fileID: 4022062883870811050}
   - component: {fileID: 35720346819111951}
   - component: {fileID: 2853611175545460933}
+  - component: {fileID: 4644972191875873367}
   m_Layer: 0
   m_Name: BaseRamp4x6x3_5
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &4022062883870811050
 Transform:
@@ -40,7 +41,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4367062610786875664}
-  m_Mesh: {fileID: -2401467131184280031, guid: 38ef84298e34fc242ba15c22d1b1fc84, type: 3}
+  m_Mesh: {fileID: 1915522234592402264, guid: 942d748e66fc9af4c97fa84359cbaf70, type: 3}
 --- !u!23 &2853611175545460933
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -83,3 +84,17 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!64 &4644972191875873367
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4367062610786875664}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 1915522234592402264, guid: 942d748e66fc9af4c97fa84359cbaf70, type: 3}
