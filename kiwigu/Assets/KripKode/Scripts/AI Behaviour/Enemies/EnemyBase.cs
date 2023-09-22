@@ -9,6 +9,7 @@ public class EnemyBase : MonoBehaviour
     [Range(10, 100)] public int MaxHealth = 100;
     [Range(10, 100)] public int MaxShield = 100;
     public GameObject GunObject;
+    public GameObject EyesPosition;
 
     [Header("Enemy Movement")]
     [Range(1, 15)] public int MovementSpeed = 5;
@@ -209,19 +210,36 @@ public class EnemyBase : MonoBehaviour
 
     public virtual bool CheckPlayerVisibility()
     {
-        Vector3 direction = player.position - transform.position + new Vector3(0, 0.5f, 0);
-        RaycastHit hit;
+        Collider[] colliders = Physics.OverlapSphere(transform.position, EnemyAwareDistance);
 
-        if (!Physics.Raycast(transform.position, direction, out hit, EnemyAwareDistance))
+        foreach (Collider collider in colliders)
         {
-            return false;
-        }
+            if (collider.CompareTag("Player"))
+            {
+                Vector3 direction = player.position - EyesPosition.transform.position + new Vector3(0, 0.5f, 0);
+                RaycastHit[] hits = Physics.RaycastAll(EyesPosition.transform.position, direction, EnemyAwareDistance);
 
-        if (hit.transform.CompareTag("Player"))
-        {
-            return true;
+                Debug.DrawLine(EyesPosition.transform.position, player.position, Color.red);
+
+                foreach (RaycastHit hit in hits)
+                {
+                    if (hit.collider.CompareTag("Player"))
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+            }
         }
 
         return false;
+    }
+
+    private void OnDestroy()
+    {
+        StopAllCoroutines();
     }
 }
