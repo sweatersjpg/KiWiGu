@@ -49,6 +49,6 @@ public class PhysicsHit : MonoBehaviour
 
         rb.AddForceAtPosition(force, point, ForceMode.Impulse);
 
-        GetComponent<MeshFilter>().mesh = altMesh;
+        if (altMesh) GetComponent<MeshFilter>().mesh = altMesh;
     }
 }
