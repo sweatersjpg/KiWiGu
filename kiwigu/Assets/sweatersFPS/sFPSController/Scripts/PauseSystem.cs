@@ -44,7 +44,7 @@ public class PauseSystem : MonoBehaviour
     void Update()
     {
         //if (isMainMenu) return;
-        if(Input.GetKeyUp(KeyCode.Escape) || Input.GetKeyUp(KeyCode.P) || Input.GetKeyUp(KeyCode.E)) TogglePaused();
+        if(Input.GetKeyUp(KeyCode.Escape) || Input.GetKeyUp(KeyCode.P) || Input.GetKeyUp(KeyCode.I)) TogglePaused();
     }
 
     public void QuitGame()
