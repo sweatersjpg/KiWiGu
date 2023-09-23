@@ -73,11 +73,12 @@ public class MiniRenderer : MonoBehaviour
     {
         if (renderers == null) renderers = new Dictionary<string, RenderTexture>();
 
-        rendererName += "" + Random.Range(0, rendererCount-1);
+        rendererName += "" + Random.Range(0, rendererCount - 1);
 
         bool instance = false;
 
-        if (rendererCount == 0 || !renderers.ContainsKey(rendererName)) {
+        if (rendererCount == 0 || !renderers.ContainsKey(rendererName))
+        {
             rt = new RenderTexture(width, height, 32);
 
             rt.filterMode = FilterMode.Point;
@@ -85,7 +86,8 @@ public class MiniRenderer : MonoBehaviour
 
             if (rendererCount > 0) renderers.Add(rendererName, rt);
             instance = true;
-        } else
+        }
+        else
         {
             rt = renderers[rendererName];
         }
@@ -106,7 +108,7 @@ public class MiniRenderer : MonoBehaviour
 
         // init spr buffer
         spr_buffer = new Stack<Spr>[layers];
-        for(int i = 0; i < spr_buffer.Length; i++)
+        for (int i = 0; i < spr_buffer.Length; i++)
         {
             spr_buffer[i] = new Stack<Spr>();
         }
@@ -114,7 +116,7 @@ public class MiniRenderer : MonoBehaviour
         GetComponent<ScreenSystem>().Init(this);
 
         //if(!useCoroutine)
-        InvokeRepeating(nameof(Render), 0f, 1f/frameRate);
+        InvokeRepeating(nameof(Render), 0f, 1f / frameRate);
 
         //else StartCoroutine(RenderLoop());
 
@@ -164,7 +166,7 @@ public class MiniRenderer : MonoBehaviour
             while (spr_buffer[i].Count > 0) tempBuffer.Push(spr_buffer[i].Pop());
             while (tempBuffer.Count > 0) drawSprite(tempBuffer.Pop());
         }
-        
+
     }
 
     // --- layer functions ---
@@ -186,12 +188,12 @@ public class MiniRenderer : MonoBehaviour
 
     public void put(string str, float X, float Y)
     {
-        float x = X-8, y = Y;
-        for(int i = 0; i < str.Length; i++)
+        float x = X - 8, y = Y;
+        for (int i = 0; i < str.Length; i++)
         {
-            if(str[i] == '\n')
+            if (str[i] == '\n')
             {
-                x = X-8;
+                x = X - 8;
                 y += 8;
                 continue;
             }
@@ -211,11 +213,11 @@ public class MiniRenderer : MonoBehaviour
         => spr(spriteSheet, sx, sy, x, y, sw, sh, false, sw, sh);
 
     public void spr(float sx, float sy, float x, float y, float sw, float sh, bool flip)
-        =>spr(spriteSheet, sx, sy, x, y, sw, sh, flip, sw, sh);
+        => spr(spriteSheet, sx, sy, x, y, sw, sh, flip, sw, sh);
 
     // adds sprite info to current layer's buffer
     public void spr(float sx, float sy, float x, float y, float sw, float sh, bool flip, float w, float h)
-        =>spr(spriteSheet, sx, sy, x, y, sw, sh, flip, w, h);
+        => spr(spriteSheet, sx, sy, x, y, sw, sh, flip, w, h);
 
     public void spr(Texture texture, float sx, float sy, float x, float y, float sw, float sh, bool flip, float w, float h)
     {

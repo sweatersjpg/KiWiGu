@@ -66,7 +66,7 @@ public class ScreenSystem : MonoBehaviour
         // open pause menu
         if (!PauseSystem.paused && (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.P))) Resume(0);
         // open inventory
-        if (!PauseSystem.paused && Input.GetKeyDown(KeyCode.E)) Resume(1);
+        if (!PauseSystem.paused && Input.GetKeyDown(KeyCode.I)) Resume(1);
 
         mouseButton = Input.GetMouseButton(0);
         mouseScrollDelta += Input.mouseScrollDelta.y;
@@ -158,14 +158,13 @@ public class ScreenSystem : MonoBehaviour
 
         float distortionIntensity = distortionTransition.Evaluate(transition / transitionDuration);
 
-        float targetIntensity = distortionIntensity * 1.5f;
+        float targetIntensity = distortionIntensity * 1.25f;
         float currentIntensity = (float)distortionEffect.intensity;
-        float smoothness = 35;
+        float smoothness = 60;
         distortionEffect.intensity.Override(Mathf.Lerp(currentIntensity, targetIntensity, Time.deltaTime * smoothness));
 
         backdrop.color = Color.Lerp(backdropStart, backdropEnd, backdropTransition.Evaluate(transition / transitionDuration));
     }
-
 
 
 
