@@ -19,6 +19,7 @@ public class sweatersController : MonoBehaviour
     public float crouchSpeed = 3.75f;
     public float acceleration = 3.75f;
     [Space]
+    public float slopeLimit = 45;
     public float deceleration = 4;
     public float slopeSpeed = 175;
     public float maxSpeedDecay = 16;
@@ -52,32 +53,8 @@ public class sweatersController : MonoBehaviour
 
     float deltaTime;
 
-    public bool isSliding
-    {
-        get
-        {
-            bool hasHit = Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, 2f);
-            groundNormal = hit.normal;
-
-            Debug.DrawRay(transform.position, Vector3.down * 2f, Color.blue);
-            Debug.DrawRay(hit.point, hit.normal, Color.blue);
-
-            return isGrounded && hasHit && Vector3.Angle(Vector3.up, hit.normal) > charController.slopeLimit;
-        }
-    }
-    public bool isGrounded
-    {
-        get
-        {
-            return Physics.SphereCast(transform.position + new Vector3(0, 0.5f), 0.5f, Vector3.down, out RaycastHit hit, 0.2f);
-            //if (Physics.SphereCast(transform.position + new Vector3(0,0.5f), 0.5f, Vector3.down, out RaycastHit hit, 0.2f))
-            //{
-            //    groundNormal = hit.normal;
-            //    return true;
-            //}
-            //return false;
-        }
-    }
+    public bool isSliding;
+    public bool isGrounded;
     public bool isCrouching
     {
         get { return charController.height < standingHeight * 0.9f; }
@@ -111,22 +88,11 @@ public class sweatersController : MonoBehaviour
 
         float airTime = (-runningSpeed + Mathf.Sqrt((runningSpeed * runningSpeed) - 2 * a * (-maxJumpDistance))) / a;
 
-        Debug.Log(airTime);
-        //float airTime = (-runningSpeed + Mathf.Sqrt(runningSpeed * runningSpeed - 2 * a * -maxJumpDistance)) / a;
-        //float airTime = Mathf.Sqrt(maxJumpDistance / (0.5f * a));
-
         airTime /= 2;
 
-        //gravity = 2 * (maxJumpHeight / (airTime * airTime));
-
-
-        //jumpSpeed = Mathf.Sqrt(2 * gravity * maxJumpHeight);
         jumpSpeed = 2 * (maxJumpHeight / airTime);
 
         gravity = jumpSpeed / airTime;
-
-        Debug.Log(gravity);
-        Debug.Log(jumpSpeed);
 
         //playerCamera = Camera.main;
     }
@@ -155,6 +121,9 @@ public class sweatersController : MonoBehaviour
     // Update is called once per frame
     void DoMovement()
     {
+        isSliding = GetIsSliding();
+        isGrounded = GetIsGrounded();
+
         Vector3 forward = transform.TransformDirection(Vector3.forward);
         Vector3 right = transform.TransformDirection(Vector3.right);
 
@@ -180,7 +149,7 @@ public class sweatersController : MonoBehaviour
 
             // x component
             float d = Mathf.Min(deceleration * deltaTime, Mathf.Abs(v.x));
-            if(Mathf.Abs(v.x - input.x) >= Mathf.Abs(v.x) + Mathf.Abs(input.x)) v.x -= Mathf.Sign(v.x) * d;
+            if (Mathf.Abs(v.x - input.x) >= Mathf.Abs(v.x) + Mathf.Abs(input.x)) v.x -= Mathf.Sign(v.x) * d;
 
             // z
             d = Mathf.Min(deceleration * deltaTime, Mathf.Abs(v.z)); ;
@@ -189,7 +158,7 @@ public class sweatersController : MonoBehaviour
             velocity = new(v.x, velocity.y, v.z);
         }
 
-        force.y -= gravity;
+        if(!isGrounded || isSliding) force.y -= gravity;
 
         if (Input.GetButtonDown("Jump") && isGrounded)
         {
@@ -204,7 +173,7 @@ public class sweatersController : MonoBehaviour
             velocity.z += jumpVector.z;
         }
 
-        if (isSliding) force += slopeSpeed * new Vector3(groundNormal.x, -groundNormal.y, groundNormal.z);
+        //if (isSliding) force += slopeSpeed * new Vector3(groundNormal.x, -groundNormal.y, groundNormal.z);
 
         velocity += 0.5f * deltaTime * force; // add half before moving
 
@@ -222,6 +191,8 @@ public class sweatersController : MonoBehaviour
 
         charController.Move(velocity * deltaTime); // move player
         velocity += 0.5f * deltaTime * force; // add other half after moving
+
+        //Debug.DrawRay(transform.position, velocity, Color.cyan);
 
         rotationX += -Input.GetAxis("Mouse Y") * lookSpeed;
         rotationX = Mathf.Clamp(rotationX, -lookXLimit, lookXLimit);
@@ -268,12 +239,39 @@ public class sweatersController : MonoBehaviour
 
         hitPointNormal = hit.normal;
 
-        // if on slope but not sliding or moving then treat slope like flat ground
-        if (!isSliding && Vector3.Angle(groundNormal, hitPointNormal) < 5 && input.magnitude < 0.1) hitPointNormal = Vector3.up;
+        Debug.DrawRay(transform.position, velocity, Color.cyan);
 
-        float angle = Vector3.Angle(velocity, hitPointNormal);
-        if (angle >= 90) velocity -= Vector3.Project(velocity, hitPointNormal);
+        Vector3 newVel = (velocity - Vector3.Project(velocity, hitPointNormal));
+        velocity = newVel;
+    }
 
+    bool GetIsSliding()
+    {
+        Vector3 p1 = transform.position + (charController.height - charController.radius) * Vector3.up;
+        Vector3 p2 = transform.position + charController.radius * Vector3.up;
+
+        bool hasHit = Physics.CapsuleCast(p1, p2, charController.radius, Vector3.down, out RaycastHit hit, 2);
+
+        Debug.DrawRay(transform.position, Vector3.down * 2f, Color.blue);
+        Debug.DrawRay(hit.point, hit.normal, Color.blue);
+
+        Debug.DrawLine(p1, p2, Color.black);
+
+        //Debug.Log(Vector3.Angle(Vector3.up, hit.normal));
+
+        return isGrounded && hasHit && Vector3.Angle(Vector3.up, hit.normal) > slopeLimit;
+    }
+
+    bool GetIsGrounded()
+    {
+        Vector3 p1 = transform.position + (charController.height - charController.radius) * Vector3.up;
+        Vector3 p2 = transform.position + charController.radius * Vector3.up;
+
+        bool hasHit = Physics.CapsuleCast(p1, p2, charController.radius, Vector3.down, out RaycastHit hit, 0.01f);
+
+        groundNormal = hit.normal;
+
+        return hasHit;
     }
 
 }
