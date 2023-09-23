@@ -1,95 +1,143 @@
-using Unity.VisualScripting;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
 
+[RequireComponent(typeof(NavMeshAgent))]
 public class EnemyBase : MonoBehaviour
 {
     [Header("Enemy Main Variables")]
-    [Range(10, 100)]
-    public int MaxHealth;
-    [Range(10, 100)]
-    public int MaxShield;
+    [Range(10, 100)] public int MaxHealth = 100;
+    [Range(10, 100)] public int MaxShield = 100;
     public GameObject GunObject;
+    public GameObject EyesPosition;
 
     [Header("Enemy Movement")]
-    [Range(1, 15)]
-    public int MovementSpeed;
-    [Range(5, 10)]
-    public int AvoidPlayerDistance;
-    [Range(100, 200)]
-    public int RotationSpeed;
-    [Range(10, 20)]
-    public int EnemyAwareDistance;
-    [Range(4, 15)]
-    public int WanderRadius;
-    public bool TakeCover;
+    [Range(1, 15)] public int MovementSpeed = 5;
+    [Range(5, 10)] public int AvoidPlayerDistance = 7;
+    [Range(10, 15)] public int FleeDistance = 12;
+    [Range(5, 10)] public int FleeMovementVariation = 7;
+    [Range(100, 200)] public int RotationSpeed = 180;
+    [Range(15, 25)] public int EnemyAwareDistance = 20;
+    [Range(5, 20)] public int WanderRadius = 8;
 
     [Header("Enemy Gun Stats")]
-    [Range(1, 10)]
-    public float EnemyFireRate;
-    [Range(0, 10)]
-    public float GunInaccuracy;
-    public GunInfo info;
+    [Range(1, 10)] public float EnemyFireRate = 1.0f;
+    [Range(0, 10)] public int GunInaccuracy = 5;
+    public GunInfo GunAssetInfo;
 
-    // Other Shared Variables
+    [Header("Shared Variables")]
     [HideInInspector] public Transform player;
     [HideInInspector] public NavMeshAgent agent;
-
     [HideInInspector] public float currentHealth;
     [HideInInspector] public float currentShield;
     [HideInInspector] public bool isHoldingGun;
     [HideInInspector] public bool wasHit;
+    [HideInInspector] public bool isWandering;
+    [HideInInspector] public bool startedFleeing;
+    [HideInInspector] public bool isShooting;
 
-    private float wanderTimer = 5f;
     private Vector3 wanderTarget;
     private Vector3 initialPosition;
-    private bool isWandering;
+    private bool playerInSight;
 
     protected virtual void Start()
     {
         initialPosition = transform.position;
 
-        if (GunObject.transform.parent != null)
-        {
-            isHoldingGun = true;
-        }
+        isHoldingGun = GunObject != null && GunObject.transform.parent != null;
 
-        player = GameObject.FindGameObjectWithTag("Player").transform;
+        player = GameObject.FindGameObjectWithTag("Player")?.transform;
+
         agent = GetComponent<NavMeshAgent>();
-
-        agent.speed = MovementSpeed;
-        agent.stoppingDistance = AvoidPlayerDistance;
-        agent.angularSpeed = RotationSpeed;
+        if (agent != null)
+        {
+            agent.speed = MovementSpeed;
+            agent.angularSpeed = RotationSpeed;
+        }
     }
 
     protected virtual void Update()
     {
-        if (agent.enabled && (CheckPlayerVisibility() || wasHit))
+        playerInSight = CheckPlayerVisibility();
+
+        if (isHoldingGun)
         {
-            isWandering = false;
-            EnemyMovement();
+            if (agent != null && (playerInSight || wasHit))
+            {
+                EnemyMovement();
+            }
+            else if (!isWandering)
+            {
+                StartCoroutine(Wander());
+            }
         }
         else
         {
-            isWandering = true;
-            Wander();
+            if (playerInSight || wasHit)
+            {
+                if (!startedFleeing)
+                {
+                    agent.ResetPath();
+                    StartCoroutine(EnemyFlee());
+                }
+            }
+            else
+            {
+                if (startedFleeing)
+                {
+                    return;
+                }
+
+                if (!isWandering)
+                {
+                    StartCoroutine(Wander());
+                }
+            }
         }
     }
 
-    private void Wander()
+    private IEnumerator EnemyFlee()
     {
-        if (isWandering)
+        Vector3 fleeDestination = FindFleeDestination();
+
+        agent.SetDestination(fleeDestination);
+
+        yield return new WaitUntil(() => agent.remainingDistance < 0.5f);
+
+        startedFleeing = false;
+    }
+
+    private Vector3 FindFleeDestination()
+    {
+        Vector3 awayFromPlayer = transform.position - player.position;
+        awayFromPlayer.Normalize();
+
+        Vector3 fleeDestination = transform.position + awayFromPlayer * FleeDistance;
+
+        float randomOffsetX = Random.Range(-FleeMovementVariation, FleeMovementVariation);
+        float randomOffsetZ = Random.Range(-FleeMovementVariation, FleeMovementVariation);
+        Vector3 randomOffset = new Vector3(randomOffsetX, 0f, randomOffsetZ);
+        fleeDestination += randomOffset;
+
+        NavMeshHit hit;
+        if (NavMesh.SamplePosition(fleeDestination, out hit, FleeDistance, NavMesh.AllAreas))
         {
-            wanderTimer -= Time.deltaTime;
-
-            if (wanderTimer <= 0)
-            {
-                wanderTarget = RandomWanderPoint();
-                wanderTimer = 5f;
-            }
-
-            agent.SetDestination(wanderTarget);
+            return hit.position;
         }
+        else
+        {
+            return transform.position;
+        }
+    }
+
+    private IEnumerator Wander()
+    {
+        wanderTarget = RandomWanderPoint();
+        agent.SetDestination(wanderTarget);
+        isWandering = true;
+        yield return new WaitUntil(() => agent.remainingDistance <= 0.5f);
+        yield return new WaitForSeconds(Random.Range(4, 6));
+        isWandering = false;
     }
 
     private Vector3 RandomWanderPoint()
@@ -104,37 +152,28 @@ public class EnemyBase : MonoBehaviour
 
     public virtual void EnemyMovement()
     {
-        if (TakeCover)
+        if (Vector3.Distance(transform.position, player.position) <= AvoidPlayerDistance)
         {
-            if (Vector3.Distance(transform.position, player.position) <= AvoidPlayerDistance)
-            {
-                Vector3 direction = player.position - transform.position;
-                direction.y = 0;
-                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(direction), RotationSpeed * Time.deltaTime);
+            Vector3 direction = player.position - transform.position;
+            direction.y = 0;
+            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(direction), RotationSpeed * Time.deltaTime);
 
-                GunObject.transform.LookAt(player.position + new Vector3(Random.Range(-GunInaccuracy, GunInaccuracy), 1.5f, Random.Range(-GunInaccuracy, GunInaccuracy)));
-            }
-            else
+            if (GunObject)
             {
-                GunObject.transform.LookAt(player.position + new Vector3(Random.Range(-GunInaccuracy, GunInaccuracy), 1.5f, Random.Range(-GunInaccuracy, GunInaccuracy)));
-                agent.SetDestination(FindClosestEdgeOnNavMesh());
+                GameObject GunObjectExitPoint = GunObject.transform.GetChild(0).gameObject;
+                GunObjectExitPoint.transform.LookAt(player.position + new Vector3(Random.Range(-GunInaccuracy, GunInaccuracy), 1.5f, Random.Range(-GunInaccuracy, GunInaccuracy)));
             }
         }
         else
         {
-            if (Vector3.Distance(transform.position, player.position) <= AvoidPlayerDistance)
+            if (GunObject)
             {
-                Vector3 direction = player.position - transform.position;
-                direction.y = 0;
-                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(direction), RotationSpeed * Time.deltaTime);
+                GameObject GunObjectExitPoint = GunObject.transform.GetChild(0).gameObject;
+                GunObjectExitPoint.transform.LookAt(player.position + new Vector3(Random.Range(-GunInaccuracy, GunInaccuracy), 1.5f, Random.Range(-GunInaccuracy, GunInaccuracy)));
+            }
 
-                GunObject.transform.LookAt(player.position + new Vector3(Random.Range(-GunInaccuracy, GunInaccuracy), 1.5f, Random.Range(-GunInaccuracy, GunInaccuracy)));
-            }
-            else
-            {
-                GunObject.transform.LookAt(player.position + new Vector3(Random.Range(-GunInaccuracy, GunInaccuracy), 1.5f, Random.Range(-GunInaccuracy, GunInaccuracy)));
-                agent.SetDestination(player.position);
-            }
+            Vector3 offset = (transform.position - player.position).normalized * AvoidPlayerDistance;
+            agent.SetDestination(player.position + offset);
         }
     }
 
@@ -157,38 +196,50 @@ public class EnemyBase : MonoBehaviour
     {
         if (currentHealth >= MaxHealth)
         {
-            isHoldingGun = false;
-            GunObject.GetComponent<Rigidbody>().isKinematic = false;
-            GunObject.transform.parent = null;
-            Destroy(GunObject, 60);
+            if (isHoldingGun)
+            {
+                GunObject.GetComponent<Rigidbody>().isKinematic = false;
+                GunObject.transform.parent = null;
+                Destroy(GunObject, 60);
+                isHoldingGun = false;
+            }
+
             Destroy(gameObject);
         }
     }
 
     public virtual bool CheckPlayerVisibility()
     {
-        Vector3 direction = player.position - transform.position + new Vector3(0, 0.5f, 0);
-        RaycastHit hit;
+        Collider[] colliders = Physics.OverlapSphere(transform.position, EnemyAwareDistance);
 
-        if (Physics.Raycast(transform.position, direction, out hit, EnemyAwareDistance))
+        foreach (Collider collider in colliders)
         {
-            if (hit.transform.CompareTag("Player"))
+            if (collider.CompareTag("Player"))
             {
-                return true;
+                Vector3 direction = player.position - EyesPosition.transform.position + new Vector3(0, 0.5f, 0);
+                RaycastHit[] hits = Physics.RaycastAll(EyesPosition.transform.position, direction, EnemyAwareDistance);
+
+                Debug.DrawLine(EyesPosition.transform.position, player.position, Color.red);
+
+                foreach (RaycastHit hit in hits)
+                {
+                    if (hit.collider.CompareTag("Player"))
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
             }
         }
+
         return false;
     }
-    Vector3 FindClosestEdgeOnNavMesh()
+
+    private void OnDestroy()
     {
-        NavMeshHit hit;
-        Vector3 position = transform.position;
-
-        if (NavMesh.FindClosestEdge(transform.position, out hit, NavMesh.AllAreas))
-        {
-            position = hit.position;
-        }
-
-        return position;
+        StopAllCoroutines();
     }
 }

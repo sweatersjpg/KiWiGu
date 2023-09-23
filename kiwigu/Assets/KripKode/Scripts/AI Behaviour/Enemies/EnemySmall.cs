@@ -19,16 +19,17 @@ public class EnemySmall : EnemyBase
     {
         base.EnemyMovement();
     }
+
     protected override void Update()
     {
         base.Update();
 
-        if (isHoldingGun && CheckPlayerVisibility())
+        if (isHoldingGun && CheckPlayerVisibility() && !startedFleeing)
         {
             if (Time.time - lastShotTime >= 1 / EnemyFireRate)
             {
-                for (int i = 0; i < info.burstSize; i++)
-                    Invoke(nameof(EnemyShoot), i * 1 / info.autoRate);
+                for (int i = 0; i < GunAssetInfo.burstSize; i++)
+                    Invoke(nameof(EnemyShoot), i * 1 / GunAssetInfo.autoRate);
                 
                 lastShotTime = Time.time;
             }
@@ -40,24 +41,29 @@ public class EnemySmall : EnemyBase
         if (!isHoldingGun)
             return;
 
-        for (int i = 0; i < info.projectiles; i++)
+        isShooting = true;
+
+        for (int i = 0; i < GunAssetInfo.projectiles; i++)
             SpawnBullet();
     }
 
     void SpawnBullet()
     {
-        GameObject bullet = Instantiate(BulletPrefab, GunObject.transform.position, GunObject.transform.rotation);
+        GameObject GunObjectExitPoint = GunObject.transform.GetChild(0).gameObject;
+
+        GameObject bullet = Instantiate(BulletPrefab, GunObjectExitPoint.transform.position, GunObjectExitPoint.transform.rotation);
         bullet.transform.parent = gameObject.transform;
 
-        Vector3 direction = GunObject.transform.forward;
-        direction += SpreadDirection(info.spread, 3);
+        Vector3 direction = GunObjectExitPoint.transform.forward;
+        direction += SpreadDirection(GunAssetInfo.spread, 3);
 
-        bullet.transform.position = GunObject.transform.position;
+        bullet.transform.position = GunObjectExitPoint.transform.position;
         bullet.transform.rotation = Quaternion.LookRotation(direction.normalized);
 
         EnemyBullet b = bullet.GetComponent<EnemyBullet>();
-        b.BulletSpeed = info.bulletSpeed;
-        b.BulletGravity = info.bulletGravity;
+        b.BulletSpeed = GunAssetInfo.bulletSpeed;
+        b.BulletGravity = GunAssetInfo.bulletGravity;
+        isShooting = false;
     }
 
     Vector3 SpreadDirection(float spread, int rolls)
