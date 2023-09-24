@@ -15,18 +15,26 @@ public class sweatersController : MonoBehaviour
     [Header("Movement Metrics")]
     public float maxJumpDistance = 4;
     public float maxJumpHeight = 2;
+    public float minJumpHeight = 0.5f;
     public float runningSpeed = 7.5f;
+    public float airSpeed = 10;
     public float crouchSpeed = 3.75f;
     public float acceleration = 3.75f;
     [Space]
     public float slopeLimit = 45;
     public float deceleration = 4;
-    public float slopeSpeed = 175;
+    public float airDeceleration = 1;
     public float maxSpeedDecay = 16;
 
     [Space]
     public float gravity = 20f;
     public float jumpSpeed = 8.0f;
+
+    [Space]
+    public float jumpBuffer = 0.2f;
+
+    float maxJumpGravity;
+    float minJumpGravity;
 
     float maxSpeed;
 
@@ -52,6 +60,9 @@ public class sweatersController : MonoBehaviour
     Vector3 spawnPoint;
 
     float deltaTime;
+
+    bool jumpPressed = false;
+    bool jumpJustReleased = false;
 
     public bool isSliding;
     public bool isGrounded;
@@ -92,7 +103,11 @@ public class sweatersController : MonoBehaviour
 
         jumpSpeed = 2 * (maxJumpHeight / airTime);
 
-        gravity = jumpSpeed / airTime;
+        maxJumpGravity = jumpSpeed / airTime;
+
+        gravity = maxJumpGravity;
+
+        minJumpGravity = jumpSpeed * jumpSpeed / (2 * minJumpHeight);
 
         //playerCamera = Camera.main;
     }
@@ -136,31 +151,30 @@ public class sweatersController : MonoBehaviour
 
         Vector3 force = acceleration * input;
 
-        if (isGrounded && !isSliding)
+        float dec = isGrounded && !isSliding ? deceleration : airDeceleration;
+        Vector3 vel = new(velocity.x, 0, velocity.z);
+
+        float d = Mathf.Min(dec * deltaTime, Mathf.Abs(vel.x));
+        if (Mathf.Abs(vel.x - input.x) >= Mathf.Abs(vel.x) + Mathf.Abs(input.x)) vel.x -= Mathf.Sign(vel.x) * d;
+        d = Mathf.Min(dec * deltaTime, Mathf.Abs(vel.z)); ;
+        if (Mathf.Abs(vel.z - input.z) >= Mathf.Abs(vel.z) + Mathf.Abs(input.z)) vel.z -= Mathf.Sign(vel.z) * d;
+
+        velocity = new(vel.x, velocity.y, vel.z);
+
+        if (!isGrounded || isSliding) force.y -= gravity;
+
+        if(Input.GetButtonDown("Jump"))
         {
-            Vector3 v = new(velocity.x, 0, velocity.z);
-            //float mag = v.magnitude - deceleration * Time.deltaTime * (1-input.magnitude);
-            //if (mag < 0) mag = 0;
-
-            //v = v.normalized * mag;
-
-            //velocity.x = v.x;
-            //velocity.z = v.z;
-
-            // x component
-            float d = Mathf.Min(deceleration * deltaTime, Mathf.Abs(v.x));
-            if (Mathf.Abs(v.x - input.x) >= Mathf.Abs(v.x) + Mathf.Abs(input.x)) v.x -= Mathf.Sign(v.x) * d;
-
-            // z
-            d = Mathf.Min(deceleration * deltaTime, Mathf.Abs(v.z)); ;
-            if (Mathf.Abs(v.z - input.z) >= Mathf.Abs(v.z) + Mathf.Abs(input.z)) v.z -= Mathf.Sign(v.z) * d;
-
-            velocity = new(v.x, velocity.y, v.z);
+            jumpPressed = true;
+            Invoke(nameof(ReleaseJump), jumpBuffer);
+        }
+        if (Input.GetButtonUp("Jump"))
+        {
+            jumpJustReleased = true;
+            jumpPressed = false;
         }
 
-        if(!isGrounded || isSliding) force.y -= gravity;
-
-        if (Input.GetButtonDown("Jump") && isGrounded)
+        if (jumpPressed && isGrounded)
         {
             Vector3 jumpVector;
 
@@ -173,26 +187,38 @@ public class sweatersController : MonoBehaviour
             velocity.z += jumpVector.z;
         }
 
-        //if (isSliding) force += slopeSpeed * new Vector3(groundNormal.x, -groundNormal.y, groundNormal.z);
+        if (jumpJustReleased && velocity.y > 0)
+        {
+            gravity = minJumpGravity;
+            jumpJustReleased = false;
+        }
+        if (velocity.y < 0) gravity = maxJumpGravity;
 
-        velocity += 0.5f * deltaTime * force; // add half before moving
+        // get velocity w/o y
+        Vector3 v = new(velocity.x, 0, velocity.z);
 
+        // get targetSpeed
         float targetSpeed = Input.GetKey(KeyCode.LeftControl) ? crouchSpeed : runningSpeed;
         if (isGrounded && !isSliding)
         {
+            // decay max speed while on ground
             maxSpeed -= maxSpeedDecay * deltaTime;
             if (maxSpeed < targetSpeed) maxSpeed = targetSpeed;
 
-            Vector3 v = new(velocity.x, 0, velocity.z);
+            // clamp to maxSpeed
             v = Vector3.ClampMagnitude(v, maxSpeed);
-
             velocity = new(v.x, velocity.y, v.z);
-        } else if (velocity.magnitude > maxSpeed) maxSpeed = velocity.magnitude;
 
+        } else if (v.magnitude > maxSpeed) maxSpeed = v.magnitude;
+        // increase maxSpeed to match airSpeed (w/o y)
+
+        // clamp to airSpeed
+        v = Vector3.ClampMagnitude(v, airSpeed);
+        velocity = new(v.x, velocity.y, v.z);
+
+        velocity += 0.5f * deltaTime * force; // add half before moving
         charController.Move(velocity * deltaTime); // move player
         velocity += 0.5f * deltaTime * force; // add other half after moving
-
-        //Debug.DrawRay(transform.position, velocity, Color.cyan);
 
         rotationX += -Input.GetAxis("Mouse Y") * lookSpeed;
         rotationX = Mathf.Clamp(rotationX, -lookXLimit, lookXLimit);
@@ -201,6 +227,13 @@ public class sweatersController : MonoBehaviour
 
         mouseLook = new Vector2(rotationX, Input.GetAxis("Mouse X") * lookSpeed);
 
+        jumpJustReleased = false;
+    }
+
+    void ReleaseJump()
+    {
+        if (!jumpPressed) jumpJustReleased = true;
+        jumpPressed = false;
     }
 
     void UpdateHeight()
@@ -230,7 +263,7 @@ public class sweatersController : MonoBehaviour
             {
                 Vector3 pushDir = new(hit.moveDirection.x, 0, hit.moveDirection.z);
 
-                body.velocity = pushDir * 5;
+                body.velocity = pushDir * 10;
                 return;
             }
         }
@@ -256,8 +289,6 @@ public class sweatersController : MonoBehaviour
         Debug.DrawRay(hit.point, hit.normal, Color.blue);
 
         Debug.DrawLine(p1, p2, Color.black);
-
-        //Debug.Log(Vector3.Angle(Vector3.up, hit.normal));
 
         return isGrounded && hasHit && Vector3.Angle(Vector3.up, hit.normal) > slopeLimit;
     }
