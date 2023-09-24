@@ -57,6 +57,10 @@ public class Bullet : MonoBehaviour
             else if(hit.transform.gameObject.CompareTag("RigidTarget"))
             {
                 hit.transform.gameObject.GetComponent<PhysicsHit>().Hit(hit.point, velocity);
+
+                Transform hole = Instantiate(bulletHolePrefab).transform;
+                hole.SetPositionAndRotation(hit.point, Quaternion.LookRotation(-hit.normal));
+                hole.parent = hit.transform;
             }
             else
             {
