@@ -91,7 +91,7 @@ public class MoveHook : MonoBehaviour
     {
         // raycast from ppos to pos
 
-        bool hasHit = Physics.Raycast(pPosition, transform.position - pPosition, 
+        bool hasHit = Physics.SphereCast(pPosition, 0.1f, transform.position - pPosition, 
             out RaycastHit hit, (transform.position - pPosition).magnitude, ~LayerMask.GetMask("GunHand", "Player"));
 
         if(hasHit)
@@ -104,6 +104,11 @@ public class MoveHook : MonoBehaviour
 
     void ResolveCollision(RaycastHit hit)
     {
+        if (hit.transform.gameObject.CompareTag("RigidTarget"))
+        {
+            hit.transform.gameObject.GetComponent<PhysicsHit>().Hit(hit.point, velocity);
+        }
+
         if (headingBack) return;
 
         transform.position = hit.point;
@@ -128,7 +133,6 @@ public class MoveHook : MonoBehaviour
         if(!headingBack && (chain.GetPosition(0) - chain.GetPosition(1)).magnitude > chainSegmentSize)
         {
             AddChainSegment(transform.position + Random.insideUnitSphere * 0.1f - velocity.normalized * 0.1f);
-            Debug.Log(chain.positionCount);
         }
         
         chain.SetPosition(chain.positionCount - 1, home.transform.position);

@@ -24,8 +24,10 @@ public class GunHand : MonoBehaviour
     float aimTimer = 0;
 
     public bool canShoot;
+    public bool hasGun = true;
 
     public GameObject thrownGunPrefab;
+    public GameObject hookShotPrefab;
 
     // Start is called before the first frame update
     void Start()
@@ -33,8 +35,11 @@ public class GunHand : MonoBehaviour
         startPosition = transform.parent.localPosition;
         targetPosition = startPosition;
 
+        if (startPosition.x > 0) mouseButton = 1;
+        else mouseButton = 0;
+
         Transform sights = transform.Find("Sights");
-        sightsPosition = sights.localPosition;
+        if(sights != null) sightsPosition = sights.localPosition;
     }
 
     // Update is called once per frame
@@ -43,15 +48,8 @@ public class GunHand : MonoBehaviour
         //if (Input.GetMouseButtonDown(1)) ToggleDownSights();
         //if (Input.GetMouseButtonDown(0)) AnimateShoot();
 
-        ObstacleAvoidance();
-
         if (Input.GetMouseButton(mouseButton) && aimTimer <= aimDelay) aimTimer += Time.deltaTime;
         if (!Input.GetMouseButton(mouseButton) && aimTimer >= 0) aimTimer -= Time.deltaTime;
-
-        if (Input.GetKeyDown(mouseButton == 0 ? KeyCode.Q : KeyCode.E)) ThrowGun();
-
-        if (aimTimer <= 0 && downSights) ToggleDownSights();
-        if (aimTimer >= aimDelay && !downSights && info.canAim) ToggleDownSights();
 
         //if (Input.GetMouseButtonUp(mouseButton))
         //{
@@ -62,51 +60,51 @@ public class GunHand : MonoBehaviour
 
         transform.parent.localPosition += 50 * ((targetPosition - transform.parent.localPosition) / 4) * Time.deltaTime;
 
+        if((targetPosition - transform.parent.localPosition).magnitude < 0.01 && !hasGun)
+        {
+            transform.parent.localPosition = startPosition;
+            Instantiate(hookShotPrefab, transform.parent);
+            Destroy(gameObject);
+        }
         // we don't actually need to do that in this script, the shootBullet script can do that for us
         //transform.parent.LookAt(AcquireTarget.instance.target);
 
-        if (!canShoot) targetAngle = 5;
-        else targetAngle = 0;
-
         gunAngle += 50 * ((targetAngle - gunAngle) / 8) * Time.deltaTime;
         transform.localEulerAngles = new(gunAngle, 0, 0);
-    }
 
-    public void ObstacleAvoidance()
-    {
-        //Vector3 origin = transform.parent.position + new Vector3(0, transform.localPosition.y, 0);
-        //Vector3 direction = (transform.position - origin).normalized;
+        if (!canShoot)
+        {
+            targetAngle = 5;
+            canShoot = true;
+        }
 
-        //Debug.DrawRay(origin, direction);
+        if (!hasGun) return;
 
-        //RaycastHit hit;
+        if (Input.GetKey(mouseButton == 0 ? KeyCode.Q : KeyCode.E))
+        {
+            targetAngle = -45;
+            targetPosition = startPosition + new Vector3(0, 0.3f, -0.2f);
+            canShoot = false;
+            if (Input.GetMouseButtonDown(mouseButton)) ThrowGun();
+        }
+        else targetAngle = 0;
 
-        //bool hasHit = Physics.Raycast(origin, direction, out hit, direction.magnitude, ~LayerMask.GetMask("GunHand", "Player"));
+        if(Input.GetKeyUp(mouseButton == 0 ? KeyCode.Q : KeyCode.E))
+        {
+            targetPosition = startPosition;
+        }
 
-        //Vector3 offset = new(0,0,0);
+        // if (Input.GetKeyUp(mouseButton == 0 ? KeyCode.Q : KeyCode.E)) ThrowGun();
 
-        //if(hasHit)
-        //{
-        //    offset = hit.point - (origin + direction);
-
-        //    targetPosition = transform.InverseTransformPoint(transform.TransformPoint(startPosition) + (hit.normal + new Vector3(0,-1,0)) * offset.magnitude);
-        //    targetAngle = offset.magnitude * -100;
-
-        //    return;
-        //}
-
-        targetPosition = startPosition;
-        // if(downSights) targetPosition = new(0, -0.17f, startPosition.z);
-        if (downSights) targetPosition = new(0, -sightsPosition.y, startPosition.z);
-        targetAngle = 0;
-
+        if (aimTimer <= 0 && downSights) ToggleDownSights();
+        if (aimTimer >= aimDelay && !downSights && info.canAim) ToggleDownSights();
     }
 
     void ThrowGun()
     {
-        ThrownGun gun = Instantiate(thrownGunPrefab).GetComponent<ThrownGun>();
-
-        gun.transform.SetPositionAndRotation(transform.position, Quaternion.LookRotation(transform.forward));
+        ThrownGun gun = Instantiate(thrownGunPrefab, transform).GetComponent<ThrownGun>();
+        gun.transform.parent = null;
+        gun.transform.LookAt(AcquireTarget.instance.target);
 
         Transform gunView = transform.Find("GunView");
 
@@ -114,13 +112,15 @@ public class GunHand : MonoBehaviour
         gun.info = info;
 
         gunView.gameObject.SetActive(false);
+        hasGun = false;
 
+        targetPosition = startPosition + new Vector3(0, -1f, 0.5f);
     }
 
     public void ToggleDownSights()
     {
         if(downSights) targetPosition = startPosition;
-        else targetPosition = new(0, -0.19f, startPosition.z);
+        else targetPosition = new(0, -sightsPosition.y, startPosition.z);
 
         downSights = !downSights;
     }

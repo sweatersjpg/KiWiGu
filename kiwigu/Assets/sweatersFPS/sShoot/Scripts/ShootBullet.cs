@@ -24,7 +24,7 @@ public class ShootBullet : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        bool canShoot = (Time.time - shotTimer) > 1/info.fireRate;
+        bool canShoot = (Time.time - shotTimer) > 1/info.fireRate && anim.canShoot && anim.hasGun;
         anim.canShoot = canShoot;
 
         bool doShoot = info.canAim ? Input.GetMouseButtonUp(anim.mouseButton) : Input.GetMouseButtonDown(anim.mouseButton);

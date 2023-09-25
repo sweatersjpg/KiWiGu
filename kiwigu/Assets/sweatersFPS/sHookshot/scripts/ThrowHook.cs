@@ -21,55 +21,62 @@ public class ThrowHook : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        startPosition = transform.localPosition;
+        startPosition = transform.parent.localPosition;
         homePosition = startPosition;
         targetPosition = startPosition;
+
+        transform.parent.localPosition += new Vector3(0, -1, -0.2f);
+
+        if (transform.parent.localPosition.x > 0) mouseButton = 1;
+        else mouseButton = 0;
     }
 
     // Update is called once per frame
     void LateUpdate()
     {
-        ObstacleAvoidance();
+        // ObstacleAvoidance();
 
-        if (Input.GetMouseButtonDown(0) && hasHook) Throw();
+        if (Input.GetMouseButtonDown(mouseButton) && hasHook) Throw();
         
-        transform.localPosition += 50 * ((targetPosition - transform.localPosition) / 4) * Time.deltaTime;
+        transform.parent.localPosition += 50 * ((targetPosition - transform.parent.localPosition) / 4) * Time.deltaTime;
     }
-    void ObstacleAvoidance()
-    {
-        Vector3 origin = transform.parent.position + new Vector3(0, transform.localPosition.y, 0);
-        Vector3 direction = (transform.position - origin).normalized;
 
-        Debug.DrawRay(origin, direction);
+    //void ObstacleAvoidance()
+    //{
+    //    Vector3 origin = transform.parent.position + new Vector3(0, transform.localPosition.y, 0);
+    //    Vector3 direction = (transform.position - origin).normalized;
 
-        RaycastHit hit;
+    //    Debug.DrawRay(origin, direction);
 
-        bool hasHit = Physics.Raycast(origin, direction, out hit, direction.magnitude, ~LayerMask.GetMask("GunHand", "Player"));
+    //    RaycastHit hit;
 
-        Vector3 offset = new(0, 0, 0);
+    //    bool hasHit = Physics.Raycast(origin, direction, out hit, direction.magnitude, ~LayerMask.GetMask("GunHand", "Player"));
 
-        if (hasHit)
-        {
-            offset = hit.point - (origin + direction);
+    //    Vector3 offset = new(0, 0, 0);
 
-            targetPosition = transform.InverseTransformPoint(transform.TransformPoint(startPosition) + (hit.normal + new Vector3(0, -1, 0)) * offset.magnitude);
+    //    if (hasHit)
+    //    {
+    //        offset = hit.point - (origin + direction);
 
-            return;
-        }
+    //        targetPosition = transform.InverseTransformPoint(transform.TransformPoint(startPosition) + (hit.normal + new Vector3(0, -1, 0)) * offset.magnitude);
 
-        targetPosition = homePosition;
+    //        return;
+    //    }
 
-    }
+    //    targetPosition = homePosition;
+
+    //}
 
     void Throw()
     {
         GameObject hook = Instantiate(hookPrefab);
         hook.transform.SetPositionAndRotation(transform.position, Quaternion.LookRotation(transform.forward));
+        hook.transform.LookAt(AcquireTarget.instance.target);
 
         hook.GetComponent<MoveHook>().home = this;
 
         hookView.SetActive(false);
-        transform.localPosition += new Vector3(0, 0, 0.4f);
+        transform.parent.localPosition += new Vector3(0, 0, 0.4f);
         homePosition = startPosition + new Vector3(0, 0, 0.2f);
 
         hasHook = false;
@@ -79,7 +86,7 @@ public class ThrowHook : MonoBehaviour
     {
         hookView.SetActive(true);
 
-        transform.localPosition += new Vector3(0, 0, -0.4f);
+        transform.parent.localPosition += new Vector3(0, 0, -0.4f);
         homePosition = startPosition;
 
         hasHook = true;

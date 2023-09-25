@@ -24,6 +24,7 @@ public class ThrownGun : MonoBehaviour
     {
         GetComponent<MeshFilter>().mesh = mesh;
         GetComponent<MeshCollider>().sharedMesh = mesh;
+
     }
 
     // Update is called once per frame

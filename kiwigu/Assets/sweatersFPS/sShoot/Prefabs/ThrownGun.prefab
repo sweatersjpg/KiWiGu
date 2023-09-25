@@ -13,10 +13,11 @@ GameObject:
   - component: {fileID: 6087863177417318727}
   - component: {fileID: 3294980877652339224}
   - component: {fileID: 6087863177417318726}
+  - component: {fileID: 1205933901838987336}
   - component: {fileID: 6087863177417318723}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: ThrownGun
-  m_TagString: Untagged
+  m_TagString: RigidTarget
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -115,7 +116,22 @@ Rigidbody:
   m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 0
-  m_CollisionDetection: 0
+  m_CollisionDetection: 2
+--- !u!114 &1205933901838987336
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6087863177417318745}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6122c022cd9e5664785e80fa3a6b9328, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxForce: 20
+  altMesh: {fileID: 0}
+  keepUp: 1
 --- !u!114 &6087863177417318723
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -129,4 +145,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   info: {fileID: 0}
-  throwForce: 10
+  throwForce: 30
