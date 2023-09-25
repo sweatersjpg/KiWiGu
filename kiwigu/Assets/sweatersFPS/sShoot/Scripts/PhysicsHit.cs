@@ -41,10 +41,14 @@ public class PhysicsHit : MonoBehaviour
     {
         Vector3 force = Vector3.ClampMagnitude(velocity, maxForce);
 
-        if (keepUp) force = new(0, maxForce, 0);
+        if (keepUp && rb.velocity.y > -0.5f)
+        {
+            force = new(0, maxForce / 2, 0);
+            rb.velocity = new(rb.velocity.x, 0, rb.velocity.z);
+        }
 
         rb.AddForceAtPosition(force, point, ForceMode.Impulse);
 
-        GetComponent<MeshFilter>().mesh = altMesh;
+        if (altMesh) GetComponent<MeshFilter>().mesh = altMesh;
     }
 }

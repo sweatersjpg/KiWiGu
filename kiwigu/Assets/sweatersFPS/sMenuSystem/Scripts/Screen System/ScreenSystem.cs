@@ -136,7 +136,7 @@ public class ScreenSystem : MonoBehaviour
             else
             {
                 transition = transitionDuration;
-                if (pauseGameCamera) gameCameraPause.paused = true;
+                //if (pauseGameCamera) gameCameraPause.paused = true;
             }
             if (transition > transitionDuration / 2 && !menuCamera.gameObject.activeSelf)
             {
@@ -153,18 +153,19 @@ public class ScreenSystem : MonoBehaviour
                 menuCamera.gameObject.SetActive(false);
                 gameCameraData.renderPostProcessing = true;
             }
-            if (gameCameraPause.paused) gameCameraPause.paused = false;
+            //if (gameCameraPause.paused) gameCameraPause.paused = false;
         }
 
         float distortionIntensity = distortionTransition.Evaluate(transition / transitionDuration);
 
-        float targetIntensity = distortionIntensity * 1.25f;
+        float targetIntensity = distortionIntensity * 1.5f;
         float currentIntensity = (float)distortionEffect.intensity;
-        float smoothness = 60;
+        float smoothness = 35;
         distortionEffect.intensity.Override(Mathf.Lerp(currentIntensity, targetIntensity, Time.deltaTime * smoothness));
 
         backdrop.color = Color.Lerp(backdropStart, backdropEnd, backdropTransition.Evaluate(transition / transitionDuration));
     }
+
 
 
 

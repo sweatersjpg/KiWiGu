@@ -12,6 +12,8 @@ public class GunHand : MonoBehaviour
     Vector3 startPosition; // local
     Vector3 targetPosition; // local
 
+    Vector3 sightsPosition;
+
     public int mouseButton;
     public float aimDelay = 0.4f;
 
@@ -23,11 +25,16 @@ public class GunHand : MonoBehaviour
 
     public bool canShoot;
 
+    public GameObject thrownGunPrefab;
+
     // Start is called before the first frame update
     void Start()
     {
-        startPosition = transform.localPosition;
+        startPosition = transform.parent.localPosition;
         targetPosition = startPosition;
+
+        Transform sights = transform.Find("Sights");
+        sightsPosition = sights.localPosition;
     }
 
     // Update is called once per frame
@@ -41,6 +48,8 @@ public class GunHand : MonoBehaviour
         if (Input.GetMouseButton(mouseButton) && aimTimer <= aimDelay) aimTimer += Time.deltaTime;
         if (!Input.GetMouseButton(mouseButton) && aimTimer >= 0) aimTimer -= Time.deltaTime;
 
+        if (Input.GetKeyDown(mouseButton == 0 ? KeyCode.Q : KeyCode.E)) ThrowGun();
+
         if (aimTimer <= 0 && downSights) ToggleDownSights();
         if (aimTimer >= aimDelay && !downSights && info.canAim) ToggleDownSights();
 
@@ -51,7 +60,10 @@ public class GunHand : MonoBehaviour
         //    AnimateShoot();
         //}
 
-        transform.localPosition += 50 * ((targetPosition - transform.localPosition) / 4) * Time.deltaTime;
+        transform.parent.localPosition += 50 * ((targetPosition - transform.parent.localPosition) / 4) * Time.deltaTime;
+
+        // we don't actually need to do that in this script, the shootBullet script can do that for us
+        //transform.parent.LookAt(AcquireTarget.instance.target);
 
         if (!canShoot) targetAngle = 5;
         else targetAngle = 0;
@@ -62,30 +74,46 @@ public class GunHand : MonoBehaviour
 
     public void ObstacleAvoidance()
     {
-        Vector3 origin = transform.parent.position + new Vector3(0, transform.localPosition.y, 0);
-        Vector3 direction = (transform.position - origin).normalized;
+        //Vector3 origin = transform.parent.position + new Vector3(0, transform.localPosition.y, 0);
+        //Vector3 direction = (transform.position - origin).normalized;
 
-        Debug.DrawRay(origin, direction);
+        //Debug.DrawRay(origin, direction);
 
-        RaycastHit hit;
+        //RaycastHit hit;
 
-        bool hasHit = Physics.Raycast(origin, direction, out hit, direction.magnitude, ~LayerMask.GetMask("GunHand", "Player"));
+        //bool hasHit = Physics.Raycast(origin, direction, out hit, direction.magnitude, ~LayerMask.GetMask("GunHand", "Player"));
 
-        Vector3 offset = new(0,0,0);
+        //Vector3 offset = new(0,0,0);
 
-        if(hasHit)
-        {
-            offset = hit.point - (origin + direction);
+        //if(hasHit)
+        //{
+        //    offset = hit.point - (origin + direction);
 
-            targetPosition = transform.InverseTransformPoint(transform.TransformPoint(startPosition) + (hit.normal + new Vector3(0,-1,0)) * offset.magnitude);
-            targetAngle = offset.magnitude * -100;
+        //    targetPosition = transform.InverseTransformPoint(transform.TransformPoint(startPosition) + (hit.normal + new Vector3(0,-1,0)) * offset.magnitude);
+        //    targetAngle = offset.magnitude * -100;
 
-            return;
-        }
+        //    return;
+        //}
 
         targetPosition = startPosition;
-        if(downSights) targetPosition = new(0, -0.17f, startPosition.z);
+        // if(downSights) targetPosition = new(0, -0.17f, startPosition.z);
+        if (downSights) targetPosition = new(0, -sightsPosition.y, startPosition.z);
         targetAngle = 0;
+
+    }
+
+    void ThrowGun()
+    {
+        ThrownGun gun = Instantiate(thrownGunPrefab).GetComponent<ThrownGun>();
+
+        gun.transform.SetPositionAndRotation(transform.position, Quaternion.LookRotation(transform.forward));
+
+        Transform gunView = transform.Find("GunView");
+
+        gun.SetMesh(gunView.GetComponent<MeshFilter>().mesh);
+        gun.info = info;
+
+        gunView.gameObject.SetActive(false);
 
     }
 
@@ -101,6 +129,6 @@ public class GunHand : MonoBehaviour
     {
         gunAngle -= info.recoil;
 
-        transform.localPosition += new Vector3(0, 0, -0.1f);
+        transform.parent.localPosition += new Vector3(0, 0, -0.1f);
     }
 }
