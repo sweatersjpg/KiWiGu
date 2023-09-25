@@ -6,16 +6,18 @@ using UnityEngine.AI;
 public class EnemyBase : MonoBehaviour
 {
     [Header("Enemy Main Variables")]
+    public bool spawnWithGun;
     [Range(10, 100)] public int MaxHealth = 100;
     [Range(10, 100)] public int MaxShield = 100;
     public GameObject GunObject;
     public GameObject EyesPosition;
+    public GameObject HandPosition;
 
     [Header("Enemy Movement")]
+    [Range(1, 15)] public int FleeDistance;
+    [Range(1, 15)] public int FleeMovementVariation;
     [Range(1, 15)] public int MovementSpeed = 5;
     [Range(5, 10)] public int AvoidPlayerDistance = 7;
-    [Range(10, 15)] public int FleeDistance = 12;
-    [Range(5, 10)] public int FleeMovementVariation = 7;
     [Range(100, 200)] public int RotationSpeed = 180;
     [Range(15, 25)] public int EnemyAwareDistance = 20;
     [Range(5, 20)] public int WanderRadius = 8;
@@ -23,7 +25,6 @@ public class EnemyBase : MonoBehaviour
     [Header("Enemy Gun Stats")]
     [Range(1, 10)] public float EnemyFireRate = 1.0f;
     [Range(0, 10)] public int GunInaccuracy = 5;
-    public GunInfo GunAssetInfo;
 
     [Header("Shared Variables")]
     [HideInInspector] public Transform player;
@@ -33,18 +34,30 @@ public class EnemyBase : MonoBehaviour
     [HideInInspector] public bool isHoldingGun;
     [HideInInspector] public bool wasHit;
     [HideInInspector] public bool isWandering;
-    [HideInInspector] public bool startedFleeing;
     [HideInInspector] public bool isShooting;
+    [HideInInspector] public bool playerInSight;
 
     private Vector3 wanderTarget;
     private Vector3 initialPosition;
-    private bool playerInSight;
+
+    GameObject InitialGunObject;
+    private bool startedFleeing;
 
     protected virtual void Start()
     {
-        initialPosition = transform.position;
+        // set tag to "Enemy"
+        gameObject.tag = "Enemy";
 
-        isHoldingGun = GunObject != null && GunObject.transform.parent != null;
+        if (spawnWithGun && GunObject)
+        {
+            GunObject = Instantiate(GunObject, HandPosition.transform);
+            isHoldingGun = true;
+        }
+
+        if (GunObject)
+            InitialGunObject = GunObject;
+
+        initialPosition = transform.position;
 
         player = GameObject.FindGameObjectWithTag("Player")?.transform;
 
@@ -73,22 +86,33 @@ public class EnemyBase : MonoBehaviour
         }
         else
         {
-            if (playerInSight || wasHit)
+            if (GunObject)
             {
-                if (!startedFleeing)
+                if (IsAgentCloseToStation())
                 {
-                    agent.ResetPath();
-                    StartCoroutine(EnemyFlee());
+                    GunObject = Instantiate(InitialGunObject, HandPosition.transform);
+                    isHoldingGun = true;
+                }
+                else
+                {
+                    GameObject closestStation = FindClosestStationWithTag("EnemyRestockStation");
+
+                    if (closestStation != null)
+                    {
+                        agent.SetDestination(closestStation.transform.position);
+                    }
                 }
             }
             else
             {
-                if (startedFleeing)
+                if (agent != null && (playerInSight || wasHit))
                 {
-                    return;
+                    if (!startedFleeing)
+                    {
+                        StartCoroutine(EnemyFlee());
+                    }
                 }
-
-                if (!isWandering)
+                else if (!isWandering)
                 {
                     StartCoroutine(Wander());
                 }
@@ -130,6 +154,43 @@ public class EnemyBase : MonoBehaviour
         }
     }
 
+    private GameObject FindClosestStationWithTag(string tag)
+    {
+        GameObject[] stations = GameObject.FindGameObjectsWithTag(tag);
+        GameObject closestStation = null;
+        float closestDistance = Mathf.Infinity;
+
+        foreach (GameObject station in stations)
+        {
+            float distance = Vector3.Distance(transform.position, station.transform.position);
+
+            if (distance < closestDistance)
+            {
+                closestDistance = distance;
+                closestStation = station;
+            }
+        }
+
+        return closestStation;
+    }
+
+    private bool IsAgentCloseToStation()
+    {
+        GameObject[] stations = GameObject.FindGameObjectsWithTag("EnemyRestockStation");
+
+        foreach (GameObject station in stations)
+        {
+            float distance = Vector3.Distance(transform.position, station.transform.position);
+
+            if (distance <= 2)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     private IEnumerator Wander()
     {
         wanderTarget = RandomWanderPoint();
@@ -154,15 +215,15 @@ public class EnemyBase : MonoBehaviour
     {
         if (Vector3.Distance(transform.position, player.position) <= AvoidPlayerDistance)
         {
-            Vector3 direction = player.position - transform.position;
-            direction.y = 0;
-            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(direction), RotationSpeed * Time.deltaTime);
-
             if (GunObject)
             {
                 GameObject GunObjectExitPoint = GunObject.transform.GetChild(0).gameObject;
                 GunObjectExitPoint.transform.LookAt(player.position + new Vector3(Random.Range(-GunInaccuracy, GunInaccuracy), 1.5f, Random.Range(-GunInaccuracy, GunInaccuracy)));
             }
+
+            Vector3 direction = player.position - transform.position;
+            direction.y = 0;
+            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(direction), RotationSpeed * Time.deltaTime);
         }
         else
         {
@@ -219,7 +280,9 @@ public class EnemyBase : MonoBehaviour
                 Vector3 direction = player.position - EyesPosition.transform.position + new Vector3(0, 0.5f, 0);
                 RaycastHit[] hits = Physics.RaycastAll(EyesPosition.transform.position, direction, EnemyAwareDistance);
 
-                Debug.DrawLine(EyesPosition.transform.position, player.position, Color.red);
+                Debug.DrawRay(EyesPosition.transform.position, direction, Color.red, 0.1f);
+
+                bool playerVisible = true;
 
                 foreach (RaycastHit hit in hits)
                 {
@@ -227,16 +290,19 @@ public class EnemyBase : MonoBehaviour
                     {
                         return true;
                     }
-                    else
+                    else if (!hit.collider.CompareTag("Enemy"))
                     {
-                        return false;
+                        playerVisible = false;
                     }
                 }
+
+                return playerVisible;
             }
         }
 
         return false;
     }
+
 
     private void OnDestroy()
     {
