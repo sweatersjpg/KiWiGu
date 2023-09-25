@@ -35,6 +35,8 @@ public class ShootBullet : MonoBehaviour
             shotTimer = Time.time;
             for(int i = 0; i < info.burstSize; i++) Invoke(nameof(Shoot), i * 1/info.autoRate);
         }
+
+        transform.LookAt(AcquireTarget.instance.target);
     }
 
     void Shoot()

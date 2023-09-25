@@ -136,7 +136,7 @@ public class ScreenSystem : MonoBehaviour
             else
             {
                 transition = transitionDuration;
-                if (pauseGameCamera) gameCameraPause.paused = true;
+                //if (pauseGameCamera) gameCameraPause.paused = true;
             }
             if (transition > transitionDuration / 2 && !menuCamera.gameObject.activeSelf)
             {
@@ -153,7 +153,7 @@ public class ScreenSystem : MonoBehaviour
                 menuCamera.gameObject.SetActive(false);
                 gameCameraData.renderPostProcessing = true;
             }
-            if (gameCameraPause.paused) gameCameraPause.paused = false;
+            //if (gameCameraPause.paused) gameCameraPause.paused = false;
         }
 
         float distortionIntensity = distortionTransition.Evaluate(transition / transitionDuration);
