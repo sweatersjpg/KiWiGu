@@ -1,8 +1,11 @@
 using UnityEngine;
 
-public class EnemySmall : EnemyBase
+public class EnemyBehaviour : EnemyBase
 {
-    [Header("Small Enemy")] public GameObject BulletPrefab;
+    [Header("Enemy Type")]
+    public bool Small;
+    public bool Medium;
+    public bool Drone;
 
     float shotTimer = 0;
     float lastShotTime = 0;
@@ -24,12 +27,12 @@ public class EnemySmall : EnemyBase
     {
         base.Update();
 
-        if (isHoldingGun && CheckPlayerVisibility() && !startedFleeing)
+        if (isHoldingGun && playerInSight)
         {
             if (Time.time - lastShotTime >= 1 / EnemyFireRate)
             {
-                for (int i = 0; i < GunAssetInfo.burstSize; i++)
-                    Invoke(nameof(EnemyShoot), i * 1 / GunAssetInfo.autoRate);
+                for (int i = 0; i < GunObject.GetComponent<EnemyGunInfo>().GunAssetInfo.burstSize; i++)
+                    Invoke(nameof(EnemyShoot), i * 1 / GunObject.GetComponent<EnemyGunInfo>().GunAssetInfo.autoRate);
                 
                 lastShotTime = Time.time;
             }
@@ -43,7 +46,7 @@ public class EnemySmall : EnemyBase
 
         isShooting = true;
 
-        for (int i = 0; i < GunAssetInfo.projectiles; i++)
+        for (int i = 0; i < GunObject.GetComponent<EnemyGunInfo>().GunAssetInfo.projectiles; i++)
             SpawnBullet();
     }
 
@@ -51,18 +54,18 @@ public class EnemySmall : EnemyBase
     {
         GameObject GunObjectExitPoint = GunObject.transform.GetChild(0).gameObject;
 
-        GameObject bullet = Instantiate(BulletPrefab, GunObjectExitPoint.transform.position, GunObjectExitPoint.transform.rotation);
+        GameObject bullet = Instantiate(GunObject.GetComponent<EnemyGunInfo>().BulletPrefab, GunObjectExitPoint.transform.position, GunObjectExitPoint.transform.rotation);
         bullet.transform.parent = gameObject.transform;
 
         Vector3 direction = GunObjectExitPoint.transform.forward;
-        direction += SpreadDirection(GunAssetInfo.spread, 3);
+        direction += SpreadDirection(GunObject.GetComponent<EnemyGunInfo>().GunAssetInfo.spread, 3);
 
         bullet.transform.position = GunObjectExitPoint.transform.position;
         bullet.transform.rotation = Quaternion.LookRotation(direction.normalized);
 
         EnemyBullet b = bullet.GetComponent<EnemyBullet>();
-        b.BulletSpeed = GunAssetInfo.bulletSpeed;
-        b.BulletGravity = GunAssetInfo.bulletGravity;
+        b.BulletSpeed = GunObject.GetComponent<EnemyGunInfo>().GunAssetInfo.bulletSpeed;
+        b.BulletGravity = GunObject.GetComponent<EnemyGunInfo>().GunAssetInfo.bulletGravity;
         isShooting = false;
     }
 
