@@ -22,6 +22,8 @@ public class MoveHook : MonoBehaviour
 
     bool canCatch = false;
 
+    GunInfo caughtGun;
+
     bool headingBack = false;
 
     float speed;
@@ -61,7 +63,8 @@ public class MoveHook : MonoBehaviour
 
         if(canCatch && heading.magnitude < catchDistance)
         {
-            home.CatchHook();
+            home.CatchHook(caughtGun);
+
             Destroy(gameObject);
             return;
         } else if(heading.magnitude > catchDistance) {
@@ -104,6 +107,27 @@ public class MoveHook : MonoBehaviour
 
     void ResolveCollision(RaycastHit hit)
     {
+        
+        if (hit.transform.gameObject.CompareTag("HookTarget") && caughtGun == null)
+        {
+            HookTarget ht = hit.transform.GetComponent<HookTarget>();
+            if (ht == null) caughtGun = hit.transform.GetComponent<ThrownGun>().info;
+            else caughtGun = ht.info;
+
+            hit.transform.parent = transform;
+            hit.transform.localPosition = new();
+
+            hit.transform.tag = "Untagged";
+
+            if (hit.rigidbody)
+            {
+                Destroy(hit.transform.GetComponent<PhysicsHit>());
+                Destroy(hit.transform.GetComponent<Rigidbody>());
+            }
+
+            return;
+        }
+        
         if (hit.transform.gameObject.CompareTag("RigidTarget"))
         {
             hit.transform.gameObject.GetComponent<PhysicsHit>().Hit(hit.point, velocity);

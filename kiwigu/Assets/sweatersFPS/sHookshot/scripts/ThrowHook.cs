@@ -82,7 +82,7 @@ public class ThrowHook : MonoBehaviour
         hasHook = false;
     }
 
-    public void CatchHook()
+    public void CatchHook(GunInfo info)
     {
         hookView.SetActive(true);
 
@@ -90,6 +90,14 @@ public class ThrowHook : MonoBehaviour
         homePosition = startPosition;
 
         hasHook = true;
+
+        if(info != null)
+        {
+            Instantiate(info.gunPrefab, transform.parent);
+            Destroy(gameObject);
+
+            transform.parent.localPosition = startPosition;
+        }
     }
 
     public void PullBack()

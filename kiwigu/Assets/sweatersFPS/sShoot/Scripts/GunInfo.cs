@@ -28,4 +28,8 @@ public class GunInfo : ScriptableObject
     public float bulletSpeed = 370;
     public float bulletGravity = -9.8f;
     public GameObject bulletPrefab;
+
+    public GameObject gunPrefab; 
+    // its crazy that we have to do this but because the gun can't
+    // reference itself as a prefab it's what needs to happen...
 }
