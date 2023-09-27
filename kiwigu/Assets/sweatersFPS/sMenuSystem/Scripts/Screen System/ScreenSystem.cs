@@ -182,8 +182,8 @@ public class ScreenSystem : MonoBehaviour
         willResume = true;
     }
 
-    public void UpdateFOV(float value)
-    {
-        gameCameraPause.paused = false;
-    }
+    // public void UpdateFOV(float value)
+    // {
+        // gameCameraPause.paused = false;
+    // }
 }

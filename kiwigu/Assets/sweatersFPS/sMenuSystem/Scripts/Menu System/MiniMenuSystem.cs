@@ -207,7 +207,7 @@ public class MiniMenuSystem : ScreenProgram
                 if (value > 1) value = 1;
 
                 M.listener.SendMessage(setting.callBack, value);
-                if (setting.callBack == "UpdateFOV") M.gameObject.SendMessage(setting.callBack, value);
+                //if (setting.callBack == "UpdateFOV") M.gameObject.SendMessage(setting.callBack, value);
             }
         }
 
