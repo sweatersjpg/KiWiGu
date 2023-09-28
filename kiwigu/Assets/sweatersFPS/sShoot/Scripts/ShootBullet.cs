@@ -8,6 +8,11 @@ public class ShootBullet : MonoBehaviour
     public GunHand anim;
     GunInfo info;
 
+    //Camera playerCamera;
+    CameraRecoil cameraRecoil;
+
+    float recoil = 0;
+
     // this script is in charge of all the perameters for the guns
 
     float shotTimer = 0;
@@ -19,6 +24,8 @@ public class ShootBullet : MonoBehaviour
 
         anim = transform.parent.GetComponent<GunHand>();
         info = anim.info;
+
+        cameraRecoil = sweatersController.instance.playerCamera.GetComponent<CameraRecoil>();
     }
 
     // Update is called once per frame
@@ -37,6 +44,14 @@ public class ShootBullet : MonoBehaviour
         }
 
         transform.LookAt(AcquireTarget.instance.target);
+
+        if(!doShoot) recoil -= 1 / info.recoilReturnTime * Time.deltaTime;
+        if(recoil < 0) recoil = 0;
+
+        float recoilAngle = Mathf.Lerp(0, 90, info.cameraRecoil.Evaluate(recoil));
+
+        cameraRecoil.RequestRecoil(recoilAngle);
+        //sweatersController.instance.playerCamera.transform.localEulerAngles = new(-recoilAngle, 0, 0);
     }
 
     void Shoot()
@@ -57,6 +72,9 @@ public class ShootBullet : MonoBehaviour
         Bullet b = bullet.GetComponent<Bullet>();
         b.speed = info.bulletSpeed;
         b.gravity = info.bulletGravity;
+
+        recoil += info.recoilPerShot;
+        if (recoil > 1) recoil = 1;
 
     }
 

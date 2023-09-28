@@ -24,6 +24,32 @@ MonoBehaviour:
   damage: 0
   spread: 0.05
   recoil: 7
+  cameraRecoil:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0.11571346
+      outSlope: 0.11571346
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.102398306
+    - serializedVersion: 3
+      time: 0.9968262
+      value: 0.330204
+      inSlope: 0.87529624
+      outSlope: 0.87529624
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.07029779
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  recoilPerShot: 0.05
+  recoilReturnTime: 0.5
   bulletSpeed: 370
   bulletGravity: -9.8
   bulletPrefab: {fileID: 745279074493107227, guid: f3885aa6f16644bbda9672673046fdfb, type: 3}
