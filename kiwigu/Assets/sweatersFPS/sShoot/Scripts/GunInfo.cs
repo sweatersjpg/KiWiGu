@@ -10,6 +10,7 @@ public class GunInfo : ScriptableObject
     public bool hasToAim = false;
     public float aimDelay = 0.3f;
     public float aimTime = 0.3f;
+    public float scopeFOV = 30;
 
     [Header("Shooting")]
     public bool fullAuto = false;

@@ -29,6 +29,8 @@ public class GunHand : MonoBehaviour
     public GameObject thrownGunPrefab;
     public GameObject hookShotPrefab;
 
+    WeaponCameraFX cameraFX;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -40,6 +42,8 @@ public class GunHand : MonoBehaviour
 
         Transform sights = transform.Find("Sights");
         if(sights != null) sightsPosition = sights.localPosition;
+
+        cameraFX = sweatersController.instance.playerCamera.GetComponent<WeaponCameraFX>();
     }
 
     // Update is called once per frame
@@ -98,6 +102,8 @@ public class GunHand : MonoBehaviour
 
         if (aimTimer <= 0 && downSights) ToggleDownSights();
         if (aimTimer >= aimDelay && !downSights && info.canAim) ToggleDownSights();
+
+        if (downSights) cameraFX.RequestFOV(info.scopeFOV);
     }
 
     void ThrowGun()
@@ -119,8 +125,12 @@ public class GunHand : MonoBehaviour
 
     public void ToggleDownSights()
     {
-        if(downSights) targetPosition = startPosition;
-        else targetPosition = new(0, -sightsPosition.y, startPosition.z);
+        if (downSights) targetPosition = startPosition;
+        else
+        {
+            if (!cameraFX.ScopedIn()) targetPosition = new(0, -sightsPosition.y, startPosition.z);
+            else return;
+        }
 
         downSights = !downSights;
     }

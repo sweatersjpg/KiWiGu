@@ -9,7 +9,7 @@ public class ShootBullet : MonoBehaviour
     GunInfo info;
 
     //Camera playerCamera;
-    CameraRecoil cameraRecoil;
+    WeaponCameraFX cameraRecoil;
 
     float recoil = 0;
 
@@ -25,7 +25,7 @@ public class ShootBullet : MonoBehaviour
         anim = transform.parent.GetComponent<GunHand>();
         info = anim.info;
 
-        cameraRecoil = sweatersController.instance.playerCamera.GetComponent<CameraRecoil>();
+        cameraRecoil = sweatersController.instance.playerCamera.GetComponent<WeaponCameraFX>();
     }
 
     // Update is called once per frame

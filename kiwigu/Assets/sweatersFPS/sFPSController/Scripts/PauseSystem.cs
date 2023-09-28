@@ -16,7 +16,7 @@ public class PauseSystem : MonoBehaviour
     [Header("Settings")]
 
     [Range(40, 80)]
-    public static float FOV = 60;
+    public static float FOV = 70;
     public float FOVmin = 40;
     public float FOVmax = 80;
 
@@ -37,7 +37,7 @@ public class PauseSystem : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        mainCamera = sweatersController.instance.playerCamera;
     }
 
     // Update is called once per frame
