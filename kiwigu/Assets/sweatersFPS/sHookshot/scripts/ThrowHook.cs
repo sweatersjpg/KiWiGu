@@ -36,7 +36,7 @@ public class ThrowHook : MonoBehaviour
     {
         // ObstacleAvoidance();
 
-        if (Input.GetMouseButtonDown(mouseButton) || Input.GetKeyDown(mouseButton == 0 ? KeyCode.Q : KeyCode.E)
+        if ((Input.GetMouseButtonDown(mouseButton) || Input.GetKeyDown(mouseButton == 0 ? KeyCode.Q : KeyCode.E))
             && hasHook) Throw();
         
         transform.parent.localPosition += 50 * ((targetPosition - transform.parent.localPosition) / 4) * Time.deltaTime;
