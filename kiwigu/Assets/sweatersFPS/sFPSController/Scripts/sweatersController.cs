@@ -98,7 +98,9 @@ public class sweatersController : MonoBehaviour
 
         float a = (acceleration * 0.25f); // 1/2a
 
-        float airTime = (-runningSpeed + Mathf.Sqrt((runningSpeed * runningSpeed) - 2 * a * (-maxJumpDistance))) / a;
+        //float airTime = (-runningSpeed + Mathf.Sqrt((runningSpeed * runningSpeed) - 2 * a * (-maxJumpDistance))) / a;
+
+        float airTime = maxJumpDistance / airSpeed;
 
         airTime /= 2;
 
