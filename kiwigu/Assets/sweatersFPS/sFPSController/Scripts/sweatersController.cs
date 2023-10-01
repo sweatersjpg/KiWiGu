@@ -17,19 +17,23 @@ public class sweatersController : MonoBehaviour
     public float maxJumpDistance = 4;
     public float maxJumpHeight = 2;
     public float minJumpHeight = 0.5f;
+
+    [Space]
     public float runningSpeed = 7.5f;
     public float airSpeed = 10;
     public float crouchSpeed = 3.75f;
     public float acceleration = 3.75f;
-    [Space]
-    public float slopeLimit = 45;
-    public float deceleration = 4;
-    public float airDeceleration = 1;
-    public float maxSpeedDecay = 16;
+    public float airAcceleration = 3;
 
     [Space]
-    public float gravity = 20f;
-    public float jumpSpeed = 8.0f;
+    public float deceleration = 4;
+    public float turnDeceleration = 64;
+    public float airDeceleration = 1;
+    public float maxSpeedDecay = 16;
+    public float slopeLimit = 45;
+
+    [HideInInspector] public float gravity = 20f;
+    [HideInInspector] public float jumpSpeed = 8.0f;
 
     [Space]
     public float jumpBuffer = 0.2f;
@@ -96,11 +100,13 @@ public class sweatersController : MonoBehaviour
 
         spawnPoint = transform.position;
 
-        float a = (acceleration * 0.25f); // 1/2a
+        // air time based on air acceleration and max speed
+        float a = airAcceleration;
 
-        //float airTime = (-runningSpeed + Mathf.Sqrt((runningSpeed * runningSpeed) - 2 * a * (-maxJumpDistance))) / a;
+        float airTime = (-runningSpeed + Mathf.Sqrt((runningSpeed * runningSpeed) - 2 * a * (-maxJumpDistance))) / a;
 
-        float airTime = maxJumpDistance / airSpeed;
+        // air time based solely on max air speed
+        //float airTime = maxJumpDistance / airSpeed;
 
         airTime /= 2;
 
@@ -150,11 +156,14 @@ public class sweatersController : MonoBehaviour
 
         // recalculate based on look facing
         input = (forward * input.x) + (right * input.z);
-        if (!isGrounded || isSliding) input /= 4; // reduce acceleration in air
 
-        Vector3 force = acceleration * input;
+        // acceleration based on ground or air
+        float acc = isGrounded && !isSliding ? acceleration : airAcceleration;
+        Vector3 force = acc * input;
 
-        float dec = isGrounded && !isSliding ? deceleration : airDeceleration;
+        // deceleration based on ground air and movement
+        float dec = input.magnitude > 0.1f ? turnDeceleration : deceleration;
+        dec = isGrounded && !isSliding ? deceleration : airDeceleration;
         Vector3 vel = new(velocity.x, 0, velocity.z);
 
         float d = Mathf.Min(dec * deltaTime, Mathf.Abs(vel.x));
@@ -164,8 +173,10 @@ public class sweatersController : MonoBehaviour
 
         velocity = new(vel.x, velocity.y, vel.z);
 
+        // apply gravity when not grounded or sliding
         if (!isGrounded || isSliding) force.y -= gravity;
 
+        // jump buffer logic
         if(Input.GetButtonDown("Jump"))
         {
             jumpPressed = true;
@@ -177,6 +188,7 @@ public class sweatersController : MonoBehaviour
             jumpPressed = false;
         }
 
+        // do jump
         if (jumpPressed && isGrounded)
         {
             Vector3 jumpVector;
@@ -190,6 +202,7 @@ public class sweatersController : MonoBehaviour
             velocity.z += jumpVector.z;
         }
 
+        // increase gravity with jump release
         if (jumpJustReleased && velocity.y > 0)
         {
             gravity = minJumpGravity;

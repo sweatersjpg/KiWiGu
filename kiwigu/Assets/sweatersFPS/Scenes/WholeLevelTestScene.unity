@@ -1050,7 +1050,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 295880600}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.34899902, y: -0.2750001, z: 0.4499998}
+  m_LocalPosition: {x: -0.3, y: -0.2750001, z: 0.4499998}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -7222,7 +7222,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1950645144}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.34899902, y: -0.2750001, z: 0.4499998}
+  m_LocalPosition: {x: 0.3, y: -0.2750001, z: 0.4499998}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -7505,6 +7505,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 390614569684195216, guid: cd009b5b1639cb64fab3f3879c5e1866, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 481911955310686156, guid: cd009b5b1639cb64fab3f3879c5e1866, type: 3}
       propertyPath: mainCamera
       value: 
@@ -7769,7 +7773,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  transitionDuration: 0.5
+  transitionDuration: 0.25
 --- !u!1 &2436104509361767061
 GameObject:
   m_ObjectHideFlags: 0
@@ -7842,13 +7846,15 @@ MonoBehaviour:
   maxJumpHeight: 2.5
   minJumpHeight: 1
   runningSpeed: 8
-  airSpeed: 10
+  airSpeed: 15
   crouchSpeed: 4
-  acceleration: 64
-  slopeLimit: 45
-  deceleration: 64
+  acceleration: 96
+  airAcceleration: 4
+  deceleration: 24
+  turnDeceleration: 128
   airDeceleration: 1
   maxSpeedDecay: 16
+  slopeLimit: 45
   gravity: 20
   jumpSpeed: 8
   jumpBuffer: 0.2

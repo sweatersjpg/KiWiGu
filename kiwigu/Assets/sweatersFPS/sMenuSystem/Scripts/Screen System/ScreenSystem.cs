@@ -21,8 +21,10 @@ public class ScreenSystem : MonoBehaviour
 
     [Header("Transition")]
     public Camera menuCamera;
-    public Camera gameCamera;
-    UniversalAdditionalCameraData gameCameraData;
+    // public Camera gameCamera;
+
+    // disabling this for now, it might not be required
+    // UniversalAdditionalCameraData gameCameraData;
     CameraPause gameCameraPause;
 
     public static Vector2 mouse;
@@ -55,8 +57,7 @@ public class ScreenSystem : MonoBehaviour
     {
         distortionEffectActive = effects.TryGet(out distortionEffect);
 
-        gameCameraData = gameCamera.GetComponent<UniversalAdditionalCameraData>();
-        gameCameraPause = gameCamera.GetComponent<CameraPause>();
+        //gameCameraData = gameCamera.GetComponent<UniversalAdditionalCameraData>();
     }
 
     private void Update()
@@ -141,7 +142,7 @@ public class ScreenSystem : MonoBehaviour
             if (transition > transitionDuration / 2 && !menuCamera.gameObject.activeSelf)
             {
                 menuCamera.gameObject.SetActive(true);
-                gameCameraData.renderPostProcessing = false;
+                // gameCameraData.renderPostProcessing = false;
             }
         }
         else
@@ -151,7 +152,7 @@ public class ScreenSystem : MonoBehaviour
             if (transition < transitionDuration / 2 && menuCamera.gameObject.activeSelf)
             {
                 menuCamera.gameObject.SetActive(false);
-                gameCameraData.renderPostProcessing = true;
+                // gameCameraData.renderPostProcessing = true;
             }
             //if (gameCameraPause.paused) gameCameraPause.paused = false;
         }
