@@ -139,21 +139,21 @@ public class ScreenSystem : MonoBehaviour
                 transition = transitionDuration;
                 //if (pauseGameCamera) gameCameraPause.paused = true;
             }
-            if (transition > transitionDuration / 2 && !menuCamera.gameObject.activeSelf)
-            {
-                menuCamera.gameObject.SetActive(true);
-                // gameCameraData.renderPostProcessing = false;
-            }
+            //if (transition > transitionDuration / 2 && !menuCamera.gameObject.activeSelf)
+            //{
+            //    menuCamera.gameObject.SetActive(true);
+            //    // gameCameraData.renderPostProcessing = false;
+            //}
         }
         else
         {
             if (transition > 0) transition -= 1f / R.frameRate;
             else transition = 0;
-            if (transition < transitionDuration / 2 && menuCamera.gameObject.activeSelf)
-            {
-                menuCamera.gameObject.SetActive(false);
-                // gameCameraData.renderPostProcessing = true;
-            }
+            //if (transition < transitionDuration / 2 && menuCamera.gameObject.activeSelf)
+            //{
+            //    menuCamera.gameObject.SetActive(false);
+            //    // gameCameraData.renderPostProcessing = true;
+            //}
             //if (gameCameraPause.paused) gameCameraPause.paused = false;
         }
 
