@@ -40,7 +40,11 @@ public class MoveHook : MonoBehaviour
         float startingSpeed = Mathf.Sqrt(2 * trackingAcceleration * hookRange);
 
         velocity = transform.forward * startingSpeed;
-        velocity += sweatersController.instance.velocity;
+
+        Vector3 v = sweatersController.instance.velocity;
+        v.y = 0;
+
+        velocity += v;
 
         speed = -velocity.magnitude;
 
@@ -93,7 +97,7 @@ public class MoveHook : MonoBehaviour
     {
         // raycast from ppos to pos
 
-        bool hasHit = Physics.SphereCast(pPosition, 0.1f, transform.position - pPosition, 
+        bool hasHit = Physics.SphereCast(pPosition, 0.25f, transform.position - pPosition, 
             out RaycastHit hit, (transform.position - pPosition).magnitude, ~LayerMask.GetMask("GunHand", "Player"));
 
         if(hasHit)
@@ -124,6 +128,8 @@ public class MoveHook : MonoBehaviour
                 Destroy(hit.transform.GetComponent<Rigidbody>());
             }
 
+            speed = 0;
+
             return;
         }
         
@@ -133,6 +139,8 @@ public class MoveHook : MonoBehaviour
         }
 
         if (headingBack) return;
+
+        speed /= 2;
 
         transform.position = hit.point;
 
