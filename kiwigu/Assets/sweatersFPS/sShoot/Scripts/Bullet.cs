@@ -2,8 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class bullet : MonoBehaviour
+public class Bullet : MonoBehaviour
 {
+    [Header("Damage")]
+    public float bulletDamage = 5;
+
     public float speed = 370;
     public float gravity = -9.8f;
 
@@ -11,6 +14,8 @@ public class bullet : MonoBehaviour
 
     public GameObject bulletMesh;
     public GameObject bulletHolePrefab;
+
+    bool dead = false;
 
     Vector3 velocity;
 
@@ -28,9 +33,9 @@ public class bullet : MonoBehaviour
     {
         float time = Time.time - startTime;
 
-        CastRay(time);
+        if(!dead) CastRay(time);
 
-        if (time > 3) Destroy(gameObject);
+        if (time > lifeTime) Destroy(gameObject);
     }
 
     void CastRay(float time)
@@ -45,12 +50,30 @@ public class bullet : MonoBehaviour
 
         if (hasHit)
         {
-            Debug.Log(hit.transform.name);
+            if (hit.transform.gameObject.CompareTag("Enemy"))
+            {
+                hit.transform.gameObject.GetComponent<EnemyBase>().TakeDamage(bulletDamage);
+            }
+            else if(hit.transform.gameObject.CompareTag("RigidTarget"))
+            {
+                hit.transform.gameObject.GetComponent<PhysicsHit>().Hit(hit.point, velocity);
 
-            Transform hole = Instantiate(bulletHolePrefab).transform;
-            hole.SetPositionAndRotation(hit.point, Quaternion.LookRotation(-hit.normal));
+                Transform hole = Instantiate(bulletHolePrefab).transform;
+                hole.SetPositionAndRotation(hit.point, Quaternion.LookRotation(-hit.normal));
+                hole.parent = hit.transform;
+            }
+            else
+            {
+                // Debug.Log(hit.transform.name);
 
-            Destroy(gameObject);
+                Transform hole = Instantiate(bulletHolePrefab).transform;
+                hole.SetPositionAndRotation(hit.point, Quaternion.LookRotation(-hit.normal));
+                hole.parent = hit.transform;
+            }
+
+            //Destroy(gameObject);
+            lifeTime = Time.time - startTime + 0.5f;
+            dead = true;
         }
     }
 

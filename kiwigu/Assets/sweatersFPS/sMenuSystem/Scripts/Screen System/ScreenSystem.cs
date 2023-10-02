@@ -1,8 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting.Antlr3.Runtime;
 using UnityEngine;
-using UnityEngine.Rendering.PostProcessing;
+using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
 
 public class ScreenSystem : MonoBehaviour
 {
@@ -20,10 +20,9 @@ public class ScreenSystem : MonoBehaviour
     }
 
     [Header("Transition")]
-
     public Camera menuCamera;
     public Camera gameCamera;
-    PostProcessLayer gamePostProcessing;
+    UniversalAdditionalCameraData gameCameraData;
     CameraPause gameCameraPause;
 
     public static Vector2 mouse;
@@ -35,7 +34,7 @@ public class ScreenSystem : MonoBehaviour
 
     bool willResume = false;
 
-    public PostProcessVolume effects;
+    public VolumeProfile effects;
     LensDistortion distortionEffect;
     bool distortionEffectActive = false;
 
@@ -54,10 +53,10 @@ public class ScreenSystem : MonoBehaviour
 
     private void Awake()
     {
-        distortionEffectActive = effects.sharedProfile.TryGetSettings(out distortionEffect);
+        distortionEffectActive = effects.TryGet(out distortionEffect);
 
+        gameCameraData = gameCamera.GetComponent<UniversalAdditionalCameraData>();
         gameCameraPause = gameCamera.GetComponent<CameraPause>();
-        gamePostProcessing = gameCamera.GetComponent<PostProcessLayer>();
     }
 
     private void Update()
@@ -73,19 +72,19 @@ public class ScreenSystem : MonoBehaviour
         mouseScrollDelta += Input.mouseScrollDelta.y;
     }
 
-    void Init(MiniRenderer mr) // called from MiniRenderer
+    public void Init(MiniRenderer mr) // called from MiniRenderer
     {
         R = mr;
         RspriteSheet = R.spriteSheet;
 
-        for(int i = 0; i < programs.Length; i++)
+        for (int i = 0; i < programs.Length; i++)
         {
             programs[i].R = R;
             programs[i].Setup();
         }
     }
 
-    void FrameUpdate() // called from MiniRenderer
+    public void FrameUpdate() // called from MiniRenderer
     {
         mouseButtonDown = mouseButton && !pmouseButton;
         mouseButtonUp = pmouseButton && !mouseButton;
@@ -98,7 +97,7 @@ public class ScreenSystem : MonoBehaviour
         if (mouse.x > 0 && mouse.x < R.width && mouse.y > 0 && mouse.y < R.height) Cursor.visible = false;
         else Cursor.visible = true;
 
-        foreach(ScreenProgram p in programs)
+        foreach (ScreenProgram p in programs)
         {
             p.mouse = mouse;
             p.mouseButton = mouseButton;
@@ -108,9 +107,9 @@ public class ScreenSystem : MonoBehaviour
         }
         mouseScrollDelta = 0;
 
-        if(program.spriteSheet != null) R.spriteSheet = program.spriteSheet;
+        if (program.spriteSheet != null) R.spriteSheet = program.spriteSheet;
 
-        if(willResume)
+        if (willResume)
         {
             program.Resume();
             willResume = false;
@@ -137,12 +136,12 @@ public class ScreenSystem : MonoBehaviour
             else
             {
                 transition = transitionDuration;
-                if (pauseGameCamera) gameCameraPause.paused = true;
+                //if (pauseGameCamera) gameCameraPause.paused = true;
             }
             if (transition > transitionDuration / 2 && !menuCamera.gameObject.activeSelf)
             {
                 menuCamera.gameObject.SetActive(true);
-                gamePostProcessing.enabled = false;
+                gameCameraData.renderPostProcessing = false;
             }
         }
         else
@@ -152,14 +151,23 @@ public class ScreenSystem : MonoBehaviour
             if (transition < transitionDuration / 2 && menuCamera.gameObject.activeSelf)
             {
                 menuCamera.gameObject.SetActive(false);
-                gamePostProcessing.enabled = true;
+                gameCameraData.renderPostProcessing = true;
             }
-            if (gameCameraPause.paused) gameCameraPause.paused = false;
+            //if (gameCameraPause.paused) gameCameraPause.paused = false;
         }
 
-        if (distortionEffectActive) distortionEffect.intensity.Override(distortionTransition.Evaluate(transition / transitionDuration) * 100);
+        float distortionIntensity = distortionTransition.Evaluate(transition / transitionDuration);
+
+        float targetIntensity = distortionIntensity * 1.5f;
+        float currentIntensity = (float)distortionEffect.intensity;
+        float smoothness = 35;
+        distortionEffect.intensity.Override(Mathf.Lerp(currentIntensity, targetIntensity, Time.deltaTime * smoothness));
+
         backdrop.color = Color.Lerp(backdropStart, backdropEnd, backdropTransition.Evaluate(transition / transitionDuration));
     }
+
+
+
 
     void GetMouse()
     {
