@@ -97,8 +97,10 @@ public class MoveHook : MonoBehaviour
     {
         // raycast from ppos to pos
 
+        HookGun();
+
         bool hasHit = Physics.SphereCast(pPosition, 0.25f, transform.position - pPosition, 
-            out RaycastHit hit, (transform.position - pPosition).magnitude, ~LayerMask.GetMask("GunHand", "Player"));
+            out RaycastHit hit, (transform.position - pPosition).magnitude, ~LayerMask.GetMask("GunHand", "Player", "HookTarget"));
 
         if(hasHit)
         {
@@ -108,10 +110,12 @@ public class MoveHook : MonoBehaviour
 
     }
 
-    void ResolveCollision(RaycastHit hit)
+    void HookGun()
     {
-        
-        if (hit.transform.gameObject.CompareTag("HookTarget") && caughtGun == null)
+        bool hasHit = Physics.SphereCast(pPosition, 0.25f, transform.position - pPosition,
+            out RaycastHit hit, (transform.position - pPosition).magnitude, LayerMask.GetMask("HookTarget"));
+
+        if (hasHit)
         {
             HookTarget ht = hit.transform.GetComponent<HookTarget>();
             if (ht == null) caughtGun = hit.transform.GetComponent<ThrownGun>().info;
@@ -132,6 +136,10 @@ public class MoveHook : MonoBehaviour
 
             return;
         }
+    }
+
+    void ResolveCollision(RaycastHit hit)
+    {
         
         if (hit.transform.gameObject.CompareTag("RigidTarget"))
         {

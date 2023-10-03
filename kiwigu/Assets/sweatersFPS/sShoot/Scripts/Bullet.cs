@@ -46,7 +46,8 @@ public class Bullet : MonoBehaviour
 
         bulletMesh.transform.position = origin;
 
-        bool hasHit = Physics.Raycast(origin, direction, out RaycastHit hit, direction.magnitude, ~LayerMask.GetMask("GunHand", "Player"));
+        bool hasHit = Physics.Raycast(origin, direction, out RaycastHit hit, direction.magnitude, 
+            ~LayerMask.GetMask("GunHand", "Player", "HookTarget"));
 
         if (hasHit)
         {
