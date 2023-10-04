@@ -6,6 +6,7 @@ using UnityEngine.AI;
 public class EnemyBase : MonoBehaviour
 {
     [Header("Enemy Main Variables")]
+    public bool canSeekGun;
     public bool spawnWithGun;
     [Range(10, 100)] public int MaxHealth = 100;
     [Range(10, 100)] public int MaxShield = 100;
@@ -43,6 +44,12 @@ public class EnemyBase : MonoBehaviour
     GameObject InitialGunObject;
     private bool startedFleeing;
 
+    [Header("Enemy Type")]
+    public bool Small;
+    public bool Medium;
+    public bool DefenseDrone;
+    public bool OffenseDrone;
+
     protected virtual void Start()
     {
         // set tag to "Enemy"
@@ -68,32 +75,21 @@ public class EnemyBase : MonoBehaviour
             agent.angularSpeed = RotationSpeed;
         }
     }
-
-    protected virtual void Update()
+    public void EnemyBehaviour()
     {
-        playerInSight = CheckPlayerVisibility();
+        if (DefenseDrone || OffenseDrone)
+            return;
 
-        if (isHoldingGun)
+        if (GunObject)
         {
-            if (agent != null && (playerInSight || wasHit))
+            if (IsAgentCloseToStation())
             {
-                EnemyMovement();
+                GunObject = Instantiate(InitialGunObject, HandPosition.transform);
+                isHoldingGun = true;
             }
-            else if (!isWandering)
+            else
             {
-                StartCoroutine(Wander());
-            }
-        }
-        else
-        {
-            if (GunObject)
-            {
-                if (IsAgentCloseToStation())
-                {
-                    GunObject = Instantiate(InitialGunObject, HandPosition.transform);
-                    isHoldingGun = true;
-                }
-                else
+                if (canSeekGun)
                 {
                     GameObject closestStation = FindClosestStationWithTag("EnemyRestockStation");
 
@@ -102,20 +98,44 @@ public class EnemyBase : MonoBehaviour
                         agent.SetDestination(closestStation.transform.position);
                     }
                 }
-            }
-            else
-            {
-                if (agent != null && (playerInSight || wasHit))
+                else
                 {
-                    if (!startedFleeing)
+                    if (agent != null && (playerInSight || wasHit))
                     {
-                        StartCoroutine(EnemyFlee());
+                        if (!startedFleeing)
+                        {
+                            StartCoroutine(EnemyFlee());
+                        }
+                    }
+                    else if (!isWandering)
+                    {
+                        StartCoroutine(Wander());
                     }
                 }
-                else if (!isWandering)
+            }
+        }
+        else
+        {
+            if (agent != null && (playerInSight || wasHit))
+            {
+                if (!startedFleeing)
                 {
-                    StartCoroutine(Wander());
+                    StartCoroutine(EnemyFlee());
                 }
+            }
+            else if (!isWandering)
+            {
+                StartCoroutine(Wander());
+            }
+        }
+    }
+    protected virtual void Update()
+    {
+        if(isHoldingGun)
+        {
+            if (!isWandering)
+            {
+                StartCoroutine(Wander());
             }
         }
     }
@@ -138,9 +158,10 @@ public class EnemyBase : MonoBehaviour
 
         Vector3 fleeDestination = transform.position + awayFromPlayer * FleeDistance;
 
-        float randomOffsetX = Random.Range(-FleeMovementVariation, FleeMovementVariation);
-        float randomOffsetZ = Random.Range(-FleeMovementVariation, FleeMovementVariation);
-        Vector3 randomOffset = new Vector3(randomOffsetX, 0f, randomOffsetZ);
+        // Use Perlin noise for smoother randomness
+        float randomOffsetX = Mathf.PerlinNoise(Time.time, 0) * 2 - 1;
+        float randomOffsetZ = Mathf.PerlinNoise(0, Time.time) * 2 - 1;
+        Vector3 randomOffset = new Vector3(randomOffsetX, 0f, randomOffsetZ) * FleeMovementVariation;
         fleeDestination += randomOffset;
 
         NavMeshHit hit;
@@ -191,7 +212,7 @@ public class EnemyBase : MonoBehaviour
         return false;
     }
 
-    private IEnumerator Wander()
+    public IEnumerator Wander()
     {
         wanderTarget = RandomWanderPoint();
         agent.SetDestination(wanderTarget);
@@ -209,33 +230,6 @@ public class EnemyBase : MonoBehaviour
         NavMesh.SamplePosition(randomDirection, out hit, WanderRadius, NavMesh.AllAreas);
 
         return hit.position;
-    }
-
-    public virtual void EnemyMovement()
-    {
-        if (Vector3.Distance(transform.position, player.position) <= AvoidPlayerDistance)
-        {
-            if (GunObject)
-            {
-                GameObject GunObjectExitPoint = GunObject.transform.GetChild(0).gameObject;
-                GunObjectExitPoint.transform.LookAt(player.position + new Vector3(Random.Range(-GunInaccuracy, GunInaccuracy), 1.5f, Random.Range(-GunInaccuracy, GunInaccuracy)));
-            }
-
-            Vector3 direction = player.position - transform.position;
-            direction.y = 0;
-            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(direction), RotationSpeed * Time.deltaTime);
-        }
-        else
-        {
-            if (GunObject)
-            {
-                GameObject GunObjectExitPoint = GunObject.transform.GetChild(0).gameObject;
-                GunObjectExitPoint.transform.LookAt(player.position + new Vector3(Random.Range(-GunInaccuracy, GunInaccuracy), 1.5f, Random.Range(-GunInaccuracy, GunInaccuracy)));
-            }
-
-            Vector3 offset = (transform.position - player.position).normalized * AvoidPlayerDistance;
-            agent.SetDestination(player.position + offset);
-        }
     }
 
     public virtual void TakeDamage(float bulletDamage)
