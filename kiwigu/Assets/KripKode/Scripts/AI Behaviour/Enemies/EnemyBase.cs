@@ -12,6 +12,8 @@ public class EnemyBase : MonoBehaviour
     [Range(10, 100)] public int MaxShield = 100;
     public GameObject GunObject;
     public GameObject EyesPosition;
+    [Tooltip("Make sure Hand Transform is attached as a child of this object!")]
+    public GameObject BodyMesh;
     public GameObject HandPosition;
 
     [Header("Enemy Movement")]
@@ -53,7 +55,8 @@ public class EnemyBase : MonoBehaviour
     protected virtual void Start()
     {
         // set tag to "Enemy"
-        gameObject.tag = "Enemy";
+        if (Small || Medium)  gameObject.tag = "Enemy";
+        else if (DefenseDrone || OffenseDrone) gameObject.tag = "DroneEnemy";
 
         if (spawnWithGun && GunObject)
         {

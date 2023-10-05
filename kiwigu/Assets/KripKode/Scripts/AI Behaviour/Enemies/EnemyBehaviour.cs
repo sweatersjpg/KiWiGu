@@ -1,3 +1,5 @@
+using System.Collections;
+using System.Security.Cryptography;
 using UnityEngine;
 using static UnityEngine.GraphicsBuffer;
 
@@ -8,8 +10,21 @@ public class EnemyBehaviour : EnemyBase
 
     [HideInInspector] public bool canShoot;
 
+    private float initialPositionY;
+    private float verticalOffset = 0.25f;
+    private float duration;
+    private float startTime;
+
     protected override void Start()
     {
+        if (DefenseDrone || OffenseDrone)
+        {
+            duration = Random.Range(1f, 3f);
+            initialPositionY = BodyMesh.transform.position.y;
+            startTime = Time.time;
+        }
+
+
         base.Start();
         shotTimer = Time.time;
     }
@@ -58,7 +73,55 @@ public class EnemyBehaviour : EnemyBase
         }
         else if (OffenseDrone)
         {
-            Debug.Log("Offense Drone Movement");
+            Collider[] hitColliders = Physics.OverlapSphere(transform.position, EnemyAwareDistance);
+            bool enemyDetected = false;
+
+            foreach (var collider in hitColliders)
+            {
+                if (collider.gameObject.tag == "Player" && collider.gameObject != gameObject)
+                {
+                    if (GunObject)
+                    {
+                        GameObject GunObjectExitPoint = GunObject.transform.GetChild(0).gameObject;
+                        GunObjectExitPoint.transform.LookAt(player.position + new Vector3(Random.Range(-GunInaccuracy, GunInaccuracy), 1.5f, Random.Range(-GunInaccuracy, GunInaccuracy)));
+                    }
+
+                    Vector3 playerPosition = collider.gameObject.transform.position;
+                    Vector3 direction = playerPosition - transform.position;
+                    direction.y = 0;
+
+                    float distanceToPlayer = direction.magnitude;
+
+                    float maxNoiseOffset = 1.0f;
+                    float noiseFrequency = 1.0f;
+
+                    BodyMesh.transform.LookAt(playerPosition);
+
+                    if (distanceToPlayer < AvoidPlayerDistance)
+                    {
+                        Vector3 targetPosition = transform.position - direction.normalized * (AvoidPlayerDistance - distanceToPlayer);
+
+                        float noiseX = Mathf.PerlinNoise(Time.time * MovementSpeed * noiseFrequency, 0) * maxNoiseOffset - (maxNoiseOffset / 2);
+                        float noiseZ = Mathf.PerlinNoise(0, Time.time * MovementSpeed * noiseFrequency) * maxNoiseOffset - (maxNoiseOffset / 2);
+                        Vector3 noiseOffset = new Vector3(noiseX, 0, noiseZ);
+
+                        targetPosition += noiseOffset;
+
+                        Quaternion targetRotation = Quaternion.LookRotation(targetPosition - transform.position);
+                        transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, RotationSpeed * Time.deltaTime);
+
+                        agent.SetDestination(targetPosition);
+
+                        enemyDetected = true;
+                        break;
+                    }
+                }
+            }
+
+            if (!enemyDetected && !isWandering)
+            {
+                StartCoroutine(Wander());
+            }
         }
         else if (Small || Medium)
         {
@@ -120,6 +183,14 @@ public class EnemyBehaviour : EnemyBase
         else
         {
             EnemyBehaviour();
+        }
+
+        if (DefenseDrone || OffenseDrone)
+        {
+            float t = Mathf.PingPong((Time.time - startTime) / duration, 1f);
+            float newYPosition = Mathf.Lerp(initialPositionY - verticalOffset, initialPositionY + verticalOffset, t);
+            Vector3 newPosition = new Vector3(BodyMesh.transform.position.x, newYPosition, BodyMesh.transform.position.z);
+            BodyMesh.transform.position = newPosition;
         }
     }
 
