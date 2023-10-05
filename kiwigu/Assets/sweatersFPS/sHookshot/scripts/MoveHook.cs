@@ -19,7 +19,7 @@ public class MoveHook : MonoBehaviour
 
     public float catchDistance = 0.2f;
 
-    bool canCatch = false;
+    // bool canCatch = false;
 
     GunInfo caughtGun;
 

@@ -26,6 +26,7 @@ public class GunInfo : ScriptableObject
     public float spread = 0; // works also as accuracy
     public float recoil = 45;
     [Space]
+    public AnimationCurve spreadVariation;
     public AnimationCurve cameraRecoil;
     public float recoilPerShot = 0.1f;
     public float recoilReturnTime = 1f;

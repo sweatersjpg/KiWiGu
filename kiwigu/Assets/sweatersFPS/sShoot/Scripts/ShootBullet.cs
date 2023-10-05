@@ -12,6 +12,7 @@ public class ShootBullet : MonoBehaviour
     WeaponCameraFX cameraRecoil;
 
     float recoil = 0;
+    float smoothRecoil = 0;
 
     // this script is in charge of all the perameters for the guns
 
@@ -48,7 +49,9 @@ public class ShootBullet : MonoBehaviour
         if(!doShoot) recoil -= 1 / info.recoilReturnTime * Time.deltaTime;
         if(recoil < 0) recoil = 0;
 
-        float recoilAngle = Mathf.Lerp(0, 90, info.cameraRecoil.Evaluate(recoil));
+        smoothRecoil += (recoil - smoothRecoil) / 4 * Time.deltaTime * 50;
+
+        float recoilAngle = info.cameraRecoil.Evaluate(smoothRecoil) * info.recoil;
 
         cameraRecoil.RequestRecoil(recoilAngle);
         //sweatersController.instance.playerCamera.transform.localEulerAngles = new(-recoilAngle, 0, 0);
@@ -65,7 +68,11 @@ public class ShootBullet : MonoBehaviour
         GameObject bullet = Instantiate(info.bulletPrefab);
 
         Vector3 direction = transform.forward;
-        direction += SpreadDirection(info.spread, 3);
+
+        float spread = info.spreadVariation.Evaluate(recoil) * info.spread;
+        if (anim.downSights) spread = 0;
+
+        direction += SpreadDirection(spread, 3);
 
         bullet.transform.SetPositionAndRotation(transform.position, Quaternion.LookRotation(direction.normalized));
 
