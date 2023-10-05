@@ -51,9 +51,13 @@ public class Bullet : MonoBehaviour
 
         if (hasHit)
         {
-            if (hit.transform.gameObject.CompareTag("Enemy"))
+            if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Enemy"))
             {
-                hit.transform.gameObject.GetComponent<EnemyBase>().TakeDamage(bulletDamage);
+                EnemyBase enemy = hit.transform.gameObject.GetComponentInChildren<EnemyBase>();
+                if (enemy != null)
+                {
+                    enemy.TakeDamage(bulletDamage);
+                }
             }
             else if(hit.transform.gameObject.CompareTag("RigidTarget"))
             {
