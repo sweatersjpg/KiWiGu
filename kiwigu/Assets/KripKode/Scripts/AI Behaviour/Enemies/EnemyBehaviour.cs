@@ -83,7 +83,17 @@ public class EnemyBehaviour : EnemyBase
                     if (GunObject)
                     {
                         GameObject GunObjectExitPoint = GunObject.transform.GetChild(0).gameObject;
-                        GunObjectExitPoint.transform.LookAt(player.position + new Vector3(Random.Range(-GunInaccuracy, GunInaccuracy), 1.5f, Random.Range(-GunInaccuracy, GunInaccuracy)));
+
+                        Quaternion targetRotation = Quaternion.LookRotation(
+                            (player.position + new Vector3(Random.Range(-GunInaccuracy, GunInaccuracy), 1.5f, Random.Range(-GunInaccuracy, GunInaccuracy))) - GunObjectExitPoint.transform.position
+                        );
+
+                        float rotationSpeed = 50;
+                        GunObjectExitPoint.transform.rotation = Quaternion.Slerp(
+                            GunObjectExitPoint.transform.rotation,
+                            targetRotation,
+                            Time.deltaTime * rotationSpeed
+                        );
                     }
 
                     Vector3 playerPosition = collider.gameObject.transform.position;
@@ -130,7 +140,17 @@ public class EnemyBehaviour : EnemyBase
                 if (GunObject)
                 {
                     GameObject GunObjectExitPoint = GunObject.transform.GetChild(0).gameObject;
-                    GunObjectExitPoint.transform.LookAt(player.position + new Vector3(Random.Range(-GunInaccuracy, GunInaccuracy), 1.5f, Random.Range(-GunInaccuracy, GunInaccuracy)));
+
+                    Quaternion targetRotation = Quaternion.LookRotation(
+                        (player.position + new Vector3(Random.Range(-GunInaccuracy, GunInaccuracy), 1.5f, Random.Range(-GunInaccuracy, GunInaccuracy))) - GunObjectExitPoint.transform.position
+                    );
+
+                    float rotationSpeed = 50;
+                    GunObjectExitPoint.transform.rotation = Quaternion.Slerp(
+                        GunObjectExitPoint.transform.rotation,
+                        targetRotation,
+                        Time.deltaTime * rotationSpeed
+                    );
                 }
 
                 Vector3 direction = player.position - transform.position;
@@ -142,7 +162,17 @@ public class EnemyBehaviour : EnemyBase
                 if (GunObject)
                 {
                     GameObject GunObjectExitPoint = GunObject.transform.GetChild(0).gameObject;
-                    GunObjectExitPoint.transform.LookAt(player.position + new Vector3(Random.Range(-GunInaccuracy, GunInaccuracy), 1.5f, Random.Range(-GunInaccuracy, GunInaccuracy)));
+
+                    Quaternion targetRotation = Quaternion.LookRotation(
+                        (player.position + new Vector3(Random.Range(-GunInaccuracy, GunInaccuracy), 1.5f, Random.Range(-GunInaccuracy, GunInaccuracy))) - GunObjectExitPoint.transform.position
+                    );
+
+                    float rotationSpeed = 50;
+                    GunObjectExitPoint.transform.rotation = Quaternion.Slerp(
+                        GunObjectExitPoint.transform.rotation,
+                        targetRotation,
+                        Time.deltaTime * rotationSpeed
+                    );
                 }
 
                 Vector3 offset = (transform.position - player.position).normalized * AvoidPlayerDistance;
