@@ -24,6 +24,7 @@ public class EnemyBase : MonoBehaviour
     [Range(100, 200)] public int RotationSpeed = 180;
     [Range(15, 25)] public int EnemyAwareDistance = 20;
     [Range(5, 20)] public int WanderRadius = 8;
+    [Range(2, 8)] public float WanderIdleVariation;
 
     [Header("Enemy Gun Stats")]
     [Range(1, 10)] public float EnemyFireRate = 1.0f;
@@ -221,7 +222,7 @@ public class EnemyBase : MonoBehaviour
         agent.SetDestination(wanderTarget);
         isWandering = true;
         yield return new WaitUntil(() => agent.remainingDistance <= 0.5f);
-        yield return new WaitForSeconds(Random.Range(4, 6));
+        yield return new WaitForSeconds(Random.Range(WanderIdleVariation - 1, WanderIdleVariation + 2));
         isWandering = false;
     }
 

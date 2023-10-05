@@ -102,8 +102,8 @@ public class EnemyBehaviour : EnemyBase
 
                     float distanceToPlayer = direction.magnitude;
 
-                    float maxNoiseOffset = 1.0f;
-                    float noiseFrequency = 1.0f;
+                    float maxNoiseOffset = 10.0f;
+                    float noiseFrequency = 5.0f;
 
                     BodyMesh.transform.LookAt(playerPosition);
 
