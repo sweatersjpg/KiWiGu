@@ -6,6 +6,9 @@ using UnityEngine;
 public class ShootBullet : MonoBehaviour
 {
     public GunHand anim;
+    float spreadSpeed = 5;
+    float spreadTimeStart = 0;
+
     GunInfo info;
 
     //Camera playerCamera;
@@ -14,6 +17,9 @@ public class ShootBullet : MonoBehaviour
     float recoil = 0;
     float smoothRecoil = 0;
 
+    float deltaTime;
+    float time;
+
     // this script is in charge of all the perameters for the guns
 
     float shotTimer = 0;
@@ -21,17 +27,30 @@ public class ShootBullet : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        shotTimer = Time.time;
+        shotTimer = 0;
 
         anim = transform.parent.GetComponent<GunHand>();
         info = anim.info;
 
         cameraRecoil = sweatersController.instance.playerCamera.GetComponent<WeaponCameraFX>();
+
+        spreadTimeStart = Random.Range(0, 100);
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (PauseSystem.paused)
+        {
+            deltaTime = 0;
+            return;
+        }
+        else
+        {
+            deltaTime = Time.deltaTime;
+            time += Time.deltaTime;
+        }
+
         bool canShoot = (Time.time - shotTimer) > 1/info.fireRate && anim.canShoot && anim.hasGun;
         anim.canShoot = canShoot;
 
@@ -46,10 +65,10 @@ public class ShootBullet : MonoBehaviour
 
         transform.LookAt(AcquireTarget.instance.target);
 
-        if(!doShoot) recoil -= 1 / info.recoilReturnTime * Time.deltaTime;
+        if(!doShoot) recoil -= 1 / info.recoilReturnTime * deltaTime;
         if(recoil < 0) recoil = 0;
 
-        smoothRecoil += (recoil - smoothRecoil) / 4 * Time.deltaTime * 50;
+        smoothRecoil += (recoil - smoothRecoil) / 4 * deltaTime * 50;
 
         float recoilAngle = info.cameraRecoil.Evaluate(smoothRecoil) * info.recoil;
 
@@ -72,7 +91,8 @@ public class ShootBullet : MonoBehaviour
         float spread = info.spreadVariation.Evaluate(recoil) * info.spread;
         if (anim.downSights) spread = 0;
 
-        direction += SpreadDirection(spread, 3);
+        if (info.projectiles == 1) direction += PerlinSpreadDirection(spread, 1);
+        else direction += SpreadDirection(spread, 2);
 
         bullet.transform.SetPositionAndRotation(transform.position, Quaternion.LookRotation(direction.normalized));
 
@@ -83,6 +103,27 @@ public class ShootBullet : MonoBehaviour
         recoil += info.recoilPerShot;
         if (recoil > 1) recoil = 1;
 
+    }
+
+    Vector3 PerlinSpreadDirection(float spread, int rolls)
+    {
+        Vector3 offset = new();
+
+        for (int i = 0; i < rolls; i++)
+        {
+            float t = time * spreadSpeed + spreadTimeStart;
+
+            float x = Mathf.PerlinNoise(t, 0) * 2 - 1;
+            float y = Mathf.PerlinNoise(0, t) * 2 - 1;
+            float z = Mathf.PerlinNoise(t * Mathf.Sqrt(2)/2, t * Mathf.Sqrt(2) / 2) * 2 - 1;
+
+            Vector3 v = new(x, y, z);
+            // v = v.normalized * (v.magnitude % 1); // stay within 1
+            
+            offset += v * spread;
+        }
+
+        return offset / rolls;
     }
 
     Vector3 SpreadDirection(float spread, int rolls)

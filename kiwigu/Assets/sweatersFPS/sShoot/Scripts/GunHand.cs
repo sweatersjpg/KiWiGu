@@ -31,6 +31,8 @@ public class GunHand : MonoBehaviour
 
     WeaponCameraFX cameraFX;
 
+    float deltaTime = 0;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -49,11 +51,16 @@ public class GunHand : MonoBehaviour
     // Update is called once per frame
     void LateUpdate()
     {
+        if (PauseSystem.paused) deltaTime = 0;
+        else deltaTime = Time.deltaTime;
+
+        if (PauseSystem.paused) return;
+        
         //if (Input.GetMouseButtonDown(1)) ToggleDownSights();
         //if (Input.GetMouseButtonDown(0)) AnimateShoot();
 
-        if (Input.GetMouseButton(mouseButton) && aimTimer <= aimDelay) aimTimer += Time.deltaTime;
-        if (!Input.GetMouseButton(mouseButton) && aimTimer >= 0) aimTimer -= Time.deltaTime;
+        if (Input.GetMouseButton(mouseButton) && aimTimer <= aimDelay) aimTimer += deltaTime;
+        if (!Input.GetMouseButton(mouseButton) && aimTimer >= 0) aimTimer -= deltaTime;
 
         //if (Input.GetMouseButtonUp(mouseButton))
         //{
@@ -62,7 +69,7 @@ public class GunHand : MonoBehaviour
         //    AnimateShoot();
         //}
 
-        transform.parent.localPosition += 50 * ((targetPosition - transform.parent.localPosition) / 4) * Time.deltaTime;
+        transform.parent.localPosition += 50 * ((targetPosition - transform.parent.localPosition) / 4) * deltaTime;
 
         if((targetPosition - transform.parent.localPosition).magnitude < 0.01 && !hasGun)
         {
@@ -73,7 +80,7 @@ public class GunHand : MonoBehaviour
         // we don't actually need to do that in this script, the shootBullet script can do that for us
         //transform.parent.LookAt(AcquireTarget.instance.target);
 
-        gunAngle += 50 * ((targetAngle - gunAngle) / 8) * Time.deltaTime;
+        gunAngle += 50 * ((targetAngle - gunAngle) / 8) * deltaTime;
         transform.localEulerAngles = new(gunAngle, 0, 0);
 
         if (!canShoot)
