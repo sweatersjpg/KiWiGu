@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Security.Cryptography;
+using TMPro;
 using UnityEngine;
 using static UnityEngine.GraphicsBuffer;
 
@@ -14,6 +15,7 @@ public class EnemyBehaviour : EnemyBase
     private float verticalOffset = 0.25f;
     private float duration;
     private float startTime;
+
 
     protected override void Start()
     {
@@ -111,14 +113,15 @@ public class EnemyBehaviour : EnemyBase
                         {
                             agent.ResetPath();
 
-                            float randomDirection = Random.Range(0, 2) == 0 ? -1f : 1f;
-                            Vector3 rightOffset = Camera.main.transform.right * randomDirection * Random.Range(1f, 3f);
-                            Vector3 targetPosition = Camera.main.transform.position + Camera.main.transform.forward * AvoidPlayerDistance + rightOffset;
+                            Vector3 randomDirection = Quaternion.Euler(0, Random.Range(Random.Range(-100, -50), Random.Range(50, 100)), 0) * Camera.main.transform.forward;
+                            Vector3 targetPosition = Camera.main.transform.position + randomDirection * AvoidPlayerDistance;
+
                             agent.SetDestination(targetPosition);
                         }
                         else
                         {
                             Vector3 targetPosition = Camera.main.transform.position + Camera.main.transform.forward * AvoidPlayerDistance;
+
                             agent.SetDestination(targetPosition);
                         }
                     }
@@ -127,7 +130,8 @@ public class EnemyBehaviour : EnemyBase
                         agent.SetDestination(player.position);
                     }
 
-                    BodyMesh.transform.LookAt(playerPosition);
+                    Quaternion rRot = Quaternion.LookRotation(playerPosition - BodyMesh.transform.position);
+                    BodyMesh.transform.rotation = Quaternion.Slerp(BodyMesh.transform.rotation, rRot, Time.deltaTime * 10);
                 }
             }
 
