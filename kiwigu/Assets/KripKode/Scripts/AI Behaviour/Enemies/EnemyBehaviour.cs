@@ -102,29 +102,32 @@ public class EnemyBehaviour : EnemyBase
 
                     float distanceToPlayer = direction.magnitude;
 
-                    float maxNoiseOffset = 10.0f;
-                    float noiseFrequency = 5.0f;
+                    if (distanceToPlayer <= AvoidPlayerDistance)
+                    {
+                        Vector3 toObject = transform.position - Camera.main.transform.position;
+                        float angleToObject = Vector3.Angle(Camera.main.transform.forward, toObject);
+
+                        if (angleToObject <= Camera.main.fieldOfView * 0.5f)
+                        {
+                            agent.ResetPath();
+
+                            float randomDirection = Random.Range(0, 2) == 0 ? -1f : 1f;
+                            Vector3 rightOffset = Camera.main.transform.right * randomDirection * Random.Range(1f, 3f);
+                            Vector3 targetPosition = Camera.main.transform.position + Camera.main.transform.forward * AvoidPlayerDistance + rightOffset;
+                            agent.SetDestination(targetPosition);
+                        }
+                        else
+                        {
+                            Vector3 targetPosition = Camera.main.transform.position + Camera.main.transform.forward * AvoidPlayerDistance;
+                            agent.SetDestination(targetPosition);
+                        }
+                    }
+                    else
+                    {
+                        agent.SetDestination(player.position);
+                    }
 
                     BodyMesh.transform.LookAt(playerPosition);
-
-                    if (distanceToPlayer < AvoidPlayerDistance)
-                    {
-                        Vector3 targetPosition = transform.position - direction.normalized * (AvoidPlayerDistance - distanceToPlayer);
-
-                        float noiseX = Mathf.PerlinNoise(Time.time * MovementSpeed * noiseFrequency, 0) * maxNoiseOffset - (maxNoiseOffset / 2);
-                        float noiseZ = Mathf.PerlinNoise(0, Time.time * MovementSpeed * noiseFrequency) * maxNoiseOffset - (maxNoiseOffset / 2);
-                        Vector3 noiseOffset = new Vector3(noiseX, 0, noiseZ);
-
-                        targetPosition += noiseOffset;
-
-                        Quaternion targetRotation = Quaternion.LookRotation(targetPosition - transform.position);
-                        transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, RotationSpeed * Time.deltaTime);
-
-                        agent.SetDestination(targetPosition);
-
-                        enemyDetected = true;
-                        break;
-                    }
                 }
             }
 
