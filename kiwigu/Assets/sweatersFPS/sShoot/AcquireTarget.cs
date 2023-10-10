@@ -20,7 +20,7 @@ public class AcquireTarget : MonoBehaviour
     void Update()
     {
         bool hasHit = Physics.Raycast(transform.position, transform.forward,
-            out RaycastHit hit, maxDistance, ~LayerMask.GetMask("GunHand", "Player"));
+            out RaycastHit hit, maxDistance, ~LayerMask.GetMask("GunHand", "Player", "HookTarget"));
 
         if(hasHit)
         {

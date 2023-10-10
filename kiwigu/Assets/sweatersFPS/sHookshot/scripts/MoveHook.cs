@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Windows;
-using static UnityEditor.PlayerSettings;
 
 public class MoveHook : MonoBehaviour
 {
@@ -18,9 +17,11 @@ public class MoveHook : MonoBehaviour
     public float trackingAcceleration = 6;
     // public float deceleration = 32;
 
-    public float catchDistance = 0.4f;
+    public float catchDistance = 0.2f;
 
-    bool canCatch = false;
+    // bool canCatch = false;
+
+    GunInfo caughtGun;
 
     bool headingBack = false;
 
@@ -39,7 +40,11 @@ public class MoveHook : MonoBehaviour
         float startingSpeed = Mathf.Sqrt(2 * trackingAcceleration * hookRange);
 
         velocity = transform.forward * startingSpeed;
-        velocity += sweatersController.instance.velocity;
+
+        Vector3 v = sweatersController.instance.velocity;
+        v.y = 0;
+
+        velocity += v;
 
         speed = -velocity.magnitude;
 
@@ -59,13 +64,21 @@ public class MoveHook : MonoBehaviour
 
         Vector3 heading = home.transform.position - transform.position;
 
-        if(canCatch && heading.magnitude < catchDistance)
+        //if(canCatch && heading.magnitude < catchDistance)
+        //{
+        //    home.CatchHook(caughtGun);
+
+        //    Destroy(gameObject);
+        //    return;
+        //} else if(heading.magnitude > catchDistance) {
+        //    canCatch = true;
+        //}
+        if(headingBack && heading.magnitude < catchDistance)
         {
-            home.CatchHook();
+            home.CatchHook(caughtGun);
+
             Destroy(gameObject);
             return;
-        } else if(heading.magnitude > catchDistance) {
-            canCatch = true;
         }
 
         if (speed > 0)
@@ -91,8 +104,10 @@ public class MoveHook : MonoBehaviour
     {
         // raycast from ppos to pos
 
-        bool hasHit = Physics.Raycast(pPosition, transform.position - pPosition, 
-            out RaycastHit hit, (transform.position - pPosition).magnitude, ~LayerMask.GetMask("GunHand", "Player"));
+        if(caughtGun == null) HookGun();
+
+        bool hasHit = Physics.SphereCast(pPosition, 0.25f, transform.position - pPosition, 
+            out RaycastHit hit, (transform.position - pPosition).magnitude, ~LayerMask.GetMask("GunHand", "Player", "HookTarget"));
 
         if(hasHit)
         {
@@ -102,9 +117,69 @@ public class MoveHook : MonoBehaviour
 
     }
 
+    void HookGun()
+    {
+        bool hasHit = Physics.SphereCast(pPosition, 0.25f, transform.position - pPosition,
+            out RaycastHit hit, (transform.position - pPosition).magnitude, LayerMask.GetMask("HookTarget"));
+
+        if (hasHit)
+        {
+            //Debug.Log(hit.transform.name);
+
+            //HookTarget ht = hit.transform.GetComponent<HookTarget>();
+            //if (ht == null) ht = hit.transform.GetComponentInChildren<HookTarget>();
+            //if (ht == null) caughtGun = hit.transform.GetComponent<ThrownGun>().info;
+            //if(ht != null) caughtGun = ht.info;
+
+            //hit.transform.parent = transform;
+            //hit.transform.localPosition = new();
+
+            //hit.transform.tag = "Untagged";
+            //hit.transform.gameObject.layer = LayerMask.NameToLayer("GunHand");
+
+            //if (hit.rigidbody)
+            //{
+            //    Destroy(hit.transform.GetComponent<PhysicsHit>());
+            //    Destroy(hit.transform.GetComponent<Rigidbody>());
+            //}
+
+            GameObject target = hit.transform.gameObject;
+            HookTarget ht = target.transform.GetComponentInChildren<HookTarget>();
+
+            if (ht == null) caughtGun = target.transform.GetComponent<ThrownGun>().info;
+            else
+            {
+                target = ht.gameObject;
+                caughtGun = ht.info;
+            }
+
+            target.transform.parent = transform;
+            target.transform.localPosition = new();
+            target.transform.gameObject.layer = LayerMask.NameToLayer("GunHand");
+
+            if (target.transform.GetComponent<Rigidbody>() != null)
+            {
+                Destroy(target.transform.GetComponent<PhysicsHit>());
+                Destroy(target.transform.GetComponent<Rigidbody>());
+            }
+
+            speed = 0;
+
+            return;
+        }
+    }
+
     void ResolveCollision(RaycastHit hit)
     {
+        
+        if (hit.transform.gameObject.CompareTag("RigidTarget"))
+        {
+            hit.transform.gameObject.GetComponent<PhysicsHit>().Hit(hit.point, velocity);
+        }
+
         if (headingBack) return;
+
+        speed /= 2;
 
         transform.position = hit.point;
 
@@ -128,7 +203,6 @@ public class MoveHook : MonoBehaviour
         if(!headingBack && (chain.GetPosition(0) - chain.GetPosition(1)).magnitude > chainSegmentSize)
         {
             AddChainSegment(transform.position + Random.insideUnitSphere * 0.1f - velocity.normalized * 0.1f);
-            Debug.Log(chain.positionCount);
         }
         
         chain.SetPosition(chain.positionCount - 1, home.transform.position);

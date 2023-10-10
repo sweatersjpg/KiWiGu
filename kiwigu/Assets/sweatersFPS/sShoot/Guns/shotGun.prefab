@@ -18,7 +18,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &5468473184659262213
 Transform:
   m_ObjectHideFlags: 0
@@ -122,7 +122,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5937121610500554496}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.349, y: -0.275, z: 0.45}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children:
@@ -150,7 +150,9 @@ MonoBehaviour:
   aimDelay: 0.3
   info: {fileID: 11400000, guid: 0be250a4e6b8aa34fb027899f9eee4ec, type: 2}
   canShoot: 0
+  hasGun: 1
   thrownGunPrefab: {fileID: 6087863177417318745, guid: 775df9a2e9013c54ab64a1c26875866b, type: 3}
+  hookShotPrefab: {fileID: 3935398618193876659, guid: 22a38e184f7b5844b993bf31543b79eb, type: 3}
 --- !u!1 &5937121610997750445
 GameObject:
   m_ObjectHideFlags: 0

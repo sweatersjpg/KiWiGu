@@ -46,13 +46,18 @@ public class Bullet : MonoBehaviour
 
         bulletMesh.transform.position = origin;
 
-        bool hasHit = Physics.Raycast(origin, direction, out RaycastHit hit, direction.magnitude, ~LayerMask.GetMask("GunHand", "Player"));
+        bool hasHit = Physics.Raycast(origin, direction, out RaycastHit hit, direction.magnitude, 
+            ~LayerMask.GetMask("GunHand", "Player", "HookTarget"));
 
         if (hasHit)
         {
-            if (hit.transform.gameObject.CompareTag("Enemy"))
+            if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Enemy"))
             {
-                hit.transform.gameObject.GetComponent<EnemyBase>().TakeDamage(bulletDamage);
+                EnemyBase enemy = hit.transform.gameObject.GetComponentInChildren<EnemyBase>();
+                if (enemy != null)
+                {
+                    enemy.TakeDamage(bulletDamage);
+                }
             }
             else if(hit.transform.gameObject.CompareTag("RigidTarget"))
             {
