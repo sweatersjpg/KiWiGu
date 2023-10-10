@@ -91,11 +91,11 @@ public class EnemyBehaviour : EnemyBase
                         );
 
                         float rotationSpeed = 50;
-                        GunObjectExitPoint.transform.rotation = Quaternion.Slerp(
-                            GunObjectExitPoint.transform.rotation,
-                            targetRotation,
-                            Time.deltaTime * rotationSpeed
-                        );
+                        //GunObjectExitPoint.transform.rotation = Quaternion.Slerp(
+                        //    GunObjectExitPoint.transform.rotation,
+                        //    targetRotation,
+                        //    Time.deltaTime * rotationSpeed
+                        //);
                     }
 
                     Vector3 playerPosition = collider.gameObject.transform.position;
@@ -157,11 +157,11 @@ public class EnemyBehaviour : EnemyBase
                     );
 
                     float rotationSpeed = 50;
-                    GunObjectExitPoint.transform.rotation = Quaternion.Slerp(
-                        GunObjectExitPoint.transform.rotation,
-                        targetRotation,
-                        Time.deltaTime * rotationSpeed
-                    );
+                    //GunObjectExitPoint.transform.rotation = Quaternion.Slerp(
+                    //    GunObjectExitPoint.transform.rotation,
+                    //    targetRotation,
+                    //    Time.deltaTime * rotationSpeed
+                    //);
                 }
 
                 Vector3 direction = player.position - transform.position;
@@ -179,11 +179,11 @@ public class EnemyBehaviour : EnemyBase
                     );
 
                     float rotationSpeed = 50;
-                    GunObjectExitPoint.transform.rotation = Quaternion.Slerp(
-                        GunObjectExitPoint.transform.rotation,
-                        targetRotation,
-                        Time.deltaTime * rotationSpeed
-                    );
+                    //GunObjectExitPoint.transform.rotation = Quaternion.Slerp(
+                    //    GunObjectExitPoint.transform.rotation,
+                    //    targetRotation,
+                    //    Time.deltaTime * rotationSpeed
+                    //);
                 }
 
                 Vector3 offset = (transform.position - player.position).normalized * AvoidPlayerDistance;
@@ -199,9 +199,9 @@ public class EnemyBehaviour : EnemyBase
 
         base.Update();
 
-        if(OffenseDrone && isInView)
+        if (OffenseDrone && isInView)
         {
-
+            // uwu
         }
         else
         {
@@ -264,7 +264,7 @@ public class EnemyBehaviour : EnemyBase
         direction += SpreadDirection(GunObject.GetComponent<EnemyGunInfo>().GunAssetInfo.spread, 3);
 
         bullet.transform.position = GunObjectExitPoint.transform.position;
-        bullet.transform.rotation = Quaternion.LookRotation(direction.normalized);
+        //bullet.transform.rotation = Quaternion.LookRotation(direction.normalized);
 
         EnemyBullet b = bullet.GetComponent<EnemyBullet>();
         b.BulletSpeed = GunObject.GetComponent<EnemyGunInfo>().GunAssetInfo.bulletSpeed;

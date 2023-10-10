@@ -12,8 +12,8 @@ public class EnemyBase : MonoBehaviour
     [Range(10, 100)] public int MaxShield = 100;
     public GameObject GunObject;
     public GameObject EyesPosition;
-    [Tooltip("Make sure Hand Transform is attached as a child of this object!")]
     public GameObject BodyMesh;
+    [Tooltip("Make sure Hand Transform is attached as a child of Body Object!")]
     public GameObject HandPosition;
 
     [Header("Enemy Movement")]
