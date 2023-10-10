@@ -15,7 +15,7 @@ public class EnemyBehaviour : EnemyBase
     private float verticalOffset = 0.25f;
     private float duration;
     private float startTime;
-
+    private bool isInView;
 
     protected override void Start()
     {
@@ -111,6 +111,8 @@ public class EnemyBehaviour : EnemyBase
 
                         if (angleToObject <= Camera.main.fieldOfView * 0.5f)
                         {
+                            isInView = false;
+
                             agent.ResetPath();
 
                             Vector3 randomDirection = Quaternion.Euler(0, Random.Range(Random.Range(-100, -50), Random.Range(50, 100)), 0) * Camera.main.transform.forward;
@@ -120,6 +122,8 @@ public class EnemyBehaviour : EnemyBase
                         }
                         else
                         {
+                            isInView = true;
+
                             Vector3 targetPosition = Camera.main.transform.position + Camera.main.transform.forward * AvoidPlayerDistance;
 
                             agent.SetDestination(targetPosition);
@@ -195,14 +199,21 @@ public class EnemyBehaviour : EnemyBase
 
         base.Update();
 
-        if (isHoldingGun && playerInSight)
+        if(OffenseDrone && isInView)
         {
-            if (Time.time - lastShotTime >= 1 / EnemyFireRate)
-            {
-                for (int i = 0; i < GunObject.GetComponent<EnemyGunInfo>().GunAssetInfo.burstSize; i++)
-                    Invoke(nameof(EnemyShoot), i * 1 / GunObject.GetComponent<EnemyGunInfo>().GunAssetInfo.autoRate);
 
-                lastShotTime = Time.time;
+        }
+        else
+        {
+            if (isHoldingGun && playerInSight)
+            {
+                if (Time.time - lastShotTime >= 1 / EnemyFireRate)
+                {
+                    for (int i = 0; i < GunObject.GetComponent<EnemyGunInfo>().GunAssetInfo.burstSize; i++)
+                        Invoke(nameof(EnemyShoot), i * 1 / GunObject.GetComponent<EnemyGunInfo>().GunAssetInfo.autoRate);
+
+                    lastShotTime = Time.time;
+                }
             }
         }
 
