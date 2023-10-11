@@ -1,3 +1,6 @@
+using System.Collections;
+using System.Security.Cryptography;
+using TMPro;
 using UnityEngine;
 using static UnityEngine.GraphicsBuffer;
 
@@ -8,8 +11,22 @@ public class EnemyBehaviour : EnemyBase
 
     [HideInInspector] public bool canShoot;
 
+    private float initialPositionY;
+    private float verticalOffset = 0.25f;
+    private float duration;
+    private float startTime;
+    private bool isInView;
+
     protected override void Start()
     {
+        if (DefenseDrone || OffenseDrone)
+        {
+            duration = Random.Range(1f, 3f);
+            initialPositionY = BodyMesh.transform.position.y;
+            startTime = Time.time;
+        }
+
+
         base.Start();
         shotTimer = Time.time;
     }
@@ -58,7 +75,74 @@ public class EnemyBehaviour : EnemyBase
         }
         else if (OffenseDrone)
         {
-            Debug.Log("Offense Drone Movement");
+            Collider[] hitColliders = Physics.OverlapSphere(transform.position, EnemyAwareDistance);
+            bool enemyDetected = false;
+
+            foreach (var collider in hitColliders)
+            {
+                if (collider.gameObject.tag == "Player" && collider.gameObject != gameObject)
+                {
+                    if (GunObject)
+                    {
+                        GameObject GunObjectExitPoint = GunObject.transform.GetChild(0).gameObject;
+
+                        Quaternion targetRotation = Quaternion.LookRotation(
+                            (player.position + new Vector3(Random.Range(-GunInaccuracy, GunInaccuracy), 1.5f, Random.Range(-GunInaccuracy, GunInaccuracy))) - GunObjectExitPoint.transform.position
+                        );
+
+                        float rotationSpeed = 50;
+                        //GunObjectExitPoint.transform.rotation = Quaternion.Slerp(
+                        //    GunObjectExitPoint.transform.rotation,
+                        //    targetRotation,
+                        //    Time.deltaTime * rotationSpeed
+                        //);
+                    }
+
+                    Vector3 playerPosition = collider.gameObject.transform.position;
+                    Vector3 direction = playerPosition - transform.position;
+                    direction.y = 0;
+
+                    float distanceToPlayer = direction.magnitude;
+
+                    if (distanceToPlayer <= AvoidPlayerDistance)
+                    {
+                        Vector3 toObject = transform.position - Camera.main.transform.position;
+                        float angleToObject = Vector3.Angle(Camera.main.transform.forward, toObject);
+
+                        if (angleToObject <= Camera.main.fieldOfView * 0.5f)
+                        {
+                            isInView = false;
+
+                            agent.ResetPath();
+
+                            Vector3 randomDirection = Quaternion.Euler(0, Random.Range(Random.Range(-100, -50), Random.Range(50, 100)), 0) * Camera.main.transform.forward;
+                            Vector3 targetPosition = Camera.main.transform.position + randomDirection * AvoidPlayerDistance;
+
+                            agent.SetDestination(targetPosition);
+                        }
+                        else
+                        {
+                            isInView = true;
+
+                            Vector3 targetPosition = Camera.main.transform.position + Camera.main.transform.forward * AvoidPlayerDistance;
+
+                            agent.SetDestination(targetPosition);
+                        }
+                    }
+                    else
+                    {
+                        agent.SetDestination(player.position);
+                    }
+
+                    Quaternion rRot = Quaternion.LookRotation(playerPosition - BodyMesh.transform.position);
+                    BodyMesh.transform.rotation = Quaternion.Slerp(BodyMesh.transform.rotation, rRot, Time.deltaTime * 10);
+                }
+            }
+
+            if (!enemyDetected && !isWandering)
+            {
+                StartCoroutine(Wander());
+            }
         }
         else if (Small || Medium)
         {
@@ -67,7 +151,17 @@ public class EnemyBehaviour : EnemyBase
                 if (GunObject)
                 {
                     GameObject GunObjectExitPoint = GunObject.transform.GetChild(0).gameObject;
-                    GunObjectExitPoint.transform.LookAt(player.position + new Vector3(Random.Range(-GunInaccuracy, GunInaccuracy), 1.5f, Random.Range(-GunInaccuracy, GunInaccuracy)));
+
+                    Quaternion targetRotation = Quaternion.LookRotation(
+                        (player.position + new Vector3(Random.Range(-GunInaccuracy, GunInaccuracy), 1.5f, Random.Range(-GunInaccuracy, GunInaccuracy))) - GunObjectExitPoint.transform.position
+                    );
+
+                    float rotationSpeed = 50;
+                    //GunObjectExitPoint.transform.rotation = Quaternion.Slerp(
+                    //    GunObjectExitPoint.transform.rotation,
+                    //    targetRotation,
+                    //    Time.deltaTime * rotationSpeed
+                    //);
                 }
 
                 Vector3 direction = player.position - transform.position;
@@ -79,7 +173,17 @@ public class EnemyBehaviour : EnemyBase
                 if (GunObject)
                 {
                     GameObject GunObjectExitPoint = GunObject.transform.GetChild(0).gameObject;
-                    GunObjectExitPoint.transform.LookAt(player.position + new Vector3(Random.Range(-GunInaccuracy, GunInaccuracy), 1.5f, Random.Range(-GunInaccuracy, GunInaccuracy)));
+
+                    Quaternion targetRotation = Quaternion.LookRotation(
+                        (player.position + new Vector3(Random.Range(-GunInaccuracy, GunInaccuracy), 1.5f, Random.Range(-GunInaccuracy, GunInaccuracy))) - GunObjectExitPoint.transform.position
+                    );
+
+                    float rotationSpeed = 50;
+                    //GunObjectExitPoint.transform.rotation = Quaternion.Slerp(
+                    //    GunObjectExitPoint.transform.rotation,
+                    //    targetRotation,
+                    //    Time.deltaTime * rotationSpeed
+                    //);
                 }
 
                 Vector3 offset = (transform.position - player.position).normalized * AvoidPlayerDistance;
@@ -95,14 +199,21 @@ public class EnemyBehaviour : EnemyBase
 
         base.Update();
 
-        if (isHoldingGun && playerInSight)
+        if (OffenseDrone && isInView)
         {
-            if (Time.time - lastShotTime >= 1 / EnemyFireRate)
+            // uwu
+        }
+        else
+        {
+            if (isHoldingGun && playerInSight)
             {
-                for (int i = 0; i < GunObject.GetComponent<EnemyGunInfo>().GunAssetInfo.burstSize; i++)
-                    Invoke(nameof(EnemyShoot), i * 1 / GunObject.GetComponent<EnemyGunInfo>().GunAssetInfo.autoRate);
+                if (Time.time - lastShotTime >= 1 / EnemyFireRate)
+                {
+                    for (int i = 0; i < GunObject.GetComponent<EnemyGunInfo>().GunAssetInfo.burstSize; i++)
+                        Invoke(nameof(EnemyShoot), i * 1 / GunObject.GetComponent<EnemyGunInfo>().GunAssetInfo.autoRate);
 
-                lastShotTime = Time.time;
+                    lastShotTime = Time.time;
+                }
             }
         }
 
@@ -120,6 +231,14 @@ public class EnemyBehaviour : EnemyBase
         else
         {
             EnemyBehaviour();
+        }
+
+        if (DefenseDrone || OffenseDrone)
+        {
+            float t = Mathf.PingPong((Time.time - startTime) / duration, 1f);
+            float newYPosition = Mathf.Lerp(initialPositionY - verticalOffset, initialPositionY + verticalOffset, t);
+            Vector3 newPosition = new Vector3(BodyMesh.transform.position.x, newYPosition, BodyMesh.transform.position.z);
+            BodyMesh.transform.position = newPosition;
         }
     }
 
@@ -145,7 +264,7 @@ public class EnemyBehaviour : EnemyBase
         direction += SpreadDirection(GunObject.GetComponent<EnemyGunInfo>().GunAssetInfo.spread, 3);
 
         bullet.transform.position = GunObjectExitPoint.transform.position;
-        bullet.transform.rotation = Quaternion.LookRotation(direction.normalized);
+        //bullet.transform.rotation = Quaternion.LookRotation(direction.normalized);
 
         EnemyBullet b = bullet.GetComponent<EnemyBullet>();
         b.BulletSpeed = GunObject.GetComponent<EnemyGunInfo>().GunAssetInfo.bulletSpeed;
