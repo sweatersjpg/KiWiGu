@@ -134,6 +134,7 @@ GameObject:
   - component: {fileID: 145806829}
   - component: {fileID: 145806831}
   - component: {fileID: 145806830}
+  - component: {fileID: 145806832}
   m_Layer: 5
   m_Name: Left Slot
   m_TagString: Untagged
@@ -199,6 +200,21 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 145806828}
   m_CullTransparentMesh: 1
+--- !u!114 &145806832
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 145806828}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e19747de3f5aca642ab2be37e372fb86, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_EffectColor: {r: 0, g: 0, b: 0, a: 0.5}
+  m_EffectDistance: {x: 2, y: -2}
+  m_UseGraphicAlpha: 1
 --- !u!1 &150181236
 GameObject:
   m_ObjectHideFlags: 0
@@ -697,6 +713,10 @@ PrefabInstance:
     - target: {fileID: 390614569014119830, guid: cd009b5b1639cb64fab3f3879c5e1866, type: 3}
       propertyPath: m_Name
       value: PauseMenuURP
+      objectReference: {fileID: 0}
+    - target: {fileID: 390614569014119830, guid: cd009b5b1639cb64fab3f3879c5e1866, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 390614569014119841, guid: cd009b5b1639cb64fab3f3879c5e1866, type: 3}
       propertyPath: gameCamera
@@ -1453,7 +1473,7 @@ GameObject:
   - component: {fileID: 672847241}
   m_Layer: 9
   m_Name: Offense Drone Example
-  m_TagString: Untagged
+  m_TagString: DroneEnemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1480,7 +1500,7 @@ NavMeshAgent:
   m_GameObject: {fileID: 672847240}
   m_Enabled: 1
   m_AgentTypeID: 0
-  m_Radius: 0.5
+  m_Radius: 1.25
   m_Speed: 3.5
   m_Acceleration: 50
   avoidancePriority: 50
@@ -1507,8 +1527,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   canSeekGun: 0
   spawnWithGun: 1
-  MaxHealth: 15
-  MaxShield: 50
+  MaxHealth: 75
+  MaxShield: 0
   GunObject: {fileID: 4006260289432868516, guid: e9f49a38ad200014aa4418f8035720f2, type: 3}
   EyesPosition: {fileID: 1398613230}
   BodyMesh: {fileID: 919132147794900897}
@@ -4517,6 +4537,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: sFPSplayer
       objectReference: {fileID: 0}
+    - target: {fileID: 7049817264079494736, guid: cbb06f0e6cdf74cf0b9c73b2af08aeb7, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: cbb06f0e6cdf74cf0b9c73b2af08aeb7, type: 3}
 --- !u!20 &1843966343 stripped
@@ -5456,7 +5480,7 @@ GameObject:
   - component: {fileID: 6691141799811686152}
   m_Layer: 9
   m_Name: Defense Drone Example
-  m_TagString: Untagged
+  m_TagString: DroneDefense
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -5497,8 +5521,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   canSeekGun: 0
   spawnWithGun: 0
-  MaxHealth: 15
-  MaxShield: 50
+  MaxHealth: 75
+  MaxShield: 0
   GunObject: {fileID: 0}
   EyesPosition: {fileID: 1136547854}
   BodyMesh: {fileID: 919132148889756576}

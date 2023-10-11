@@ -9,7 +9,7 @@ public class EnemyBase : MonoBehaviour
     public bool canSeekGun;
     public bool spawnWithGun;
     [Range(10, 100)] public int MaxHealth = 100;
-    [Range(10, 100)] public int MaxShield = 100;
+    [Range(0, 100)] public int MaxShield = 100;
     public GameObject GunObject;
     public GameObject EyesPosition;
     public GameObject BodyMesh;
