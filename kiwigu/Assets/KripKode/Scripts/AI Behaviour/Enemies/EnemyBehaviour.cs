@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using TMPro;
 using UnityEngine;
@@ -6,8 +7,13 @@ using static UnityEngine.GraphicsBuffer;
 
 public class EnemyBehaviour : EnemyBase
 {
-    private float timeSinceLastMove = 0f;
-    private float timeRandom;
+    bool detectedPlayer;
+
+    bool doingShootingPattern;
+    Vector3 newPosition;
+
+    float t;
+    float newYPosition;
 
     float shotTimer = 0;
     float lastShotTime = 0;
@@ -22,11 +28,9 @@ public class EnemyBehaviour : EnemyBase
 
     protected override void Start()
     {
-        timeRandom = Random.Range(2, 8);
-
         if (DefenseDrone || OffenseDrone)
         {
-            duration = Random.Range(1f, 3f);
+            duration = Random.Range(2, 4);
             initialPositionY = BodyMesh.transform.position.y;
             startTime = Time.time;
         }
@@ -40,7 +44,6 @@ public class EnemyBehaviour : EnemyBase
         if (DefenseDrone)
         {
             Collider[] hitColliders = Physics.OverlapSphere(transform.position, EnemyAwareDistance);
-            bool enemyDetected = false;
 
             foreach (var collider in hitColliders)
             {
@@ -67,12 +70,11 @@ public class EnemyBehaviour : EnemyBase
 
                     agent.SetDestination(targetPosition);
 
-                    enemyDetected = true;
                     break;
                 }
             }
 
-            if (!enemyDetected && !isWandering)
+            if (!isWandering)
             {
                 StartCoroutine(Wander());
             }
@@ -80,12 +82,19 @@ public class EnemyBehaviour : EnemyBase
         else if (OffenseDrone)
         {
             Collider[] hitColliders = Physics.OverlapSphere(transform.position, EnemyAwareDistance);
-            bool enemyDetected = false;
 
             foreach (var collider in hitColliders)
             {
                 if (collider.gameObject.tag == "Player" && collider.gameObject != gameObject)
                 {
+                   if(!detectedPlayer)
+                    {
+                        Debug.Log("Stopped");
+                        agent.ResetPath();
+                        StopAllCoroutines();
+                        detectedPlayer = true;
+                    }
+
                     if (GunObject)
                     {
                         GameObject GunObjectExitPoint = GunObject.transform.GetChild(0).gameObject;
@@ -108,7 +117,7 @@ public class EnemyBehaviour : EnemyBase
 
                     float distanceToPlayer = direction.magnitude;
 
-                    if (distanceToPlayer <= AvoidPlayerDistance)
+                    if (distanceToPlayer <= EnemyAwareDistance)
                     {
                         Vector3 toObject = transform.position - Camera.main.transform.position;
                         float angleToObject = Vector3.Angle(Camera.main.transform.forward, toObject);
@@ -117,28 +126,18 @@ public class EnemyBehaviour : EnemyBase
                         {
                             isInView = false;
 
-                            if (timeSinceLastMove >= timeRandom)
+                            if (!doingShootingPattern)
                             {
-                                agent.ResetPath();
-
-                                Vector3 randomDirection = Random.insideUnitCircle;
-                                randomDirection.y = 0;
-
-                                float distanceToCamera = AvoidPlayerDistance;
-                                float randomAngle = Random.Range(0, 360);
-
-                                Vector3 cameraPosition = Camera.main.transform.position;
-                                Vector3 cameraForward = Camera.main.transform.forward;
-
-                                Vector3 targetPosition = cameraPosition + Quaternion.Euler(0, randomAngle, 0) * cameraForward * distanceToCamera + randomDirection.normalized * distanceToCamera;
-
-                                agent.SetDestination(targetPosition);
-
-                                timeRandom = Random.Range(2, 8);
-                                timeSinceLastMove = 0f;
+                                int randomPattern = Random.Range(0, 2);
+                                if (randomPattern == 0)
+                                {
+                                    StartCoroutine(OffenseDronePatternOne());
+                                }
+                                else
+                                {
+                                    StartCoroutine(OffenseDronePatternTwo());
+                                }
                             }
-
-                            timeSinceLastMove += Time.deltaTime;
                         }
                         else if (angleToObject >= Camera.main.fieldOfView * 0.5f)
                         {
@@ -154,15 +153,20 @@ public class EnemyBehaviour : EnemyBase
 
                     Quaternion rRot = Quaternion.LookRotation(playerPosition - BodyMesh.transform.position);
                     BodyMesh.transform.rotation = Quaternion.Slerp(BodyMesh.transform.rotation, rRot, Time.deltaTime * 10);
-
-                    enemyDetected = true;
+                }
+                else if (collider.gameObject.tag != "Player")
+                {
+                    Debug.Log("player not in colliders");
+                    detectedPlayer = false;
+                    isWandering = false;
                 }
             }
 
-            if (!enemyDetected && !isWandering)
+            if (!isWandering)
             {
                 StartCoroutine(Wander());
             }
+
         }
         else if (Small || Medium)
         {
@@ -212,6 +216,22 @@ public class EnemyBehaviour : EnemyBase
         }
     }
 
+    IEnumerator OffenseDronePatternOne()
+    {
+        Debug.Log("Doing PATTERN");
+        doingShootingPattern = true;
+        yield return new WaitForSeconds(2);
+        doingShootingPattern = false;
+    }
+
+    IEnumerator OffenseDronePatternTwo()
+    {
+        Debug.Log("Doing PATTERN");
+        doingShootingPattern = true;
+        yield return new WaitForSeconds(2);
+        doingShootingPattern = false;
+    }
+
     protected override void Update()
     {
         playerInSight = CheckPlayerVisibility();
@@ -222,12 +242,15 @@ public class EnemyBehaviour : EnemyBase
         {
             if (isHoldingGun && playerInSight)
             {
-                if (Time.time - lastShotTime >= 1 / EnemyFireRate)
+                if (!DefenseDrone && !OffenseDrone)
                 {
-                    for (int i = 0; i < GunObject.GetComponent<EnemyGunInfo>().GunAssetInfo.burstSize; i++)
-                        Invoke(nameof(EnemyShoot), i * 1 / GunObject.GetComponent<EnemyGunInfo>().GunAssetInfo.autoRate);
+                    if (Time.time - lastShotTime >= 1 / EnemyFireRate)
+                    {
+                        for (int i = 0; i < GunObject.GetComponent<EnemyGunInfo>().GunAssetInfo.burstSize; i++)
+                            Invoke(nameof(EnemyShoot), i * 1 / GunObject.GetComponent<EnemyGunInfo>().GunAssetInfo.autoRate);
 
-                    lastShotTime = Time.time;
+                        lastShotTime = Time.time;
+                    }
                 }
             }
         }
@@ -248,12 +271,15 @@ public class EnemyBehaviour : EnemyBase
             EnemyBehaviour();
         }
 
-        if (DefenseDrone || OffenseDrone)
+        if (!doingShootingPattern)
         {
-            float t = Mathf.PingPong((Time.time - startTime) / duration, 1f);
-            float newYPosition = Mathf.Lerp(initialPositionY - verticalOffset, initialPositionY + verticalOffset, t);
-            Vector3 newPosition = new Vector3(BodyMesh.transform.position.x, newYPosition, BodyMesh.transform.position.z);
-            BodyMesh.transform.position = newPosition;
+            if (DefenseDrone || OffenseDrone)
+            {
+                t = Mathf.PingPong((Time.time - startTime) / duration, 1);
+                newYPosition = Mathf.Lerp(initialPositionY - verticalOffset, initialPositionY + verticalOffset, t);
+                newPosition = new Vector3(BodyMesh.transform.position.x, newYPosition, BodyMesh.transform.position.z);
+                BodyMesh.transform.position = newPosition;
+            }
         }
     }
 
