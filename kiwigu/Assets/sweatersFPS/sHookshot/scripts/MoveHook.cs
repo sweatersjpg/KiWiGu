@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Windows;
+using static UnityEngine.GraphicsBuffer;
 
 public class MoveHook : MonoBehaviour
 {
@@ -22,6 +23,9 @@ public class MoveHook : MonoBehaviour
     // bool canCatch = false;
 
     GunInfo caughtGun;
+    HookTarget hookTarget;
+    public float playerDistance = 4;
+    public float distToHook = 0;
 
     bool headingBack = false;
 
@@ -91,6 +95,40 @@ public class MoveHook : MonoBehaviour
             }
         }
 
+        if(hookTarget)
+        {
+            hookTarget.resistance -= deltaTime;
+
+            if (hookTarget.resistance > 0)
+            {
+                UpdateChain();
+
+                sweatersController player = sweatersController.instance;
+
+                Vector3 toPlayer = player.transform.position - transform.position;
+
+                distToHook = Mathf.Min(toPlayer.magnitude, distToHook);
+
+                float distance = Mathf.Max(distToHook, playerDistance);
+
+                if (toPlayer.magnitude > distance)
+                {
+                    player.transform.position = transform.position + toPlayer.normalized * distance;
+
+                    Vector3 normal = -toPlayer.normalized;
+                    player.velocity -= Vector3.Project(player.velocity, normal);
+                }
+
+                return;
+            } else
+            {
+                transform.parent = null;
+                TakeHookTarget();
+                hookTarget = null;
+                sweatersController.instance.isEncombered = false;
+            }
+        }
+
         speed += trackingAcceleration * deltaTime * 0.5f;
         velocity = velocity.normalized * Mathf.Abs(speed);
         transform.position += velocity * deltaTime;
@@ -124,24 +162,6 @@ public class MoveHook : MonoBehaviour
 
         if (hasHit)
         {
-            //Debug.Log(hit.transform.name);
-
-            //HookTarget ht = hit.transform.GetComponent<HookTarget>();
-            //if (ht == null) ht = hit.transform.GetComponentInChildren<HookTarget>();
-            //if (ht == null) caughtGun = hit.transform.GetComponent<ThrownGun>().info;
-            //if(ht != null) caughtGun = ht.info;
-
-            //hit.transform.parent = transform;
-            //hit.transform.localPosition = new();
-
-            //hit.transform.tag = "Untagged";
-            //hit.transform.gameObject.layer = LayerMask.NameToLayer("GunHand");
-
-            //if (hit.rigidbody)
-            //{
-            //    Destroy(hit.transform.GetComponent<PhysicsHit>());
-            //    Destroy(hit.transform.GetComponent<Rigidbody>());
-            //}
 
             GameObject target = hit.transform.gameObject;
             HookTarget ht = target.transform.GetComponentInChildren<HookTarget>();
@@ -149,13 +169,29 @@ public class MoveHook : MonoBehaviour
             if (ht == null) caughtGun = target.transform.GetComponent<ThrownGun>().info;
             else
             {
+                ht.resistance -= deltaTime;
+                if (ht.resistance > 0)
+                {
+                    speed = 0.1f;
+                    hookTarget = ht;
+
+                    ht.gameObject.layer = LayerMask.NameToLayer("GunHand");
+
+                    // sweatersController.instance.isEncombered = true;
+                    distToHook = (sweatersController.instance.transform.position - ht.transform.position).magnitude;
+                    transform.parent = ht.transform;
+                    transform.localPosition = new();
+
+                    return; // don't take gun
+                }
+
                 target = ht.gameObject;
                 caughtGun = ht.info;
             }
 
             target.transform.parent = transform;
             target.transform.localPosition = new();
-            target.transform.gameObject.layer = LayerMask.NameToLayer("GunHand");
+            target.layer = LayerMask.NameToLayer("GunHand");
 
             if (target.transform.GetComponent<Rigidbody>() != null)
             {
@@ -164,8 +200,22 @@ public class MoveHook : MonoBehaviour
             }
 
             speed = 0;
+        }
+    }
 
-            return;
+    void TakeHookTarget()
+    {
+        GameObject target = hookTarget.gameObject;
+        caughtGun = hookTarget.info;
+
+        target.transform.parent = transform;
+        target.transform.localPosition = new();
+        target.transform.gameObject.layer = LayerMask.NameToLayer("GunHand");
+
+        if (target.transform.GetComponent<Rigidbody>() != null)
+        {
+            Destroy(target.transform.GetComponent<PhysicsHit>());
+            Destroy(target.transform.GetComponent<Rigidbody>());
         }
     }
 

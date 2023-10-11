@@ -15,6 +15,9 @@ public class Bullet : MonoBehaviour
     public GameObject bulletMesh;
     public GameObject bulletHolePrefab;
 
+    [Space]
+    public GameObject sparksPrefab;
+
     bool dead = false;
 
     Vector3 velocity;
@@ -51,6 +54,8 @@ public class Bullet : MonoBehaviour
 
         if (hasHit)
         {
+            SpawnSparks(hit, direction);
+            
             if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Enemy"))
             {
                 EnemyBase enemy = hit.transform.gameObject.GetComponentInChildren<EnemyBase>();
@@ -80,6 +85,19 @@ public class Bullet : MonoBehaviour
             lifeTime = Time.time - startTime + 0.5f;
             dead = true;
         }
+    }
+
+    void SpawnSparks(RaycastHit hit, Vector3 direction)
+    {
+        Vector3 d = direction;
+        Vector3 n = hit.normal;
+
+        Vector3 r = d - 2 * Vector3.Dot(d, n) * n;
+
+        Vector3 facing = r;
+
+        Transform sparks = Instantiate(sparksPrefab, bulletMesh.transform).transform;
+        sparks.SetPositionAndRotation(hit.point, Quaternion.LookRotation(facing));
     }
 
     Vector3 EvaluateLocation(float time)
