@@ -2,7 +2,7 @@
 <objects serializationModel="Studio.02.02.00">
 	<object class="Event" id="{946ef6fa-5f23-4ffa-a5ad-a2551dfdacb8}">
 		<property name="name">
-			<value>New Event</value>
+			<value>BGM</value>
 		</property>
 		<property name="outputFormat">
 			<value>1</value>
@@ -35,6 +35,9 @@
 		<relationship name="parameters">
 			<destination>{06fe52d2-b740-4261-a0a5-8262ee8d14b7}</destination>
 		</relationship>
+		<relationship name="banks">
+			<destination>{d7e3d324-ddf1-4c84-ad17-40751d4c73d4}</destination>
+		</relationship>
 	</object>
 	<object class="EventMixer" id="{d036d995-a177-4c22-8ac8-90b2bb9ec561}">
 		<relationship name="masterBus">
@@ -61,7 +64,7 @@
 	<object class="MarkerTrack" id="{b158b958-ce3d-4c5f-8005-05c51b5127cc}" />
 	<object class="GroupTrack" id="{80e82a04-6f46-4f64-ab4c-9b10ade5cf46}">
 		<relationship name="automationTracks">
-			<destination>{3873055e-f9ee-4798-a282-13e4eb46dad7}</destination>
+			<destination>{f2fc5e8f-174d-4c63-bb66-c417ac9989a8}</destination>
 		</relationship>
 		<relationship name="modules">
 			<destination>{707bb2ba-9bed-4255-a74b-f6817e050d62}</destination>
@@ -112,7 +115,7 @@
 		</relationship>
 	</object>
 	<object class="MixerBusPanner" id="{af6a69ab-4ea1-42b2-b5ac-a5e92011570a}" />
-	<object class="AutomationTrack" id="{3873055e-f9ee-4798-a282-13e4eb46dad7}">
+	<object class="AutomationTrack" id="{f2fc5e8f-174d-4c63-bb66-c417ac9989a8}">
 		<relationship name="automator">
 			<destination>{e73ee3db-ed19-4a81-a6a4-e3fe8ac7bff2}</destination>
 		</relationship>
