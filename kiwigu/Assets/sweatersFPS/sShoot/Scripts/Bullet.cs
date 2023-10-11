@@ -10,6 +10,8 @@ public class Bullet : MonoBehaviour
     public float speed = 370;
     public float gravity = -9.8f;
 
+    public float acceleration = 0;
+
     public float lifeTime = 3;
 
     public GameObject bulletMesh;
@@ -55,7 +57,8 @@ public class Bullet : MonoBehaviour
         if (hasHit)
         {
             SpawnSparks(hit, direction);
-            
+            bulletMesh.transform.position = hit.point;
+
             if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Enemy"))
             {
                 EnemyBase enemy = hit.transform.gameObject.GetComponentInChildren<EnemyBase>();
@@ -83,6 +86,9 @@ public class Bullet : MonoBehaviour
 
             //Destroy(gameObject);
             lifeTime = Time.time - startTime + 0.5f;
+
+            Destroy(bulletMesh.GetComponentInChildren<MeshRenderer>().gameObject);
+            // bulletMesh.SetActive(false);
             dead = true;
         }
     }
@@ -96,7 +102,7 @@ public class Bullet : MonoBehaviour
 
         Vector3 facing = r;
 
-        Transform sparks = Instantiate(sparksPrefab, bulletMesh.transform).transform;
+        Transform sparks = Instantiate(sparksPrefab).transform;
         sparks.SetPositionAndRotation(hit.point, Quaternion.LookRotation(facing));
     }
 
@@ -104,9 +110,11 @@ public class Bullet : MonoBehaviour
     {
         // y = v * t + 0.5 * gravity * t * t
 
-        float x = velocity.x * time;
-        float y = velocity.y * time + 0.5f * gravity * time * time;
-        float z = velocity.z * time;
+        Vector3 acc = transform.forward * acceleration;
+
+        float x = velocity.x * time + 0.5f * acc.x * time * time;
+        float y = velocity.y * time + (0.5f * gravity * time * time) + (0.5f * acc.y * time * time);
+        float z = velocity.z * time + 0.5f * acc.z * time * time;
 
         return new Vector3(x, y, z) + transform.position;
     }
