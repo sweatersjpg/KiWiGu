@@ -72,7 +72,7 @@ public class ThrowHook : MonoBehaviour
     {
         GameObject hook = Instantiate(hookPrefab);
         hook.transform.SetPositionAndRotation(transform.position, Quaternion.LookRotation(transform.forward));
-        hook.transform.LookAt(AcquireTarget.instance.target);
+        hook.transform.LookAt(AcquireTarget.instance.GetHookTarget());
 
         hook.GetComponent<MoveHook>().home = this;
 

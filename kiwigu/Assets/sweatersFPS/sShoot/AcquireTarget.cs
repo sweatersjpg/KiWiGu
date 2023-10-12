@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Burst.CompilerServices;
 using UnityEngine;
 
 public class AcquireTarget : MonoBehaviour
@@ -31,5 +32,29 @@ public class AcquireTarget : MonoBehaviour
             }
         } else target = transform.position + transform.forward * maxDistance;
 
+    }
+
+    public Vector3 GetHookTarget()
+    {
+        bool hasHit = Physics.Raycast(transform.position, transform.forward,
+            out RaycastHit hit, maxDistance, ~LayerMask.GetMask("GunHand", "Player"));
+
+        if(hasHit)
+        {
+            HookTarget ht = hit.transform.GetComponentInChildren<HookTarget>();
+
+            Vector3 target = hit.point;
+
+            if (ht) target = ht.transform.position;
+
+            if ((target - transform.position).magnitude < minDistance)
+            {
+                target = transform.position + (target - transform.position).normalized * minDistance;
+            }
+
+            return target;
+        }
+
+        return transform.position + transform.forward * maxDistance;
     }
 }
