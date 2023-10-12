@@ -21,7 +21,9 @@ public class EnemyBase : MonoBehaviour
     [HideInInspector] public bool isShooting;
     [HideInInspector] public bool playerInSight;
     [HideInInspector] public bool detectedPlayer;
+    [HideInInspector] public bool detectedEnemy;
     [HideInInspector] public Vector3 playerPosition;
+    [HideInInspector] public Vector3 enemyPosition;
 
     private Vector3 wanderTarget;
     private Vector3 initialPosition;
@@ -141,7 +143,10 @@ public class EnemyBase : MonoBehaviour
         if (hitBoxScript.CheckIfHitboxScript)
             return;
 
-        DetectPlayer();
+        if (enemyTypeVariables.OffenseDrone || enemyTypeVariables.Small || enemyTypeVariables.Medium)
+            DetectPlayer();
+        else if (enemyTypeVariables.DefenseDrone)
+            DetectEnemy();
 
         if (isHoldingGun && !isWandering)
         {
@@ -159,6 +164,37 @@ public class EnemyBase : MonoBehaviour
             .First()
             .transform.position;
     }
+
+    private void DetectEnemy()
+    {
+        int enemyLayerMask = 1 << LayerMask.NameToLayer("Enemy");
+        Collider[] enemies = Physics.OverlapSphere(transform.position, enemyMovementVariables.EnemyAwareDistance, enemyLayerMask);
+
+        if (enemies.Length > 0)
+        {
+            detectedEnemy = true;
+
+            float closestDistance = float.MaxValue;
+            foreach (Collider enemy in enemies)
+            {
+                if (enemy.gameObject.CompareTag("DroneEnemy"))
+                    return;
+
+                    float distance = Vector3.Distance(transform.position, enemy.transform.position);
+                if (distance < closestDistance)
+                {
+                    closestDistance = distance;
+
+                    enemyPosition = enemy.transform.position;
+                }
+            }
+        }
+        else
+        {
+            detectedEnemy = false;
+        }
+    }
+
 
     private IEnumerator EnemyFlee()
     {
@@ -178,7 +214,6 @@ public class EnemyBase : MonoBehaviour
 
         Vector3 fleeDestination = transform.position + awayFromPlayer * enemyMovementVariables.FleeDistance;
 
-        // Use Perlin noise for smoother randomness
         float randomOffsetX = Mathf.PerlinNoise(Time.time, 0) * 2 - 1;
         float randomOffsetZ = Mathf.PerlinNoise(0, Time.time) * 2 - 1;
         Vector3 randomOffset = new Vector3(randomOffsetX, 0f, randomOffsetZ) * enemyMovementVariables.FleeMovementVariation;

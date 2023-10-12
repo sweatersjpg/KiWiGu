@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 9115080599896133349}
   m_Layer: 9
   m_Name: Fan
-  m_TagString: Untagged
+  m_TagString: DroneEnemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -116,7 +116,7 @@ GameObject:
   - component: {fileID: 9115080599937218443}
   m_Layer: 9
   m_Name: Fan
-  m_TagString: Untagged
+  m_TagString: DroneEnemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -230,7 +230,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9115080600601322045}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -298,7 +298,9 @@ MonoBehaviour:
   isShooting: 0
   playerInSight: 0
   detectedPlayer: 0
+  detectedEnemy: 0
   playerPosition: {x: 0, y: 0, z: 0}
+  enemyPosition: {x: 0, y: 0, z: 0}
   canShoot: 0
 --- !u!195 &9115080600601322046
 NavMeshAgent:
@@ -337,7 +339,7 @@ GameObject:
   - component: {fileID: 9115080600602638114}
   m_Layer: 9
   m_Name: Drone_Offence
-  m_TagString: Untagged
+  m_TagString: DroneEnemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -475,7 +477,9 @@ MonoBehaviour:
   isShooting: 0
   playerInSight: 0
   detectedPlayer: 0
+  detectedEnemy: 0
   playerPosition: {x: 0, y: 0, z: 0}
+  enemyPosition: {x: 0, y: 0, z: 0}
 --- !u!1 &9115080601005013943
 GameObject:
   m_ObjectHideFlags: 0
