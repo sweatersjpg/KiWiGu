@@ -91,17 +91,18 @@ public class GunHand : MonoBehaviour
 
         if (!hasGun) return;
 
-        if (Input.GetKey(mouseButton == 0 ? KeyCode.Q : KeyCode.E))
+        if (Input.GetKeyDown(mouseButton == 0 ? KeyCode.Q : KeyCode.E))
         {
             targetAngle = -45;
             targetPosition = startPosition + new Vector3(0, 0.3f, -0.2f);
             canShoot = false;
-            if (Input.GetMouseButtonDown(mouseButton)) ThrowGun();
+            Invoke(nameof(ThrowGun), 0.2f);
         }
         else targetAngle = 0;
 
-        if(Input.GetKeyUp(mouseButton == 0 ? KeyCode.Q : KeyCode.E))
+        if (Input.GetKeyUp(mouseButton == 0 ? KeyCode.Q : KeyCode.E))
         {
+            CancelInvoke(nameof(ThrowGun));
             targetPosition = startPosition;
         }
 
