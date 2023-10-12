@@ -20,7 +20,8 @@ public class Bullet : MonoBehaviour
     public float trackingSpeed = 2;
 
     Transform target;
-    Vector3 ogTarget;
+    Transform ogTarget;
+    Vector3 ogTargetPosition;
 
     public float lifeTime = 3;
 
@@ -43,8 +44,9 @@ public class Bullet : MonoBehaviour
         startTime = Time.time;
 
         if(trackTarget) target = AcquireTarget.instance.GetBulletTarget();
-        if (target != null) ogTarget = target.position;
-        else ogTarget = AcquireTarget.instance.target;
+        if (target != null) ogTarget = target;
+        
+        ogTargetPosition = AcquireTarget.instance.target;
 
     }
 
@@ -55,7 +57,9 @@ public class Bullet : MonoBehaviour
 
         // if (target != null) transform.LookAt(target);
 
-        if (trackTarget)
+        if (ogTarget != null) ogTargetPosition = ogTarget.position;
+
+        if (trackTarget && time > 0.2f)
         {
             Collider[] hits = Physics.OverlapSphere(bulletMesh.transform.position, trackingRadius,
                 LayerMask.GetMask("Enemy", "PhysicsObject"));
@@ -69,19 +73,19 @@ public class Bullet : MonoBehaviour
             foreach (Collider c in hits)
             {
                 if (closest == null
-                    || Vector3.Distance(c.transform.position, ogTarget) > Vector3.Distance(closest.position, ogTarget))
+                    || Vector3.Distance(c.transform.position, ogTargetPosition) > Vector3.Distance(closest.position, ogTargetPosition))
                 {
                     closest = c.transform;
                 }
             }
 
             if (closest != null) target = closest;
+            else target = ogTarget;
         }
 
-        if (trackTarget && !dead)
+        if (target != null && !dead)
         {
-            Vector3 tpos = ogTarget;
-            if (target != null) tpos = target.position;
+            Vector3 tpos = target.position;
 
             tpos = (tpos - transform.position).normalized * 
                 (bulletMesh.transform.position - transform.position).magnitude + transform.position;
