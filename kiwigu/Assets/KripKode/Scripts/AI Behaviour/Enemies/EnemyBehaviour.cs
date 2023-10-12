@@ -70,10 +70,10 @@ public class EnemyBehaviour : EnemyBase
 
                 if (!isShootingPatternActive)
                 {
-                    StartCoroutine(OffenseDronePattern(Random.Range(0, 2), playerPosition));
+                   // StartCoroutine(DefenseDronePattern(enemyPosition));
                 }
 
-                RotateBodyMeshTowardsPlayer();
+                RotateBodyMeshTowardsObj(enemyPosition);
             }
             else if (!isShootingPatternActive)
             {
@@ -106,7 +106,7 @@ public class EnemyBehaviour : EnemyBase
                     StartCoroutine(OffenseDronePattern(Random.Range(0, 2), playerPosition));
                 }
 
-                RotateBodyMeshTowardsPlayer();
+                RotateBodyMeshTowardsObj(playerPosition);
             }
             else if (!isShootingPatternActive)
             {
@@ -143,9 +143,9 @@ public class EnemyBehaviour : EnemyBase
         }
     }
 
-    void RotateBodyMeshTowardsPlayer()
+    void RotateBodyMeshTowardsObj(Vector3 objPos)
     {
-        Quaternion rRot = Quaternion.LookRotation(playerPosition - enemyMainVariables.BodyMesh.transform.position);
+        Quaternion rRot = Quaternion.LookRotation(objPos - enemyMainVariables.BodyMesh.transform.position);
         enemyMainVariables.BodyMesh.transform.rotation = Quaternion.Slerp(enemyMainVariables.BodyMesh.transform.rotation, rRot, Time.deltaTime * 10);
     }
 

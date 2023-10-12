@@ -21,7 +21,7 @@ public class EnemyBase : MonoBehaviour
     [HideInInspector] public bool isShooting;
     [HideInInspector] public bool playerInSight;
     [HideInInspector] public bool detectedPlayer;
-    [HideInInspector] public bool detectedEnemy;
+    public bool detectedEnemy;
     [HideInInspector] public Vector3 playerPosition;
     [HideInInspector] public Vector3 enemyPosition;
 
@@ -57,7 +57,9 @@ public class EnemyBase : MonoBehaviour
     {
         if (enemyTypeVariables.Small || enemyTypeVariables.Medium)
             gameObject.tag = "Enemy";
-        else if (enemyTypeVariables.DefenseDrone || enemyTypeVariables.OffenseDrone)
+        else if (enemyTypeVariables.DefenseDrone)
+            gameObject.tag = "DroneDefense";
+        else if (enemyTypeVariables.OffenseDrone)
             gameObject.tag = "DroneEnemy";
     }
 
@@ -167,32 +169,13 @@ public class EnemyBase : MonoBehaviour
 
     private void DetectEnemy()
     {
-        int enemyLayerMask = 1 << LayerMask.NameToLayer("Enemy");
-        Collider[] enemies = Physics.OverlapSphere(transform.position, enemyMovementVariables.EnemyAwareDistance, enemyLayerMask);
+        GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
+        detectedEnemy = enemies.Any(enemy => Vector3.Distance(transform.position, enemy.transform.position) < enemyMovementVariables.EnemyAwareDistance);
 
-        if (enemies.Length > 0)
-        {
-            detectedEnemy = true;
-
-            float closestDistance = float.MaxValue;
-            foreach (Collider enemy in enemies)
-            {
-                if (enemy.gameObject.CompareTag("DroneEnemy"))
-                    return;
-
-                    float distance = Vector3.Distance(transform.position, enemy.transform.position);
-                if (distance < closestDistance)
-                {
-                    closestDistance = distance;
-
-                    enemyPosition = enemy.transform.position;
-                }
-            }
-        }
-        else
-        {
-            detectedEnemy = false;
-        }
+        enemyPosition = enemies
+            .OrderBy(enemy => Vector3.Distance(transform.position, enemy.transform.position))
+            .First()
+            .transform.position;
     }
 
 
@@ -292,7 +275,7 @@ public class EnemyBase : MonoBehaviour
 
     public virtual void TakeDamage(float bulletDamage)
     {
-        if(hitBoxScript.CheckIfHitboxScript && hitBoxScript.enemyBehaviour)
+        if (hitBoxScript.CheckIfHitboxScript && hitBoxScript.enemyBehaviour)
         {
             hitBoxScript.enemyBehaviour.wasHit = true;
             if (hitBoxScript.enemyBehaviour.currentShield < hitBoxScript.enemyBehaviour.enemyMainVariables.MaxShield)
@@ -407,7 +390,7 @@ public class EnemyBase : MonoBehaviour
         [Range(100, 200)]
         [Tooltip("The rotation speed of the enemy.")]
         public int RotationSpeed = 180;
-        [Range(15, 25)]
+        [Range(10, 25)]
         [Tooltip("The distance at which the enemy becomes aware of the player.")]
         public int EnemyAwareDistance = 20;
         [Range(5, 20)]
