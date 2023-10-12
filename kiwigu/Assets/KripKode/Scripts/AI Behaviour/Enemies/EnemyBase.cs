@@ -237,7 +237,10 @@ public class EnemyBase : MonoBehaviour
         wanderTarget = RandomWanderPoint();
         agent.SetDestination(wanderTarget);
         isWandering = true;
-        yield return new WaitUntil(() => agent.remainingDistance <= 0.5f);
+
+        if (agent.isOnNavMesh)
+            yield return new WaitUntil(() => agent.remainingDistance <= 0.5f);
+
         yield return new WaitForSeconds(Random.Range(enemyMovementVariables.WanderIdleVariation - 1, enemyMovementVariables.WanderIdleVariation + 2));
         isWandering = false;
     }
