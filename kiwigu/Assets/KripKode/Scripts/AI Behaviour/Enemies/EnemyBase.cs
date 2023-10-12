@@ -21,7 +21,9 @@ public class EnemyBase : MonoBehaviour
     [HideInInspector] public bool isShooting;
     [HideInInspector] public bool playerInSight;
     [HideInInspector] public bool detectedPlayer;
+    public bool detectedEnemy;
     [HideInInspector] public Vector3 playerPosition;
+    [HideInInspector] public Vector3 enemyPosition;
 
     private Vector3 wanderTarget;
     private Vector3 initialPosition;
@@ -55,7 +57,9 @@ public class EnemyBase : MonoBehaviour
     {
         if (enemyTypeVariables.Small || enemyTypeVariables.Medium)
             gameObject.tag = "Enemy";
-        else if (enemyTypeVariables.DefenseDrone || enemyTypeVariables.OffenseDrone)
+        else if (enemyTypeVariables.DefenseDrone)
+            gameObject.tag = "DroneDefense";
+        else if (enemyTypeVariables.OffenseDrone)
             gameObject.tag = "DroneEnemy";
     }
 
@@ -141,7 +145,10 @@ public class EnemyBase : MonoBehaviour
         if (hitBoxScript.CheckIfHitboxScript)
             return;
 
-        DetectPlayer();
+        if (enemyTypeVariables.OffenseDrone || enemyTypeVariables.Small || enemyTypeVariables.Medium)
+            DetectPlayer();
+        else if (enemyTypeVariables.DefenseDrone)
+            DetectEnemy();
 
         if (isHoldingGun && !isWandering)
         {
@@ -159,6 +166,18 @@ public class EnemyBase : MonoBehaviour
             .First()
             .transform.position;
     }
+
+    private void DetectEnemy()
+    {
+        GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
+        detectedEnemy = enemies.Any(enemy => Vector3.Distance(transform.position, enemy.transform.position) < enemyMovementVariables.EnemyAwareDistance);
+
+        enemyPosition = enemies
+            .OrderBy(enemy => Vector3.Distance(transform.position, enemy.transform.position))
+            .First()
+            .transform.position;
+    }
+
 
     private IEnumerator EnemyFlee()
     {
@@ -178,7 +197,6 @@ public class EnemyBase : MonoBehaviour
 
         Vector3 fleeDestination = transform.position + awayFromPlayer * enemyMovementVariables.FleeDistance;
 
-        // Use Perlin noise for smoother randomness
         float randomOffsetX = Mathf.PerlinNoise(Time.time, 0) * 2 - 1;
         float randomOffsetZ = Mathf.PerlinNoise(0, Time.time) * 2 - 1;
         Vector3 randomOffset = new Vector3(randomOffsetX, 0f, randomOffsetZ) * enemyMovementVariables.FleeMovementVariation;
@@ -257,7 +275,7 @@ public class EnemyBase : MonoBehaviour
 
     public virtual void TakeDamage(float bulletDamage)
     {
-        if(hitBoxScript.CheckIfHitboxScript && hitBoxScript.enemyBehaviour)
+        if (hitBoxScript.CheckIfHitboxScript && hitBoxScript.enemyBehaviour)
         {
             hitBoxScript.enemyBehaviour.wasHit = true;
             if (hitBoxScript.enemyBehaviour.currentShield < hitBoxScript.enemyBehaviour.enemyMainVariables.MaxShield)
@@ -377,7 +395,7 @@ public class EnemyBase : MonoBehaviour
         [Range(100, 200)]
         [Tooltip("The rotation speed of the enemy.")]
         public int RotationSpeed = 180;
-        [Range(15, 25)]
+        [Range(10, 25)]
         [Tooltip("The distance at which the enemy becomes aware of the player.")]
         public int EnemyAwareDistance = 20;
         [Range(5, 20)]
