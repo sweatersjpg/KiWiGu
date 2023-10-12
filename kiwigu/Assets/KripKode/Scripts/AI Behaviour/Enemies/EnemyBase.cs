@@ -3,65 +3,13 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;
 
-[RequireComponent(typeof(NavMeshAgent))]
 public class EnemyBase : MonoBehaviour
 {
-    [Header("Enemy Main Variables")]
-    [Tooltip("Whether the enemy can seek a gun.")]
-    public bool canSeekGun;
-    [Tooltip("Whether the enemy spawns with a gun.")]
-    public bool spawnWithGun;
-    [Range(10, 100)]
-    [Tooltip("The maximum health of the enemy.")]
-    public int MaxHealth = 100;
-    [Range(0, 100)]
-    [Tooltip("The maximum shield of the enemy.")]
-    public int MaxShield = 100;
-    [Tooltip("The GameObject representing the enemy's gun.")]
-    public GameObject GunObject;
-    [Tooltip("The GameObject representing the position of the enemy's eyes.")]
-    public GameObject EyesPosition;
-    [Tooltip("The GameObject representing the enemy's body mesh.")]
-    public GameObject BodyMesh;
-    [Tooltip("Make sure Hand Transform is attached as a child of the Body Object!")]
-    public GameObject HandPosition;
-
-    [Header("Enemy Movement")]
-    [Range(1, 15)]
-    [Tooltip("The distance the enemy flees when in danger.")]
-    public int FleeDistance;
-    [Range(1, 15)]
-    [Tooltip("Variation in the movement during fleeing.")]
-    public int FleeMovementVariation;
-    [Range(1, 15)]
-    [Tooltip("The movement speed of the enemy.")]
-    public int MovementSpeed = 5;
-    [Range(5, 10)]
-    [Tooltip("The distance at which the enemy avoids the player.")]
-    public int AvoidPlayerDistance = 7;
-    [Range(100, 200)]
-    [Tooltip("The rotation speed of the enemy.")]
-    public int RotationSpeed = 180;
-    [Range(15, 25)]
-    [Tooltip("The distance at which the enemy becomes aware of the player.")]
-    public int EnemyAwareDistance = 20;
-    [Range(5, 20)]
-    [Tooltip("The radius for wandering.")]
-    public int WanderRadius = 8;
-    [Range(2, 8)]
-    [Tooltip("Variation in idle time during wandering.")]
-    public float WanderIdleVariation;
-    [Range(1, 10)]
-    [Tooltip("Idle time for a drone.")]
-    public int DroneIdleTime = 2;
-
-    [Header("Enemy Gun Stats")]
-    [Range(1, 10)]
-    [Tooltip("The fire rate of the enemy.")]
-    public float EnemyFireRate = 1.0f;
-    [Range(0, 10)]
-    [Tooltip("Inaccuracy of the enemy's gun.")]
-    public int GunInaccuracy = 5;
+    public EnemyMainVariables enemyMainVariables;
+    public EnemyMovementVariables enemyMovementVariables;
+    public EnemyGunStats enemyGunStats;
+    public EnemyTypeVariables enemyTypeVariables;
+    public HitboxScript hitBoxScript;
 
     [Header("Shared Variables")]
     [HideInInspector] public NavMeshAgent agent;
@@ -81,17 +29,14 @@ public class EnemyBase : MonoBehaviour
     private GameObject initialGunObject;
     private bool startedFleeing;
 
-    [Header("Enemy Type")]
-    public bool Small;
-    public bool Medium;
-    public bool DefenseDrone;
-    public bool OffenseDrone;
-
     protected virtual void Start()
     {
+        if (hitBoxScript.CheckIfHitboxScript)
+            return;
+
         SetTagBasedOnEnemyType();
 
-        if (spawnWithGun && GunObject)
+        if (enemyMainVariables.spawnWithGun && enemyMainVariables.GunObject)
         {
             SetupInitialGun();
         }
@@ -101,32 +46,32 @@ public class EnemyBase : MonoBehaviour
         agent = GetComponent<NavMeshAgent>();
         if (agent != null)
         {
-            agent.speed = MovementSpeed;
-            agent.angularSpeed = RotationSpeed;
+            agent.speed = enemyMovementVariables.MovementSpeed;
+            agent.angularSpeed = enemyMovementVariables.RotationSpeed;
         }
     }
 
     private void SetTagBasedOnEnemyType()
     {
-        if (Small || Medium)
+        if (enemyTypeVariables.Small || enemyTypeVariables.Medium)
             gameObject.tag = "Enemy";
-        else if (DefenseDrone || OffenseDrone)
+        else if (enemyTypeVariables.DefenseDrone || enemyTypeVariables.OffenseDrone)
             gameObject.tag = "DroneEnemy";
     }
 
     private void SetupInitialGun()
     {
-        GunObject = Instantiate(GunObject, HandPosition.transform);
+        enemyMainVariables.GunObject = Instantiate(enemyMainVariables.GunObject, enemyMainVariables.HandPosition.transform);
         isHoldingGun = true;
-        initialGunObject = GunObject;
+        initialGunObject = enemyMainVariables.GunObject;
     }
 
     public void EnemyBehaviour()
     {
-        if (DefenseDrone || OffenseDrone)
+        if (enemyTypeVariables.DefenseDrone || enemyTypeVariables.OffenseDrone)
             return;
 
-        if (GunObject)
+        if (enemyMainVariables.GunObject)
         {
             HandleGunLogic();
         }
@@ -140,7 +85,7 @@ public class EnemyBase : MonoBehaviour
     {
         if (IsAgentCloseToStation())
         {
-            GunObject = Instantiate(initialGunObject, HandPosition.transform);
+            enemyMainVariables.GunObject = Instantiate(initialGunObject, enemyMainVariables.HandPosition.transform);
             isHoldingGun = true;
         }
         else
@@ -151,7 +96,7 @@ public class EnemyBase : MonoBehaviour
 
     private void HandleGunSeeking()
     {
-        if (canSeekGun)
+        if (enemyMainVariables.canSeekGun)
         {
             GameObject closestStation = FindClosestStationWithTag("EnemyRestockStation");
 
@@ -193,6 +138,9 @@ public class EnemyBase : MonoBehaviour
 
     protected virtual void Update()
     {
+        if (hitBoxScript.CheckIfHitboxScript)
+            return;
+
         DetectPlayer();
 
         if (isHoldingGun && !isWandering)
@@ -204,7 +152,7 @@ public class EnemyBase : MonoBehaviour
     private void DetectPlayer()
     {
         GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
-        detectedPlayer = players.Any(player => Vector3.Distance(transform.position, player.transform.position) < EnemyAwareDistance);
+        detectedPlayer = players.Any(player => Vector3.Distance(transform.position, player.transform.position) < enemyMovementVariables.EnemyAwareDistance);
 
         playerPosition = players
             .OrderBy(player => Vector3.Distance(transform.position, player.transform.position))
@@ -228,16 +176,16 @@ public class EnemyBase : MonoBehaviour
         Vector3 awayFromPlayer = transform.position - playerPosition;
         awayFromPlayer.Normalize();
 
-        Vector3 fleeDestination = transform.position + awayFromPlayer * FleeDistance;
+        Vector3 fleeDestination = transform.position + awayFromPlayer * enemyMovementVariables.FleeDistance;
 
         // Use Perlin noise for smoother randomness
         float randomOffsetX = Mathf.PerlinNoise(Time.time, 0) * 2 - 1;
         float randomOffsetZ = Mathf.PerlinNoise(0, Time.time) * 2 - 1;
-        Vector3 randomOffset = new Vector3(randomOffsetX, 0f, randomOffsetZ) * FleeMovementVariation;
+        Vector3 randomOffset = new Vector3(randomOffsetX, 0f, randomOffsetZ) * enemyMovementVariables.FleeMovementVariation;
         fleeDestination += randomOffset;
 
         NavMeshHit hit;
-        if (NavMesh.SamplePosition(fleeDestination, out hit, FleeDistance, NavMesh.AllAreas))
+        if (NavMesh.SamplePosition(fleeDestination, out hit, enemyMovementVariables.FleeDistance, NavMesh.AllAreas))
         {
             return hit.position;
         }
@@ -290,44 +238,47 @@ public class EnemyBase : MonoBehaviour
         agent.SetDestination(wanderTarget);
         isWandering = true;
         yield return new WaitUntil(() => agent.remainingDistance <= 0.5f);
-        yield return new WaitForSeconds(Random.Range(WanderIdleVariation - 1, WanderIdleVariation + 2));
+        yield return new WaitForSeconds(Random.Range(enemyMovementVariables.WanderIdleVariation - 1, enemyMovementVariables.WanderIdleVariation + 2));
         isWandering = false;
     }
 
     public Vector3 RandomWanderPoint()
     {
-        Vector3 randomDirection = Random.insideUnitSphere * WanderRadius;
+        Vector3 randomDirection = Random.insideUnitSphere * enemyMovementVariables.WanderRadius;
         randomDirection += initialPosition;
         NavMeshHit hit;
-        NavMesh.SamplePosition(randomDirection, out hit, WanderRadius, NavMesh.AllAreas);
+        NavMesh.SamplePosition(randomDirection, out hit, enemyMovementVariables.WanderRadius, NavMesh.AllAreas);
 
         return hit.position;
     }
 
     public virtual void TakeDamage(float bulletDamage)
     {
-        wasHit = true;
-        if (currentShield < MaxShield)
+        if(hitBoxScript.CheckIfHitboxScript && hitBoxScript.enemyBehaviour)
         {
-            currentShield = Mathf.Min(currentShield + bulletDamage, MaxShield);
-        }
-        else if (currentHealth < MaxHealth)
-        {
-            currentHealth = Mathf.Min(currentHealth + bulletDamage, MaxHealth);
-        }
+            hitBoxScript.enemyBehaviour.wasHit = true;
+            if (hitBoxScript.enemyBehaviour.currentShield < hitBoxScript.enemyBehaviour.enemyMainVariables.MaxShield)
+            {
+                hitBoxScript.enemyBehaviour.currentShield = Mathf.Min(hitBoxScript.enemyBehaviour.currentShield + bulletDamage, hitBoxScript.enemyBehaviour.enemyMainVariables.MaxShield);
+            }
+            else if (hitBoxScript.enemyBehaviour.currentHealth < hitBoxScript.enemyBehaviour.enemyMainVariables.MaxHealth)
+            {
+                hitBoxScript.enemyBehaviour.currentHealth = Mathf.Min(hitBoxScript.enemyBehaviour.currentHealth + bulletDamage, hitBoxScript.enemyBehaviour.enemyMainVariables.MaxHealth);
+            }
 
-        CheckStats();
+            hitBoxScript.enemyBehaviour.CheckStats();
+        }
     }
 
     public void CheckStats()
     {
-        if (currentHealth >= MaxHealth)
+        if (currentHealth >= enemyMainVariables.MaxHealth)
         {
             if (isHoldingGun)
             {
-                GunObject.GetComponent<Rigidbody>().isKinematic = false;
-                GunObject.transform.parent = null;
-                Destroy(GunObject, 60);
+                enemyMainVariables.GunObject.GetComponent<Rigidbody>().isKinematic = false;
+                enemyMainVariables.GunObject.transform.parent = null;
+                Destroy(enemyMainVariables.GunObject, 60);
                 isHoldingGun = false;
             }
 
@@ -337,16 +288,16 @@ public class EnemyBase : MonoBehaviour
 
     public virtual bool CheckPlayerVisibility()
     {
-        Collider[] colliders = Physics.OverlapSphere(transform.position, EnemyAwareDistance);
+        Collider[] colliders = Physics.OverlapSphere(transform.position, enemyMovementVariables.EnemyAwareDistance);
 
         foreach (Collider collider in colliders)
         {
             if (collider.CompareTag("Player"))
             {
-                Vector3 direction = playerPosition - EyesPosition.transform.position + new Vector3(0, 0.5f, 0);
-                RaycastHit[] hits = Physics.RaycastAll(EyesPosition.transform.position, direction, EnemyAwareDistance);
+                Vector3 direction = playerPosition - enemyMainVariables.EyesPosition.transform.position + new Vector3(0, 0.5f, 0);
+                RaycastHit[] hits = Physics.RaycastAll(enemyMainVariables.EyesPosition.transform.position, direction, enemyMovementVariables.EnemyAwareDistance);
 
-                Debug.DrawRay(EyesPosition.transform.position, direction, Color.red, 0.1f);
+                Debug.DrawRay(enemyMainVariables.EyesPosition.transform.position, direction, Color.red, 0.1f);
 
                 bool playerVisible = true;
 
@@ -369,9 +320,96 @@ public class EnemyBase : MonoBehaviour
         return false;
     }
 
-
     private void OnDestroy()
     {
         StopAllCoroutines();
+    }
+
+
+    [System.Serializable]
+    public class EnemyMainVariables
+    {
+        [Header("Enemy Main Variables")]
+        [Tooltip("Whether the enemy can seek a gun.")]
+        public bool canSeekGun;
+        [Tooltip("Whether the enemy spawns with a gun.")]
+        public bool spawnWithGun;
+        [Range(10, 100)]
+        [Tooltip("The maximum health of the enemy.")]
+        public int MaxHealth = 100;
+        [Range(0, 100)]
+        [Tooltip("The maximum shield of the enemy.")]
+        public int MaxShield = 100;
+        [Tooltip("The GameObject representing the enemy's gun.")]
+        public GameObject GunObject;
+        [Tooltip("The GameObject representing the position of the enemy's eyes.")]
+        public GameObject EyesPosition;
+        [Tooltip("The GameObject representing the enemy's body mesh.")]
+        public GameObject BodyMesh;
+        [Tooltip("Make sure Hand Transform is attached as a child of the Body Object!")]
+        public GameObject HandPosition;
+    }
+
+    [System.Serializable]
+    public class EnemyMovementVariables
+    {
+        [Header("Enemy Movement")]
+        [Range(1, 15)]
+        [Tooltip("The distance the enemy flees when in danger.")]
+        public int FleeDistance = 5;
+        [Range(1, 15)]
+        [Tooltip("Variation in the movement during fleeing.")]
+        public int FleeMovementVariation = 4;
+        [Range(1, 15)]
+        [Tooltip("The movement speed of the enemy.")]
+        public int MovementSpeed = 5;
+        [Range(5, 10)]
+        [Tooltip("The distance at which the enemy avoids the player.")]
+        public int AvoidPlayerDistance = 7;
+        [Range(100, 200)]
+        [Tooltip("The rotation speed of the enemy.")]
+        public int RotationSpeed = 180;
+        [Range(15, 25)]
+        [Tooltip("The distance at which the enemy becomes aware of the player.")]
+        public int EnemyAwareDistance = 20;
+        [Range(5, 20)]
+        [Tooltip("The radius for wandering.")]
+        public int WanderRadius = 8;
+        [Range(2, 8)]
+        [Tooltip("Variation in idle time during wandering.")]
+        public float WanderIdleVariation;
+        [Range(1, 10)]
+        [Tooltip("Idle time for a drone.")]
+        public int DroneIdleTime = 2;
+    }
+
+    [System.Serializable]
+    public class EnemyGunStats
+    {
+        [Header("Enemy Gun Stats")]
+        [Range(1, 10)]
+        [Tooltip("The fire rate of the enemy.")]
+        public float EnemyFireRate = 1.0f;
+        [Range(0, 10)]
+        [Tooltip("Inaccuracy of the enemy's gun.")]
+        public int GunInaccuracy = 5;
+    }
+
+    [System.Serializable]
+    public class EnemyTypeVariables
+    {
+        [Header("Enemy Type")]
+        public bool Small;
+        public bool Medium;
+        public bool DefenseDrone;
+        public bool OffenseDrone;
+    }
+
+    [System.Serializable]
+    public class HitboxScript
+    {
+        [Header("Hitbox")]
+        public bool CheckIfHitboxScript;
+        public EnemyBehaviour enemyBehaviour;
     }
 }
