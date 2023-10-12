@@ -181,7 +181,9 @@ public class EnemyBehaviour : EnemyBase
 
             agent.SetDestination(targetPosition);
 
-            timeDroneMove = agent.remainingDistance / agent.speed;
+            float distanceToTarget = Vector3.Distance(currentPosition, targetPosition);
+
+            timeDroneMove = distanceToTarget / agent.speed;
 
             if (moveUp)
             {
@@ -206,7 +208,6 @@ public class EnemyBehaviour : EnemyBase
 
         doingShootingPattern = false;
     }
-
 
     //IEnumerator OffenseDronePatternTwo(Vector3 playerPosition)
     //{
