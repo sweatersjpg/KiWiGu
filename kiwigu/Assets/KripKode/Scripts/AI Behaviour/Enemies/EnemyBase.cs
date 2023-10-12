@@ -25,6 +25,7 @@ public class EnemyBase : MonoBehaviour
     [Range(15, 25)] public int EnemyAwareDistance = 20;
     [Range(5, 20)] public int WanderRadius = 8;
     [Range(2, 8)] public float WanderIdleVariation;
+    [Range(1, 10)] public int DroneIdleTime = 2;
 
     [Header("Enemy Gun Stats")]
     [Range(1, 10)] public float EnemyFireRate = 1.0f;

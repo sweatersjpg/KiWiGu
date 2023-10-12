@@ -58,6 +58,9 @@ public class EnemyBehaviour : EnemyBase
         }
         else if (OffenseDrone)
         {
+            SphereCollider sphereCollider = GetComponent<SphereCollider>();
+            sphereCollider.center = new Vector3(sphereCollider.center.x, BodyMesh.transform.position.y, sphereCollider.center.z);
+
             GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
             detectedPlayer = players.Any(player => Vector3.Distance(transform.position, player.transform.position) < EnemyAwareDistance);
 
@@ -220,7 +223,7 @@ public class EnemyBehaviour : EnemyBase
         }
 
         agent.ResetPath();
-        yield return new WaitForSeconds(2);
+        yield return new WaitForSeconds(DroneIdleTime);
 
         doingShootingPattern = false;
     }
@@ -271,7 +274,7 @@ public class EnemyBehaviour : EnemyBase
         EnemyShoot();
 
         agent.ResetPath();
-        yield return new WaitForSeconds(2);
+        yield return new WaitForSeconds(DroneIdleTime);
 
         doingShootingPattern = false;
     }
