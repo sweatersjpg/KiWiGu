@@ -134,6 +134,7 @@ GameObject:
   - component: {fileID: 145806829}
   - component: {fileID: 145806831}
   - component: {fileID: 145806830}
+  - component: {fileID: 145806832}
   m_Layer: 5
   m_Name: Left Slot
   m_TagString: Untagged
@@ -199,6 +200,21 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 145806828}
   m_CullTransparentMesh: 1
+--- !u!114 &145806832
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 145806828}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e19747de3f5aca642ab2be37e372fb86, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_EffectColor: {r: 0, g: 0, b: 0, a: 0.5}
+  m_EffectDistance: {x: 2, y: -2}
+  m_UseGraphicAlpha: 1
 --- !u!1 &150181236
 GameObject:
   m_ObjectHideFlags: 0
@@ -382,7 +398,7 @@ Transform:
   m_Children:
   - {fileID: 201100836}
   m_Father: {fileID: 0}
-  m_RootOrder: 10
+  m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!120 &174010302
 LineRenderer:
@@ -680,7 +696,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 230568914}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -0.5}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -697,6 +713,10 @@ PrefabInstance:
     - target: {fileID: 390614569014119830, guid: cd009b5b1639cb64fab3f3879c5e1866, type: 3}
       propertyPath: m_Name
       value: PauseMenuURP
+      objectReference: {fileID: 0}
+    - target: {fileID: 390614569014119830, guid: cd009b5b1639cb64fab3f3879c5e1866, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 390614569014119841, guid: cd009b5b1639cb64fab3f3879c5e1866, type: 3}
       propertyPath: gameCamera
@@ -1290,7 +1310,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 11
+  m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &610473044
 GameObject:
@@ -1322,7 +1342,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 9
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &610473046
 MonoBehaviour:
@@ -1450,27 +1470,13 @@ GameObject:
   - component: {fileID: 672847244}
   - component: {fileID: 672847243}
   - component: {fileID: 672847242}
-  - component: {fileID: 672847241}
   m_Layer: 9
   m_Name: Offense Drone Example
-  m_TagString: Untagged
+  m_TagString: DroneEnemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!135 &672847241
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 672847240}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.5
-  m_Center: {x: 0, y: 2.75, z: 0}
 --- !u!195 &672847242
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -1480,7 +1486,7 @@ NavMeshAgent:
   m_GameObject: {fileID: 672847240}
   m_Enabled: 1
   m_AgentTypeID: 0
-  m_Radius: 0.5
+  m_Radius: 1.25
   m_Speed: 3.5
   m_Acceleration: 50
   avoidancePriority: 50
@@ -1505,25 +1511,36 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e72f5f760cb371a41bcd487648940b92, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  canSeekGun: 0
-  spawnWithGun: 1
-  MaxHealth: 15
-  MaxShield: 50
-  GunObject: {fileID: 4006260289432868516, guid: e9f49a38ad200014aa4418f8035720f2, type: 3}
-  EyesPosition: {fileID: 1398613230}
-  BodyMesh: {fileID: 919132147794900897}
-  HandPosition: {fileID: 230568914}
-  FleeDistance: 8
-  FleeMovementVariation: 10
-  MovementSpeed: 6
-  AvoidPlayerDistance: 10
-  RotationSpeed: 125
-  EnemyAwareDistance: 20
-  WanderRadius: 15
-  WanderIdleVariation: 4
-  EnemyFireRate: 2
-  GunInaccuracy: 8
-  player: {fileID: 0}
+  enemyMainVariables:
+    canSeekGun: 0
+    spawnWithGun: 1
+    MaxHealth: 25
+    MaxShield: 0
+    GunObject: {fileID: 4006260289432868516, guid: e9f49a38ad200014aa4418f8035720f2, type: 3}
+    EyesPosition: {fileID: 1398613230}
+    BodyMesh: {fileID: 919132147794900897}
+    HandPosition: {fileID: 230568914}
+  enemyMovementVariables:
+    FleeDistance: 5
+    FleeMovementVariation: 4
+    MovementSpeed: 5
+    AvoidPlayerDistance: 7
+    RotationSpeed: 180
+    EnemyAwareDistance: 20
+    WanderRadius: 8
+    WanderIdleVariation: 0
+    DroneIdleTime: 2
+  enemyGunStats:
+    EnemyFireRate: 1
+    GunInaccuracy: 5
+  enemyTypeVariables:
+    Small: 0
+    Medium: 0
+    DefenseDrone: 0
+    OffenseDrone: 1
+  hitBoxScript:
+    CheckIfHitboxScript: 0
+    enemyBehaviour: {fileID: 0}
   agent: {fileID: 0}
   currentHealth: 0
   currentShield: 0
@@ -1532,10 +1549,8 @@ MonoBehaviour:
   isWandering: 0
   isShooting: 0
   playerInSight: 0
-  Small: 0
-  Medium: 0
-  DefenseDrone: 0
-  OffenseDrone: 1
+  detectedPlayer: 0
+  playerPosition: {x: 0, y: 0, z: 0}
   canShoot: 0
 --- !u!33 &672847244
 MeshFilter:
@@ -1560,7 +1575,7 @@ Transform:
   - {fileID: 543450651712335131}
   - {fileID: 1398613231}
   m_Father: {fileID: 0}
-  m_RootOrder: 13
+  m_RootOrder: 12
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &736487615
 GameObject:
@@ -2708,7 +2723,7 @@ GameObject:
   - component: {fileID: 1240763930}
   - component: {fileID: 1240763929}
   - component: {fileID: 1240763928}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Fan
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2891,7 +2906,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
 --- !u!114 &1282034300
 MonoBehaviour:
@@ -3438,7 +3453,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1471481660
 GameObject:
@@ -3537,7 +3552,7 @@ RectTransform:
   - {fileID: 742280268}
   - {fileID: 1886535259}
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -3575,7 +3590,7 @@ GameObject:
   - component: {fileID: 1474007762}
   - component: {fileID: 1474007761}
   - component: {fileID: 1474007760}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Fan
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3695,7 +3710,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 8
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1494978731
 MonoBehaviour:
@@ -3837,7 +3852,7 @@ Transform:
   - {fileID: 1331329282}
   - {fileID: 1604196801}
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1604196800
 GameObject:
@@ -4288,7 +4303,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 7
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1824294242
 GameObject:
@@ -4516,6 +4531,10 @@ PrefabInstance:
     - target: {fileID: 4619342294706443379, guid: cbb06f0e6cdf74cf0b9c73b2af08aeb7, type: 3}
       propertyPath: m_Name
       value: sFPSplayer
+      objectReference: {fileID: 0}
+    - target: {fileID: 7049817264079494736, guid: cbb06f0e6cdf74cf0b9c73b2af08aeb7, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: cbb06f0e6cdf74cf0b9c73b2af08aeb7, type: 3}
@@ -4767,7 +4786,7 @@ GameObject:
   - component: {fileID: 2090254506}
   - component: {fileID: 2090254505}
   - component: {fileID: 2090254504}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Fan
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4881,7 +4900,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2139980276}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0.5}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -4904,7 +4923,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &2141429317
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4921,7 +4940,7 @@ MonoBehaviour:
   priority: 0
   blendDistance: 0
   weight: 1
-  sharedProfile: {fileID: 11400000, guid: 4944c0f364edec6409e02d6e35bec71a, type: 2}
+  sharedProfile: {fileID: 11400000, guid: 1b645afaf4b1871498db402b63d3c464, type: 2}
 --- !u!4 &2141429318
 Transform:
   m_ObjectHideFlags: 0
@@ -4935,7 +4954,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 14
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &543450651712335131
 Transform:
@@ -5039,7 +5058,7 @@ Transform:
   - {fileID: 749136424269691388}
   - {fileID: 2982960233143197011}
   m_Father: {fileID: 0}
-  m_RootOrder: 14
+  m_RootOrder: 13
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &749136423427085291
 MonoBehaviour:
@@ -5053,25 +5072,36 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e72f5f760cb371a41bcd487648940b92, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  canSeekGun: 0
-  spawnWithGun: 1
-  MaxHealth: 15
-  MaxShield: 25
-  GunObject: {fileID: 4006260289432868516, guid: e9f49a38ad200014aa4418f8035720f2, type: 3}
-  EyesPosition: {fileID: 2819137060111565289}
-  BodyMesh: {fileID: 749136424269691391}
-  HandPosition: {fileID: 499884555}
-  FleeDistance: 8
-  FleeMovementVariation: 10
-  MovementSpeed: 4
-  AvoidPlayerDistance: 7
-  RotationSpeed: 125
-  EnemyAwareDistance: 15
-  WanderRadius: 15
-  WanderIdleVariation: 4
-  EnemyFireRate: 4
-  GunInaccuracy: 8
-  player: {fileID: 0}
+  enemyMainVariables:
+    canSeekGun: 0
+    spawnWithGun: 0
+    MaxHealth: 100
+    MaxShield: 100
+    GunObject: {fileID: 0}
+    EyesPosition: {fileID: 0}
+    BodyMesh: {fileID: 0}
+    HandPosition: {fileID: 0}
+  enemyMovementVariables:
+    FleeDistance: 5
+    FleeMovementVariation: 4
+    MovementSpeed: 5
+    AvoidPlayerDistance: 7
+    RotationSpeed: 180
+    EnemyAwareDistance: 20
+    WanderRadius: 8
+    WanderIdleVariation: 0
+    DroneIdleTime: 2
+  enemyGunStats:
+    EnemyFireRate: 1
+    GunInaccuracy: 5
+  enemyTypeVariables:
+    Small: 0
+    Medium: 0
+    DefenseDrone: 0
+    OffenseDrone: 0
+  hitBoxScript:
+    CheckIfHitboxScript: 0
+    enemyBehaviour: {fileID: 0}
   agent: {fileID: 0}
   currentHealth: 0
   currentShield: 0
@@ -5080,10 +5110,8 @@ MonoBehaviour:
   isWandering: 0
   isShooting: 0
   playerInSight: 0
-  Small: 1
-  Medium: 0
-  DefenseDrone: 0
-  OffenseDrone: 0
+  detectedPlayer: 0
+  playerPosition: {x: 0, y: 0, z: 0}
   canShoot: 0
 --- !u!33 &749136423427085293
 MeshFilter:
@@ -5112,7 +5140,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!23 &749136424269691386
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -5208,7 +5236,9 @@ GameObject:
   - component: {fileID: 543450651712335131}
   - component: {fileID: 3469287837844349630}
   - component: {fileID: 1711813854857221748}
-  m_Layer: 0
+  - component: {fileID: 3469287837844349631}
+  - component: {fileID: 3469287837844349632}
+  m_Layer: 9
   m_Name: Drone_Offence
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5226,7 +5256,8 @@ GameObject:
   - component: {fileID: 543450652891117850}
   - component: {fileID: 3469287836673930943}
   - component: {fileID: 1711813855901418101}
-  m_Layer: 0
+  - component: {fileID: 3469287836673930944}
+  m_Layer: 9
   m_Name: Drone_Defense
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5245,7 +5276,7 @@ GameObject:
   - component: {fileID: 3469287837365882023}
   - component: {fileID: 1711813855788021869}
   - component: {fileID: 158639340}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Fan
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5417,6 +5448,19 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 919132148889756576}
   m_Mesh: {fileID: -3679894120614013469, guid: 287df3370e05ae341aa22174646589cf, type: 3}
+--- !u!135 &3469287836673930944
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 919132148889756576}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.5
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!33 &3469287837365882023
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -5433,6 +5477,71 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 919132147794900897}
   m_Mesh: {fileID: 1373888236586580764, guid: 0c6850943bf032848885cbcefce08903, type: 3}
+--- !u!135 &3469287837844349631
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 919132147794900897}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.5
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &3469287837844349632
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 919132147794900897}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c575cb675417b9943863d6f2f6d9ee96, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enemyMainVariables:
+    canSeekGun: 0
+    spawnWithGun: 0
+    MaxHealth: 100
+    MaxShield: 100
+    GunObject: {fileID: 0}
+    EyesPosition: {fileID: 0}
+    BodyMesh: {fileID: 0}
+    HandPosition: {fileID: 0}
+  enemyMovementVariables:
+    FleeDistance: 5
+    FleeMovementVariation: 4
+    MovementSpeed: 5
+    AvoidPlayerDistance: 7
+    RotationSpeed: 180
+    EnemyAwareDistance: 20
+    WanderRadius: 8
+    WanderIdleVariation: 0
+    DroneIdleTime: 2
+  enemyGunStats:
+    EnemyFireRate: 1
+    GunInaccuracy: 5
+  enemyTypeVariables:
+    Small: 0
+    Medium: 0
+    DefenseDrone: 0
+    OffenseDrone: 0
+  hitBoxScript:
+    CheckIfHitboxScript: 1
+    enemyBehaviour: {fileID: 672847243}
+  agent: {fileID: 0}
+  currentHealth: 0
+  currentShield: 0
+  isHoldingGun: 0
+  wasHit: 0
+  isWandering: 0
+  isShooting: 0
+  playerInSight: 0
+  detectedPlayer: 0
+  playerPosition: {x: 0, y: 0, z: 0}
 --- !u!33 &6691141799811686144
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -5453,14 +5562,13 @@ GameObject:
   - component: {fileID: 6691141799811686144}
   - component: {fileID: 6691141799811686150}
   - component: {fileID: 6691141799811686149}
-  - component: {fileID: 6691141799811686152}
   m_Layer: 9
   m_Name: Defense Drone Example
-  m_TagString: Untagged
+  m_TagString: DroneDefense
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!195 &6691141799811686149
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -5495,25 +5603,36 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e72f5f760cb371a41bcd487648940b92, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  canSeekGun: 0
-  spawnWithGun: 0
-  MaxHealth: 15
-  MaxShield: 50
-  GunObject: {fileID: 0}
-  EyesPosition: {fileID: 1136547854}
-  BodyMesh: {fileID: 919132148889756576}
-  HandPosition: {fileID: 2139980276}
-  FleeDistance: 8
-  FleeMovementVariation: 10
-  MovementSpeed: 4
-  AvoidPlayerDistance: 7
-  RotationSpeed: 125
-  EnemyAwareDistance: 20
-  WanderRadius: 15
-  WanderIdleVariation: 4
-  EnemyFireRate: 4
-  GunInaccuracy: 8
-  player: {fileID: 0}
+  enemyMainVariables:
+    canSeekGun: 0
+    spawnWithGun: 0
+    MaxHealth: 100
+    MaxShield: 100
+    GunObject: {fileID: 0}
+    EyesPosition: {fileID: 0}
+    BodyMesh: {fileID: 0}
+    HandPosition: {fileID: 0}
+  enemyMovementVariables:
+    FleeDistance: 5
+    FleeMovementVariation: 4
+    MovementSpeed: 5
+    AvoidPlayerDistance: 7
+    RotationSpeed: 180
+    EnemyAwareDistance: 20
+    WanderRadius: 8
+    WanderIdleVariation: 0
+    DroneIdleTime: 2
+  enemyGunStats:
+    EnemyFireRate: 1
+    GunInaccuracy: 5
+  enemyTypeVariables:
+    Small: 0
+    Medium: 0
+    DefenseDrone: 0
+    OffenseDrone: 0
+  hitBoxScript:
+    CheckIfHitboxScript: 0
+    enemyBehaviour: {fileID: 0}
   agent: {fileID: 0}
   currentHealth: 0
   currentShield: 0
@@ -5522,10 +5641,8 @@ MonoBehaviour:
   isWandering: 0
   isShooting: 0
   playerInSight: 0
-  Small: 0
-  Medium: 0
-  DefenseDrone: 1
-  OffenseDrone: 0
+  detectedPlayer: 0
+  playerPosition: {x: 0, y: 0, z: 0}
   canShoot: 0
 --- !u!4 &6691141799811686151
 Transform:
@@ -5542,21 +5659,8 @@ Transform:
   - {fileID: 543450652891117850}
   - {fileID: 1136547855}
   m_Father: {fileID: 0}
-  m_RootOrder: 12
+  m_RootOrder: 11
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!135 &6691141799811686152
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6691141799811686147}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.5
-  m_Center: {x: 0, y: 2.75, z: 0}
 --- !u!114 &8962245709193224098
 MonoBehaviour:
   m_ObjectHideFlags: 0

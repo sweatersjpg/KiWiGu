@@ -71,7 +71,7 @@ Camera:
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 1847
+    m_Bits: 3895
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -139,6 +139,7 @@ MonoBehaviour:
   target: {x: 0, y: 0, z: 0}
   maxDistance: 50
   minDistance: 3
+  radius: 0.2
 --- !u!114 &4619342294562106012
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -252,6 +253,7 @@ MonoBehaviour:
   crouchSpeed: 4
   acceleration: 96
   airAcceleration: 4
+  encomberedAcceleration: 3
   deceleration: 24
   turnDeceleration: 128
   airDeceleration: 1
@@ -267,6 +269,7 @@ MonoBehaviour:
   mouseLook: {x: 0, y: 0}
   velocity: {x: 0, y: 0, z: 0}
   input: {x: 0, y: 0, z: 0}
+  isEncombered: 0
   isSliding: 0
   isGrounded: 0
 --- !u!1 &4619342294876411546

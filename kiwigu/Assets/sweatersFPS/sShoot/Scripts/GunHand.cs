@@ -144,7 +144,7 @@ public class GunHand : MonoBehaviour
 
     public void AnimateShoot()
     {
-        gunAngle -= info.recoil;
+        gunAngle -= info.recoil / 2;
 
         transform.parent.localPosition += new Vector3(0, 0, -0.1f);
     }

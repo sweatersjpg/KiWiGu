@@ -72,7 +72,7 @@ public class ThrowHook : MonoBehaviour
     {
         GameObject hook = Instantiate(hookPrefab);
         hook.transform.SetPositionAndRotation(transform.position, Quaternion.LookRotation(transform.forward));
-        hook.transform.LookAt(AcquireTarget.instance.target);
+        hook.transform.LookAt(AcquireTarget.instance.GetHookTarget());
 
         hook.GetComponent<MoveHook>().home = this;
 
@@ -88,7 +88,7 @@ public class ThrowHook : MonoBehaviour
         hookView.SetActive(true);
 
         transform.parent.localPosition += new Vector3(0, 0, -0.4f);
-        homePosition = startPosition;
+        targetPosition = startPosition;
 
         hasHook = true;
 
@@ -103,6 +103,6 @@ public class ThrowHook : MonoBehaviour
 
     public void PullBack()
     {
-        homePosition = startPosition - new Vector3(0, 0, 0.5f);
+        targetPosition = startPosition - new Vector3(0, 0, 0.5f);
     }
 }

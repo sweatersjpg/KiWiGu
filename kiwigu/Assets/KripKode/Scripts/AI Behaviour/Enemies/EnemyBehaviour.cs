@@ -1,218 +1,231 @@
 using System.Collections;
-using System.Security.Cryptography;
-using TMPro;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
 
 public class EnemyBehaviour : EnemyBase
 {
-    float shotTimer = 0;
-    float lastShotTime = 0;
+    float exitPointRotationSpeed;
+
+    private bool isMovingUpOrDown;
+    private float droneMoveTime;
+
+    private bool isMovingUp;
+    private bool isDroneStopped;
+
+    private bool isShootingPatternActive;
+    Vector3 patternTargetPosition;
+
+    private float lerpParameter;
+    private float targetYPosition;
+
+    private float shootingTimer = 0;
+    private float lastShotTimestamp = 0;
 
     [HideInInspector] public bool canShoot;
 
-    private float initialPositionY;
+    private float initialYPosition;
     private float verticalOffset = 0.25f;
-    private float duration;
-    private float startTime;
-    private bool isInView;
+    private float movementDuration;
+    private float movementStartTime;
+    private bool isCurrentlyInView;
 
     protected override void Start()
     {
-        if (DefenseDrone || OffenseDrone)
+        if (hitBoxScript.CheckIfHitboxScript)
+            return;
+
+        exitPointRotationSpeed = 180;
+
+        if (enemyTypeVariables.DefenseDrone || enemyTypeVariables.OffenseDrone)
         {
-            duration = Random.Range(1f, 3f);
-            initialPositionY = BodyMesh.transform.position.y;
-            startTime = Time.time;
+            movementDuration = Random.Range(2, 4);
+            initialYPosition = enemyMainVariables.BodyMesh.transform.position.y;
+            movementStartTime = Time.time;
         }
 
-
         base.Start();
-        shotTimer = Time.time;
+        shootingTimer = Time.time;
     }
 
     public void EnemyMovement()
     {
-        if (DefenseDrone)
+        if (enemyTypeVariables.DefenseDrone)
         {
-            Collider[] hitColliders = Physics.OverlapSphere(transform.position, EnemyAwareDistance);
-            bool enemyDetected = false;
-
-            foreach (var collider in hitColliders)
+            // leave this empty for now
+        }
+        else if (enemyTypeVariables.OffenseDrone)
+        {
+            if (detectedPlayer)
             {
-                if (collider.gameObject.tag == "Enemy" && collider.gameObject != gameObject)
+                if (enemyMainVariables.GunObject)
                 {
-                    Vector3 direction = collider.gameObject.transform.position - transform.position;
-                    direction.y = 0;
-
-                    float noiseX = Mathf.PerlinNoise(Time.time * RotationSpeed, 0) * 2 - 1;
-                    float noiseY = Mathf.PerlinNoise(0, Time.time * RotationSpeed) * 2 - 1;
-                    Quaternion noiseRotation = Quaternion.Euler(new Vector3(noiseX, noiseY, 0));
-
-                    Quaternion targetRotation = Quaternion.LookRotation(direction) * noiseRotation;
-
-                    transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, RotationSpeed * Time.deltaTime);
-
-                    Vector3 noiseOffset = new Vector3(
-                        Mathf.PerlinNoise(Time.time * MovementSpeed, 0) * 1 - (1 / 2),
-                        0,
-                        Mathf.PerlinNoise(0, Time.time * MovementSpeed) * 1 - (1 / 2)
-                    );
-
-                    Vector3 targetPosition = collider.gameObject.transform.position + noiseOffset;
-
-                    agent.SetDestination(targetPosition);
-
-                    enemyDetected = true;
-                    break;
+                    RotateGunObjectExitPoint();
                 }
-            }
 
-            if (!enemyDetected && !isWandering)
+                if (!isDroneStopped)
+                {
+                    agent.ResetPath();
+                    StopAllCoroutines();
+                    isWandering = true;
+                    isDroneStopped = true;
+                }
+
+                if (!isShootingPatternActive)
+                {
+                    StartCoroutine(OffenseDronePattern(Random.Range(0, 2), playerPosition));
+                }
+
+                RotateBodyMeshTowardsPlayer();
+            }
+            else if (!isShootingPatternActive)
             {
-                StartCoroutine(Wander());
+                if (isDroneStopped && isWandering)
+                {
+                    StartCoroutine(Wander());
+                    isDroneStopped = false;
+                }
             }
         }
-        else if (OffenseDrone)
+        else if (enemyTypeVariables.Small || enemyTypeVariables.Medium)
         {
-            Collider[] hitColliders = Physics.OverlapSphere(transform.position, EnemyAwareDistance);
-            bool enemyDetected = false;
-
-            foreach (var collider in hitColliders)
+            if (Vector3.Distance(transform.position, playerPosition) <= enemyMovementVariables.AvoidPlayerDistance)
             {
-                if (collider.gameObject.tag == "Player" && collider.gameObject != gameObject)
+                if (enemyMainVariables.GunObject)
                 {
-                    if (GunObject)
-                    {
-                        GameObject GunObjectExitPoint = GunObject.transform.GetChild(0).gameObject;
-
-                        Quaternion targetRotation = Quaternion.LookRotation(
-                            (player.position + new Vector3(Random.Range(-GunInaccuracy, GunInaccuracy), 1.5f, Random.Range(-GunInaccuracy, GunInaccuracy))) - GunObjectExitPoint.transform.position
-                        );
-
-                        float rotationSpeed = 50;
-                        //GunObjectExitPoint.transform.rotation = Quaternion.Slerp(
-                        //    GunObjectExitPoint.transform.rotation,
-                        //    targetRotation,
-                        //    Time.deltaTime * rotationSpeed
-                        //);
-                    }
-
-                    Vector3 playerPosition = collider.gameObject.transform.position;
-                    Vector3 direction = playerPosition - transform.position;
-                    direction.y = 0;
-
-                    float distanceToPlayer = direction.magnitude;
-
-                    if (distanceToPlayer <= AvoidPlayerDistance)
-                    {
-                        Vector3 toObject = transform.position - Camera.main.transform.position;
-                        float angleToObject = Vector3.Angle(Camera.main.transform.forward, toObject);
-
-                        if (angleToObject <= Camera.main.fieldOfView * 0.5f)
-                        {
-                            isInView = false;
-
-                            agent.ResetPath();
-
-                            Vector3 randomDirection = Quaternion.Euler(0, Random.Range(Random.Range(-100, -50), Random.Range(50, 100)), 0) * Camera.main.transform.forward;
-                            Vector3 targetPosition = Camera.main.transform.position + randomDirection * AvoidPlayerDistance;
-
-                            agent.SetDestination(targetPosition);
-                        }
-                        else
-                        {
-                            isInView = true;
-
-                            Vector3 targetPosition = Camera.main.transform.position + Camera.main.transform.forward * AvoidPlayerDistance;
-
-                            agent.SetDestination(targetPosition);
-                        }
-                    }
-                    else
-                    {
-                        agent.SetDestination(player.position);
-                    }
-
-                    Quaternion rRot = Quaternion.LookRotation(playerPosition - BodyMesh.transform.position);
-                    BodyMesh.transform.rotation = Quaternion.Slerp(BodyMesh.transform.rotation, rRot, Time.deltaTime * 10);
-                }
-            }
-
-            if (!enemyDetected && !isWandering)
-            {
-                StartCoroutine(Wander());
-            }
-        }
-        else if (Small || Medium)
-        {
-            if (Vector3.Distance(transform.position, player.position) <= AvoidPlayerDistance)
-            {
-                if (GunObject)
-                {
-                    GameObject GunObjectExitPoint = GunObject.transform.GetChild(0).gameObject;
-
-                    Quaternion targetRotation = Quaternion.LookRotation(
-                        (player.position + new Vector3(Random.Range(-GunInaccuracy, GunInaccuracy), 1.5f, Random.Range(-GunInaccuracy, GunInaccuracy))) - GunObjectExitPoint.transform.position
-                    );
-
-                    float rotationSpeed = 50;
-                    //GunObjectExitPoint.transform.rotation = Quaternion.Slerp(
-                    //    GunObjectExitPoint.transform.rotation,
-                    //    targetRotation,
-                    //    Time.deltaTime * rotationSpeed
-                    //);
+                    RotateGunObjectExitPoint();
                 }
 
-                Vector3 direction = player.position - transform.position;
+                Vector3 direction = playerPosition - transform.position;
                 direction.y = 0;
-                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(direction), RotationSpeed * Time.deltaTime);
+                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(direction), enemyMovementVariables.RotationSpeed * Time.deltaTime);
             }
             else
             {
-                if (GunObject)
+                if (enemyMainVariables.GunObject)
                 {
-                    GameObject GunObjectExitPoint = GunObject.transform.GetChild(0).gameObject;
-
-                    Quaternion targetRotation = Quaternion.LookRotation(
-                        (player.position + new Vector3(Random.Range(-GunInaccuracy, GunInaccuracy), 1.5f, Random.Range(-GunInaccuracy, GunInaccuracy))) - GunObjectExitPoint.transform.position
-                    );
-
-                    float rotationSpeed = 50;
-                    //GunObjectExitPoint.transform.rotation = Quaternion.Slerp(
-                    //    GunObjectExitPoint.transform.rotation,
-                    //    targetRotation,
-                    //    Time.deltaTime * rotationSpeed
-                    //);
+                    RotateGunObjectExitPoint();
                 }
 
-                Vector3 offset = (transform.position - player.position).normalized * AvoidPlayerDistance;
-                agent.SetDestination(player.position + offset);
+                Vector3 offset = (transform.position - playerPosition).normalized * enemyMovementVariables.AvoidPlayerDistance;
+                agent.SetDestination(playerPosition + offset);
             }
         }
     }
 
+    void RotateBodyMeshTowardsPlayer()
+    {
+        Quaternion rRot = Quaternion.LookRotation(playerPosition - enemyMainVariables.BodyMesh.transform.position);
+        enemyMainVariables.BodyMesh.transform.rotation = Quaternion.Slerp(enemyMainVariables.BodyMesh.transform.rotation, rRot, Time.deltaTime * 10);
+    }
+
+    void RotateGunObjectExitPoint()
+    {
+        GameObject GunObjectExitPoint = enemyMainVariables.GunObject.transform.GetChild(0).gameObject;
+
+        Quaternion targetRotation = Quaternion.LookRotation(
+            (playerPosition + new Vector3(Random.Range(-enemyGunStats.GunInaccuracy, enemyGunStats.GunInaccuracy), 1.5f, Random.Range(-enemyGunStats.GunInaccuracy, enemyGunStats.GunInaccuracy))) - GunObjectExitPoint.transform.position
+        );
+
+        GunObjectExitPoint.transform.rotation = Quaternion.Slerp(
+            GunObjectExitPoint.transform.rotation,
+            targetRotation,
+            Time.deltaTime * exitPointRotationSpeed
+        );
+    }
+
+    IEnumerator MoveBodyMesh(Vector3 targetPosition, float duration)
+    {
+        float elapsedTime = 0;
+        Vector3 initialPosition = enemyMainVariables.BodyMesh.transform.position;
+
+        while (elapsedTime < duration)
+        {
+            elapsedTime += Time.deltaTime;
+            float t = Mathf.Clamp01(elapsedTime / duration);
+            enemyMainVariables.BodyMesh.transform.position = Vector3.Lerp(initialPosition, targetPosition, t);
+            yield return null;
+        }
+    }
+
+    private IEnumerator OffenseDronePattern(int pattern, Vector3 playerPosition)
+    {
+        isShootingPatternActive = true;
+
+        for (int i = 0; i < 4; i++)
+        {
+            isMovingUp = !isMovingUp;
+            Vector3 currentPosition = transform.position;
+            Vector3 randomDirection = Random.insideUnitSphere;
+            randomDirection.Normalize();
+
+            Vector3 targetPosition = currentPosition + randomDirection * 4;
+            agent.SetDestination(targetPosition);
+
+            float distanceToTarget = Vector3.Distance(currentPosition, targetPosition);
+            droneMoveTime = distanceToTarget / agent.speed;
+
+            if (isMovingUp)
+            {
+                patternTargetPosition = new Vector3(enemyMainVariables.BodyMesh.transform.position.x, enemyMainVariables.BodyMesh.transform.position.y + 1.5f, enemyMainVariables.BodyMesh.transform.position.z);
+            }
+            else
+            {
+                patternTargetPosition = new Vector3(enemyMainVariables.BodyMesh.transform.position.x, enemyMainVariables.BodyMesh.transform.position.y - 1.5f, enemyMainVariables.BodyMesh.transform.position.z);
+            }
+
+            targetYPosition = patternTargetPosition.y;
+
+            isMovingUpOrDown = true;
+
+            yield return new WaitUntil(() => !agent.pathPending && agent.remainingDistance < 0.1f);
+
+            isMovingUpOrDown = false;
+
+            switch (pattern)
+            {
+                case 0:
+                    EnemyShoot();
+                    break;
+                case 1:
+                    if (i == 3)
+                    {
+                        yield return new WaitForSeconds(0.25f);
+                        EnemyShoot();
+                        yield return new WaitForSeconds(0.25f);
+                        EnemyShoot();
+                        yield return new WaitForSeconds(0.25f);
+                        EnemyShoot();
+                    }
+                    break;
+            }
+        }
+
+        agent.ResetPath();
+        yield return new WaitForSeconds(enemyMovementVariables.DroneIdleTime);
+        isShootingPatternActive = false;
+    }
 
     protected override void Update()
     {
+        if (hitBoxScript.CheckIfHitboxScript)
+            return;
+
         playerInSight = CheckPlayerVisibility();
 
         base.Update();
 
-        if (OffenseDrone && isInView)
-        {
-            // uwu
-        }
-        else
+        if (!isCurrentlyInView)
         {
             if (isHoldingGun && playerInSight)
             {
-                if (Time.time - lastShotTime >= 1 / EnemyFireRate)
+                if (!enemyTypeVariables.DefenseDrone && !enemyTypeVariables.OffenseDrone)
                 {
-                    for (int i = 0; i < GunObject.GetComponent<EnemyGunInfo>().GunAssetInfo.burstSize; i++)
-                        Invoke(nameof(EnemyShoot), i * 1 / GunObject.GetComponent<EnemyGunInfo>().GunAssetInfo.autoRate);
+                    if (Time.time - lastShotTimestamp >= 1 / enemyGunStats.EnemyFireRate)
+                    {
+                        for (int i = 0; i < enemyMainVariables.GunObject.GetComponent<EnemyGunInfo>().GunAssetInfo.burstSize; i++)
+                            Invoke(nameof(EnemyShoot), i * 1 / enemyMainVariables.GunObject.GetComponent<EnemyGunInfo>().GunAssetInfo.autoRate);
 
-                    lastShotTime = Time.time;
+                        lastShotTimestamp = Time.time;
+                    }
                 }
             }
         }
@@ -224,7 +237,7 @@ public class EnemyBehaviour : EnemyBase
                 EnemyMovement();
             }
         }
-        else if (!isHoldingGun && (DefenseDrone || OffenseDrone))
+        else if (!isHoldingGun && (enemyTypeVariables.DefenseDrone || enemyTypeVariables.OffenseDrone))
         {
             EnemyMovement();
         }
@@ -233,12 +246,22 @@ public class EnemyBehaviour : EnemyBase
             EnemyBehaviour();
         }
 
-        if (DefenseDrone || OffenseDrone)
+        if (!isShootingPatternActive)
         {
-            float t = Mathf.PingPong((Time.time - startTime) / duration, 1f);
-            float newYPosition = Mathf.Lerp(initialPositionY - verticalOffset, initialPositionY + verticalOffset, t);
-            Vector3 newPosition = new Vector3(BodyMesh.transform.position.x, newYPosition, BodyMesh.transform.position.z);
-            BodyMesh.transform.position = newPosition;
+            if (enemyTypeVariables.DefenseDrone || enemyTypeVariables.OffenseDrone)
+            {
+                lerpParameter = Mathf.PingPong((Time.time - movementStartTime) / movementDuration, 1);
+                targetYPosition = Mathf.Lerp(initialYPosition - verticalOffset, initialYPosition + verticalOffset, lerpParameter);
+                patternTargetPosition = new Vector3(enemyMainVariables.BodyMesh.transform.position.x, targetYPosition, enemyMainVariables.BodyMesh.transform.position.z);
+                enemyMainVariables.BodyMesh.transform.position = patternTargetPosition;
+            }
+        }
+
+        if (isMovingUpOrDown)
+        {
+            Vector3 goTo = new Vector3(enemyMainVariables.BodyMesh.transform.position.x, targetYPosition, enemyMainVariables.BodyMesh.transform.position.z);
+            Vector3 lerpPosition = Vector3.Lerp(enemyMainVariables.BodyMesh.transform.position, goTo, Time.deltaTime / droneMoveTime);
+            enemyMainVariables.BodyMesh.transform.position = lerpPosition;
         }
     }
 
@@ -249,26 +272,26 @@ public class EnemyBehaviour : EnemyBase
 
         isShooting = true;
 
-        for (int i = 0; i < GunObject.GetComponent<EnemyGunInfo>().GunAssetInfo.projectiles; i++)
+        for (int i = 0; i < enemyMainVariables.GunObject.GetComponent<EnemyGunInfo>().GunAssetInfo.projectiles; i++)
             SpawnBullet();
     }
 
     void SpawnBullet()
     {
-        GameObject GunObjectExitPoint = GunObject.transform.GetChild(0).gameObject;
+        GameObject GunObjectExitPoint = enemyMainVariables.GunObject.transform.GetChild(0).gameObject;
 
-        GameObject bullet = Instantiate(GunObject.GetComponent<EnemyGunInfo>().BulletPrefab, GunObjectExitPoint.transform.position, GunObjectExitPoint.transform.rotation);
+        GameObject bullet = Instantiate(enemyMainVariables.GunObject.GetComponent<EnemyGunInfo>().BulletPrefab, GunObjectExitPoint.transform.position, GunObjectExitPoint.transform.rotation);
         bullet.transform.parent = gameObject.transform;
 
         Vector3 direction = GunObjectExitPoint.transform.forward;
-        direction += SpreadDirection(GunObject.GetComponent<EnemyGunInfo>().GunAssetInfo.spread, 3);
+        direction += SpreadDirection(enemyMainVariables.GunObject.GetComponent<EnemyGunInfo>().GunAssetInfo.spread, 3);
 
         bullet.transform.position = GunObjectExitPoint.transform.position;
-        //bullet.transform.rotation = Quaternion.LookRotation(direction.normalized);
+        bullet.transform.rotation = Quaternion.LookRotation(direction.normalized);
 
         EnemyBullet b = bullet.GetComponent<EnemyBullet>();
-        b.BulletSpeed = GunObject.GetComponent<EnemyGunInfo>().GunAssetInfo.bulletSpeed;
-        b.BulletGravity = GunObject.GetComponent<EnemyGunInfo>().GunAssetInfo.bulletGravity;
+        b.BulletSpeed = enemyMainVariables.GunObject.GetComponent<EnemyGunInfo>().GunAssetInfo.bulletSpeed;
+        b.BulletGravity = enemyMainVariables.GunObject.GetComponent<EnemyGunInfo>().GunAssetInfo.bulletGravity;
         isShooting = false;
     }
 

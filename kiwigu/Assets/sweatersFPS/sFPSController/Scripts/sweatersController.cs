@@ -24,6 +24,7 @@ public class sweatersController : MonoBehaviour
     public float crouchSpeed = 3.75f;
     public float acceleration = 3.75f;
     public float airAcceleration = 3;
+    public float encomberedAcceleration = 3;
 
     [Space]
     public float deceleration = 4;
@@ -68,6 +69,8 @@ public class sweatersController : MonoBehaviour
 
     bool jumpPressed = false;
     bool jumpJustReleased = false;
+
+    public bool isEncombered;
 
     public bool isSliding;
     public bool isGrounded;
@@ -159,6 +162,7 @@ public class sweatersController : MonoBehaviour
 
         // acceleration based on ground or air
         float acc = isGrounded && !isSliding ? acceleration : airAcceleration;
+        if (isEncombered) acc = encomberedAcceleration;
         Vector3 force = acc * input;
 
         // deceleration based on ground air and movement

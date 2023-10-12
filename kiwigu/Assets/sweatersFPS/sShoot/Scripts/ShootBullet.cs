@@ -6,6 +6,8 @@ using UnityEngine;
 public class ShootBullet : MonoBehaviour
 {
     public GunHand anim;
+    public ParticleSystem flash;
+
     float spreadSpeed = 5;
     float spreadTimeStart = 0;
 
@@ -80,6 +82,7 @@ public class ShootBullet : MonoBehaviour
     {
         for (int i = 0; i < info.projectiles; i++) SpawnBullet();
         anim.AnimateShoot();
+        if(flash != null) flash.Play();
     }
 
     void SpawnBullet()

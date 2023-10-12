@@ -10,6 +10,8 @@ public class HookTarget : MonoBehaviour
 
     public bool hasView = true;
 
+    public float resistance = 2;
+
     private void Start()
     {        
         Mesh mesh = info.gunPrefab.transform.Find("GunView").GetComponent<MeshFilter>().sharedMesh;
