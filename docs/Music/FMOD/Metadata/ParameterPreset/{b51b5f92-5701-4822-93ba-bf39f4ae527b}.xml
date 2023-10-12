@@ -12,14 +12,19 @@
 		</relationship>
 	</object>
 	<object class="GameParameter" id="{4c705085-575d-4ac9-858c-790f33708cc5}">
-		<property name="isGlobal">
-			<value>true</value>
-		</property>
 		<property name="initialValue">
 			<value>0</value>
 		</property>
 		<property name="isExposedRecursively">
 			<value>false</value>
+		</property>
+		<relationship name="automators">
+			<destination>{c8f72f3f-e38f-4f80-86be-3ee1fb2e9364}</destination>
+		</relationship>
+	</object>
+	<object class="Automator" id="{c8f72f3f-e38f-4f80-86be-3ee1fb2e9364}">
+		<property name="nameOfPropertyBeingAutomated">
+			<value>cursorPosition</value>
 		</property>
 	</object>
 </objects>
