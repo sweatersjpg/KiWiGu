@@ -1,13 +1,26 @@
 using System.Collections;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.AI;
+using static UnityEditor.Experimental.GraphView.GraphView;
+using static UnityEditor.ShaderGraph.Internal.KeywordDependentCollection;
 using static UnityEngine.GraphicsBuffer;
 
 public class EnemyBehaviour : EnemyBase
 {
-    bool detectedPlayer;
+    private Vector3 moveTarget;
+
+    public bool moveDroneUpOrDown;
+    public float timeDroneMove;
+
+    public bool moveUp;
+
+    public bool detectedPlayer;
+    public bool stoppedDrone;
 
     bool doingShootingPattern;
     Vector3 newPosition;
@@ -43,130 +56,52 @@ public class EnemyBehaviour : EnemyBase
     {
         if (DefenseDrone)
         {
-            Collider[] hitColliders = Physics.OverlapSphere(transform.position, EnemyAwareDistance);
-
-            foreach (var collider in hitColliders)
-            {
-                if (collider.gameObject.tag == "Enemy" && collider.gameObject != gameObject)
-                {
-                    Vector3 direction = collider.gameObject.transform.position - transform.position;
-                    direction.y = 0;
-
-                    float noiseX = Mathf.PerlinNoise(Time.time * RotationSpeed, 0) * 2 - 1;
-                    float noiseY = Mathf.PerlinNoise(0, Time.time * RotationSpeed) * 2 - 1;
-                    Quaternion noiseRotation = Quaternion.Euler(new Vector3(noiseX, noiseY, 0));
-
-                    Quaternion targetRotation = Quaternion.LookRotation(direction) * noiseRotation;
-
-                    transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, RotationSpeed * Time.deltaTime);
-
-                    Vector3 noiseOffset = new Vector3(
-                        Mathf.PerlinNoise(Time.time * MovementSpeed, 0) * 1 - (1 / 2),
-                        0,
-                        Mathf.PerlinNoise(0, Time.time * MovementSpeed) * 1 - (1 / 2)
-                    );
-
-                    Vector3 targetPosition = collider.gameObject.transform.position + noiseOffset;
-
-                    agent.SetDestination(targetPosition);
-
-                    break;
-                }
-            }
-
-            if (!isWandering)
-            {
-                StartCoroutine(Wander());
-            }
+           
         }
         else if (OffenseDrone)
         {
-            Collider[] hitColliders = Physics.OverlapSphere(transform.position, EnemyAwareDistance);
+            GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
+            detectedPlayer = players.Any(player => Vector3.Distance(transform.position, player.transform.position) < EnemyAwareDistance);
 
-            foreach (var collider in hitColliders)
+            if (detectedPlayer)
             {
-                if (collider.gameObject.tag == "Player" && collider.gameObject != gameObject)
+                Vector3 playerPosition = players
+                               .OrderBy(player => Vector3.Distance(transform.position, player.transform.position))
+                               .First()
+                               .transform.position;
+
+                if (!stoppedDrone)
                 {
-                   if(!detectedPlayer)
-                    {
-                        Debug.Log("Stopped");
-                        agent.ResetPath();
-                        StopAllCoroutines();
-                        detectedPlayer = true;
-                    }
-
-                    if (GunObject)
-                    {
-                        GameObject GunObjectExitPoint = GunObject.transform.GetChild(0).gameObject;
-
-                        Quaternion targetRotation = Quaternion.LookRotation(
-                            (player.position + new Vector3(Random.Range(-GunInaccuracy, GunInaccuracy), 1.5f, Random.Range(-GunInaccuracy, GunInaccuracy))) - GunObjectExitPoint.transform.position
-                        );
-
-                        float rotationSpeed = 90;
-                        GunObjectExitPoint.transform.rotation = Quaternion.Slerp(
-                            GunObjectExitPoint.transform.rotation,
-                            targetRotation,
-                            Time.deltaTime * rotationSpeed
-                        );
-                    }
-
-                    Vector3 playerPosition = collider.gameObject.transform.position;
-                    Vector3 direction = playerPosition - transform.position;
-                    direction.y = 0;
-
-                    float distanceToPlayer = direction.magnitude;
-
-                    if (distanceToPlayer <= EnemyAwareDistance)
-                    {
-                        Vector3 toObject = transform.position - Camera.main.transform.position;
-                        float angleToObject = Vector3.Angle(Camera.main.transform.forward, toObject);
-
-                        if (angleToObject <= Camera.main.fieldOfView * 0.5f)
-                        {
-                            isInView = false;
-
-                            if (!doingShootingPattern)
-                            {
-                                int randomPattern = Random.Range(0, 2);
-                                if (randomPattern == 0)
-                                {
-                                    StartCoroutine(OffenseDronePatternOne());
-                                }
-                                else
-                                {
-                                    StartCoroutine(OffenseDronePatternTwo());
-                                }
-                            }
-                        }
-                        else if (angleToObject >= Camera.main.fieldOfView * 0.5f)
-                        {
-                            agent.ResetPath();
-
-                            isInView = true;
-
-                            Vector3 targetPosition = Camera.main.transform.position + Camera.main.transform.forward * AvoidPlayerDistance;
-
-                            agent.SetDestination(targetPosition);
-                        }
-                    }
-
-                    Quaternion rRot = Quaternion.LookRotation(playerPosition - BodyMesh.transform.position);
-                    BodyMesh.transform.rotation = Quaternion.Slerp(BodyMesh.transform.rotation, rRot, Time.deltaTime * 10);
+                    agent.ResetPath();
+                    StopAllCoroutines();
+                    isWandering = true;
+                    stoppedDrone = true;
                 }
-                else if (collider.gameObject.tag != "Player")
+
+                if (!doingShootingPattern)
                 {
-                    Debug.Log("player not in colliders");
-                    detectedPlayer = false;
-                    isWandering = false;
+                    int randomPattern = Random.Range(0, 1);
+                    if (randomPattern == 0)
+                    {
+                        StartCoroutine(OffenseDronePatternOne(playerPosition));
+                    }
+                    else
+                    {
+                        //StartCoroutine(OffenseDronePatternTwo(playerPosition));
+                    }
+                }
+
+                Quaternion rRot = Quaternion.LookRotation(playerPosition - BodyMesh.transform.position);
+                BodyMesh.transform.rotation = Quaternion.Slerp(BodyMesh.transform.rotation, rRot, Time.deltaTime * 10);
+            }
+            else if (!doingShootingPattern)
+            {
+                if (stoppedDrone && isWandering)
+                {
+                    StartCoroutine(Wander());
+                    stoppedDrone = false;
                 }
             }
-
-            if (!isWandering)
-            {
-                StartCoroutine(Wander());
-            }
-
         }
         else if (Small || Medium)
         {
@@ -216,21 +151,67 @@ public class EnemyBehaviour : EnemyBase
         }
     }
 
-    IEnumerator OffenseDronePatternOne()
+    IEnumerator MoveBodyMesh(Vector3 targetPosition, float duration)
     {
-        Debug.Log("Doing PATTERN");
+        float elapsedTime = 0;
+        Vector3 initialPosition = BodyMesh.transform.position;
+
+        while (elapsedTime < duration)
+        {
+            elapsedTime += Time.deltaTime;
+            float t = Mathf.Clamp01(elapsedTime / duration);
+            BodyMesh.transform.position = Vector3.Lerp(initialPosition, targetPosition, t);
+            yield return null;
+        }
+    }
+
+    IEnumerator OffenseDronePatternOne(Vector3 playerPosition)
+    {
         doingShootingPattern = true;
+
+        for (int i = 0; i < 4; i++)
+        {
+            moveUp = !moveUp;
+
+            Vector3 currentPosition = transform.position;
+            Vector3 randomDirection = Random.insideUnitSphere;
+            randomDirection.Normalize();
+
+            Vector3 targetPosition = currentPosition + randomDirection * 4;
+
+            agent.SetDestination(targetPosition);
+
+            timeDroneMove = agent.remainingDistance / agent.speed;
+
+            if (moveUp)
+            {
+                newPosition = new Vector3(BodyMesh.transform.position.x, BodyMesh.transform.position.y + 1.5f, BodyMesh.transform.position.z);
+            }
+            else
+            {
+                newPosition = new Vector3(BodyMesh.transform.position.x, BodyMesh.transform.position.y - 1.5f, BodyMesh.transform.position.z);
+            }
+
+            newYPosition = newPosition.y;
+
+            moveDroneUpOrDown = true;
+
+            yield return new WaitUntil(() => !agent.pathPending && agent.remainingDistance < 0.1f);
+
+            moveDroneUpOrDown = false;
+        }
+
+        agent.ResetPath();
         yield return new WaitForSeconds(2);
+
         doingShootingPattern = false;
     }
 
-    IEnumerator OffenseDronePatternTwo()
-    {
-        Debug.Log("Doing PATTERN");
-        doingShootingPattern = true;
-        yield return new WaitForSeconds(2);
-        doingShootingPattern = false;
-    }
+
+    //IEnumerator OffenseDronePatternTwo(Vector3 playerPosition)
+    //{
+    //    // same behaviour for now
+    //}
 
     protected override void Update()
     {
@@ -280,6 +261,13 @@ public class EnemyBehaviour : EnemyBase
                 newPosition = new Vector3(BodyMesh.transform.position.x, newYPosition, BodyMesh.transform.position.z);
                 BodyMesh.transform.position = newPosition;
             }
+        }
+
+        if (moveDroneUpOrDown)
+        {
+            Vector3 goTo = new Vector3(BodyMesh.transform.position.x, newYPosition, BodyMesh.transform.position.z);
+            Vector3 lerpPosition = Vector3.Lerp(BodyMesh.transform.position, goTo, Time.deltaTime / timeDroneMove);
+            BodyMesh.transform.position = lerpPosition;
         }
     }
 

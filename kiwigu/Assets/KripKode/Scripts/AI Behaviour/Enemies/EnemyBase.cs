@@ -226,7 +226,7 @@ public class EnemyBase : MonoBehaviour
         isWandering = false;
     }
 
-    private Vector3 RandomWanderPoint()
+    public Vector3 RandomWanderPoint()
     {
         Vector3 randomDirection = Random.insideUnitSphere * WanderRadius;
         randomDirection += initialPosition;
