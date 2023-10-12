@@ -12,24 +12,22 @@ using static UnityEngine.GraphicsBuffer;
 
 public class EnemyBehaviour : EnemyBase
 {
-    private Vector3 moveTarget;
+    private bool moveDroneUpOrDown;
+    private float timeDroneMove;
 
-    public bool moveDroneUpOrDown;
-    public float timeDroneMove;
+    private bool moveUp;
 
-    public bool moveUp;
+    private bool detectedPlayer;
+    private bool stoppedDrone;
 
-    public bool detectedPlayer;
-    public bool stoppedDrone;
-
-    bool doingShootingPattern;
+    private bool doingShootingPattern;
     Vector3 newPosition;
 
-    float t;
-    float newYPosition;
+    private float t;
+    private float newYPosition;
 
-    float shotTimer = 0;
-    float lastShotTime = 0;
+    private float shotTimer = 0;
+    private float lastShotTime = 0;
 
     [HideInInspector] public bool canShoot;
 
@@ -70,6 +68,22 @@ public class EnemyBehaviour : EnemyBase
                                .First()
                                .transform.position;
 
+                if (GunObject)
+                {
+                    GameObject GunObjectExitPoint = GunObject.transform.GetChild(0).gameObject;
+
+                    Quaternion targetRotation = Quaternion.LookRotation(
+                        (playerPosition + new Vector3(Random.Range(-GunInaccuracy, GunInaccuracy), 1.5f, Random.Range(-GunInaccuracy, GunInaccuracy))) - GunObjectExitPoint.transform.position
+                    );
+
+                    float rotationSpeed = 90;
+                    GunObjectExitPoint.transform.rotation = Quaternion.Slerp(
+                        GunObjectExitPoint.transform.rotation,
+                        targetRotation,
+                        Time.deltaTime * rotationSpeed
+                    );
+                }
+
                 if (!stoppedDrone)
                 {
                     agent.ResetPath();
@@ -80,14 +94,14 @@ public class EnemyBehaviour : EnemyBase
 
                 if (!doingShootingPattern)
                 {
-                    int randomPattern = Random.Range(0, 1);
+                    int randomPattern = Random.Range(0, 2);
                     if (randomPattern == 0)
                     {
                         StartCoroutine(OffenseDronePatternOne(playerPosition));
                     }
                     else
                     {
-                        //StartCoroutine(OffenseDronePatternTwo(playerPosition));
+                        StartCoroutine(OffenseDronePatternTwo(playerPosition));
                     }
                 }
 
@@ -201,6 +215,8 @@ public class EnemyBehaviour : EnemyBase
             yield return new WaitUntil(() => !agent.pathPending && agent.remainingDistance < 0.1f);
 
             moveDroneUpOrDown = false;
+
+            EnemyShoot();
         }
 
         agent.ResetPath();
@@ -209,10 +225,56 @@ public class EnemyBehaviour : EnemyBase
         doingShootingPattern = false;
     }
 
-    //IEnumerator OffenseDronePatternTwo(Vector3 playerPosition)
-    //{
-    //    // same behaviour for now
-    //}
+    IEnumerator OffenseDronePatternTwo(Vector3 playerPosition)
+    {
+        doingShootingPattern = true;
+
+        for (int i = 0; i < 4; i++)
+        {
+            moveUp = !moveUp;
+
+            Vector3 currentPosition = transform.position;
+            Vector3 randomDirection = Random.insideUnitSphere;
+            randomDirection.Normalize();
+
+            Vector3 targetPosition = currentPosition + randomDirection * 4;
+
+            agent.SetDestination(targetPosition);
+
+            float distanceToTarget = Vector3.Distance(currentPosition, targetPosition);
+
+            timeDroneMove = distanceToTarget / agent.speed;
+
+            if (moveUp)
+            {
+                newPosition = new Vector3(BodyMesh.transform.position.x, BodyMesh.transform.position.y + 1.5f, BodyMesh.transform.position.z);
+            }
+            else
+            {
+                newPosition = new Vector3(BodyMesh.transform.position.x, BodyMesh.transform.position.y - 1.5f, BodyMesh.transform.position.z);
+            }
+
+            newYPosition = newPosition.y;
+
+            moveDroneUpOrDown = true;
+
+            yield return new WaitUntil(() => !agent.pathPending && agent.remainingDistance < 0.1f);
+
+            moveDroneUpOrDown = false;
+        }
+
+        yield return new WaitForSeconds(0.25f);
+        EnemyShoot();
+        yield return new WaitForSeconds(0.25f);
+        EnemyShoot();
+        yield return new WaitForSeconds(0.25f);
+        EnemyShoot();
+
+        agent.ResetPath();
+        yield return new WaitForSeconds(2);
+
+        doingShootingPattern = false;
+    }
 
     protected override void Update()
     {
