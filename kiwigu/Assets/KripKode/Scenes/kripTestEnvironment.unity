@@ -1542,7 +1542,7 @@ MonoBehaviour:
   WanderRadius: 15
   WanderIdleVariation: 4
   EnemyFireRate: 2
-  GunInaccuracy: 8
+  GunInaccuracy: 5
   player: {fileID: 0}
   agent: {fileID: 0}
   currentHealth: 0
@@ -1556,6 +1556,9 @@ MonoBehaviour:
   Medium: 0
   DefenseDrone: 0
   OffenseDrone: 1
+  moveDroneUpOrDown: 0
+  timeDroneMove: 0
+  moveUp: 0
   detectedPlayer: 0
   stoppedDrone: 0
   canShoot: 0
@@ -5110,6 +5113,9 @@ MonoBehaviour:
   Medium: 0
   DefenseDrone: 0
   OffenseDrone: 0
+  moveDroneUpOrDown: 0
+  timeDroneMove: 0
+  moveUp: 0
   detectedPlayer: 0
   stoppedDrone: 0
   canShoot: 0
@@ -5554,6 +5560,9 @@ MonoBehaviour:
   Medium: 0
   DefenseDrone: 1
   OffenseDrone: 0
+  moveDroneUpOrDown: 0
+  timeDroneMove: 0
+  moveUp: 0
   detectedPlayer: 0
   stoppedDrone: 0
   canShoot: 0
