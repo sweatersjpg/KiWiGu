@@ -176,7 +176,8 @@ public class EnemyBehaviour : EnemyBase
 
             isMovingUpOrDown = true;
 
-            yield return new WaitUntil(() => !agent.pathPending && agent.remainingDistance < 0.1f);
+            if (agent.isOnNavMesh)
+                yield return new WaitUntil(() => !agent.pathPending && agent.remainingDistance < 0.1f);
 
             isMovingUpOrDown = false;
 
