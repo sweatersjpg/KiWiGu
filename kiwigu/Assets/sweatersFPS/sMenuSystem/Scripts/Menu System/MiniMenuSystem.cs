@@ -177,11 +177,11 @@ public class MiniMenuSystem : ScreenProgram
                     PauseSystem.pauseSystem.FOVmin,
                     PauseSystem.pauseSystem.FOVmax, PauseSystem.FOV);
             }
-            else if (setting.title == "volume")
-            {
-                PauseSystem.pauseSystem.masterMixer.GetFloat("volume", out value);
-                value = Mathf.Pow(10, value / 10);
-            }
+            //else if (setting.title == "volume")
+            //{
+            //    PauseSystem.pauseSystem.masterMixer.GetFloat("volume", out value);
+            //    value = Mathf.Pow(10, value / 10);
+            //}
         }
 
         public override void Draw(int x, int y)

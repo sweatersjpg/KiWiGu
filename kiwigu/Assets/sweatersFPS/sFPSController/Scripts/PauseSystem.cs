@@ -10,7 +10,6 @@ public class PauseSystem : MonoBehaviour
     public static PauseSystem pauseSystem;
     public static bool paused;
 
-    public AudioMixer masterMixer;
     public Camera mainCamera;
 
     [Header("Settings")]
@@ -25,6 +24,9 @@ public class PauseSystem : MonoBehaviour
     public float mouseSensitivityMin = 2;
     public float mouseSensitivityMax = 6;
 
+    FMOD.Studio.Bus musicBus;
+    FMOD.Studio.Bus sfxBus;
+
     private void Awake()
     {
         if (pauseSystem == null)
@@ -38,6 +40,9 @@ public class PauseSystem : MonoBehaviour
     void Start()
     {
         mainCamera = sweatersController.instance.playerCamera;
+
+        musicBus = FMODUnity.RuntimeManager.GetBus("bus:/Music");
+        musicBus = FMODUnity.RuntimeManager.GetBus("bus:/SFX");
     }
 
     // Update is called once per frame
@@ -87,7 +92,16 @@ public class PauseSystem : MonoBehaviour
 
     // sliders
 
-    public void UpdateVolume(float value) => pauseSystem.masterMixer.SetFloat("volume", 10*Mathf.Log10(value));
+    //public void UpdateVolume(float value) => pauseSystem.masterMixer.SetFloat("volume", 10*Mathf.Log10(value));
+    public void UpdateSfxVolume(float value)
+    {
+
+    }
+
+    public void UpdateMusicVolume(float value)
+    {
+
+    }
 
     public void UpdateSensitivity(float value)
     {

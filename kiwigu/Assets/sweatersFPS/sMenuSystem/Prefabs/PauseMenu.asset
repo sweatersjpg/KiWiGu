@@ -21,10 +21,6 @@ MonoBehaviour:
   - title: settings
     onClick: 
     settings:
-    - title: volume
-      type: 0
-      content: []
-      callBack: UpdateVolume
     - title: FOV
       type: 0
       content: []
@@ -37,6 +33,17 @@ MonoBehaviour:
       type: 1
       content: []
       callBack: SetFullscreen
+  - title: volume
+    onClick: 
+    settings:
+    - title: music
+      type: 0
+      content: []
+      callBack: UpdateMusicVolume
+    - title: sfx
+      type: 0
+      content: []
+      callBack: UpdateSfxVolume
   - title: about
     onClick: 
     settings:
