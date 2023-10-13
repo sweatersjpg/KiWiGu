@@ -23,7 +23,7 @@ public class MoveHook : MonoBehaviour
     // bool canCatch = false;
 
     GunInfo caughtGun;
-    HookTarget hookTarget;
+    [HideInInspector] public HookTarget hookTarget;
     public float playerDistance = 4;
     public float distToHook = 0;
 
@@ -201,6 +201,23 @@ public class MoveHook : MonoBehaviour
 
             speed = 0;
         }
+    }
+
+    public void TakeThrownGun(GameObject target)
+    {
+        caughtGun = target.transform.GetComponent<ThrownGun>().info;
+
+        target.transform.parent = transform;
+        target.transform.localPosition = new();
+        target.layer = LayerMask.NameToLayer("GunHand");
+
+        if (target.transform.GetComponent<Rigidbody>() != null)
+        {
+            Destroy(target.transform.GetComponent<PhysicsHit>());
+            Destroy(target.transform.GetComponent<Rigidbody>());
+        }
+
+        speed = 0;
     }
 
     void TakeHookTarget()
