@@ -48,8 +48,33 @@ MonoBehaviour:
   bulletDamage: 5
   speed: 370
   gravity: -9.8
-  radius: 0.2
   acceleration: 0
+  radius: 0.2
+  changeSize: 0
+  radiusOverLifetime:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   trackTarget: 0
   trackingRadius: 1
   trackingSpeed: 2

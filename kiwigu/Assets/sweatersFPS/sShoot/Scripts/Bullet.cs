@@ -8,21 +8,28 @@ public class Bullet : MonoBehaviour
     [Header("Damage")]
     public float bulletDamage = 5;
 
+    [Header("Metrics")]
     public float speed = 370;
     public float gravity = -9.8f;
-
-    public float radius = 0.2f;
-
     public float acceleration = 0;
-    public bool trackTarget = false;
 
+    [Space]
+    public float radius = 0.2f;
+    public float maxSize;
+    public bool changeSize = false;
+    public AnimationCurve radiusOverLifetime;
+
+    float size = 0;
+
+    [Header("Tracking")]
+    public bool trackTarget = false;
     public float trackingRadius = 2;
     public float trackingSpeed = 2;
-
     Transform target;
     Transform ogTarget;
     Vector3 ogTargetPosition;
 
+    [Space]
     public float lifeTime = 3;
 
     public GameObject bulletMesh;
@@ -49,13 +56,19 @@ public class Bullet : MonoBehaviour
         if (target != null) ogTarget = target;
         
         ogTargetPosition = AcquireTarget.instance.target;
-
     }
 
     // Update is called once per frame
     void Update()
     {
         float time = Time.time - startTime;
+
+        float scale = radiusOverLifetime.Evaluate(time / lifeTime) * maxSize;
+        if (scale < 0) scale = 0;
+
+        size += Time.deltaTime * 50 * (scale - size) / 2;
+
+        if (changeSize) bulletMesh.transform.localScale = new(size * 2, size * 2, size * 2);
 
         // if (target != null) transform.LookAt(target);
 
@@ -191,7 +204,7 @@ public class Bullet : MonoBehaviour
         //Destroy(gameObject);
         lifeTime = Time.time - startTime + 0.5f;
 
-        Destroy(bulletMesh.GetComponentInChildren<MeshRenderer>().gameObject);
+        if(!changeSize) Destroy(bulletMesh.GetComponentInChildren<MeshRenderer>().gameObject);
         // bulletMesh.SetActive(false);
         dead = true;
     }
