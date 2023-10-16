@@ -15,11 +15,6 @@ public class Bullet : MonoBehaviour
 
     [Space]
     public float radius = 0.2f;
-    public float maxSize;
-    public bool changeSize = false;
-    public AnimationCurve radiusOverLifetime;
-
-    float size = 0;
 
     [Header("Tracking")]
     public bool trackTarget = false;
@@ -42,9 +37,9 @@ public class Bullet : MonoBehaviour
 
     bool dead = false;
 
-    // Vector3 velocity;
-
     float startTime;
+
+    [HideInInspector] public float charge;
 
     // Start is called before the first frame update
     void Start()
@@ -62,13 +57,6 @@ public class Bullet : MonoBehaviour
     void Update()
     {
         float time = Time.time - startTime;
-
-        float scale = radiusOverLifetime.Evaluate(time / lifeTime) * maxSize;
-        if (scale < 0) scale = 0;
-
-        size += Time.deltaTime * 50 * (scale - size) / 2;
-
-        if (changeSize) bulletMesh.transform.localScale = new(size * 2, size * 2, size * 2);
 
         // if (target != null) transform.LookAt(target);
 
@@ -204,7 +192,8 @@ public class Bullet : MonoBehaviour
         //Destroy(gameObject);
         lifeTime = Time.time - startTime + 0.5f;
 
-        if(!changeSize) Destroy(bulletMesh.GetComponentInChildren<MeshRenderer>().gameObject);
+        MeshRenderer view = bulletMesh.GetComponentInChildren<MeshRenderer>();
+        if(view != null) Destroy(view.gameObject);
         // bulletMesh.SetActive(false);
         dead = true;
     }

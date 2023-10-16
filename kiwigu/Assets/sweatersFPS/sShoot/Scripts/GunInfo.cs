@@ -12,6 +12,11 @@ public class GunInfo : ScriptableObject
     public float aimTime = 0.3f;
     public float scopeFOV = 30;
 
+    [Header("Charge")]
+    public bool canCharge = false;
+    public float timeToMaxCharge = 1;
+    public AnimationCurve chargeCurve;
+
     [Header("Shooting")]
     public bool fullAuto = false;
     public float projectiles = 1;
@@ -35,6 +40,7 @@ public class GunInfo : ScriptableObject
     public float bulletGravity = -9.8f;
     [Space]
     public GameObject bulletPrefab;
+
     public GameObject gunPrefab; 
     // its crazy that we have to do this but because the gun can't
     // reference itself as a prefab it's what needs to happen...

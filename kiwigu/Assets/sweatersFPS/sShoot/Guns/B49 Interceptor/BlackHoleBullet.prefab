@@ -29,6 +29,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 7767398782270900955}
   - {fileID: 4570687430845626531}
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -50,59 +51,6 @@ MonoBehaviour:
   gravity: -9.8
   acceleration: 0
   radius: 0.01
-  maxSize: 1
-  changeSize: 1
-  radiusOverLifetime:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 4.5699778
-      outSlope: 4.5699778
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0.03807824
-    - serializedVersion: 3
-      time: 0.3235007
-      value: 0.8698774
-      inSlope: 0.68331003
-      outSlope: 0.68331003
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 0.89819336
-      value: 0.99755096
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 0.96759033
-      value: 0.004852295
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 1.0034722
-      value: -0.012140792
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
   trackTarget: 0
   trackingRadius: 2
   trackingSpeed: 2
@@ -110,6 +58,8 @@ MonoBehaviour:
   bulletMesh: {fileID: 7168401629478513263}
   bulletHolePrefab: {fileID: 7839328679860194084, guid: a8f58d7ed020d4940b3a031616ccfaa5, type: 3}
   sparksPrefab: {fileID: 7558042070311089840, guid: 4a757825a5bafce41a9ebb47f13d0190, type: 3}
+  spawnOnHit: []
+  charge: 0
 --- !u!1 &7168401629478513263
 GameObject:
   m_ObjectHideFlags: 0
@@ -140,9 +90,8 @@ Transform:
   m_Children:
   - {fileID: 7691052602728220666}
   - {fileID: 8559321434234720297}
-  - {fileID: 7767398782270900955}
   m_Father: {fileID: 745279074493107226}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7185538354066154837
 GameObject:
@@ -372,11 +321,23 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
-    m_TransformParent: {fileID: 4570687430845626531}
+    m_TransformParent: {fileID: 745279074493107226}
     m_Modifications:
     - target: {fileID: 3567933066273778052, guid: 66449fe07135529438764cc95b9a082a, type: 3}
       propertyPath: m_RootOrder
-      value: 2
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3567933066273778052, guid: 66449fe07135529438764cc95b9a082a, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3567933066273778052, guid: 66449fe07135529438764cc95b9a082a, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3567933066273778052, guid: 66449fe07135529438764cc95b9a082a, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.1
       objectReference: {fileID: 0}
     - target: {fileID: 3567933066273778052, guid: 66449fe07135529438764cc95b9a082a, type: 3}
       propertyPath: m_LocalPosition.x
@@ -396,15 +357,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3567933066273778052, guid: 66449fe07135529438764cc95b9a082a, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 3567933066273778052, guid: 66449fe07135529438764cc95b9a082a, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 3567933066273778052, guid: 66449fe07135529438764cc95b9a082a, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 3567933066273778052, guid: 66449fe07135529438764cc95b9a082a, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -424,6 +385,69 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 66449fe07135529438764cc95b9a082a, type: 3}
+--- !u!1 &7767398782270900952 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3567933066273778055, guid: 66449fe07135529438764cc95b9a082a, type: 3}
+  m_PrefabInstance: {fileID: 6505590612556866399}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &6474359019176767405
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7767398782270900952}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a6189574b3817874d9b6115565f8f8b4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bullet: {fileID: 745279074493107228}
+  target: {fileID: 4570687430845626531}
+  maxSize: 1
+  minSize: 0.2
+  sizeOverLifetime:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 10.510949
+      outSlope: 10.510949
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.05881812
+    - serializedVersion: 3
+      time: 0.19677734
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 0.8981481
+      value: 1.0097324
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 0.9976852
+      value: 0.00486618
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!4 &7767398782270900955 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3567933066273778052, guid: 66449fe07135529438764cc95b9a082a, type: 3}
