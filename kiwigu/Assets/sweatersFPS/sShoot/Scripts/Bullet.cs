@@ -31,6 +31,8 @@ public class Bullet : MonoBehaviour
     [Space]
     public GameObject sparksPrefab;
 
+    public GameObject[] spawnOnHit;
+
     bool dead = false;
 
     // Vector3 velocity;
@@ -154,6 +156,12 @@ public class Bullet : MonoBehaviour
     {
         SpawnSparks(hit, direction);
         bulletMesh.transform.position = hit.point;
+
+        foreach(GameObject s in spawnOnHit)
+        {
+            GameObject o = Instantiate(s);
+            o.transform.position = hit.point;
+        }
 
         if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Enemy"))
         {
