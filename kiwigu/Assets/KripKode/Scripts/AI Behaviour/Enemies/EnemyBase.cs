@@ -153,7 +153,7 @@ public class EnemyBase : MonoBehaviour
             DetectEnemy();
         }
 
-        if (isHoldingGun && !isWandering)
+        if (!isWandering)
         {
             StartCoroutine(Wander());
         }
@@ -320,7 +320,7 @@ public class EnemyBase : MonoBehaviour
             if (collider.CompareTag("Player"))
             {
                 Vector3 direction = playerPosition - enemyMainVariables.EyesPosition.transform.position + new Vector3(0, 0.5f, 0);
-                RaycastHit[] hits = Physics.RaycastAll(enemyMainVariables.EyesPosition.transform.position, direction, enemyMovementVariables.EnemyAwareDistance);
+                RaycastHit[] hits = Physics.RaycastAll(enemyMainVariables.EyesPosition.transform.position, direction, enemyMovementVariables.EnemyAwareDistance, ~LayerMask.GetMask("Enemy"));
 
                 Debug.DrawRay(enemyMainVariables.EyesPosition.transform.position, direction, Color.red, 0.1f);
 
@@ -331,10 +331,6 @@ public class EnemyBase : MonoBehaviour
                     if (hit.collider.CompareTag("Player"))
                     {
                         return true;
-                    }
-                    else if (!hit.collider.CompareTag("Enemy"))
-                    {
-                        playerVisible = false;
                     }
                 }
 
