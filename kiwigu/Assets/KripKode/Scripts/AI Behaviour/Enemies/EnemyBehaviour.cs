@@ -147,7 +147,10 @@ public class EnemyBehaviour : EnemyBase
             float distanceToTarget = Vector3.Distance(currentPosition, targetPosition);
             droneMoveTime = distanceToTarget / agent.speed;
 
-            patternTargetPosition = new Vector3(enemyMainVariables.BodyMesh.transform.localPosition.x, isMovingUp ? enemyMainVariables.BodyMesh.transform.localPosition.y + 1.5f : enemyMainVariables.BodyMesh.transform.localPosition.y - 1.5f, enemyMainVariables.BodyMesh.transform.localPosition.z);
+            patternTargetPosition = new Vector3(enemyMainVariables.BodyMesh.transform.localPosition.x,
+                isMovingUp ? enemyMainVariables.BodyMesh.transform.localPosition.y + 1.5f : enemyMainVariables.BodyMesh.transform.localPosition.y - 1.5f,
+                enemyMainVariables.BodyMesh.transform.localPosition.z);
+
             targetYPosition = patternTargetPosition.y;
             isMovingUpOrDown = true;
 
@@ -172,6 +175,7 @@ public class EnemyBehaviour : EnemyBase
         agent.ResetPath();
         yield return new WaitForSeconds(enemyMovementVariables.DroneIdleTime);
         isShootingPatternActive = false;
+        isWandering = false;
     }
 
     private IEnumerator DefenseDronePattern(Vector3 theProtectorPosition)
@@ -198,7 +202,10 @@ public class EnemyBehaviour : EnemyBase
             float distanceToTarget = Vector3.Distance(currentPosition, targetPosition);
             droneMoveTime = distanceToTarget / agent.speed;
 
-            patternTargetPosition = new Vector3(enemyMainVariables.BodyMesh.transform.localPosition.x, isMovingUp ? enemyMainVariables.BodyMesh.transform.localPosition.y + 1.5f : enemyMainVariables.BodyMesh.transform.localPosition.y - 1.5f, enemyMainVariables.BodyMesh.transform.localPosition.z);
+            patternTargetPosition = new Vector3(enemyMainVariables.BodyMesh.transform.localPosition.x,
+                isMovingUp ? enemyMainVariables.BodyMesh.transform.localPosition.y + 1.5f : enemyMainVariables.BodyMesh.transform.localPosition.y - 1.5f,
+                enemyMainVariables.BodyMesh.transform.localPosition.z);
+
             targetYPosition = patternTargetPosition.y;
             isMovingUpOrDown = true;
 
@@ -211,6 +218,7 @@ public class EnemyBehaviour : EnemyBase
         agent.ResetPath();
         yield return new WaitForSeconds(enemyMovementVariables.DroneIdleTime);
         isShootingPatternActive = false;
+        isWandering = false;
     }
 
     protected override void Update()
