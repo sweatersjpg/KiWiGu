@@ -306,6 +306,7 @@ public class EnemyBase : MonoBehaviour
                 isHoldingGun = false;
             }
 
+            Instantiate(enemyMainVariables.explosionPrefab, enemyMainVariables.BodyMesh.transform.position, Quaternion.identity);
             Destroy(gameObject);
         }
     }
@@ -372,6 +373,7 @@ public class EnemyBase : MonoBehaviour
         public GameObject BodyMesh;
         [Tooltip("Make sure Hand Transform is attached as a child of the Body Object!")]
         public GameObject HandPosition;
+        public GameObject explosionPrefab;
     }
 
     [System.Serializable]

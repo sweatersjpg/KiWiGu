@@ -947,7 +947,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 15
+  m_RootOrder: 16
   m_LocalEulerAnglesHint: {x: 73.509, y: -90, z: -90}
 --- !u!1 &118309897
 GameObject:
@@ -2622,7 +2622,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &517546218
 PrefabInstance:
@@ -2963,7 +2963,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5728757122284842761, guid: ac1693904f6e1784b94d42fc61badb38, type: 3}
       propertyPath: m_RootOrder
-      value: 8
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 5728757122284842761, guid: ac1693904f6e1784b94d42fc61badb38, type: 3}
       propertyPath: m_LocalPosition.x
@@ -7569,7 +7569,7 @@ Transform:
   m_Children:
   - {fileID: 857434676}
   m_Father: {fileID: 0}
-  m_RootOrder: 19
+  m_RootOrder: 20
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1597177095
 PrefabInstance:
@@ -8210,6 +8210,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: HealthBar
       objectReference: {fileID: 0}
+    - target: {fileID: 8497208939105443934, guid: 7b5a167290d9e40488989a44d5eb6a95, type: 3}
+      propertyPath: TargetPercent
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8497208939105443935, guid: 7b5a167290d9e40488989a44d5eb6a95, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -8751,7 +8755,7 @@ Transform:
   - {fileID: 1190248918}
   - {fileID: 1502175755}
   m_Father: {fileID: 0}
-  m_RootOrder: 7
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1850758619
 GameObject:
@@ -8961,7 +8965,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 4619342294706443279, guid: cbb06f0e6cdf74cf0b9c73b2af08aeb7, type: 3}
       propertyPath: m_RootOrder
-      value: 20
+      value: 19
       objectReference: {fileID: 0}
     - target: {fileID: 4619342294706443279, guid: cbb06f0e6cdf74cf0b9c73b2af08aeb7, type: 3}
       propertyPath: m_LocalPosition.x
@@ -10876,7 +10880,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 390614569014119849, guid: cd009b5b1639cb64fab3f3879c5e1866, type: 3}
       propertyPath: m_RootOrder
-      value: 4
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 390614569014119849, guid: cd009b5b1639cb64fab3f3879c5e1866, type: 3}
       propertyPath: m_LocalPosition.x
@@ -11592,7 +11596,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 5017420656059058089, guid: 4a757825a5bafce41a9ebb47f13d0190, type: 3}
       propertyPath: m_RootOrder
-      value: 16
+      value: 15
       objectReference: {fileID: 0}
     - target: {fileID: 5017420656059058089, guid: 4a757825a5bafce41a9ebb47f13d0190, type: 3}
       propertyPath: m_LocalPosition.x
@@ -84489,6 +84493,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Offense Drone Example
       objectReference: {fileID: 0}
+    - target: {fileID: 9115080600601322047, guid: 337eb0bd26bf08741a4855a5f19f50d8, type: 3}
+      propertyPath: enemyMainVariables.explosionPrefab
+      value: 
+      objectReference: {fileID: 1886320638105856866, guid: 868415f162da742468824c5743d47bae, type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 337eb0bd26bf08741a4855a5f19f50d8, type: 3}
 --- !u!114 &9115080601642063284
@@ -84512,6 +84520,7 @@ MonoBehaviour:
     EyesPosition: {fileID: 9115080600550736631}
     BodyMesh: {fileID: 9115080601642320043}
     HandPosition: {fileID: 9115080600166698044}
+    explosionPrefab: {fileID: 1886320638105856866, guid: 868415f162da742468824c5743d47bae, type: 3}
   enemyMovementVariables:
     FleeDistance: 5
     FleeMovementVariation: 4
@@ -84648,6 +84657,7 @@ MonoBehaviour:
     EyesPosition: {fileID: 0}
     BodyMesh: {fileID: 0}
     HandPosition: {fileID: 0}
+    explosionPrefab: {fileID: 0}
   enemyMovementVariables:
     FleeDistance: 5
     FleeMovementVariation: 4
