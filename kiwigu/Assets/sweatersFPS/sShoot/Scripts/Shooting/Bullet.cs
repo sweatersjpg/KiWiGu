@@ -8,21 +8,23 @@ public class Bullet : MonoBehaviour
     [Header("Damage")]
     public float bulletDamage = 5;
 
+    [Header("Metrics")]
     public float speed = 370;
     public float gravity = -9.8f;
+    public float acceleration = 0;
 
+    [Space]
     public float radius = 0.2f;
 
-    public float acceleration = 0;
+    [Header("Tracking")]
     public bool trackTarget = false;
-
     public float trackingRadius = 2;
     public float trackingSpeed = 2;
-
     Transform target;
     Transform ogTarget;
     Vector3 ogTargetPosition;
 
+    [Space]
     public float lifeTime = 3;
 
     public GameObject bulletMesh;
@@ -31,11 +33,13 @@ public class Bullet : MonoBehaviour
     [Space]
     public GameObject sparksPrefab;
 
+    public GameObject[] spawnOnHit;
+
     bool dead = false;
 
-    // Vector3 velocity;
-
     float startTime;
+
+    [HideInInspector] public float charge;
 
     // Start is called before the first frame update
     void Start()
@@ -47,7 +51,6 @@ public class Bullet : MonoBehaviour
         if (target != null) ogTarget = target;
         
         ogTargetPosition = AcquireTarget.instance.target;
-
     }
 
     // Update is called once per frame
@@ -155,6 +158,12 @@ public class Bullet : MonoBehaviour
         SpawnSparks(hit, direction);
         bulletMesh.transform.position = hit.point;
 
+        foreach(GameObject s in spawnOnHit)
+        {
+            GameObject o = Instantiate(s);
+            o.transform.position = hit.point;
+        }
+
         if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Enemy"))
         {
             EnemyBase enemy = hit.transform.gameObject.GetComponentInChildren<EnemyBase>();
@@ -183,7 +192,8 @@ public class Bullet : MonoBehaviour
         //Destroy(gameObject);
         lifeTime = Time.time - startTime + 0.5f;
 
-        Destroy(bulletMesh.GetComponentInChildren<MeshRenderer>().gameObject);
+        MeshRenderer view = bulletMesh.GetComponentInChildren<MeshRenderer>();
+        if(view != null) Destroy(view.gameObject);
         // bulletMesh.SetActive(false);
         dead = true;
     }

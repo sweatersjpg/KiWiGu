@@ -17,17 +17,21 @@ public class ThrowHook : MonoBehaviour
 
     Vector3 startPosition;
     Vector3 homePosition;
+
+    Transform view;
     
     // Start is called before the first frame update
     void Start()
     {
-        startPosition = transform.parent.localPosition;
+        view = transform.parent.parent;
+
+        startPosition = view.localPosition;
         homePosition = startPosition;
         targetPosition = startPosition;
 
-        transform.parent.localPosition += new Vector3(0, -1, -0.2f);
+        view.localPosition += new Vector3(0, -1, -0.2f);
 
-        if (transform.parent.localPosition.x > 0) mouseButton = 1;
+        if (view.localPosition.x > 0) mouseButton = 1;
         else mouseButton = 0;
     }
 
@@ -38,8 +42,8 @@ public class ThrowHook : MonoBehaviour
 
         if ((Input.GetMouseButtonDown(mouseButton) || Input.GetKeyDown(mouseButton == 0 ? KeyCode.Q : KeyCode.E))
             && hasHook) Throw();
-        
-        transform.parent.localPosition += 50 * ((targetPosition - transform.parent.localPosition) / 4) * Time.deltaTime;
+
+        view.localPosition += 50 * ((targetPosition - view.localPosition) / 4) * Time.deltaTime;
     }
 
     //void ObstacleAvoidance()
@@ -77,7 +81,7 @@ public class ThrowHook : MonoBehaviour
         hook.GetComponent<MoveHook>().home = this;
 
         hookView.SetActive(false);
-        transform.parent.localPosition += new Vector3(0, 0, 0.4f);
+        view.localPosition += new Vector3(0, 0, 0.4f);
         homePosition = startPosition + new Vector3(0, 0, 0.2f);
 
         hasHook = false;
@@ -87,7 +91,7 @@ public class ThrowHook : MonoBehaviour
     {
         hookView.SetActive(true);
 
-        transform.parent.localPosition += new Vector3(0, 0, -0.4f);
+        view.localPosition += new Vector3(0, 0, -0.4f);
         targetPosition = startPosition;
 
         hasHook = true;
@@ -97,7 +101,7 @@ public class ThrowHook : MonoBehaviour
             Instantiate(info.gunPrefab, transform.parent);
             Destroy(gameObject);
 
-            transform.parent.localPosition = startPosition;
+            view.localPosition = startPosition;
         }
     }
 

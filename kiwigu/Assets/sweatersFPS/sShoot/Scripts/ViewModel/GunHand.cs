@@ -31,15 +31,21 @@ public class GunHand : MonoBehaviour
 
     WeaponCameraFX cameraFX;
 
+    public Transform view;
+    public Transform parent;
+
     float deltaTime = 0;
 
     // Start is called before the first frame update
     void Start()
     {
-        startPosition = transform.parent.localPosition;
+        if (view == null) view = transform.parent.parent;
+        if (parent == null) parent = transform.parent.parent;
+
+        startPosition = view.localPosition;
         targetPosition = startPosition;
 
-        if (startPosition.x > 0) mouseButton = 1;
+        if (parent.localPosition.x > 0) mouseButton = 1;
         else mouseButton = 0;
 
         Transform sights = transform.Find("Sights");
@@ -69,16 +75,16 @@ public class GunHand : MonoBehaviour
         //    AnimateShoot();
         //}
 
-        transform.parent.localPosition += 50 * ((targetPosition - transform.parent.localPosition) / 4) * deltaTime;
+        view.localPosition += 50 * ((targetPosition - view.localPosition) / 4) * deltaTime;
 
-        if((targetPosition - transform.parent.localPosition).magnitude < 0.01 && !hasGun)
+        if((targetPosition - view.localPosition).magnitude < 0.01 && !hasGun)
         {
-            transform.parent.localPosition = startPosition;
+            view.localPosition = startPosition;
             Instantiate(hookShotPrefab, transform.parent);
             Destroy(gameObject);
         }
         // we don't actually need to do that in this script, the shootBullet script can do that for us
-        //transform.parent.LookAt(AcquireTarget.instance.target);
+        //view.LookAt(AcquireTarget.instance.target);
 
         gunAngle += 50 * ((targetAngle - gunAngle) / 8) * deltaTime;
         transform.localEulerAngles = new(gunAngle, 0, 0);
@@ -136,7 +142,7 @@ public class GunHand : MonoBehaviour
         if (downSights) targetPosition = startPosition;
         else
         {
-            if (!cameraFX.ScopedIn()) targetPosition = new(0, -sightsPosition.y, startPosition.z);
+            if (!cameraFX.ScopedIn()) targetPosition = new(-sightsPosition.x, -sightsPosition.y, startPosition.z);
             else return;
         }
 
@@ -147,6 +153,6 @@ public class GunHand : MonoBehaviour
     {
         gunAngle -= info.recoil / 2;
 
-        transform.parent.localPosition += new Vector3(0, 0, -0.1f);
+        view.localPosition += new Vector3(0, 0, -0.1f);
     }
 }

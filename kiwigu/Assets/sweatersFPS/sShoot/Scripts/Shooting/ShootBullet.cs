@@ -22,6 +22,9 @@ public class ShootBullet : MonoBehaviour
     float deltaTime;
     float time;
 
+    [HideInInspector] public float charge;
+    float chargeTimer;
+
     // this script is in charge of all the perameters for the guns
 
     float shotTimer = 0;
@@ -56,8 +59,20 @@ public class ShootBullet : MonoBehaviour
         bool canShoot = (Time.time - shotTimer) > 1/info.fireRate && anim.canShoot && anim.hasGun;
         anim.canShoot = canShoot;
 
-        bool doShoot = info.canAim ? Input.GetMouseButtonUp(anim.mouseButton) : Input.GetMouseButtonDown(anim.mouseButton);
+        bool doShoot = (info.canAim || info.canCharge) ?
+            Input.GetMouseButtonUp(anim.mouseButton) : Input.GetMouseButtonDown(anim.mouseButton);
         if (info.fullAuto) doShoot = Input.GetMouseButton(anim.mouseButton);
+
+        if(info.canCharge)
+        {
+            // if (Input.GetMouseButtonDown(anim.mouseButton)) chargeTimerStart = time;
+            if (Input.GetMouseButton(anim.mouseButton)) chargeTimer += deltaTime / info.timeToMaxCharge;
+
+            if (chargeTimer > 1) chargeTimer = 1;
+            if (chargeTimer < 0) chargeTimer = 0;
+
+            charge = info.chargeCurve.Evaluate(chargeTimer);
+        }
 
         if (doShoot && canShoot)
         {
@@ -83,6 +98,9 @@ public class ShootBullet : MonoBehaviour
         for (int i = 0; i < info.projectiles; i++) SpawnBullet();
         anim.AnimateShoot();
         if(flash != null) flash.Play();
+
+        chargeTimer = 0;
+        Debug.Log(charge);
     }
 
     void SpawnBullet()
@@ -102,6 +120,7 @@ public class ShootBullet : MonoBehaviour
         Bullet b = bullet.GetComponent<Bullet>();
         b.speed = info.bulletSpeed;
         b.gravity = info.bulletGravity;
+        b.charge = charge;
 
         recoil += info.recoilPerShot;
         if (recoil > 1) recoil = 1;
