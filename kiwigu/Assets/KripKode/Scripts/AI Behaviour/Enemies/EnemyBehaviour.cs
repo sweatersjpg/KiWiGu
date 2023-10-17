@@ -17,6 +17,7 @@ public class EnemyBehaviour : EnemyBase
     private float targetYPosition;
     private float shootingTimer = 0;
     private float lastShotTimestamp = 0;
+    private bool isAiming;
 
     [HideInInspector] public bool canShoot;
 
@@ -62,8 +63,16 @@ public class EnemyBehaviour : EnemyBase
         }
         else if (enemyTypeVariables.OffenseDrone && detectedPlayer)
         {
-            if (enemyMainVariables.GunObject)
-                RotateGunObjectExitPoint(playerPosition);
+            if(!isAiming)
+            {
+                if (enemyMainVariables.GunObject)
+                    RotateGunObjectExitPoint(playerPosition);
+
+                RotateBodyMeshTowardsObj(playerPosition);
+            }
+
+            if (!isShootingPatternActive)
+                StartCoroutine(OffenseDronePattern(Random.Range(0, 2), playerPosition));
 
             if (!isDroneStopped)
             {
@@ -73,10 +82,6 @@ public class EnemyBehaviour : EnemyBase
                 isDroneStopped = true;
             }
 
-            if (!isShootingPatternActive)
-                StartCoroutine(OffenseDronePattern(Random.Range(0, 2), playerPosition));
-
-            RotateBodyMeshTowardsObj(playerPosition);
         }
         else if (enemyTypeVariables.Small || enemyTypeVariables.Medium)
         {
@@ -159,6 +164,8 @@ public class EnemyBehaviour : EnemyBase
 
             isMovingUpOrDown = false;
 
+            isAiming = true;
+
             if (pattern == 0 && isHoldingGun)
                 EnemyShoot();
             else if (pattern == 1 && i == 2)
@@ -176,6 +183,7 @@ public class EnemyBehaviour : EnemyBase
         yield return new WaitForSeconds(enemyMovementVariables.DroneIdleTime);
         isShootingPatternActive = false;
         isWandering = false;
+        isAiming = false;
     }
 
     private IEnumerator DefenseDronePattern(Vector3 theProtectorPosition)
