@@ -21,7 +21,7 @@ public class EnemyBase : MonoBehaviour
     [HideInInspector] public bool isShooting;
     [HideInInspector] public bool playerInSight;
     [HideInInspector] public bool detectedPlayer;
-    public bool detectedEnemy;
+    [HideInInspector] public bool detectedEnemy;
     [HideInInspector] public Vector3 playerPosition;
     [HideInInspector] public Vector3 enemyPosition;
 
@@ -148,9 +148,12 @@ public class EnemyBase : MonoBehaviour
         if (enemyTypeVariables.OffenseDrone || enemyTypeVariables.Small || enemyTypeVariables.Medium)
             DetectPlayer();
         else if (enemyTypeVariables.DefenseDrone)
+        {
+            DetectPlayer();
             DetectEnemy();
+        }
 
-        if (isHoldingGun && !isWandering)
+        if (!isWandering)
         {
             StartCoroutine(Wander());
         }
@@ -297,17 +300,13 @@ public class EnemyBase : MonoBehaviour
         {
             if (isHoldingGun)
             {
-                //enemyMainVariables.GunObject.GetComponent<Rigidbody>().isKinematic = false;
-                //enemyMainVariables.GunObject.transform.parent = null;
-                //Destroy(enemyMainVariables.GunObject, 60);
-                //isHoldingGun = false;
-
                 HookTarget ht = GetComponentInChildren<HookTarget>();
                 if(ht != null) ht.BeforeDestroy();
 
                 isHoldingGun = false;
             }
 
+            Instantiate(enemyMainVariables.explosionPrefab, enemyMainVariables.BodyMesh.transform.position, Quaternion.identity);
             Destroy(gameObject);
         }
     }
@@ -321,7 +320,7 @@ public class EnemyBase : MonoBehaviour
             if (collider.CompareTag("Player"))
             {
                 Vector3 direction = playerPosition - enemyMainVariables.EyesPosition.transform.position + new Vector3(0, 0.5f, 0);
-                RaycastHit[] hits = Physics.RaycastAll(enemyMainVariables.EyesPosition.transform.position, direction, enemyMovementVariables.EnemyAwareDistance);
+                RaycastHit[] hits = Physics.RaycastAll(enemyMainVariables.EyesPosition.transform.position, direction, enemyMovementVariables.EnemyAwareDistance, ~LayerMask.GetMask("Enemy"));
 
                 Debug.DrawRay(enemyMainVariables.EyesPosition.transform.position, direction, Color.red, 0.1f);
 
@@ -332,10 +331,6 @@ public class EnemyBase : MonoBehaviour
                     if (hit.collider.CompareTag("Player"))
                     {
                         return true;
-                    }
-                    else if (!hit.collider.CompareTag("Enemy"))
-                    {
-                        playerVisible = false;
                     }
                 }
 
@@ -374,6 +369,7 @@ public class EnemyBase : MonoBehaviour
         public GameObject BodyMesh;
         [Tooltip("Make sure Hand Transform is attached as a child of the Body Object!")]
         public GameObject HandPosition;
+        public GameObject explosionPrefab;
     }
 
     [System.Serializable]
