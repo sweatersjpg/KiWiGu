@@ -270,7 +270,11 @@ public class EnemyBehaviour : EnemyBase
 
         isShooting = true;
 
-        for (int i = 0; i < enemyMainVariables.GunObject.GetComponent<EnemyGunInfo>().GunAssetInfo.projectiles; i++)
+        HookTarget gun = transform.GetComponentInChildren<HookTarget>();
+        if (gun == null) return; // dont shoot if no  hookTarget gun
+        GunInfo info = gun.info;
+
+        for (int i = 0; i < info.projectiles; i++)
             SpawnBullet();
     }
 
@@ -278,18 +282,28 @@ public class EnemyBehaviour : EnemyBase
     {
         GameObject GunObjectExitPoint = enemyMainVariables.GunObject.transform.GetChild(0).gameObject;
 
-        GameObject bullet = Instantiate(enemyMainVariables.GunObject.GetComponent<EnemyGunInfo>().BulletPrefab, GunObjectExitPoint.transform.position, GunObjectExitPoint.transform.rotation);
-        bullet.transform.parent = gameObject.transform;
+        //GunInfo info = enemyMainVariables.GunObject.GetComponent<EnemyGunInfo>().GunAssetInfo;
+        HookTarget gun = transform.GetComponentInChildren<HookTarget>();
+        GunInfo info = gun.info;
+
+        GameObject bullet = Instantiate(info.bulletPrefab, GunObjectExitPoint.transform.position, GunObjectExitPoint.transform.rotation);
+        // bullet.transform.parent = gameObject.transform;
 
         Vector3 direction = GunObjectExitPoint.transform.forward;
-        direction += SpreadDirection(enemyMainVariables.GunObject.GetComponent<EnemyGunInfo>().GunAssetInfo.spread, 3);
+        direction += SpreadDirection(info.spread, 3);
 
         bullet.transform.position = GunObjectExitPoint.transform.position;
         bullet.transform.rotation = Quaternion.LookRotation(direction.normalized);
 
-        EnemyBullet b = bullet.GetComponent<EnemyBullet>();
-        b.BulletSpeed = enemyMainVariables.GunObject.GetComponent<EnemyGunInfo>().GunAssetInfo.bulletSpeed;
-        b.BulletGravity = enemyMainVariables.GunObject.GetComponent<EnemyGunInfo>().GunAssetInfo.bulletGravity;
+        //EnemyBullet b = bullet.GetComponent<EnemyBullet>();
+        //b.BulletSpeed = info.bulletSpeed;
+        //b.BulletGravity = info.bulletGravity;
+        Bullet b = bullet.GetComponent<Bullet>();
+        b.speed = info.bulletSpeed;
+        b.gravity = info.bulletGravity;
+        b.ignoreMask = ~LayerMask.GetMask("GunHand", "HookTarget");
+        b.trackTarget = false;
+
         isShooting = false;
     }
 

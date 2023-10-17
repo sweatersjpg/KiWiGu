@@ -41,6 +41,8 @@ public class Bullet : MonoBehaviour
 
     [HideInInspector] public float charge;
 
+    [HideInInspector] public LayerMask ignoreMask;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -126,7 +128,7 @@ public class Bullet : MonoBehaviour
         } else
         {
             bool hasHitTwoElectricBoogaloo = Physics.Raycast(origin, direction, out RaycastHit hitTwo, direction.magnitude,
-                ~LayerMask.GetMask("GunHand", "Player", "HookTarget"));
+                ignoreMask);
 
             if (hasHitTwoElectricBoogaloo)
             {

@@ -121,6 +121,7 @@ public class ShootBullet : MonoBehaviour
         b.speed = info.bulletSpeed;
         b.gravity = info.bulletGravity;
         b.charge = charge;
+        b.ignoreMask = ~LayerMask.GetMask("GunHand", "Player", "HookTarget");
 
         recoil += info.recoilPerShot;
         if (recoil > 1) recoil = 1;
