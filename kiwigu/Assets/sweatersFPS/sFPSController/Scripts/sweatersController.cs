@@ -54,8 +54,9 @@ public class sweatersController : MonoBehaviour
 
     float targetHeight;
 
-    [HideInInspector] public Vector2 mouseLook;
+    public Vector2 mouseLook;
     public Vector3 velocity;
+    public Vector3 rawInput;
     public Vector3 input;
 
     float rotationX = 0;
@@ -157,6 +158,7 @@ public class sweatersController : MonoBehaviour
         input = new Vector3(Input.GetAxis("Vertical"), 0, Input.GetAxis("Horizontal"));
         input = Vector3.ClampMagnitude(input, 1); // limit input to 1
 
+        rawInput = new(input.x, 0, input.z);
         // recalculate based on look facing
         input = (forward * input.x) + (right * input.z);
 

@@ -14,6 +14,12 @@ public class WeaponCameraFX : MonoBehaviour
     bool scopeIn = false;
     float scopeFOV = 30;
 
+    public float fovSpeedScale = 2;
+    float targetFOV;
+
+    public float tiltIntensity = 5;
+    float tilt = 0;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -24,7 +30,14 @@ public class WeaponCameraFX : MonoBehaviour
     // Update is called once per frame
     void LateUpdate()
     {
-        transform.localEulerAngles = new(-FindMax(recoilRequests), 0, 0);
+        sweatersController player = sweatersController.instance;
+
+        float targetTilt = Input.GetAxis("Mouse X") * tiltIntensity;
+        if (PauseSystem.paused) targetTilt = 0;
+
+        tilt += (targetTilt - tilt) / 4 * Time.deltaTime * 50;
+        
+        transform.localEulerAngles = new(-FindMax(recoilRequests), 0, -tilt);
 
         recoilRequests.Clear();
 
@@ -34,11 +47,31 @@ public class WeaponCameraFX : MonoBehaviour
         if (fovTimer < 0) fovTimer = 0;
         if (fovTimer > 1) fovTimer = 1;
 
-        playerCamera.fieldOfView = Mathf.Lerp(PauseSystem.FOV, scopeFOV, fovTransition.Evaluate(fovTimer));
-        sweatersController.instance.lookSpeed
-            = Mathf.Lerp(PauseSystem.mouseSensitivity, PauseSystem.mouseSensitivity / 2, fovTransition.Evaluate(fovTimer)); ;
+        targetFOV = Mathf.Lerp(PauseSystem.FOV, scopeFOV, fovTransition.Evaluate(fovTimer));
+
+        float speedFOV = Mathf.Max(Vector3.Dot(player.velocity, player.transform.forward), 0);
+        targetFOV += speedFOV;
+
+        playerCamera.fieldOfView += (targetFOV - playerCamera.fieldOfView) / 4 * Time.deltaTime * 50;
+
+        SetMouseSensitivity();
+
+        //player.lookSpeed
+        //    = Mathf.Lerp(PauseSystem.mouseSensitivity, PauseSystem.mouseSensitivity / 2, fovTransition.Evaluate(fovTimer));
 
         scopeIn = false;
+    }
+    
+    void SetMouseSensitivity()
+    {
+        float max = PauseSystem.FOV;
+        float min = PauseSystem.pauseSystem.FOVmin;
+
+        float fov = (targetFOV - min) / (max - min);
+
+        float sens = Mathf.Lerp(2, 1, fov);
+
+        sweatersController.instance.lookSpeed = PauseSystem.mouseSensitivity / sens;
     }
 
     float FindMax(List<float> angles)

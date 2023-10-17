@@ -13,6 +13,9 @@ public class ViewBob : MonoBehaviour
 
     Vector3 targetPosition;
 
+    Vector3 targetRotation;
+    Vector3 rotation;
+
     int hand = -1;
 
     sweatersController player;
@@ -45,8 +48,19 @@ public class ViewBob : MonoBehaviour
 
         if (!player.isGrounded) targetPosition = new(0, velocity.y * -0.01f, 0);
 
-        if (Mathf.Abs(transform.parent.localPosition.x) < 0.01) targetPosition = 0.1f * targetPosition.magnitude * targetPosition.normalized;
+        targetRotation = new(0, 0, Vector3.Dot(velocity, player.transform.right));
+
+        if (Mathf.Abs(transform.parent.localPosition.x) < 0.01)
+        {
+            targetPosition = 0.1f * targetPosition.magnitude * targetPosition.normalized;
+            targetRotation = 0.2f * targetRotation.magnitude * targetRotation.normalized;
+        }
 
         transform.localPosition += (targetPosition - transform.localPosition) / 4 * Time.deltaTime * 50;
+
+        rotation += (targetRotation - rotation) / 4 * Time.deltaTime * 50;
+
+        transform.localEulerAngles = rotation;
+        
     }
 }
