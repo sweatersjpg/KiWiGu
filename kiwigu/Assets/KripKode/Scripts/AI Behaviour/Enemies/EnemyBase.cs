@@ -153,7 +153,7 @@ public class EnemyBase : MonoBehaviour
             DetectEnemy();
         }
 
-        if (!isWandering)
+        if (!isWandering && !isShooting && !detectedPlayer)
         {
             StartCoroutine(Wander());
         }
