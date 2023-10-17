@@ -271,7 +271,7 @@ MonoBehaviour:
   enemyMovementVariables:
     FleeDistance: 5
     FleeMovementVariation: 4
-    MovementSpeed: 5
+    MovementSpeed: 6
     AvoidPlayerDistance: 7
     RotationSpeed: 180
     EnemyAwareDistance: 15
@@ -301,6 +301,9 @@ MonoBehaviour:
   detectedEnemy: 0
   playerPosition: {x: 0, y: 0, z: 0}
   enemyPosition: {x: 0, y: 0, z: 0}
+  exitPointRotationSpeed: 180
+  verticalOffset: 0.75
+  movementDuration: 2
   canShoot: 0
 --- !u!195 &9115080600601322046
 NavMeshAgent:

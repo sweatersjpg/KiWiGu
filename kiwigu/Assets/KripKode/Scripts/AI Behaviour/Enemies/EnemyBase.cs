@@ -300,11 +300,6 @@ public class EnemyBase : MonoBehaviour
         {
             if (isHoldingGun)
             {
-                //enemyMainVariables.GunObject.GetComponent<Rigidbody>().isKinematic = false;
-                //enemyMainVariables.GunObject.transform.parent = null;
-                //Destroy(enemyMainVariables.GunObject, 60);
-                //isHoldingGun = false;
-
                 HookTarget ht = GetComponentInChildren<HookTarget>();
                 if(ht != null) ht.BeforeDestroy();
 
