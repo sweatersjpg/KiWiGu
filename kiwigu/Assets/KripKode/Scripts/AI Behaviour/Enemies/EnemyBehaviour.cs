@@ -5,7 +5,7 @@ using static EnemyBase;
 
 public class EnemyBehaviour : EnemyBase
 {
-    float exitPointRotationSpeed;
+    private float exitPointRotationSpeed;
 
     private bool isMovingUpOrDown;
     private float droneMoveTime;
@@ -57,7 +57,7 @@ public class EnemyBehaviour : EnemyBase
             {
                 if (enemyMainVariables.GunObject)
                 {
-                    RotateGunObjectExitPoint(enemyPosition);
+                    RotateGunObjectExitPoint(playerPosition);
                 }
 
                 if (!isDroneStopped)
@@ -70,10 +70,10 @@ public class EnemyBehaviour : EnemyBase
 
                 if (!isShootingPatternActive)
                 {
-                   // StartCoroutine(DefenseDronePattern(enemyPosition));
+                    StartCoroutine(DefenseDronePattern(enemyPosition));
                 }
 
-                RotateBodyMeshTowardsObj(enemyPosition);
+                RotateBodyMeshTowardsObj(playerPosition);
             }
             else if (!isShootingPatternActive)
             {
@@ -164,7 +164,7 @@ public class EnemyBehaviour : EnemyBase
         );
     }
 
-    private IEnumerator OffenseDronePattern(int pattern, Vector3 playerPosition)
+    private IEnumerator OffenseDronePattern(int pattern, Vector3 thePlayerPosition)
     {
         isShootingPatternActive = true;
 
@@ -178,15 +178,25 @@ public class EnemyBehaviour : EnemyBase
         for (int i = 0; i < iPattern; i++)
         {
             isMovingUp = !isMovingUp;
+
             Vector3 currentPosition = transform.position;
 
             Vector3 randomDirection = Random.insideUnitSphere;
             randomDirection.Normalize();
 
-            Vector3 targetPosition = currentPosition + randomDirection * 4;
+            Vector3 directionToPlayer = thePlayerPosition - currentPosition;
+            directionToPlayer.y = 0;
+
+            if (directionToPlayer.sqrMagnitude < enemyMovementVariables.AvoidPlayerDistance)
+            {
+                randomDirection += directionToPlayer.normalized;
+            }
+
+            Vector3 targetPosition = currentPosition + randomDirection * 2;
             agent.SetDestination(targetPosition);
 
             float distanceToTarget = Vector3.Distance(currentPosition, targetPosition);
+
             droneMoveTime = distanceToTarget / agent.speed;
 
             if (isMovingUp)
@@ -210,17 +220,18 @@ public class EnemyBehaviour : EnemyBase
             switch (pattern)
             {
                 case 0:
-                    EnemyShoot();
+                    if (isHoldingGun)
+                        EnemyShoot();
                     break;
                 case 1:
-                    if (i == 3)
+                    if (i == 2)
                     {
-                        yield return new WaitForSeconds(0.25f);
-                        EnemyShoot();
-                        yield return new WaitForSeconds(0.25f);
-                        EnemyShoot();
-                        yield return new WaitForSeconds(0.25f);
-                        EnemyShoot();
+                        for (int j = 0; j < 3; j++)
+                        {
+                            yield return new WaitForSeconds(0.35f);
+                            if (isHoldingGun)
+                                EnemyShoot();
+                        }
                     }
                     break;
             }
@@ -231,24 +242,32 @@ public class EnemyBehaviour : EnemyBase
         isShootingPatternActive = false;
     }
 
-    private IEnumerator DefenseDronePattern(Vector3 playerPosition)
+    private IEnumerator DefenseDronePattern(Vector3 theProtectorPosition)
     {
         isShootingPatternActive = true;
 
-        int iPattern;
-
-        for (int i = 0; i < 5; i++)
+        for (int i = 0; i < 3; i++)
         {
             isMovingUp = !isMovingUp;
+
             Vector3 currentPosition = transform.position;
 
             Vector3 randomDirection = Random.insideUnitSphere;
             randomDirection.Normalize();
 
-            Vector3 targetPosition = currentPosition + randomDirection * 4;
+            Vector3 directionToEnemy = theProtectorPosition - currentPosition;
+            directionToEnemy.y = 0;
+
+            if (directionToEnemy.sqrMagnitude < enemyMovementVariables.AvoidPlayerDistance)
+            {
+                randomDirection += directionToEnemy.normalized;
+            }
+
+            Vector3 targetPosition = currentPosition + randomDirection * 2;
             agent.SetDestination(targetPosition);
 
             float distanceToTarget = Vector3.Distance(currentPosition, targetPosition);
+
             droneMoveTime = distanceToTarget / agent.speed;
 
             if (isMovingUp)
@@ -280,7 +299,8 @@ public class EnemyBehaviour : EnemyBase
         if (hitBoxScript.CheckIfHitboxScript)
             return;
 
-        playerInSight = CheckPlayerVisibility();
+        if (enemyTypeVariables.Small || enemyTypeVariables.Medium || enemyTypeVariables.OffenseDrone)
+            playerInSight = CheckPlayerVisibility();
 
         base.Update();
 
@@ -308,7 +328,7 @@ public class EnemyBehaviour : EnemyBase
                 EnemyMovement();
             }
         }
-        else if (!isHoldingGun && (enemyTypeVariables.DefenseDrone || enemyTypeVariables.OffenseDrone))
+        else if (!isHoldingGun && enemyTypeVariables.DefenseDrone || enemyTypeVariables.OffenseDrone)
         {
             EnemyMovement();
         }

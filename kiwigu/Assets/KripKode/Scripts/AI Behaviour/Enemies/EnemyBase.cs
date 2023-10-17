@@ -21,7 +21,7 @@ public class EnemyBase : MonoBehaviour
     [HideInInspector] public bool isShooting;
     [HideInInspector] public bool playerInSight;
     [HideInInspector] public bool detectedPlayer;
-    public bool detectedEnemy;
+    [HideInInspector] public bool detectedEnemy;
     [HideInInspector] public Vector3 playerPosition;
     [HideInInspector] public Vector3 enemyPosition;
 
@@ -148,7 +148,10 @@ public class EnemyBase : MonoBehaviour
         if (enemyTypeVariables.OffenseDrone || enemyTypeVariables.Small || enemyTypeVariables.Medium)
             DetectPlayer();
         else if (enemyTypeVariables.DefenseDrone)
+        {
+            DetectPlayer();
             DetectEnemy();
+        }
 
         if (isHoldingGun && !isWandering)
         {
