@@ -27,6 +27,8 @@ public class EnemyBehaviour : EnemyBase
     private float interval;
     private Vector3 randomDestination;
 
+    bool canFacePlayer = true;
+
     protected override void Start()
     {
         if (hitBoxScript.CheckIfHitboxScript)
@@ -106,12 +108,16 @@ public class EnemyBehaviour : EnemyBase
 
     private void RotateBodyMeshTowardsObj(Vector3 objPos)
     {
+        if (!canFacePlayer) return;
+
         Quaternion rRot = Quaternion.LookRotation(objPos - bodyMeshDrone.position);
         bodyMeshDrone.rotation = Quaternion.Slerp(bodyMeshDrone.rotation, rRot, Time.deltaTime * 10);
     }
 
     private void RotateGunObjectExitPoint(Vector3 rotPos)
     {
+        if (!canFacePlayer) return;
+        
         gunObjectExitPoint = enemyMainVariables.GunObject.transform.GetChild(0).gameObject;
 
         Quaternion targetRotation = Quaternion.LookRotation(
@@ -175,17 +181,22 @@ public class EnemyBehaviour : EnemyBase
 
             if (pattern == 0 && isHoldingGun)
             {
+                canFacePlayer = false;
                 yield return new WaitForSeconds(0.25f);
                 if (detectedPlayer)
-                    EnemyShoot();
+                    yield return new WaitForSeconds(EnemyShoot());
+                canFacePlayer = true;
             }
             else if (pattern == 1 && i == 2)
             {
                 for (int j = 0; j < 3; j++)
                 {
-                    yield return new WaitForSeconds(0.45f);
+                    yield return new WaitForSeconds(0.25f);
+                    canFacePlayer = false;
+                    yield return new WaitForSeconds(0.25f);
                     if (isHoldingGun && detectedPlayer)
-                        EnemyShoot();
+                        yield return new WaitForSeconds(EnemyShoot());
+                    canFacePlayer = true;
                 }
             }
         }
@@ -303,18 +314,31 @@ public class EnemyBehaviour : EnemyBase
             targetYPos.y = initialYPosition - droneHeightOffset;
     }
 
-    private void EnemyShoot()
+    private float EnemyShoot()
     {
         if (!isHoldingGun)
-            return;
-        isShooting = true;
+            return 0;
 
         HookTarget gun = transform.GetComponentInChildren<HookTarget>();
-        if (gun == null) return;
+        if (gun == null)
+        {
+            isHoldingGun = false;
+            return 0;
+        }
         GunInfo info = gun.info;
 
-        for (int i = 0; i < info.projectiles; i++)
-            SpawnBullet();
+        isShooting = true;
+
+        float burst = info.burstSize;
+        if (info.fullAuto) burst = info.autoRate;
+
+        for(int j = 0; j < burst; j++)
+        {
+            isShooting = true;
+            for (int i = 0; i < info.projectiles; i++) Invoke(nameof(SpawnBullet), j * 1 / info.autoRate);
+        }
+
+        return burst * 1 / info.autoRate;
     }
 
     private void SpawnBullet()
@@ -333,8 +357,9 @@ public class EnemyBehaviour : EnemyBase
         Bullet b = bullet.GetComponent<Bullet>();
         b.speed = info.bulletSpeed;
         b.gravity = info.bulletGravity;
-        b.ignoreMask = ~LayerMask.GetMask("GunHand", "HookTarget");
+        b.ignoreMask = ~LayerMask.GetMask("GunHand", "HookTarget", "Enemy");
         b.trackTarget = false;
+        b.fromEnemy = true;
 
         isShooting = false;
     }
