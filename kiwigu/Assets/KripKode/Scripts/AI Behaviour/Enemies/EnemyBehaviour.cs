@@ -48,7 +48,7 @@ public class EnemyBehaviour : EnemyBase
     {
         if (enemyTypeVariables.DefenseDrone && detectedEnemy)
         {
-            Debug.Log("RUNNING????");
+            //Debug.Log("RUNNING????");
             float distance = Vector3.Distance(transform.position, enemyPosition);
 
             if (distance > 0.1f)
