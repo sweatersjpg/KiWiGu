@@ -353,7 +353,7 @@ public class EnemyBehaviour : EnemyBase
         b.ignoreMask = ~LayerMask.GetMask("GunHand", "HookTarget", "Enemy");
         b.trackTarget = false;
         b.fromEnemy = true;
-        b.charge = 1;
+        b.charge = 0.5f;
 
         isShooting = false;
     }
