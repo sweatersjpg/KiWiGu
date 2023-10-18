@@ -23,7 +23,8 @@ public class ThrownGun : MonoBehaviour
     public void SetMesh(Mesh mesh)
     {
         GetComponent<MeshFilter>().mesh = mesh;
-        GetComponent<MeshCollider>().sharedMesh = mesh;
+        // GetComponent<MeshCollider>().sharedMesh = mesh;
+
     }
 
     // Update is called once per frame

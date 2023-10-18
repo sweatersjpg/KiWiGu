@@ -17,76 +17,96 @@ public class ThrowHook : MonoBehaviour
 
     Vector3 startPosition;
     Vector3 homePosition;
+
+    Transform view;
     
     // Start is called before the first frame update
     void Start()
     {
-        startPosition = transform.localPosition;
+        view = transform.parent.parent;
+
+        startPosition = view.localPosition;
         homePosition = startPosition;
         targetPosition = startPosition;
+
+        view.localPosition += new Vector3(0, -1, -0.2f);
+
+        if (view.localPosition.x > 0) mouseButton = 1;
+        else mouseButton = 0;
     }
 
     // Update is called once per frame
     void LateUpdate()
     {
-        ObstacleAvoidance();
+        // ObstacleAvoidance();
 
-        if (Input.GetMouseButtonDown(0) && hasHook) Throw();
-        
-        transform.localPosition += 50 * ((targetPosition - transform.localPosition) / 4) * Time.deltaTime;
+        if ((Input.GetMouseButtonDown(mouseButton) || Input.GetKeyDown(mouseButton == 0 ? KeyCode.Q : KeyCode.E))
+            && hasHook) Throw();
+
+        view.localPosition += 50 * ((targetPosition - view.localPosition) / 4) * Time.deltaTime;
     }
-    void ObstacleAvoidance()
-    {
-        Vector3 origin = transform.parent.position + new Vector3(0, transform.localPosition.y, 0);
-        Vector3 direction = (transform.position - origin).normalized;
 
-        Debug.DrawRay(origin, direction);
+    //void ObstacleAvoidance()
+    //{
+    //    Vector3 origin = transform.parent.position + new Vector3(0, transform.localPosition.y, 0);
+    //    Vector3 direction = (transform.position - origin).normalized;
 
-        RaycastHit hit;
+    //    Debug.DrawRay(origin, direction);
 
-        bool hasHit = Physics.Raycast(origin, direction, out hit, direction.magnitude, ~LayerMask.GetMask("GunHand", "Player"));
+    //    RaycastHit hit;
 
-        Vector3 offset = new(0, 0, 0);
+    //    bool hasHit = Physics.Raycast(origin, direction, out hit, direction.magnitude, ~LayerMask.GetMask("GunHand", "Player"));
 
-        if (hasHit)
-        {
-            offset = hit.point - (origin + direction);
+    //    Vector3 offset = new(0, 0, 0);
 
-            targetPosition = transform.InverseTransformPoint(transform.TransformPoint(startPosition) + (hit.normal + new Vector3(0, -1, 0)) * offset.magnitude);
+    //    if (hasHit)
+    //    {
+    //        offset = hit.point - (origin + direction);
 
-            return;
-        }
+    //        targetPosition = transform.InverseTransformPoint(transform.TransformPoint(startPosition) + (hit.normal + new Vector3(0, -1, 0)) * offset.magnitude);
 
-        targetPosition = homePosition;
+    //        return;
+    //    }
 
-    }
+    //    targetPosition = homePosition;
+
+    //}
 
     void Throw()
     {
         GameObject hook = Instantiate(hookPrefab);
         hook.transform.SetPositionAndRotation(transform.position, Quaternion.LookRotation(transform.forward));
+        hook.transform.LookAt(AcquireTarget.instance.GetHookTarget());
 
         hook.GetComponent<MoveHook>().home = this;
 
         hookView.SetActive(false);
-        transform.localPosition += new Vector3(0, 0, 0.4f);
+        view.localPosition += new Vector3(0, 0, 0.4f);
         homePosition = startPosition + new Vector3(0, 0, 0.2f);
 
         hasHook = false;
     }
 
-    public void CatchHook()
+    public void CatchHook(GunInfo info)
     {
         hookView.SetActive(true);
 
-        transform.localPosition += new Vector3(0, 0, -0.4f);
-        homePosition = startPosition;
+        view.localPosition += new Vector3(0, 0, -0.4f);
+        targetPosition = startPosition;
 
         hasHook = true;
+
+        if(info != null)
+        {
+            Instantiate(info.gunPrefab, transform.parent);
+            Destroy(gameObject);
+
+            view.localPosition = startPosition;
+        }
     }
 
     public void PullBack()
     {
-        homePosition = startPosition - new Vector3(0, 0, 0.5f);
+        targetPosition = startPosition - new Vector3(0, 0, 0.5f);
     }
 }
