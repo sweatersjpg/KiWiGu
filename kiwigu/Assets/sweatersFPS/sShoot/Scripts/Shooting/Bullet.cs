@@ -42,6 +42,7 @@ public class Bullet : MonoBehaviour
     [HideInInspector] public float charge;
 
     [HideInInspector] public LayerMask ignoreMask;
+    [HideInInspector] public bool fromEnemy = false;
 
     // Start is called before the first frame update
     void Start()
@@ -121,6 +122,8 @@ public class Bullet : MonoBehaviour
 
         bool hasHit = Physics.SphereCast(origin, radius, direction, out RaycastHit hit, direction.magnitude,
             LayerMask.GetMask("Enemy", "PhysicsObject"));
+
+        if (fromEnemy) hasHit = false;
 
         if(hasHit)
         {

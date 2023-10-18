@@ -262,7 +262,7 @@ MonoBehaviour:
   enemyMainVariables:
     canSeekGun: 0
     spawnWithGun: 1
-    MaxHealth: 25
+    MaxHealth: 50
     MaxShield: 0
     GunObject: {fileID: 4006260289432868516, guid: e9f49a38ad200014aa4418f8035720f2, type: 3}
     EyesPosition: {fileID: 9115080601658537340}
@@ -272,10 +272,10 @@ MonoBehaviour:
   enemyMovementVariables:
     FleeDistance: 5
     FleeMovementVariation: 4
-    MovementSpeed: 6
-    AvoidPlayerDistance: 7
+    MovementSpeed: 9
+    AvoidPlayerDistance: 5
     RotationSpeed: 180
-    EnemyAwareDistance: 15
+    EnemyAwareDistance: 20
     WanderRadius: 8
     WanderIdleVariation: 4
     DroneIdleTime: 2
@@ -303,9 +303,9 @@ MonoBehaviour:
   playerPosition: {x: 0, y: 0, z: 0}
   enemyPosition: {x: 0, y: 0, z: 0}
   exitPointRotationSpeed: 180
-  verticalOffset: 0.75
+  verticalOffset: 1
   movementDuration: 2
-  canShoot: 0
+  CanShoot: 0
 --- !u!195 &9115080600601322046
 NavMeshAgent:
   m_ObjectHideFlags: 0

@@ -25,6 +25,8 @@ public class ShootBullet : MonoBehaviour
     [HideInInspector] public float charge;
     float chargeTimer;
 
+    public Ammunition ammo;
+
     // this script is in charge of all the perameters for the guns
 
     float shotTimer = 0;
@@ -40,6 +42,8 @@ public class ShootBullet : MonoBehaviour
         cameraRecoil = sweatersController.instance.playerCamera.GetComponent<WeaponCameraFX>();
 
         spreadTimeStart = Random.Range(0, 100);
+
+        if (ammo.capacity == 0) ammo = new Ammunition(info.capacity);
     }
 
     // Update is called once per frame
@@ -74,7 +78,7 @@ public class ShootBullet : MonoBehaviour
             charge = info.chargeCurve.Evaluate(chargeTimer);
         }
 
-        if (doShoot && canShoot)
+        if (doShoot && canShoot && ammo.count > 0)
         {
             shotTimer = Time.time;
             for(int i = 0; i < info.burstSize; i++) Invoke(nameof(Shoot), i * 1/info.autoRate);
@@ -95,12 +99,14 @@ public class ShootBullet : MonoBehaviour
 
     void Shoot()
     {
+        ammo.count -= 1;
+
         for (int i = 0; i < info.projectiles; i++) SpawnBullet();
         anim.AnimateShoot();
         if(flash != null) flash.Play();
 
         chargeTimer = 0;
-        Debug.Log(charge);
+        // Debug.Log(charge);
     }
 
     void SpawnBullet()

@@ -126,6 +126,8 @@ public class GunHand : MonoBehaviour
         gun.transform.parent = null;
         gun.transform.LookAt(AcquireTarget.instance.target);
 
+        gun.ammo = GetComponentInChildren<ShootBullet>().ammo;
+
         Transform gunView = transform.Find("GunView");
 
         gun.SetMesh(gunView.GetComponent<MeshFilter>().mesh);
