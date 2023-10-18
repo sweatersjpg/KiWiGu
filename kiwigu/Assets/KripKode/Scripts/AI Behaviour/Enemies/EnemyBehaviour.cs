@@ -1,6 +1,7 @@
 using System.Collections;
 using TMPro;
 using UnityEngine;
+using UnityEngine.AI;
 using UnityEngine.UIElements;
 
 public class EnemyBehaviour : EnemyBase
@@ -24,6 +25,7 @@ public class EnemyBehaviour : EnemyBase
     private bool droneSwitch;
     private float lastExecutionTime = 0f;
     private float interval;
+    private Vector3 randomDestination;
 
     protected override void Start()
     {
@@ -131,25 +133,29 @@ public class EnemyBehaviour : EnemyBase
 
         for (int i = 0; i < iPattern; i++)
         {
-            Vector3 playerPosition = thePlayerPosition;
-
-            float avoidPlayerDistance = enemyMovementVariables.AvoidPlayerDistance;
-
+            float distanceToPlayer = Vector3.Distance(transform.position, thePlayerPosition);
             Vector3 currentPosition = transform.position;
 
-            Vector3 randomDirection = Random.insideUnitSphere;
-            randomDirection.Normalize();
+            if (distanceToPlayer < enemyMovementVariables.AvoidPlayerDistance)
+            {
+                Vector3 moveDirection = transform.position - thePlayerPosition;
+                randomDestination = transform.position + moveDirection.normalized * (enemyMovementVariables.AvoidPlayerDistance + 2);
+                agent.SetDestination(randomDestination);
+            }
+            else if (distanceToPlayer > (enemyMovementVariables.AvoidPlayerDistance + 2) || !agent.pathPending)
+            {
+                float randomDistance = Random.Range(enemyMovementVariables.AvoidPlayerDistance, enemyMovementVariables.AvoidPlayerDistance + 2);
+                Vector3 randomDirection = Random.insideUnitSphere * randomDistance;
+                randomDirection += thePlayerPosition;
+                NavMeshHit hit;
+                NavMesh.SamplePosition(randomDirection, out hit, randomDistance, NavMesh.AllAreas);
 
-            Vector3 directionToPlayer = playerPosition - currentPosition;
-            directionToPlayer.y = 0;
+                // Set the random destination
+                randomDestination = hit.position;
+                agent.SetDestination(randomDestination);
+            }
 
-            Vector3 targetPosition = playerPosition - directionToPlayer.normalized * avoidPlayerDistance;
-
-            targetPosition += randomDirection * avoidPlayerDistance;
-
-            agent.SetDestination(targetPosition);
-
-            float distanceToTarget = Vector3.Distance(currentPosition, targetPosition);
+            float distanceToTarget = Vector3.Distance(currentPosition, randomDestination);
 
             droneMoveTime = distanceToTarget / agent.speed;
 
@@ -254,7 +260,7 @@ public class EnemyBehaviour : EnemyBase
         if (isHoldingGun && agent != null && (playerInSight || wasHit))
             EnemyMovement();
 
-        if (!isShootingPatternActive && enemyTypeVariables.DefenseDrone || enemyTypeVariables.OffenseDrone)
+        if (!isShootingPatternActive && (enemyTypeVariables.DefenseDrone || enemyTypeVariables.OffenseDrone))
         {
             bodyMeshDrone.localPosition = Vector3.Lerp(bodyMeshDrone.localPosition, targetYPos, Time.deltaTime * 2);
 
@@ -275,7 +281,7 @@ public class EnemyBehaviour : EnemyBase
                 interval = Random.Range(0.5f, 1.0f);
             }
         }
-        else if (isShootingPatternActive && enemyTypeVariables.Small || enemyTypeVariables.Medium)
+        else if (isShootingPatternActive && (enemyTypeVariables.DefenseDrone || enemyTypeVariables.OffenseDrone))
         {
             bodyMeshDrone.localPosition = Vector3.Lerp(bodyMeshDrone.localPosition, targetYPos, Time.deltaTime / droneMoveTime);
         }
@@ -284,7 +290,7 @@ public class EnemyBehaviour : EnemyBase
     private void MoveUp()
     {
         if (isShootingPatternActive)
-            targetYPos.y = initialYPosition + (droneHeightOffset * 3);
+            targetYPos.y = initialYPosition + (droneHeightOffset * 5);
         else
             targetYPos.y = initialYPosition + droneHeightOffset;
     }
@@ -292,7 +298,7 @@ public class EnemyBehaviour : EnemyBase
     private void MoveDown()
     {
         if (isShootingPatternActive)
-            targetYPos.y = initialYPosition - (droneHeightOffset * 3);
+            targetYPos.y = initialYPosition - (droneHeightOffset * 5);
         else
             targetYPos.y = initialYPosition - droneHeightOffset;
     }
