@@ -17,10 +17,18 @@ MonoBehaviour:
   aimDelay: 0.3
   aimTime: 0.3
   scopeFOV: 30
+  canCharge: 0
+  timeToMaxCharge: 1
+  chargeCurve:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   fullAuto: 1
   projectiles: 1
   burstSize: 1
-  autoRate: 5
+  autoRate: 20
   fireRate: 20
   damage: 0
   spread: 0.05
