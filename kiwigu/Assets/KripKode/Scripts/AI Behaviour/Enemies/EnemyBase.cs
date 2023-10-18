@@ -28,7 +28,6 @@ public class EnemyBase : MonoBehaviour
     private Vector3 wanderTarget;
     private Vector3 initialPosition;
 
-    private GameObject initialGunObject;
     private bool startedFleeing;
 
     protected virtual void Start()
@@ -67,7 +66,6 @@ public class EnemyBase : MonoBehaviour
     {
         enemyMainVariables.GunObject = Instantiate(enemyMainVariables.GunObject, enemyMainVariables.HandPosition.transform);
         isHoldingGun = true;
-        initialGunObject = enemyMainVariables.GunObject;
     }
 
     public void EnemyBehaviour()
@@ -89,7 +87,6 @@ public class EnemyBase : MonoBehaviour
     {
         if (IsAgentCloseToStation())
         {
-            enemyMainVariables.GunObject = Instantiate(initialGunObject, enemyMainVariables.HandPosition.transform);
             isHoldingGun = true;
         }
         else
@@ -162,6 +159,9 @@ public class EnemyBase : MonoBehaviour
     private void DetectPlayer()
     {
         GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
+
+        if (players.Length == 0) return;
+
         detectedPlayer = players.Any(player => Vector3.Distance(transform.position, player.transform.position) < enemyMovementVariables.EnemyAwareDistance);
 
         playerPosition = players
@@ -172,7 +172,11 @@ public class EnemyBase : MonoBehaviour
 
     private void DetectEnemy()
     {
-        GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
+        GameObject[] enemies = GameObject.FindGameObjectsWithTag("DroneEnemy");
+
+        if (enemies.Length == 0)
+            return;
+
         detectedEnemy = enemies.Any(enemy => Vector3.Distance(transform.position, enemy.transform.position) < enemyMovementVariables.EnemyAwareDistance);
 
         enemyPosition = enemies
