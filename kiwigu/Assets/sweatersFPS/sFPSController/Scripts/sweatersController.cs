@@ -38,6 +38,7 @@ public class sweatersController : MonoBehaviour
 
     [Space]
     public float jumpBuffer = 0.2f;
+    public float kyoteTime = 0.2f;
 
     float maxJumpGravity;
     float minJumpGravity;
@@ -150,7 +151,7 @@ public class sweatersController : MonoBehaviour
     void DoMovement()
     {
         isSliding = GetIsSliding();
-        isGrounded = GetIsGrounded();
+        GetIsGrounded();
 
         Vector3 forward = transform.TransformDirection(Vector3.forward);
         Vector3 right = transform.TransformDirection(Vector3.right);
@@ -197,6 +198,8 @@ public class sweatersController : MonoBehaviour
         // do jump
         if (jumpPressed && isGrounded)
         {
+            isGrounded = false;
+            
             Vector3 jumpVector;
 
             if (isSliding) jumpVector = groundNormal * jumpSpeed;
@@ -315,7 +318,7 @@ public class sweatersController : MonoBehaviour
         return isGrounded && hasHit && Vector3.Angle(Vector3.up, hit.normal) > slopeLimit;
     }
 
-    bool GetIsGrounded()
+    void GetIsGrounded()
     {
         Vector3 p1 = transform.position + (charController.height - charController.radius) * Vector3.up;
         Vector3 p2 = transform.position + charController.radius * Vector3.up;
@@ -324,7 +327,17 @@ public class sweatersController : MonoBehaviour
 
         groundNormal = hit.normal;
 
-        return hasHit;
+        if (hasHit) isGrounded = true;
+        else
+        {
+            Invoke(nameof(SetGroundedToFalse), kyoteTime);
+        }
+        // isGrounded = hasHit;
+    }
+
+    void SetGroundedToFalse()
+    {
+        isGrounded = false;
     }
 
 }
