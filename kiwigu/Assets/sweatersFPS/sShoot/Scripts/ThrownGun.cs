@@ -21,15 +21,20 @@ public class ThrownGun : MonoBehaviour
         rb = GetComponent<Rigidbody>();
 
         rb.AddForce(transform.forward * throwForce, ForceMode.Impulse);
+        rb.AddTorque(transform.right * 10);
 
         rb.velocity += sweatersController.instance.velocity;
 
         if(ammo.capacity == 0) ammo = new Ammunition(info.capacity);
     }
 
-    public void SetMesh(Mesh mesh)
+    public void SetMesh(Mesh mesh, Material mat)
     {
-        GetComponent<MeshFilter>().mesh = mesh;
+        MeshFilter mf = GetComponentInChildren<MeshFilter>();
+
+        mf.mesh = mesh;
+        mf.transform.GetComponent<MeshRenderer>().sharedMaterial = mat;
+        
         // GetComponent<MeshCollider>().sharedMesh = mesh;
 
     }

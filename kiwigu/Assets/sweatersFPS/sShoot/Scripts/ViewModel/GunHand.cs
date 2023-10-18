@@ -36,6 +36,8 @@ public class GunHand : MonoBehaviour
 
     float deltaTime = 0;
 
+    [HideInInspector] public bool outOfAmmo = false;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -86,6 +88,8 @@ public class GunHand : MonoBehaviour
         // we don't actually need to do that in this script, the shootBullet script can do that for us
         //view.LookAt(AcquireTarget.instance.target);
 
+        if (outOfAmmo) targetAngle = 45;
+
         gunAngle += 50 * ((targetAngle - gunAngle) / 8) * deltaTime;
         transform.localEulerAngles = new(gunAngle, 0, 0);
 
@@ -102,7 +106,7 @@ public class GunHand : MonoBehaviour
             targetAngle = -45;
             targetPosition = startPosition + new Vector3(0, 0.3f, -0.2f);
             canShoot = false;
-            Invoke(nameof(ThrowGun), 0.2f);
+            Invoke(nameof(ThrowGun), 0.05f);
         }
         else targetAngle = 0;
 
@@ -115,7 +119,9 @@ public class GunHand : MonoBehaviour
         // if (Input.GetKeyUp(mouseButton == 0 ? KeyCode.Q : KeyCode.E)) ThrowGun();
 
         if (aimTimer <= 0 && downSights) ToggleDownSights();
-        if (aimTimer >= aimDelay && !downSights && info.canAim) ToggleDownSights();
+        if (downSights && outOfAmmo) ToggleDownSights();
+
+        if (aimTimer >= aimDelay && !downSights && info.canAim && !outOfAmmo) ToggleDownSights();
 
         if (downSights) cameraFX.RequestFOV(info.scopeFOV);
     }
@@ -130,7 +136,7 @@ public class GunHand : MonoBehaviour
 
         Transform gunView = transform.Find("GunView");
 
-        gun.SetMesh(gunView.GetComponent<MeshFilter>().mesh);
+        gun.SetMesh(gunView.GetComponent<MeshFilter>().mesh, info.gunPrefab.GetComponentInChildren<MeshRenderer>().sharedMaterial);
         gun.info = info;
 
         gunView.gameObject.SetActive(false);

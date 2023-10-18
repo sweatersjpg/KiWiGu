@@ -23,7 +23,7 @@ public class PhysicsHit : MonoBehaviour
 
         startPos = transform.position;
 
-        startMesh = GetComponent<MeshFilter>().mesh;
+        startMesh = GetComponentInChildren<MeshFilter>().mesh;
     }
 
     private void Update()

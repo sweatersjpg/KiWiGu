@@ -78,11 +78,19 @@ public class ShootBullet : MonoBehaviour
             charge = info.chargeCurve.Evaluate(chargeTimer);
         }
 
-        if (doShoot && canShoot && ammo.count > 0)
+        if (doShoot && canShoot)
         {
-            shotTimer = Time.time;
-            for(int i = 0; i < info.burstSize; i++) Invoke(nameof(Shoot), i * 1/info.autoRate);
+            if(ammo.count > 0)
+            {
+                shotTimer = Time.time;
+                for (int i = 0; i < info.burstSize; i++) Invoke(nameof(Shoot), i * 1 / info.autoRate);
+            } else
+            {
+                // out of ammo sfx
+            }
         }
+
+        if (ammo.count <= 0) anim.outOfAmmo = true;
 
         transform.LookAt(AcquireTarget.instance.target);
 
@@ -128,6 +136,7 @@ public class ShootBullet : MonoBehaviour
         b.gravity = info.bulletGravity;
         b.charge = charge;
         b.ignoreMask = ~LayerMask.GetMask("GunHand", "Player", "HookTarget");
+        b.bulletDamage = info.damage;
 
         recoil += info.recoilPerShot;
         if (recoil > 1) recoil = 1;

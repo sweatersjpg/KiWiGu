@@ -124,7 +124,9 @@ public class MoveHook : MonoBehaviour
                 return;
             } else
             {
+                DamageEnemy(transform);
                 transform.parent = null;
+
                 TakeHookTarget();
                 hookTarget = null;
                 sweatersController.instance.isEncombered = false;
@@ -140,13 +142,23 @@ public class MoveHook : MonoBehaviour
         UpdateChain();
     }
 
+    void DamageEnemy(Transform t)
+    {
+        EnemyBase e = t.GetComponentInParent<EnemyBase>();
+
+        if (e)
+        {
+            e.TakeDamage(99999);
+        }
+    }
+
     void DoPhysics()
     {
         // raycast from ppos to pos
 
         if(caughtGun == null) HookGun();
 
-        bool hasHit = Physics.SphereCast(pPosition, 0.25f, transform.position - pPosition, 
+        bool hasHit = Physics.Raycast(pPosition, transform.position - pPosition, 
             out RaycastHit hit, (transform.position - pPosition).magnitude, ~LayerMask.GetMask("GunHand", "Player", "HookTarget"));
 
         if(hasHit)
@@ -159,7 +171,7 @@ public class MoveHook : MonoBehaviour
 
     void HookGun()
     {
-        bool hasHit = Physics.SphereCast(pPosition, 0.25f, transform.position - pPosition,
+        bool hasHit = Physics.SphereCast(pPosition, 1f, transform.position - pPosition,
             out RaycastHit hit, (transform.position - pPosition).magnitude, LayerMask.GetMask("HookTarget"));
 
         if (hasHit)
