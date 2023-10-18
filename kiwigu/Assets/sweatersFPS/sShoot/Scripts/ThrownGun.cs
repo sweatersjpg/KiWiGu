@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering.PostProcessing;
 
 public class ThrownGun : MonoBehaviour
 {
@@ -11,6 +12,8 @@ public class ThrownGun : MonoBehaviour
 
     public float throwForce = 10;
 
+    public Ammunition ammo;
+
     void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -18,6 +21,8 @@ public class ThrownGun : MonoBehaviour
         rb.AddForce(transform.forward * throwForce, ForceMode.Impulse);
 
         rb.velocity += sweatersController.instance.velocity;
+
+        if(ammo.capacity == 0) ammo = new Ammunition(info.capacity);
     }
 
     public void SetMesh(Mesh mesh)

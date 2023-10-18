@@ -23,6 +23,8 @@ public class MoveHook : MonoBehaviour
     // bool canCatch = false;
 
     GunInfo caughtGun;
+    Ammunition caughtGunAmmo;
+
     [HideInInspector] public HookTarget hookTarget;
     public float playerDistance = 4;
     public float distToHook = 0;
@@ -79,7 +81,7 @@ public class MoveHook : MonoBehaviour
         //}
         if(headingBack && heading.magnitude < catchDistance)
         {
-            home.CatchHook(caughtGun);
+            home.CatchHook(caughtGun, caughtGunAmmo);
 
             Destroy(gameObject);
             return;
@@ -166,7 +168,11 @@ public class MoveHook : MonoBehaviour
             GameObject target = hit.transform.gameObject;
             HookTarget ht = target.transform.GetComponentInChildren<HookTarget>();
 
-            if (ht == null) caughtGun = target.transform.GetComponent<ThrownGun>().info;
+            if (ht == null)
+            {
+                caughtGun = target.transform.GetComponent<ThrownGun>().info;
+                caughtGunAmmo = target.transform.GetComponent<ThrownGun>().ammo; // transfer ammo info
+            }
             else
             {
                 ht.resistance -= deltaTime;
@@ -187,6 +193,7 @@ public class MoveHook : MonoBehaviour
 
                 target = ht.gameObject;
                 caughtGun = ht.info;
+                caughtGunAmmo = new Ammunition(ht.info.capacity); // max capacity
             }
 
             target.transform.parent = transform;
@@ -206,6 +213,7 @@ public class MoveHook : MonoBehaviour
     public void TakeThrownGun(GameObject target)
     {
         caughtGun = target.transform.GetComponent<ThrownGun>().info;
+        caughtGunAmmo = target.transform.GetComponent<ThrownGun>().ammo;
 
         target.transform.parent = transform;
         target.transform.localPosition = new();
@@ -223,7 +231,9 @@ public class MoveHook : MonoBehaviour
     void TakeHookTarget()
     {
         GameObject target = hookTarget.gameObject;
+
         caughtGun = hookTarget.info;
+        caughtGunAmmo = new Ammunition(caughtGun.capacity);
 
         target.transform.parent = transform;
         target.transform.localPosition = new();

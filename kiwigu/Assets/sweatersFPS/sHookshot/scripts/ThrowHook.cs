@@ -87,7 +87,7 @@ public class ThrowHook : MonoBehaviour
         hasHook = false;
     }
 
-    public void CatchHook(GunInfo info)
+    public void CatchHook(GunInfo info, Ammunition ammo)
     {
         hookView.SetActive(true);
 
@@ -98,7 +98,11 @@ public class ThrowHook : MonoBehaviour
 
         if(info != null)
         {
-            Instantiate(info.gunPrefab, transform.parent);
+            ShootBullet gun = Instantiate(info.gunPrefab, transform.parent).GetComponentInChildren<ShootBullet>();
+
+            gun.ammo = new Ammunition(ammo.capacity);
+            gun.ammo.count = ammo.count;
+
             Destroy(gameObject);
 
             view.localPosition = startPosition;

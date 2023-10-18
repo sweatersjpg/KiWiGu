@@ -237,6 +237,8 @@ MonoBehaviour:
   hasGun: 1
   thrownGunPrefab: {fileID: 6087863177417318745, guid: 775df9a2e9013c54ab64a1c26875866b, type: 3}
   hookShotPrefab: {fileID: 3935398618193876659, guid: 22a38e184f7b5844b993bf31543b79eb, type: 3}
+  view: {fileID: 0}
+  parent: {fileID: 0}
 --- !u!1 &8481551846922107198
 GameObject:
   m_ObjectHideFlags: 0
@@ -283,6 +285,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   anim: {fileID: 8481551846423878806}
   flash: {fileID: 4881407319109368433}
+  charge: 0
+  ammo:
+    capacity: 0
+    count: 0
 --- !u!1001 &7552643302772910255
 PrefabInstance:
   m_ObjectHideFlags: 0
