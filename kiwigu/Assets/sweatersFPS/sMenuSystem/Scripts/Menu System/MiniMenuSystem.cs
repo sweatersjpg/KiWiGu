@@ -177,11 +177,9 @@ public class MiniMenuSystem : ScreenProgram
                     PauseSystem.pauseSystem.FOVmin,
                     PauseSystem.pauseSystem.FOVmax, PauseSystem.FOV);
             }
-            else if (setting.title == "volume")
-            {
-                PauseSystem.pauseSystem.masterMixer.GetFloat("volume", out value);
-                value = Mathf.Pow(10, value / 10);
-            }
+            else if (setting.title == "music") value = PauseSystem.pauseSystem.musicVol;
+            else if (setting.title == "sfx") value = PauseSystem.pauseSystem.sfxVol;
+            else if (setting.title == "master") value = PauseSystem.pauseSystem.masterVol;
         }
 
         public override void Draw(int x, int y)
@@ -207,7 +205,7 @@ public class MiniMenuSystem : ScreenProgram
                 if (value > 1) value = 1;
 
                 M.listener.SendMessage(setting.callBack, value);
-                if (setting.callBack == "UpdateFOV") M.gameObject.SendMessage(setting.callBack, value);
+                //if (setting.callBack == "UpdateFOV") M.gameObject.SendMessage(setting.callBack, value);
             }
         }
 

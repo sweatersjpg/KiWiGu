@@ -27,7 +27,9 @@ public class MiniRenderer : MonoBehaviour
     [SerializeField]
     Color backgroundColor;
 
-    RenderTexture rt;
+    public RenderTexture rt;
+    public Material mat;
+
     Renderer m_Renderer;
 
     public string rendererName = "Grass";
@@ -75,27 +77,38 @@ public class MiniRenderer : MonoBehaviour
 
         rendererName += "" + Random.Range(0, rendererCount - 1);
 
-        bool instance = false;
+        bool instance = true;
 
-        if (rendererCount == 0 || !renderers.ContainsKey(rendererName))
+        if (rt == null)
         {
-            rt = new RenderTexture(width, height, 32);
+            instance = false;
+            if (!renderers.ContainsKey(rendererName))
+            {
+                rt = new RenderTexture(width, height, 32);
 
-            rt.filterMode = FilterMode.Point;
-            //rt.filterMode = FilterMode.Trilinear;
+                rt.filterMode = FilterMode.Point;
 
-            if (rendererCount > 0) renderers.Add(rendererName, rt);
-            instance = true;
+                renderers.Add(rendererName, rt);
+                instance = true;
+            }
+            else
+            {
+                rt = renderers[rendererName];
+            }
+        }
+
+        if (mat != null)
+        {
+            mat.SetTexture("_MainTex", rt);
+            mat.SetTexture("_AlphaTex", rt);
         }
         else
         {
-            rt = renderers[rendererName];
+            m_Renderer = GetComponent<Renderer>();
+
+            m_Renderer.material.SetTexture("_MainTex", rt);
+            m_Renderer.material.SetTexture("_AlphaTex", rt);
         }
-
-        m_Renderer = GetComponent<Renderer>();
-
-        m_Renderer.material.SetTexture("_MainTex", rt);
-        m_Renderer.material.SetTexture("_AlphaTex", rt);
 
         if (!instance) enabled = false;
 

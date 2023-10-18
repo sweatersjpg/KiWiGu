@@ -10,13 +10,12 @@ public class PauseSystem : MonoBehaviour
     public static PauseSystem pauseSystem;
     public static bool paused;
 
-    public AudioMixer masterMixer;
     public Camera mainCamera;
 
     [Header("Settings")]
 
     [Range(40, 80)]
-    public static float FOV = 60;
+    public static float FOV = 70;
     public float FOVmin = 40;
     public float FOVmax = 80;
 
@@ -24,6 +23,14 @@ public class PauseSystem : MonoBehaviour
     public static float mouseSensitivity = 4;
     public float mouseSensitivityMin = 2;
     public float mouseSensitivityMax = 6;
+
+    public float musicVol = 0.1f;
+    public float sfxVol = 0.1f;
+    public float masterVol = 0.1f;
+
+    FMOD.Studio.Bus musicBus;
+    FMOD.Studio.Bus masterBus;
+    FMOD.Studio.Bus sfxBus;
 
     private void Awake()
     {
@@ -37,7 +44,16 @@ public class PauseSystem : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        mainCamera = sweatersController.instance.playerCamera;
+
+        masterBus = FMODUnity.RuntimeManager.GetBus("bus:/");
+        masterBus.setVolume(masterVol);
+
+        musicBus = FMODUnity.RuntimeManager.GetBus("bus:/Music");
+        musicBus.setVolume(musicVol);
+
+        sfxBus = FMODUnity.RuntimeManager.GetBus("bus:/SFX");
+        sfxBus.setVolume(sfxVol);
     }
 
     // Update is called once per frame
@@ -87,7 +103,21 @@ public class PauseSystem : MonoBehaviour
 
     // sliders
 
-    public void UpdateVolume(float value) => pauseSystem.masterMixer.SetFloat("volume", 10*Mathf.Log10(value));
+    //public void UpdateVolume(float value) => pauseSystem.masterMixer.SetFloat("volume", 10*Mathf.Log10(value));
+    public void UpdateSfxVolume(float value)
+    {
+        sfxBus.setVolume(value);
+    }
+
+    public void UpdateMusicVolume(float value)
+    {
+        musicBus.setVolume(value);
+    }
+
+    public void UpdateMasterVolume(float value)
+    {
+        masterBus.setVolume(value);
+    }
 
     public void UpdateSensitivity(float value)
     {
