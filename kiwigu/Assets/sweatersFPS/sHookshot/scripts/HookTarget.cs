@@ -16,7 +16,11 @@ public class HookTarget : MonoBehaviour
     private void Start()
     {        
         Mesh mesh = info.gunPrefab.transform.Find("GunView").GetComponent<MeshFilter>().sharedMesh;
-        if (hasView) gunView.GetComponent<MeshFilter>().mesh = mesh;
+        if (hasView)
+        {
+            gunView.GetComponent<MeshFilter>().mesh = mesh;
+            gunView.GetComponent<MeshRenderer>().sharedMaterial = info.gunPrefab.GetComponentInChildren<MeshRenderer>().sharedMaterial;
+        }
     }
 
     public void BeforeDestroy()
@@ -24,7 +28,7 @@ public class HookTarget : MonoBehaviour
         ThrownGun gun = Instantiate(throwGunPrefab, transform).GetComponent<ThrownGun>();
         gun.transform.parent = null;
 
-        gun.SetMesh(gunView.GetComponent<MeshFilter>().mesh);
+        gun.SetMesh(gunView.GetComponent<MeshFilter>().mesh, info.gunPrefab.GetComponentInChildren<MeshRenderer>().sharedMaterial);
         gun.info = info;
         gun.throwForce = 1;
         

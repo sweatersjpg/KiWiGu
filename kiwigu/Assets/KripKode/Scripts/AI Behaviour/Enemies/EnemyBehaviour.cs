@@ -360,6 +360,7 @@ public class EnemyBehaviour : EnemyBase
         b.ignoreMask = ~LayerMask.GetMask("GunHand", "HookTarget", "Enemy");
         b.trackTarget = false;
         b.fromEnemy = true;
+        b.bulletDamage = info.damage;
 
         isShooting = false;
     }

@@ -9,6 +9,8 @@ public class Explosion : MonoBehaviour
     [SerializeField] float finalRadius;
     [SerializeField] AnimationCurve explosionSize;
 
+    [SerializeField] float damageDealt = 20;
+
     [SerializeField] Transform explosionFX;
 
     List<Collider> alreadyHit;
@@ -45,14 +47,23 @@ public class Explosion : MonoBehaviour
 
         foreach(Collider hit in hits)
         {
-            if(hit.attachedRigidbody != null)
+            if (alreadyHit.Contains(hit)) return;
+
+            if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Enemy"))
             {
-                if (alreadyHit.Contains(hit)) return;
+                EnemyBase enemy = hit.transform.gameObject.GetComponentInChildren<EnemyBase>();
+                if (enemy != null)
+                {
+                    enemy.TakeDamage(damageDealt);
+                    alreadyHit.Add(hit);
+                }
+            } else if (hit.attachedRigidbody != null)
+            {
                 alreadyHit.Add(hit);
 
                 //hit.attachedRigidbody.AddExplosionForce(force, transform.position, radius);
                 hit.attachedRigidbody.AddForce(force * (hit.transform.position - transform.position).normalized, ForceMode.Impulse);
-                print(hit.name);
+                // print(hit.name);
             }
 
         }
