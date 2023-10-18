@@ -1,5 +1,8 @@
 using System.Collections;
+using TMPro;
 using UnityEngine;
+using UnityEngine.AI;
+using UnityEngine.UIElements;
 
 public class EnemyBehaviour : EnemyBase
 {
@@ -16,8 +19,13 @@ public class EnemyBehaviour : EnemyBase
     // Drone Pattern Variables
     private float droneMoveTime;
     private float initialYPosition;
-
-    public bool canFacePlayer = true;
+    private Transform bodyMeshDrone;
+    private Vector3 targetYPos;
+    private float droneHeightOffset = 0.25f;
+    private bool droneSwitch;
+    private float lastExecutionTime = 0f;
+    private float interval;
+    private Vector3 randomDestination;
 
     protected override void Start()
     {
@@ -28,8 +36,13 @@ public class EnemyBehaviour : EnemyBase
 
         if (enemyTypeVariables.DefenseDrone || enemyTypeVariables.OffenseDrone)
         {
+            interval = Random.Range(0.5f, 1.0f);
+
             initialYPosition = agent.height;
-            enemyMainVariables.BodyMesh.transform.localPosition = new Vector3(0, initialYPosition, 0);
+
+            bodyMeshDrone = enemyMainVariables.BodyMesh.transform;
+            bodyMeshDrone.localPosition = new Vector3(0, initialYPosition, 0);
+            targetYPos = bodyMeshDrone.localPosition;
         }
     }
 
@@ -93,16 +106,12 @@ public class EnemyBehaviour : EnemyBase
 
     private void RotateBodyMeshTowardsObj(Vector3 objPos)
     {
-        if (!canFacePlayer) return;
-
-        Quaternion rRot = Quaternion.LookRotation(objPos - enemyMainVariables.BodyMesh.transform.position);
-        enemyMainVariables.BodyMesh.transform.rotation = Quaternion.Slerp(enemyMainVariables.BodyMesh.transform.rotation, rRot, Time.deltaTime * 10);
+        Quaternion rRot = Quaternion.LookRotation(objPos - bodyMeshDrone.position);
+        bodyMeshDrone.rotation = Quaternion.Slerp(bodyMeshDrone.rotation, rRot, Time.deltaTime * 10);
     }
 
     private void RotateGunObjectExitPoint(Vector3 rotPos)
     {
-        if (!canFacePlayer) return; // if shooting, don't look towards player pos
-
         gunObjectExitPoint = enemyMainVariables.GunObject.transform.GetChild(0).gameObject;
 
         Quaternion targetRotation = Quaternion.LookRotation(
@@ -124,50 +133,59 @@ public class EnemyBehaviour : EnemyBase
 
         for (int i = 0; i < iPattern; i++)
         {
-            Vector3 playerPosition = thePlayerPosition;
-
-            float avoidPlayerDistance = enemyMovementVariables.AvoidPlayerDistance;
-
+            float distanceToPlayer = Vector3.Distance(transform.position, thePlayerPosition);
             Vector3 currentPosition = transform.position;
 
-            Vector3 randomDirection = Random.insideUnitSphere;
-            randomDirection.Normalize();
+            if (distanceToPlayer < enemyMovementVariables.AvoidPlayerDistance)
+            {
+                Vector3 moveDirection = transform.position - thePlayerPosition;
+                randomDestination = transform.position + moveDirection.normalized * (enemyMovementVariables.AvoidPlayerDistance + 2);
+                agent.SetDestination(randomDestination);
+            }
+            else if (distanceToPlayer > (enemyMovementVariables.AvoidPlayerDistance + 2) || !agent.pathPending)
+            {
+                float randomDistance = Random.Range(enemyMovementVariables.AvoidPlayerDistance, enemyMovementVariables.AvoidPlayerDistance + 2);
+                Vector3 randomDirection = Random.insideUnitSphere * randomDistance;
+                randomDirection += thePlayerPosition;
+                NavMeshHit hit;
+                NavMesh.SamplePosition(randomDirection, out hit, randomDistance, NavMesh.AllAreas);
 
-            Vector3 directionToPlayer = playerPosition - currentPosition;
-            directionToPlayer.y = 0;
+                // Set the random destination
+                randomDestination = hit.position;
+                agent.SetDestination(randomDestination);
+            }
 
-            Vector3 targetPosition = playerPosition - directionToPlayer.normalized * avoidPlayerDistance;
-
-            targetPosition += randomDirection * avoidPlayerDistance;
-
-            agent.SetDestination(targetPosition);
-
-
-            float distanceToTarget = Vector3.Distance(currentPosition, targetPosition);
+            float distanceToTarget = Vector3.Distance(currentPosition, randomDestination);
 
             droneMoveTime = distanceToTarget / agent.speed;
 
             if (agent.isOnNavMesh)
                 yield return new WaitUntil(() => !agent.pathPending && agent.remainingDistance < 0.1f);
 
+            if (droneSwitch)
+            {
+                MoveUp();
+                droneSwitch = false;
+            }
+            else
+            {
+                MoveDown();
+                droneSwitch = true;
+            }
+
             if (pattern == 0 && isHoldingGun)
             {
-                canFacePlayer = false;
                 yield return new WaitForSeconds(0.25f);
                 if (detectedPlayer)
-                    yield return new WaitForSeconds(EnemyShoot());
-                canFacePlayer = true;
+                    EnemyShoot();
             }
             else if (pattern == 1 && i == 2)
             {
                 for (int j = 0; j < 3; j++)
                 {
-                    yield return new WaitForSeconds(0.45f); // give drone time to face player again
-                    canFacePlayer = false;
-                    yield return new WaitForSeconds(0.25f);
+                    yield return new WaitForSeconds(0.45f);
                     if (isHoldingGun && detectedPlayer)
-                        yield return new WaitForSeconds(EnemyShoot());
-                    canFacePlayer = true;
+                        EnemyShoot();
                 }
             }
         }
@@ -177,7 +195,7 @@ public class EnemyBehaviour : EnemyBase
         isShootingPatternActive = false;
         isWandering = false;
 
-        enemyMainVariables.BodyMesh.transform.localRotation = Quaternion.Euler(0, 0, 0);
+        bodyMeshDrone.localRotation = Quaternion.Euler(0, 0, 0);
     }
 
     private IEnumerator DefenseDronePattern(Vector3 theProtectorPosition)
@@ -207,6 +225,17 @@ public class EnemyBehaviour : EnemyBase
 
             droneMoveTime = distanceToTarget / agent.speed;
 
+            if (droneSwitch)
+            {
+                MoveUp();
+                droneSwitch = false;
+            }
+            else
+            {
+                MoveDown();
+                droneSwitch = true;
+            }
+
             if (agent.isOnNavMesh)
                 yield return new WaitUntil(() => !agent.pathPending && agent.remainingDistance < 0.1f);
         }
@@ -216,7 +245,7 @@ public class EnemyBehaviour : EnemyBase
         isShootingPatternActive = false;
         isWandering = false;
 
-        enemyMainVariables.BodyMesh.transform.localRotation = Quaternion.Euler(0, 0, 0);
+        bodyMeshDrone.localRotation = Quaternion.Euler(0, 0, 0);
     }
 
     protected override void Update()
@@ -230,30 +259,62 @@ public class EnemyBehaviour : EnemyBase
 
         if (isHoldingGun && agent != null && (playerInSight || wasHit))
             EnemyMovement();
+
+        if (!isShootingPatternActive && (enemyTypeVariables.DefenseDrone || enemyTypeVariables.OffenseDrone))
+        {
+            bodyMeshDrone.localPosition = Vector3.Lerp(bodyMeshDrone.localPosition, targetYPos, Time.deltaTime * 2);
+
+            if (Time.time - lastExecutionTime >= interval)
+            {
+                if (droneSwitch)
+                {
+                    MoveUp();
+                    droneSwitch = false;
+                }
+                else
+                {
+                    MoveDown();
+                    droneSwitch = true;
+                }
+
+                lastExecutionTime = Time.time;
+                interval = Random.Range(0.5f, 1.0f);
+            }
+        }
+        else if (isShootingPatternActive && (enemyTypeVariables.DefenseDrone || enemyTypeVariables.OffenseDrone))
+        {
+            bodyMeshDrone.localPosition = Vector3.Lerp(bodyMeshDrone.localPosition, targetYPos, Time.deltaTime / droneMoveTime);
+        }
     }
 
-    private float EnemyShoot() // returns seconds until done firing
+    private void MoveUp()
+    {
+        if (isShootingPatternActive)
+            targetYPos.y = initialYPosition + (droneHeightOffset * 5);
+        else
+            targetYPos.y = initialYPosition + droneHeightOffset;
+    }
+
+    private void MoveDown()
+    {
+        if (isShootingPatternActive)
+            targetYPos.y = initialYPosition - (droneHeightOffset * 5);
+        else
+            targetYPos.y = initialYPosition - droneHeightOffset;
+    }
+
+    private void EnemyShoot()
     {
         if (!isHoldingGun)
-            return 0;
-
+            return;
         isShooting = true;
 
         HookTarget gun = transform.GetComponentInChildren<HookTarget>();
-        if (gun == null) return 0;
+        if (gun == null) return;
         GunInfo info = gun.info;
 
-        float burst = info.burstSize;
-        if (info.fullAuto) burst = 10;
-        //burst = 1;
-
-        for (int j = 0; j < burst; j++)
-        {
-            isShooting = true;
-            for (int i = 0; i < info.projectiles; i++) Invoke(nameof(SpawnBullet), j * 1 / info.autoRate);
-        }
-
-        return burst * 1 / info.autoRate;
+        for (int i = 0; i < info.projectiles; i++)
+            SpawnBullet();
     }
 
     private void SpawnBullet()
@@ -266,14 +327,14 @@ public class EnemyBehaviour : EnemyBase
         Vector3 direction = gunObjectExitPoint.transform.forward;
         direction += SpreadDirection(info.spread, 3);
 
-        bullet.transform.SetPositionAndRotation(gunObjectExitPoint.transform.position, Quaternion.LookRotation(direction.normalized));
+        bullet.transform.position = gunObjectExitPoint.transform.position;
+        bullet.transform.rotation = Quaternion.LookRotation(direction.normalized);
 
         Bullet b = bullet.GetComponent<Bullet>();
         b.speed = info.bulletSpeed;
         b.gravity = info.bulletGravity;
-        b.ignoreMask = ~LayerMask.GetMask("GunHand", "HookTarget", "Enemy");
+        b.ignoreMask = ~LayerMask.GetMask("GunHand", "HookTarget");
         b.trackTarget = false;
-        b.fromEnemy = true;
 
         isShooting = false;
     }
