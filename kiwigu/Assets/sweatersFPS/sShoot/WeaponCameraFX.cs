@@ -49,7 +49,7 @@ public class WeaponCameraFX : MonoBehaviour
 
         targetFOV = Mathf.Lerp(PauseSystem.FOV, scopeFOV, fovTransition.Evaluate(fovTimer));
 
-        float speedFOV = Mathf.Max(Vector3.Dot(player.velocity, player.transform.forward), 0);
+        float speedFOV = Mathf.Max(Vector3.Dot(player.velocity, player.transform.forward), 0) * fovSpeedScale;
         targetFOV += speedFOV;
 
         playerCamera.fieldOfView += (targetFOV - playerCamera.fieldOfView) / 4 * Time.deltaTime * 50;

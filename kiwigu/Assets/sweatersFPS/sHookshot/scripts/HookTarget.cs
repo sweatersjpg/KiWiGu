@@ -35,6 +35,9 @@ public class HookTarget : MonoBehaviour
             hook.transform.parent = null;
 
             hook.TakeThrownGun(gun.gameObject);
+        } else
+        {
+            Destroy(gun.gameObject);
         }
     }
 }
