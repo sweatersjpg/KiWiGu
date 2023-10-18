@@ -14,6 +14,8 @@ public class ThrownGun : MonoBehaviour
 
     public Ammunition ammo;
 
+    public GameObject explosion;
+
     void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -36,5 +38,11 @@ public class ThrownGun : MonoBehaviour
     void Update()
     {
         
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        Instantiate(explosion, transform.position, Quaternion.identity);
+        Destroy(gameObject);
     }
 }
