@@ -92,6 +92,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9115080600601322047, guid: 337eb0bd26bf08741a4855a5f19f50d8, type: 3}
+      propertyPath: sfxEmitterAvailable
+      value: 
+      objectReference: {fileID: 773644979421818999}
+    - target: {fileID: 9115080600601322047, guid: 337eb0bd26bf08741a4855a5f19f50d8, type: 3}
       propertyPath: enemyGunStats.GunInaccuracy
       value: 0
       objectReference: {fileID: 0}
@@ -109,3 +113,41 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 337eb0bd26bf08741a4855a5f19f50d8, type: 3}
+--- !u!1 &1334361200128405887 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 9115080600601322045, guid: 337eb0bd26bf08741a4855a5f19f50d8, type: 3}
+  m_PrefabInstance: {fileID: 7853116606368633666}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &773644979421818999
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1334361200128405887}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a6610d2e704f1648819acc8d7460285, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CollisionTag: 
+  EventReference:
+    Guid:
+      Data1: -807209716
+      Data2: 1198973856
+      Data3: 1820108474
+      Data4: -1617302324
+    Path: event:/SFX_Shoot
+  Event: 
+  PlayEvent: 0
+  StopEvent: 0
+  AllowFadeout: 1
+  TriggerOnce: 0
+  Preload: 0
+  AllowNonRigidbodyDoppler: 0
+  Params:
+  - Name: Weapon
+    Value: 3
+  OverrideAttenuation: 0
+  OverrideMinDistance: 1
+  OverrideMaxDistance: 20

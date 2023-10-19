@@ -1,9 +1,12 @@
+using FMODUnity;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
 
 public class EnemyBehaviour : EnemyBase
 {
+    [SerializeField] StudioEventEmitter sfxEmitterAvailable;
+
     [SerializeField] private float gunExitPointRotationSpeed = 180f;
 
     private GameObject gunObjectExitPoint;
@@ -329,7 +332,8 @@ public class EnemyBehaviour : EnemyBase
         {
             isShooting = true;
 
-            // call shot
+            sfxEmitterAvailable.SetParameter("Charge", 0.5f);
+            sfxEmitterAvailable.Play();
 
             for (int i = 0; i < info.projectiles; i++) Invoke(nameof(SpawnBullet), j * 1 / info.autoRate);
         }
