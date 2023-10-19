@@ -38,7 +38,7 @@ public class Explosion : MonoBehaviour
 
         CheckRadius(scale / 2);
 
-        if (time > 1) Destroy(gameObject);
+        if (time > duration) Destroy(gameObject);
     }
 
     void CheckRadius(float radius)
