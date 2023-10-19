@@ -367,7 +367,7 @@ SphereCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.5
+  m_Radius: 0.6574155
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &7778922056953652725
 MonoBehaviour:
@@ -451,7 +451,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7778922056953917674}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 89.18, y: 4.33, z: -5.42}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -482,7 +482,7 @@ MonoBehaviour:
   enemyMainVariables:
     canSeekGun: 0
     spawnWithGun: 1
-    MaxHealth: 25
+    MaxHealth: 75
     MaxShield: 0
     GunObject: {fileID: 4006260289432868516, guid: e9f49a38ad200014aa4418f8035720f2, type: 3}
     EyesPosition: {fileID: 7778922055897720747}
@@ -492,7 +492,7 @@ MonoBehaviour:
   enemyMovementVariables:
     FleeDistance: 5
     FleeMovementVariation: 4
-    MovementSpeed: 10
+    MovementSpeed: 5
     AvoidPlayerDistance: 5
     RotationSpeed: 180
     EnemyAwareDistance: 20
@@ -558,6 +558,10 @@ PrefabInstance:
       propertyPath: info
       value: 
       objectReference: {fileID: 11400000, guid: e52ddfd18c18ab2459364aac03b537fb, type: 2}
+    - target: {fileID: 4914410258131161909, guid: ac1693904f6e1784b94d42fc61badb38, type: 3}
+      propertyPath: resistance
+      value: 0.5
+      objectReference: {fileID: 0}
     - target: {fileID: 5580866924456615346, guid: ac1693904f6e1784b94d42fc61badb38, type: 3}
       propertyPath: m_Name
       value: HookTarget
@@ -580,15 +584,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5728757122284842761, guid: ac1693904f6e1784b94d42fc61badb38, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 89.18
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5728757122284842761, guid: ac1693904f6e1784b94d42fc61badb38, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 4.0979996
+      value: -0.081
       objectReference: {fileID: 0}
     - target: {fileID: 5728757122284842761, guid: ac1693904f6e1784b94d42fc61badb38, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.8299999
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5728757122284842761, guid: ac1693904f6e1784b94d42fc61badb38, type: 3}
       propertyPath: m_LocalRotation.w
@@ -616,6 +620,14 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5728757122284842761, guid: ac1693904f6e1784b94d42fc61badb38, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5743063868320570868, guid: ac1693904f6e1784b94d42fc61badb38, type: 3}
+      propertyPath: m_Radius
+      value: 0.5748177
+      objectReference: {fileID: 0}
+    - target: {fileID: 5743063868320570868, guid: ac1693904f6e1784b94d42fc61badb38, type: 3}
+      propertyPath: m_Center.x
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []

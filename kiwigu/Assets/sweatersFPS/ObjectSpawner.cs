@@ -22,8 +22,10 @@ public class ObjectSpawner : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        foreach(GameObject thing in things)
+        for(int i = things.Count-1; i >= 0; i--)
         {
+            GameObject thing = things[i];
+
             if (thing != null) continue;
             things.Remove(thing);
             Invoke(nameof(SpawnThing), spawnDelay);
