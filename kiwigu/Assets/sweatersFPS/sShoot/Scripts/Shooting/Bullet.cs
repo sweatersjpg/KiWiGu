@@ -169,7 +169,11 @@ public class Bullet : MonoBehaviour
             o.transform.position = hit.point;
         }
 
-        if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Enemy"))
+        if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Player"))
+        {
+            hit.transform.GetComponent<PlayerHealth>().DealDamage(bulletDamage, -direction);
+        }
+        else if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Enemy"))
         {
             EnemyBase enemy = hit.transform.gameObject.GetComponentInChildren<EnemyBase>();
             if (enemy != null)

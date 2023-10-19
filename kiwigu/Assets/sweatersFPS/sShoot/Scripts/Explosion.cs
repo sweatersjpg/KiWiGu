@@ -49,7 +49,16 @@ public class Explosion : MonoBehaviour
         {
             if (alreadyHit.Contains(hit)) return;
 
-            if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Enemy"))
+            if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Player"))
+            {
+                Vector3 direction = (transform.position - hit.transform.position);
+                hit.transform.GetComponent<PlayerHealth>().DealDamage(damageDealt, direction.normalized);
+
+                sweatersController.instance.velocity -= direction.normalized * 20;
+
+                alreadyHit.Add(hit);
+            }
+            else if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Enemy"))
             {
                 EnemyBase enemy = hit.transform.gameObject.GetComponentInChildren<EnemyBase>();
                 if (enemy != null)
