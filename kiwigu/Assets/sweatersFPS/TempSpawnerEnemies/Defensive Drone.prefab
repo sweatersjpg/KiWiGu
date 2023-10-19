@@ -436,6 +436,7 @@ GameObject:
   - component: {fileID: 7778922056953917671}
   - component: {fileID: 7778922056953917672}
   - component: {fileID: 7778922056953917673}
+  - component: {fileID: -8559876748422602685}
   m_Layer: 9
   m_Name: Defensive Drone
   m_TagString: DroneDefense
@@ -522,6 +523,7 @@ MonoBehaviour:
   detectedEnemy: 0
   playerPosition: {x: 0, y: 0, z: 0}
   enemyPosition: {x: 0, y: 0, z: 0}
+  sfxEmitterAvailable: {fileID: -8559876748422602685}
   gunExitPointRotationSpeed: 180
   CanShoot: 0
   droneHeightOffset: 0.4
@@ -547,6 +549,41 @@ NavMeshAgent:
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 0
+--- !u!114 &-8559876748422602685
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7778922056953917674}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a6610d2e704f1648819acc8d7460285, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CollisionTag: 
+  EventReference:
+    Guid:
+      Data1: -807209716
+      Data2: 1198973856
+      Data3: 1820108474
+      Data4: -1617302324
+    Path: event:/SFX_Shoot
+  Event: 
+  PlayEvent: 0
+  StopEvent: 0
+  AllowFadeout: 1
+  TriggerOnce: 0
+  Preload: 0
+  AllowNonRigidbodyDoppler: 0
+  Params:
+  - Name: Weapon
+    Value: 2
+  - Name: Charge
+    Value: 0
+  OverrideAttenuation: 0
+  OverrideMinDistance: 1
+  OverrideMaxDistance: 20
 --- !u!1001 &1552349780166437625
 PrefabInstance:
   m_ObjectHideFlags: 0
