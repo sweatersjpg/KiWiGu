@@ -46,25 +46,15 @@ public class PlayerHealth : MonoBehaviour
 
     public void DealDamage(float damage, Vector3 source)
     {
-        // Please fix this :(
-
-        // Instantiate a UI element from the 'directionalPrefab' and attach it to the 'daddy' object.
         RectTransform indicator = Instantiate(directionalPrefab, daddy.transform).GetComponent<RectTransform>();
 
-        // Calculate the direction from this object's position to the 'source' position.
-        Vector3 _direction = transform.position - source;
+        Quaternion sourceRot = Quaternion.LookRotation(source);
 
-        // Calculate a rotation that points from this object to the 'source'.
-        Quaternion sourceRot = Quaternion.LookRotation(_direction);
-
-        // Adjust the 'sourceRot' to control the rotation of the UI element.
         sourceRot.z = -sourceRot.y;
-        sourceRot.x = sourceRot.y = 0; // reset the 'x' and 'y' components of 'sourceRot'.
+        sourceRot.x = sourceRot.y = 0;
 
-        // Create a 'northDirection' vector using the 'y' component of the current object's rotation.
         Vector3 northDirection = new Vector3(0, 0, transform.eulerAngles.y);
 
-        // Combine 'sourceRot' and 'northDirection' to set the local rotation of the UI element.
         indicator.localRotation = sourceRot * Quaternion.Euler(northDirection);
 
         regenBuffer = regenBufferTime;
