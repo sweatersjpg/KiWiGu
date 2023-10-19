@@ -235,8 +235,8 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   transitionDuration: 0.25
-  fovSpeedScale: 2
-  tiltIntensity: 10
+  fovSpeedScale: 0.5
+  tiltIntensity: 2
 --- !u!114 &1623970847784269070
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -306,6 +306,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4619342294706443279}
   - component: {fileID: 4619342294706443276}
+  - component: {fileID: 8015278467566398380}
   - component: {fileID: 4619342294706443272}
   m_Layer: 7
   m_Name: sFPSplayer
@@ -349,6 +350,23 @@ CharacterController:
   m_SkinWidth: 0.0001
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 1, z: 0}
+--- !u!114 &8015278467566398380
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4619342294706443379}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4871a9f939fe4954cab95af35de7ce88, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  healthBar: {fileID: 0}
+  health: 300
+  totalHealth: 300
+  regenRate: 5
+  regenBufferTime: 1
 --- !u!114 &4619342294706443272
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -381,6 +399,7 @@ MonoBehaviour:
   gravity: 20
   jumpSpeed: 8
   jumpBuffer: 0.2
+  kyoteTime: 0.2
   lookSpeed: 4
   lookXLimit: 80
   standingHeight: 2
@@ -523,8 +542,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1121f63fc35fe4cf3b3f8c73625d31e5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  timeScale: 1.1
-  delta: {x: 0.03, y: 0.02, z: 0.02}
+  timeScale: 1
+  delta: {x: 0.02, y: 0.01, z: 0}
+  rotationDelta: {x: 0, y: 0, z: 0.5}
   velocity: {x: 0, y: 0, z: 0}
   cameraFX: {fileID: 4619342294562106012}
 --- !u!1 &7049817264000701855
@@ -543,7 +563,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &7049817264000701852
 Transform:
   m_ObjectHideFlags: 0
@@ -659,8 +679,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1121f63fc35fe4cf3b3f8c73625d31e5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  timeScale: 1.1
-  delta: {x: 0.03, y: 0.02, z: 0.02}
+  timeScale: 1
+  delta: {x: 0.02, y: 0.01, z: 0}
+  rotationDelta: {x: 0, y: 0, z: 0.5}
   velocity: {x: 0, y: 0, z: 0}
   cameraFX: {fileID: 4619342294562106012}
 --- !u!1 &7049817264283544459

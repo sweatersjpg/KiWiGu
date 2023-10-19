@@ -76,7 +76,7 @@ public class PauseSystem : MonoBehaviour
 
     public void ReloadScene()
     {
-        TogglePaused();
+        if(paused) TogglePaused();
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
