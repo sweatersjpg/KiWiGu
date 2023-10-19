@@ -347,6 +347,7 @@ public class EnemyBase : MonoBehaviour
 
     private void OnDestroy()
     {
+        if(Camera.main != null) Camera.main.GetComponent<Music>().Violence = 0;
         StopAllCoroutines();
     }
 

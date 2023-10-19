@@ -73,22 +73,31 @@ public class EnemyBehaviour : EnemyBase
             if (!isShootingPatternActive)
                 StartCoroutine(DefenseDronePattern(enemyPosition));
         }
-        else if (enemyTypeVariables.OffenseDrone && detectedPlayer)
+        else if (enemyTypeVariables.OffenseDrone)
         {
-            if (enemyMainVariables.GunObject)
-                RotateGunObjectExitPoint(playerPosition);
-
-            RotateBodyMeshTowardsObj(playerPosition);
-
-            if (!isDroneStopped)
+            if(detectedPlayer)
             {
-                agent.ResetPath();
-                StopAllCoroutines();
-                isDroneStopped = true;
-            }
+                Camera.main.GetComponent<Music>().Violence = 1;
 
-            if (!isShootingPatternActive)
-                StartCoroutine(OffenseDronePattern(Random.Range(0, 2), playerPosition));
+                if (enemyMainVariables.GunObject)
+                    RotateGunObjectExitPoint(playerPosition);
+
+                RotateBodyMeshTowardsObj(playerPosition);
+
+                if (!isDroneStopped)
+                {
+                    agent.ResetPath();
+                    StopAllCoroutines();
+                    isDroneStopped = true;
+                }
+
+                if (!isShootingPatternActive)
+                    StartCoroutine(OffenseDronePattern(Random.Range(0, 2), playerPosition));
+            }
+            else
+            {
+                Camera.main.GetComponent<Music>().Violence = 0;
+            }
         }
         else if (enemyTypeVariables.Small || enemyTypeVariables.Medium)
         {
@@ -208,7 +217,7 @@ public class EnemyBehaviour : EnemyBase
 
         agent.ResetPath();
         yield return new WaitForSeconds(enemyMovementVariables.DroneIdleTime);
-        isShootingPatternActive = false;
+        isShootingPatternActive = false;    
         isWandering = false;
 
         bodyMeshDrone.localRotation = Quaternion.Euler(0, 0, 0);

@@ -6,7 +6,7 @@ public class Music : MonoBehaviour
     // this entire thing is a total placeholder until there is a proper battle theme
     // we can decide how to do the transitions later, likely in FMOD itself with magnet regions but we'll see
 
-    [Range(0, 1)] [SerializeField] internal int Violence; // change uwu
+    [Range(0, 1)] internal int Violence; // change uwu
     [SerializeField] float transitionTime = 1.2f;
     [SerializeField] StudioEventEmitter musicEmitter;
 
