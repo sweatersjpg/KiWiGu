@@ -2,9 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+using FMODUnity;
 
 public class ShootBullet : MonoBehaviour
 {
+    [SerializeField] StudioEventEmitter sfxEmitterAvailable;
+    [SerializeField] StudioEventEmitter sfxEmitterOut;
+
     public GunHand anim;
     public ParticleSystem flash;
 
@@ -60,14 +64,14 @@ public class ShootBullet : MonoBehaviour
             time += Time.deltaTime;
         }
 
-        bool canShoot = (Time.time - shotTimer) > 1/info.fireRate && anim.canShoot && anim.hasGun;
+        bool canShoot = (Time.time - shotTimer) > 1 / info.fireRate && anim.canShoot && anim.hasGun;
         anim.canShoot = canShoot;
 
         bool doShoot = (info.canAim || info.canCharge) ?
             Input.GetMouseButtonUp(anim.mouseButton) : Input.GetMouseButtonDown(anim.mouseButton);
         if (info.fullAuto) doShoot = Input.GetMouseButton(anim.mouseButton);
 
-        if(info.canCharge)
+        if (info.canCharge)
         {
             // if (Input.GetMouseButtonDown(anim.mouseButton)) chargeTimerStart = time;
             if (Input.GetMouseButton(anim.mouseButton)) chargeTimer += deltaTime / info.timeToMaxCharge;
@@ -80,13 +84,15 @@ public class ShootBullet : MonoBehaviour
 
         if (doShoot && canShoot)
         {
-            if(ammo.count > 0)
+            if (ammo.count > 0)
             {
                 shotTimer = Time.time;
                 for (int i = 0; i < info.burstSize; i++) Invoke(nameof(Shoot), i * 1 / info.autoRate);
-            } else
+            }
+            else
             {
-                // out of ammo sfx
+                if (Input.GetMouseButtonDown(anim.mouseButton))
+                    sfxEmitterOut.Play();
             }
         }
 
@@ -94,8 +100,8 @@ public class ShootBullet : MonoBehaviour
 
         transform.LookAt(AcquireTarget.instance.target);
 
-        if(!doShoot) recoil -= 1 / info.recoilReturnTime * deltaTime;
-        if(recoil < 0) recoil = 0;
+        if (!doShoot) recoil -= 1 / info.recoilReturnTime * deltaTime;
+        if (recoil < 0) recoil = 0;
 
         smoothRecoil += (recoil - smoothRecoil) / 4 * deltaTime * 50;
 
@@ -109,9 +115,12 @@ public class ShootBullet : MonoBehaviour
     {
         ammo.count -= 1;
 
+        sfxEmitterAvailable.SetParameter("Charge", charge);
+        sfxEmitterAvailable.Play();
+
         for (int i = 0; i < info.projectiles; i++) SpawnBullet();
         anim.AnimateShoot();
-        if(flash != null) flash.Play();
+        if (flash != null) flash.Play();
 
         chargeTimer = 0;
         // Debug.Log(charge);
@@ -153,11 +162,11 @@ public class ShootBullet : MonoBehaviour
 
             float x = Mathf.PerlinNoise(t, 0) * 2 - 1;
             float y = Mathf.PerlinNoise(0, t) * 2 - 1;
-            float z = Mathf.PerlinNoise(t * Mathf.Sqrt(2)/2, t * Mathf.Sqrt(2) / 2) * 2 - 1;
+            float z = Mathf.PerlinNoise(t * Mathf.Sqrt(2) / 2, t * Mathf.Sqrt(2) / 2) * 2 - 1;
 
             Vector3 v = new(x, y, z);
             // v = v.normalized * (v.magnitude % 1); // stay within 1
-            
+
             offset += v * spread;
         }
 

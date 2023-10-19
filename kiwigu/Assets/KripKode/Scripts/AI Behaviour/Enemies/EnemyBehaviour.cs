@@ -328,6 +328,9 @@ public class EnemyBehaviour : EnemyBase
         for(int j = 0; j < burst; j++)
         {
             isShooting = true;
+
+            // call shot
+
             for (int i = 0; i < info.projectiles; i++) Invoke(nameof(SpawnBullet), j * 1 / info.autoRate);
         }
 
