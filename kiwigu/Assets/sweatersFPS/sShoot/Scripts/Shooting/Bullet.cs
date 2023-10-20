@@ -160,7 +160,7 @@ public class Bullet : MonoBehaviour
 
     void DoHit(RaycastHit hit, Vector3 direction)
     {
-        SpawnSparks(hit, direction);
+        if(sparksPrefab != null) SpawnSparks(hit, direction);
         bulletMesh.transform.position = hit.point;
 
         foreach(GameObject s in spawnOnHit)
@@ -185,17 +185,13 @@ public class Bullet : MonoBehaviour
         {
             hit.transform.gameObject.GetComponent<PhysicsHit>().Hit(hit.point, transform.forward * speed);
 
-            Transform hole = Instantiate(bulletHolePrefab).transform;
-            hole.SetPositionAndRotation(hit.point, Quaternion.LookRotation(-hit.normal));
-            hole.parent = hit.transform;
+            SpawnHole(hit);
         }
         else
         {
             // Debug.Log(hit.transform.name);
 
-            Transform hole = Instantiate(bulletHolePrefab).transform;
-            hole.SetPositionAndRotation(hit.point, Quaternion.LookRotation(-hit.normal));
-            hole.parent = hit.transform;
+            SpawnHole(hit);
         }
 
         //Destroy(gameObject);
@@ -205,6 +201,15 @@ public class Bullet : MonoBehaviour
         if(view != null) Destroy(view.gameObject);
         // bulletMesh.SetActive(false);
         dead = true;
+    }
+
+    void SpawnHole(RaycastHit hit)
+    {
+        if (bulletHolePrefab == null) return;
+        
+        Transform hole = Instantiate(bulletHolePrefab).transform;
+        hole.SetPositionAndRotation(hit.point, Quaternion.LookRotation(-hit.normal));
+        hole.parent = hit.transform;
     }
 
     void SpawnSparks(RaycastHit hit, Vector3 direction)
