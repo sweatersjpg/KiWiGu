@@ -10,52 +10,70 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 23c1375cd985d95488add3e7772559e4, type: 3}
-  m_Name: autoGun
+  m_Name: WardShot
   m_EditorClassIdentifier: 
   canAim: 0
   hasToAim: 0
   aimDelay: 0.3
   aimTime: 0.3
-  scopeFOV: 30
-  capacity: 80
+  scopeFOV: 50
+  capacity: 30
   recharge: 0
   rechargeRate: 5
-  canCharge: 0
+  canCharge: 1
   timeToMaxCharge: 1
   chargeCurve:
     serializedVersion: 2
-    m_Curve: []
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 1
+      outSlope: 1
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 1
+      outSlope: 1
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  fullAuto: 1
+  fullAuto: 0
   projectiles: 1
   burstSize: 1
-  autoRate: 10
-  fireRate: 10
-  damage: 5
-  spread: 0.05
-  recoil: 5
+  autoRate: 1
+  fireRate: 3
+  damage: 0
+  spread: 0.02
+  recoil: 7
   spreadVariation:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
-      time: 0.0011558533
-      value: 0.24816895
-      inSlope: 0.75270104
-      outSlope: 0.75270104
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
       tangentMode: 34
       weightedMode: 0
       inWeight: 0
-      outWeight: 0.33333334
+      outWeight: 0
     - serializedVersion: 3
       time: 1
       value: 1
-      inSlope: 0.75270104
-      outSlope: 0.75270104
+      inSlope: 0
+      outSlope: 0
       tangentMode: 34
       weightedMode: 0
-      inWeight: 0.33333334
+      inWeight: 0
       outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
@@ -66,27 +84,27 @@ MonoBehaviour:
     - serializedVersion: 3
       time: 0
       value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
+      inSlope: 1
+      outSlope: 1
+      tangentMode: 34
       weightedMode: 0
       inWeight: 0
       outWeight: 0
     - serializedVersion: 3
       time: 1
       value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
+      inSlope: 1
+      outSlope: 1
+      tangentMode: 34
       weightedMode: 0
       inWeight: 0
       outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  recoilPerShot: 0.05
-  recoilReturnTime: 0.4
-  bulletSpeed: 370
-  bulletGravity: -9.8
-  bulletPrefab: {fileID: 745279074493107227, guid: f3885aa6f16644bbda9672673046fdfb, type: 3}
-  gunPrefab: {fileID: 8481551846423878803, guid: d161eeb33801f4694a1c022b8fa60d9a, type: 3}
+  recoilPerShot: 0.2
+  recoilReturnTime: 0.5
+  bulletSpeed: 4
+  bulletGravity: 0
+  bulletPrefab: {fileID: 745279074493107227, guid: 8244bc82a85de8c4e9c69c9776b8099c, type: 3}
+  gunPrefab: {fileID: 9025670313450575901, guid: 6d7b380a02b3b6e4bb2f11c2bed25ca9, type: 3}
