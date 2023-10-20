@@ -80,6 +80,11 @@ public class PauseSystem : MonoBehaviour
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
+    public void CloseGame()
+    {
+        Application.Quit();
+    }
+
     public void TogglePaused()
     {
         Cursor.lockState = !paused ? CursorLockMode.None : CursorLockMode.Locked;
