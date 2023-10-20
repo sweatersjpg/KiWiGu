@@ -17,6 +17,10 @@ public class PlayerHealth : MonoBehaviour
     [Space]
     [SerializeField] float regenBufferTime = 1;
 
+
+    [Space]
+    [SerializeField] Transform killFloor;
+
     float regenBuffer = 0;
 
     float deltaTime;
@@ -39,8 +43,6 @@ public class PlayerHealth : MonoBehaviour
             if (health > totalHealth) health = totalHealth;
         }
         else regenBuffer -= deltaTime;
-
-        print(health / totalHealth + " " + health);
 
         CheckStats();
     }
@@ -68,8 +70,8 @@ public class PlayerHealth : MonoBehaviour
     }
 
     void CheckStats()
-    {
-        if (health >= 0) return;
+    {        
+        if (health >= 0 && !(killFloor && transform.position.y < killFloor.position.y)) return;
 
         PauseSystem.pauseSystem.ReloadScene();
     }
