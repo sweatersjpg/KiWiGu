@@ -17,7 +17,7 @@ public class PlayerHealth : MonoBehaviour
     [Space]
     [SerializeField] float regenBufferTime = 1;
 
-    float regenBuffer;
+    float regenBuffer = 0;
 
     float deltaTime;
 
@@ -35,13 +35,19 @@ public class PlayerHealth : MonoBehaviour
 
         if (regenBuffer <= 0)
         {
-            health += Mathf.Min(deltaTime * regenRate, totalHealth - health);
+            health += deltaTime * regenRate;
+            if (health > totalHealth) health = totalHealth;
         }
         else regenBuffer -= deltaTime;
 
-        healthBar.TargetPercent = health / totalHealth;
+        print(health / totalHealth + " " + health);
 
         CheckStats();
+    }
+
+    public void FixedUpdate()
+    {
+        if (!PauseSystem.paused) healthBar.TargetPercent = health / totalHealth;
     }
 
     public void DealDamage(float damage, Vector3 source)
