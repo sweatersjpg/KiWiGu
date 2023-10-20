@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class PlayerHealth : MonoBehaviour
 {
+    [SerializeField] GameObject daddy;
+    [SerializeField] GameObject directionalPrefab;
     [SerializeField] HealthBar healthBar;
     
     float health;
@@ -42,10 +44,20 @@ public class PlayerHealth : MonoBehaviour
         CheckStats();
     }
 
-    public void DealDamage(float damage, Vector3 direction)
+    public void DealDamage(float damage, Vector3 source)
     {
-        regenBuffer = regenBufferTime; // resetBuffer;
+        RectTransform indicator = Instantiate(directionalPrefab, daddy.transform).GetComponent<RectTransform>();
 
+        Quaternion sourceRot = Quaternion.LookRotation(source);
+
+        sourceRot.z = -sourceRot.y;
+        sourceRot.x = sourceRot.y = 0;
+
+        Vector3 northDirection = new Vector3(0, 0, transform.eulerAngles.y);
+
+        indicator.localRotation = sourceRot * Quaternion.Euler(northDirection);
+
+        regenBuffer = regenBufferTime;
         health -= damage;
     }
 
