@@ -4,54 +4,56 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
-// WIP I'LL FIX IT SOON OK
-
 public class AmmoUIDiscrete : MonoBehaviour
 {
     bool justSwapped = true;
 
-    public ShootBullet gun;
+    ShootBullet gun;
 
     public Transform playerHand;
 
-    [SerializeField] Color noWeaponColor;
+    [SerializeField] Color emptyColor;
+    [SerializeField] Color halfColor;
 
     [SerializeField] List<Sprite> sprites;
-    List<Image> bulletImages;
+    List<Image> ammoImages;
+    [SerializeField] Image weaponImage;
 
-    [SerializeField] GameObject bulletGrid;
+    [SerializeField] Transform ammoGrid;
 
     void OnEnable()
     {
-        bulletImages = new List<Image>(bulletGrid.GetComponentsInChildren<Image>());
+        ammoImages = new List<Image>(ammoGrid.GetComponentsInChildren<Image>());
 
         FetchGun();
-        foreach (Image i in bulletImages) i.color = Color.white;
+        foreach (Image i in ammoImages) i.color = Color.white;
     }
 
     void FixedUpdate()
     {
         if (!FetchGun())
         {
-            foreach (Image i in bulletImages)
+            foreach (Image i in ammoImages)
             {
-                i.sprite = sprites[1];
-                i.color = noWeaponColor;
+                i.sprite = sprites[1];  // empty bullet
+                i.color = emptyColor;
             }
+            weaponImage.color = emptyColor;
             justSwapped = true;
 
             return;
         }
 
-        if ((gun.ammo.count == gun.ammo.capacity) && justSwapped)
+        if (justSwapped && (gun.ammo.count == gun.ammo.capacity))
         {
             justSwapped = false;
             gun.ShootEvent.AddListener(UseBullet);
-            foreach (Image i in bulletImages)
+            foreach (Image i in ammoImages)
             {
+                i.sprite = sprites[0];  // full ammo image
                 i.color = Color.white;
-                i.sprite = sprites[0];
             }
+            weaponImage.color = Color.white;
         }
     }
 
@@ -63,9 +65,28 @@ public class AmmoUIDiscrete : MonoBehaviour
 
     public void UseBullet()
     {
-        bulletImages[(int)gun.ammo.count].sprite = sprites[1];
-        bulletImages[(int)gun.ammo.count].color = noWeaponColor;
+        if (gun.ammo.capacity < ammoImages.Count) // 1 mag
+        {
+            ammoImages[(int)(gun.ammo.capacity - gun.ammo.count - 1)].sprite = sprites[1];  // empty ammo image
+            ammoImages[(int)(gun.ammo.capacity - gun.ammo.count - 1)].color = emptyColor;
+        }
+        else    // 2 mags
+        {
+            if (gun.ammo.count > (gun.ammo.capacity / 2 - 1))   // 1st mag
+            {
+                ammoImages[(int)((gun.ammo.capacity - gun.ammo.count) - 1)].color = halfColor;
+            }
+            else    // 2nd mag
+            {
+                ammoImages[(int)((gun.ammo.capacity / 2) - gun.ammo.count - 1)].sprite = sprites[1];  // empty ammo image
+                ammoImages[(int)((gun.ammo.capacity / 2) - gun.ammo.count - 1)].color = emptyColor;
+            }
 
-        //print("SHOT " + gun.ammo.count + " " + gun.ammo.capacity);
+        }
+
+        if (gun.ammo.count == 0)
+        {
+            weaponImage.color = emptyColor;
+        }
     }
 }
