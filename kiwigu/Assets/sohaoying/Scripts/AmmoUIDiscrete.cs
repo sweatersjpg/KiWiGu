@@ -4,76 +4,68 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
-// WIP I'LL FIX IT BEFORE GOING TO THE STUDIO TOMORROW OK
+// WIP I'LL FIX IT SOON OK
 
 public class AmmoUIDiscrete : MonoBehaviour
 {
-    EnergyBar display;
+    bool justSwapped = true;
 
-    ShootBullet gun;
+    public ShootBullet gun;
 
     public Transform playerHand;
 
     [SerializeField] Color noWeaponColor;
 
-    [SerializeField] Image weaponIcon;
-    List<Image> images;
+    [SerializeField] List<Sprite> sprites;
+    List<Image> bulletImages;
 
     [SerializeField] GameObject bulletGrid;
-    [SerializeField] GameObject emptyBulletGrid;
 
-    public List<Transform> bulletTransforms;
-    public List<Transform> emptyBulletTransforms;
-    
-    void Start()
+    void OnEnable()
     {
-        bulletTransforms = new List<Transform>(bulletGrid.GetComponentsInChildren<Transform>());
-        bulletTransforms.Remove(bulletGrid.transform);
-
-        emptyBulletTransforms = new List<Transform>(emptyBulletGrid.GetComponentsInChildren<Transform>());
-        emptyBulletTransforms.Remove(emptyBulletGrid.transform);
-
-            Debug.Log(bulletTransforms.Count +" "+emptyBulletTransforms.Count);
-
-        images = new List<Image>(emptyBulletGrid.GetComponentsInChildren<Image>());
-        images.Add(weaponIcon);
-
-        foreach (Transform t in emptyBulletTransforms) t.gameObject.SetActive(false);
+        bulletImages = new List<Image>(bulletGrid.GetComponentsInChildren<Image>());
 
         FetchGun();
-        gun.ShootEvent.AddListener(UseBullet);
+        foreach (Image i in bulletImages) i.color = Color.white;
     }
 
     void FixedUpdate()
     {
-        if (!FetchGun()) {
-            foreach (Transform t in bulletTransforms) t.gameObject.SetActive(false);
-            foreach (Transform t in emptyBulletTransforms) t.gameObject.SetActive(true);
-
-            foreach (Image i in images) i.color = noWeaponColor;
+        if (!FetchGun())
+        {
+            foreach (Image i in bulletImages)
+            {
+                i.sprite = sprites[1];
+                i.color = noWeaponColor;
+            }
+            justSwapped = true;
 
             return;
         }
 
-        foreach (Image i in images) i.color = Color.white;
+        if ((gun.ammo.count == gun.ammo.capacity) && justSwapped)
+        {
+            justSwapped = false;
+            gun.ShootEvent.AddListener(UseBullet);
+            foreach (Image i in bulletImages)
+            {
+                i.color = Color.white;
+                i.sprite = sprites[0];
+            }
+        }
     }
 
     bool FetchGun()
     {
         gun = playerHand.GetComponentInChildren<ShootBullet>();
-
         return gun != null;
     }
 
-    void UseBullet()
+    public void UseBullet()
     {
-        bulletTransforms[(int)gun.ammo.count].gameObject.SetActive(false);
-        emptyBulletTransforms[(int)gun.ammo.count].gameObject.SetActive(true);
-        
-        print(gun.ammo.count+" "+gun.ammo.capacity);
-        
-        if (gun.ammo.count == 0) {
-            foreach (Image i in images) i.color = noWeaponColor;
-        }
+        bulletImages[(int)gun.ammo.count].sprite = sprites[1];
+        bulletImages[(int)gun.ammo.count].color = noWeaponColor;
+
+        //print("SHOT " + gun.ammo.count + " " + gun.ammo.capacity);
     }
 }
