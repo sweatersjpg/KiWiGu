@@ -36,47 +36,6 @@ MonoBehaviour:
   m_GrainTex:
     m_OverrideState: 1
     m_Value: 0
---- !u!114 &-1895027369978919396
-MonoBehaviour:
-  m_ObjectHideFlags: 3
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0b2db86121404754db890f4c8dfe81b2, type: 3}
-  m_Name: Bloom
-  m_EditorClassIdentifier: 
-  active: 0
-  threshold:
-    m_OverrideState: 1
-    m_Value: 1
-  intensity:
-    m_OverrideState: 1
-    m_Value: 15
-  scatter:
-    m_OverrideState: 1
-    m_Value: 1
-  clamp:
-    m_OverrideState: 0
-    m_Value: 65472
-  tint:
-    m_OverrideState: 0
-    m_Value: {r: 1, g: 1, b: 1, a: 1}
-  highQualityFiltering:
-    m_OverrideState: 0
-    m_Value: 1
-  skipIterations:
-    m_OverrideState: 0
-    m_Value: 1
-  dirtTexture:
-    m_OverrideState: 0
-    m_Value: {fileID: 2800000, guid: 61448964d7e78b343b20d6f347ff4431, type: 3}
-    dimension: 1
-  dirtIntensity:
-    m_OverrideState: 0
-    m_Value: 0
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -90,31 +49,8 @@ MonoBehaviour:
   m_Name: Game PP
   m_EditorClassIdentifier: 
   components:
-  - {fileID: -1895027369978919396}
-  - {fileID: 1761969986178276541}
   - {fileID: 6491784580511653127}
---- !u!114 &1761969986178276541
-MonoBehaviour:
-  m_ObjectHideFlags: 3
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 70afe9e12c7a7ed47911bb608a23a8ff, type: 3}
-  m_Name: SplitToning
-  m_EditorClassIdentifier: 
-  active: 0
-  shadows:
-    m_OverrideState: 1
-    m_Value: {r: 0.53921914, g: 0.6037736, b: 0.57269186, a: 1}
-  highlights:
-    m_OverrideState: 1
-    m_Value: {r: 0.3584906, g: 0.34911326, b: 0.28972352, a: 1}
-  balance:
-    m_OverrideState: 0
-    m_Value: 0
+  - {fileID: 6495191897735502064}
 --- !u!114 &6491784580511653127
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -143,3 +79,23 @@ MonoBehaviour:
   saturation:
     m_OverrideState: 1
     m_Value: 2
+--- !u!114 &6495191897735502064
+MonoBehaviour:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e021b4c809a781e468c2988c016ebbea, type: 3}
+  m_Name: ColorLookup
+  m_EditorClassIdentifier: 
+  active: 1
+  texture:
+    m_OverrideState: 1
+    m_Value: {fileID: 2800000, guid: 2b698f1b5f9aa944899012a28b478cae, type: 3}
+    dimension: 1
+  contribution:
+    m_OverrideState: 1
+    m_Value: 0.15
