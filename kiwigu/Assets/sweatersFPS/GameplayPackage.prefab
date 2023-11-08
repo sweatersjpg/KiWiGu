@@ -98,7 +98,7 @@ MonoBehaviour:
   m_VolumeLayerMask:
     serializedVersion: 2
     m_Bits: 64
-  m_VolumeTrigger: {fileID: 1736691324943218963}
+  m_VolumeTrigger: {fileID: 0}
   m_VolumeFrameworkUpdateModeOption: 2
   m_RenderPostProcessing: 1
   m_Antialiasing: 0
@@ -1790,6 +1790,10 @@ PrefabInstance:
     - target: {fileID: 4619342294562106014, guid: cbb06f0e6cdf74cf0b9c73b2af08aeb7, type: 3}
       propertyPath: m_Cameras.Array.size
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4619342294562106014, guid: cbb06f0e6cdf74cf0b9c73b2af08aeb7, type: 3}
+      propertyPath: m_RenderPostProcessing
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4619342294562106014, guid: cbb06f0e6cdf74cf0b9c73b2af08aeb7, type: 3}
       propertyPath: m_Cameras.Array.data[0]
