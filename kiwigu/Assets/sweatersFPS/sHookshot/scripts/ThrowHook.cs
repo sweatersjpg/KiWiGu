@@ -89,6 +89,7 @@ public class ThrowHook : MonoBehaviour
 
     public void CatchHook(GunInfo info, Ammunition ammo)
     {
+        CancelInvoke();
         hookView.SetActive(true);
 
         view.localPosition += new Vector3(0, 0, -0.4f);
@@ -111,6 +112,13 @@ public class ThrowHook : MonoBehaviour
 
     public void PullBack()
     {
+        CancelInvoke();
         targetPosition = startPosition - new Vector3(0, 0, 0.5f);
+        Invoke(nameof(Reach), 0.5f);
+    }
+
+    public void Reach()
+    {
+        targetPosition = startPosition + new Vector3(0, 0, 0.2f);
     }
 }

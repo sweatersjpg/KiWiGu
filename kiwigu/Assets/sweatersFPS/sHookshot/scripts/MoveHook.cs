@@ -15,8 +15,10 @@ public class MoveHook : MonoBehaviour
 
     //public float startingSpeed = 8;
     public float hookRange = 5;
+    public float maxHookRange = 10;
     public float trackingAcceleration = 6;
-    // public float deceleration = 32;
+    public float gravity = 10;
+    public float deceleration = 32;
 
     public float catchDistance = 0.2f;
 
@@ -33,6 +35,7 @@ public class MoveHook : MonoBehaviour
 
     float speed;
     [HideInInspector] public Vector3 velocity;
+    Vector3 G = new();
 
     float deltaTime = 0;
 
@@ -43,14 +46,13 @@ public class MoveHook : MonoBehaviour
 
     void Start()
     {
-        float startingSpeed = Mathf.Sqrt(2 * trackingAcceleration * hookRange);
+        float startingSpeed = Mathf.Sqrt(2 * trackingAcceleration * hookRange / 2);
 
         velocity = transform.forward * startingSpeed;
 
-        Vector3 v = sweatersController.instance.velocity;
-        v.y = 0;
-
-        velocity += v;
+        //Vector3 v = sweatersController.instance.velocity;
+        //v.y = 0;
+        //velocity += v;
 
         speed = -velocity.magnitude;
 
@@ -87,17 +89,17 @@ public class MoveHook : MonoBehaviour
             return;
         }
 
-        if (speed > 0)
+        if (speed >= 0)
         {
             velocity = heading.normalized;
-            if(!headingBack)
+            if (!headingBack)
             {
                 headingBack = true;
                 home.PullBack();
             }
         }
 
-        if(hookTarget)
+        if (hookTarget)
         {
             hookTarget.resistance -= deltaTime;
 
@@ -113,6 +115,7 @@ public class MoveHook : MonoBehaviour
 
                 float distance = Mathf.Max(distToHook, playerDistance);
 
+                // grapple hook effect
                 if (toPlayer.magnitude > distance)
                 {
                     player.transform.position = transform.position + toPlayer.normalized * distance;
@@ -133,10 +136,34 @@ public class MoveHook : MonoBehaviour
             }
         }
 
-        speed += trackingAcceleration * deltaTime * 0.5f;
+        if(headingBack) speed += trackingAcceleration * deltaTime * 0.5f;
+        else if(heading.magnitude > hookRange)
+        {
+            if(speed < -0.5f) speed += deceleration * deltaTime * 0.5f;
+            G += 0.5f * deltaTime * gravity * Vector3.down;
+        }
+
         velocity = velocity.normalized * Mathf.Abs(speed);
-        transform.position += velocity * deltaTime;
-        speed += trackingAcceleration * deltaTime * 0.5f;
+
+        // restrict distance
+        if(heading.magnitude > maxHookRange)
+        {
+            transform.position = home.transform.position - heading.normalized * maxHookRange;
+
+            Vector3 normal = heading.normalized;
+            G -= Vector3.Project(G, normal);
+        }
+
+        Vector3 vel = velocity + G;
+
+        transform.position += vel * deltaTime;
+
+        if (headingBack) speed += trackingAcceleration * deltaTime * 0.5f;
+        else if (heading.magnitude > hookRange)
+        {
+            if (speed < -0.5f) speed += deceleration * deltaTime * 0.5f;
+            G += 0.5f * deltaTime * gravity * Vector3.down;
+        }
 
         DoPhysics();
         UpdateChain();
@@ -191,7 +218,7 @@ public class MoveHook : MonoBehaviour
                 ht.resistance -= deltaTime;
                 if (ht.resistance > 0)
                 {
-                    speed = 0.1f;
+                    Pullback();
                     hookTarget = ht;
 
                     ht.gameObject.layer = LayerMask.NameToLayer("GunHand");
@@ -219,10 +246,10 @@ public class MoveHook : MonoBehaviour
                 Destroy(target.transform.GetComponent<Rigidbody>());
             }
 
-            speed = 0;
+            Pullback();
         }
     }
-
+    
     public void TakeThrownGun(GameObject target)
     {
         caughtGun = target.transform.GetComponent<ThrownGun>().info;
@@ -238,7 +265,7 @@ public class MoveHook : MonoBehaviour
             Destroy(target.transform.GetComponent<Rigidbody>());
         }
 
-        speed = 0;
+        Pullback();
     }
 
     void TakeHookTarget()
@@ -270,6 +297,8 @@ public class MoveHook : MonoBehaviour
         if (headingBack) return;
 
         speed /= 2;
+        G = new();
+        Invoke(nameof(Pullback), 0.2f);
 
         transform.position = hit.point;
 
@@ -309,7 +338,7 @@ public class MoveHook : MonoBehaviour
             //Vector3 v = Vector3.Project(p - h, r - h) + h;
             Vector3 v = (d.magnitude / chain.positionCount) * i * d.normalized + h;
 
-            p += 50 * deltaTime * ((v - p) / (headingBack ? 2 : 8));
+            p += 50 * deltaTime * ((v - p) / (headingBack ? 2 : 4));
 
             chain.SetPosition(i, p);
         }
@@ -326,5 +355,11 @@ public class MoveHook : MonoBehaviour
         }
 
         chain.SetPosition(1, pos);
+    }
+
+    void Pullback()
+    {
+        speed = 0;
+        G = new();
     }
 }
