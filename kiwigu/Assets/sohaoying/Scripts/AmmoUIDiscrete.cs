@@ -17,13 +17,18 @@ public class AmmoUIDiscrete : MonoBehaviour
 
     [SerializeField] List<Sprite> sprites;
     List<Image> ammoImages;
-    [SerializeField] Image weaponImage;
+    [SerializeField] List<Image> iconImages;
 
     [SerializeField] Transform ammoGrid;
 
     void OnEnable()
     {
         ammoImages = new List<Image>(ammoGrid.GetComponentsInChildren<Image>());
+        foreach (Transform child in transform)
+        {
+            Image i = child.GetComponent<Image>();
+            if (i != null) iconImages.Add(i);
+        }
 
         FetchGun();
         foreach (Image i in ammoImages) i.color = Color.white;
@@ -38,7 +43,8 @@ public class AmmoUIDiscrete : MonoBehaviour
                 i.sprite = sprites[1];  // empty bullet
                 i.color = emptyColor;
             }
-            weaponImage.color = emptyColor;
+
+            foreach (Image i in iconImages) i.color = emptyColor;
             justSwapped = true;
 
             return;
@@ -53,7 +59,7 @@ public class AmmoUIDiscrete : MonoBehaviour
                 i.sprite = sprites[0];  // full ammo image
                 i.color = Color.white;
             }
-            weaponImage.color = Color.white;
+            foreach (Image i in iconImages) i.color = Color.white;
         }
     }
 
@@ -65,7 +71,7 @@ public class AmmoUIDiscrete : MonoBehaviour
 
     public void UseBullet()
     {
-        if (gun.ammo.capacity < ammoImages.Count) // 1 mag
+        if (gun.ammo.capacity <= ammoImages.Count) // 1 mag
         {
             ammoImages[(int)(gun.ammo.capacity - gun.ammo.count - 1)].sprite = sprites[1];  // empty ammo image
             ammoImages[(int)(gun.ammo.capacity - gun.ammo.count - 1)].color = emptyColor;
@@ -86,7 +92,7 @@ public class AmmoUIDiscrete : MonoBehaviour
 
         if (gun.ammo.count == 0)
         {
-            weaponImage.color = emptyColor;
+            foreach (Image i in iconImages) i.color = emptyColor;
         }
     }
 }
