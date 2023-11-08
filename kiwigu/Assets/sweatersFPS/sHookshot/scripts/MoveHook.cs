@@ -357,7 +357,7 @@ public class MoveHook : MonoBehaviour
         chain.SetPosition(1, pos);
     }
 
-    void Pullback()
+    public void Pullback()
     {
         speed = 0;
         G = new();
