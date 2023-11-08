@@ -138,7 +138,6 @@ public class Bullet : MonoBehaviour
                 DoHit(hitTwo, direction);
             }
         }
-
     }
 
     //void CastRay(float time, float radius, LayerMask mask)
@@ -160,16 +159,11 @@ public class Bullet : MonoBehaviour
 
     void DoHit(RaycastHit hit, Vector3 direction)
     {
-        if(sparksPrefab != null) SpawnSparks(hit, direction);
-        bulletMesh.transform.position = hit.point;
-
-        foreach(GameObject s in spawnOnHit)
+        if (hit.transform.gameObject.layer == LayerMask.NameToLayer("EnergyWall"))
         {
-            GameObject o = Instantiate(s);
-            o.transform.position = hit.point;
+            if(Vector3.Dot(hit.transform.right, direction) > 0) return;
         }
-
-        if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Player"))
+        else if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Player"))
         {
             hit.transform.GetComponent<PlayerHealth>().DealDamage(bulletDamage, -direction);
         }
@@ -192,6 +186,15 @@ public class Bullet : MonoBehaviour
             // Debug.Log(hit.transform.name);
 
             SpawnHole(hit);
+        }
+
+        if (sparksPrefab != null) SpawnSparks(hit, direction);
+        bulletMesh.transform.position = hit.point;
+
+        foreach (GameObject s in spawnOnHit)
+        {
+            GameObject o = Instantiate(s);
+            o.transform.position = hit.point;
         }
 
         //Destroy(gameObject);
