@@ -25,6 +25,8 @@ public class EnemyBehaviour : EnemyBase
     private float lastExecutionTime = 0f;
     private float interval;
     private Vector3 randomDestination;
+     private bool isRoaming;
+    private float roamStartTime;
 
     bool canFacePlayer = true;
 
@@ -51,7 +53,6 @@ public class EnemyBehaviour : EnemyBase
     {
         if (enemyTypeVariables.DefenseDrone && detectedEnemy)
         {
-            //Debug.Log("RUNNING????");
             float distance = Vector3.Distance(transform.position, enemyPosition);
 
             if (distance > 0.1f)
@@ -72,6 +73,17 @@ public class EnemyBehaviour : EnemyBase
 
             if (!isShootingPatternActive)
                 StartCoroutine(DefenseDronePattern(enemyPosition));
+
+            if (!isRoaming)
+            {
+                isRoaming = true;
+                roamStartTime = Time.time;
+            }
+            else if (Time.time - roamStartTime >= 1.5f)
+            {
+                isRoaming = false;
+                agent.ResetPath();
+            }
         }
         else if (enemyTypeVariables.OffenseDrone)
         {
@@ -97,6 +109,16 @@ public class EnemyBehaviour : EnemyBase
             else
             {
                 Camera.main.GetComponent<Music>().Violence = 0;
+            }
+            if (!isRoaming)
+            {
+                isRoaming = true;
+                roamStartTime = Time.time;
+            }
+            else if (Time.time - roamStartTime >= 1.5f)
+            {
+                isRoaming = false;
+                agent.ResetPath();
             }
         }
         else if (enemyTypeVariables.Small || enemyTypeVariables.Medium)
