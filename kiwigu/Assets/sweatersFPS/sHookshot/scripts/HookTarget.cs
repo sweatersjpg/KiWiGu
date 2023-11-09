@@ -12,6 +12,7 @@ public class HookTarget : MonoBehaviour
     public bool hasView = true;
 
     public float resistance = 2;
+    public bool tether = false;
 
     private void Start()
     {        

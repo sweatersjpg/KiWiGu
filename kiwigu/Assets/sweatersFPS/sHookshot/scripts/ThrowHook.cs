@@ -45,7 +45,7 @@ public class ThrowHook : MonoBehaviour
         if (Input.GetMouseButtonDown(mouseButton) || Input.GetKeyDown(mouseButton == 0 ? KeyCode.Q : KeyCode.E))
         {
             if (hasHook) Throw();
-            else hook.GetComponent<MoveHook>().Pullback();
+            else hook.GetComponent<MoveHook>().PullbackWithForce();
         }
 
         view.localPosition += 50 * ((targetPosition - view.localPosition) / 4) * Time.deltaTime;

@@ -96,12 +96,13 @@ public class MoveHook : MonoBehaviour
             {
                 headingBack = true;
                 home.PullBack();
+                maxHookRange = heading.magnitude;
             }
         }
 
         if (hookTarget)
         {
-            hookTarget.resistance -= deltaTime;
+            if(!hookTarget.tether) hookTarget.resistance -= deltaTime;
 
             if (hookTarget.resistance > 0)
             {
@@ -111,42 +112,67 @@ public class MoveHook : MonoBehaviour
 
                 Vector3 toPlayer = player.transform.position - transform.position;
 
-                distToHook = Mathf.Min(toPlayer.magnitude, distToHook);
+                //distToHook = Mathf.Min(toPlayer.magnitude, distToHook);
 
-                float distance = Mathf.Max(distToHook, playerDistance);
+                //float distance = Mathf.Max(distToHook, playerDistance);
+                //distance = Mathf.Min(distance, maxHookRange);
+
+                //speed += trackingAcceleration * deltaTime * 0.5f;
+                //maxHookRange -= Mathf.Min(speed * deltaTime, maxHookRange);
+                //speed += trackingAcceleration * deltaTime * 0.5f;
+
+                float distance = Mathf.Max(maxHookRange, playerDistance);
 
                 // grapple hook effect
-                if (toPlayer.magnitude > distance)
-                {
-                    player.transform.position = transform.position + toPlayer.normalized * distance;
+                if (heading.magnitude > distance)
+                {                    
+                    Vector3 target = transform.position + heading.normalized * distance;
+                    target += (player.transform.position - home.transform.position);
+
+                    player.transform.position = target;
+                    // Vector3 force = deltaTime * (target - player.transform.position);
 
                     Vector3 normal = -toPlayer.normalized;
                     player.velocity -= Vector3.Project(player.velocity, normal);
+
+                    // player.velocity += force;
                 }
 
                 return;
-            } else
+            } else if(!hookTarget.tether)
             {
                 DamageEnemy(transform);
                 transform.parent = null;
 
                 TakeHookTarget();
                 hookTarget = null;
-                sweatersController.instance.isEncombered = false;
+                // sweatersController.instance.isEncombered = false;
+            } else
+            {
+                transform.parent = null;
+                hookTarget.resistance = 2;
+                hookTarget.gameObject.layer = LayerMask.NameToLayer("HookTarget");
+                hookTarget = null;
+                
             }
         }
 
-        if(headingBack) speed += trackingAcceleration * deltaTime * 0.5f;
-        else if(heading.magnitude > hookRange)
+        if (headingBack) speed += trackingAcceleration * deltaTime * 0.5f;
+        else if (heading.magnitude > hookRange)
         {
-            if(speed < -0.5f) speed += deceleration * deltaTime * 0.5f;
+            if (speed < -0.5f) speed += deceleration * deltaTime * 0.5f;
             G += 0.5f * deltaTime * gravity * Vector3.down;
         }
 
         velocity = velocity.normalized * Mathf.Abs(speed);
 
+        if(headingBack)
+        {
+            maxHookRange -= Mathf.Min(speed * deltaTime, maxHookRange);
+        }
+
         // restrict distance
-        if(heading.magnitude > maxHookRange)
+        if (heading.magnitude > maxHookRange)
         {
             transform.position = home.transform.position - heading.normalized * maxHookRange;
 
@@ -154,7 +180,8 @@ public class MoveHook : MonoBehaviour
             G -= Vector3.Project(G, normal);
         }
 
-        Vector3 vel = velocity + G;
+        Vector3 vel = G;
+        if (!headingBack) vel += velocity;
 
         transform.position += vel * deltaTime;
 
@@ -359,6 +386,23 @@ public class MoveHook : MonoBehaviour
 
     public void Pullback()
     {
+        speed = 0;
+        G = new();
+    }
+
+    public void PullbackWithForce()
+    {
+        if (hookTarget)
+        {
+            hookTarget.resistance = 0;
+
+            sweatersController player = sweatersController.instance;
+
+            Vector3 v = -(player.transform.position - transform.position).normalized * 30;
+            player.velocity.y = v.y;
+            player.maxSpeed = player.airSpeed;
+
+        }
         speed = 0;
         G = new();
     }
