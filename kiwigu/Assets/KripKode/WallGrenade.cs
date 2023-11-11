@@ -1,20 +1,21 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 public class WallGrenade : MonoBehaviour
 {
     private Rigidbody rb;
-
     public GameObject wallPrefab;
 
-    void Start()
+    private void Start()
     {
         rb = GetComponent<Rigidbody>();
     }
 
     private void Update()
+    {
+        UpdateRotation();
+    }
+
+    private void UpdateRotation()
     {
         if (rb != null)
         {
@@ -22,7 +23,12 @@ public class WallGrenade : MonoBehaviour
         }
     }
 
-    void OnCollisionEnter(Collision collision)
+    private void OnCollisionEnter(Collision collision)
+    {
+        HandleCollision(collision);
+    }
+
+    private void HandleCollision(Collision collision)
     {
         Vector3 collisionNormal = collision.contacts[0].normal;
 
@@ -36,15 +42,15 @@ public class WallGrenade : MonoBehaviour
         }
     }
 
-    void SpawnWall()
+    private void SpawnWall()
     {
         GameObject wall = Instantiate(wallPrefab, transform.position, Quaternion.identity);
+        SetWallRotation(wall);
+    }
 
-        // Get the rotation of the grenade
+    private void SetWallRotation(GameObject wall)
+    {
         Quaternion grenadeRotation = transform.rotation;
-
-        // Set the rotation of the wall to face the grenade's x-axis
         wall.transform.rotation = Quaternion.Euler(0f, grenadeRotation.eulerAngles.y - 90, 0f);
-
     }
 }
