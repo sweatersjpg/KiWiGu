@@ -12,16 +12,19 @@ public class HookTarget : MonoBehaviour
     public bool hasView = true;
 
     public float resistance = 2;
+    [HideInInspector] public float maxResistance;
     public bool tether = false;
 
     private void Start()
     {        
-        Mesh mesh = info.gunPrefab.transform.Find("GunView").GetComponent<MeshFilter>().sharedMesh;
+        Mesh mesh = gunView.GetComponent<MeshFilter>().sharedMesh;
         if (hasView)
         {
             gunView.GetComponent<MeshFilter>().mesh = mesh;
             gunView.GetComponent<MeshRenderer>().sharedMaterial = info.gunPrefab.GetComponentInChildren<MeshRenderer>().sharedMaterial;
         }
+
+        maxResistance = resistance;
     }
 
     public void BeforeDestroy()

@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 8641178297122344754}
   - component: {fileID: 8641178297122344752}
   - component: {fileID: 8641178297122344753}
+  - component: {fileID: 2384279380916955795}
   m_Layer: 0
   m_Name: HookFlashFX
   m_TagString: Untagged
@@ -27,8 +28,8 @@ Transform:
   m_GameObject: {fileID: 8641178297122344755}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 5, y: 5, z: 5}
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -55,7 +56,10 @@ VisualEffect:
     m_Vector3f:
       m_Array: []
     m_Vector4f:
-      m_Array: []
+      m_Array:
+      - m_Value: {x: 0.9056604, y: 0.5108071, z: 0.11595381, w: 1}
+        m_Name: ShineColor
+        m_Overridden: 0
     m_Uint:
       m_Array: []
     m_Int:
@@ -110,3 +114,16 @@ VFXRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!114 &2384279380916955795
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8641178297122344755}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6813659512b3a8249ace187dc8d1762e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  lifetime: 1

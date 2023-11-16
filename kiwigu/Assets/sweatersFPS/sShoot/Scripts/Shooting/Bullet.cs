@@ -44,6 +44,8 @@ public class Bullet : MonoBehaviour
     [HideInInspector] public LayerMask ignoreMask;
     [HideInInspector] public bool fromEnemy = false;
 
+    [Space] public bool justInfo = false;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -59,6 +61,8 @@ public class Bullet : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (justInfo) return;
+        
         float time = Time.time - startTime;
 
         // if (target != null) transform.LookAt(target);
