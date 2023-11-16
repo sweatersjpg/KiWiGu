@@ -5,15 +5,15 @@ using UnityEngine.AI;
 
 public class EnemyBehaviour : EnemyBase
 {
-    [SerializeField] StudioEventEmitter sfxEmitterAvailable;
-
+    [SerializeField] private StudioEventEmitter sfxEmitterAvailable;
     [SerializeField] private float gunExitPointRotationSpeed = 180f;
 
     private GameObject gunObjectExitPoint;
     private bool isDroneStopped;
     private bool isShootingPatternActive;
-
-    [HideInInspector] public bool CanShoot;
+    private bool isRoaming;
+    private float roamStartTime;
+    private bool canFacePlayer = true;
 
     // Drone Pattern Variables
     [SerializeField] private float droneHeightOffset = 0.25f;
@@ -25,10 +25,6 @@ public class EnemyBehaviour : EnemyBase
     private float lastExecutionTime = 0f;
     private float interval;
     private Vector3 randomDestination;
-     private bool isRoaming;
-    private float roamStartTime;
-
-    bool canFacePlayer = true;
 
     protected override void Start()
     {
@@ -39,107 +35,117 @@ public class EnemyBehaviour : EnemyBase
 
         if (enemyTypeVariables.DefenseDrone || enemyTypeVariables.OffenseDrone)
         {
-            interval = Random.Range(0.5f, 1.0f);
-
-            initialYPosition = agent.height;
-
-            bodyMeshDrone = enemyMainVariables.BodyMesh.transform;
-            bodyMeshDrone.localPosition = new Vector3(0, initialYPosition, 0);
-            targetYPos = bodyMeshDrone.localPosition;
+            InitializeDroneVariables();
         }
+    }
+
+    private void InitializeDroneVariables()
+    {
+        interval = Random.Range(0.5f, 1.0f);
+        initialYPosition = agent.height;
+        bodyMeshDrone = enemyMainVariables.BodyMesh.transform;
+        bodyMeshDrone.localPosition = new Vector3(0, initialYPosition, 0);
+        targetYPos = bodyMeshDrone.localPosition;
     }
 
     public void EnemyMovement()
     {
         if (enemyTypeVariables.DefenseDrone && detectedEnemy)
         {
-            float distance = Vector3.Distance(transform.position, enemyPosition);
+            HandleDefenseDroneMovement();
+        }
+        else if (enemyTypeVariables.OffenseDrone)
+        {
+            HandleOffenseDroneMovement();
+        }
+        else if (enemyTypeVariables.Small || enemyTypeVariables.Medium)
+        {
+            HandleRegularEnemyMovement();
+        }
+    }
 
-            if (distance > 0.1f)
-                agent.SetDestination(enemyPosition);
-            else
-                agent.ResetPath();
+    private void HandleDefenseDroneMovement()
+    {
+        float distance = Vector3.Distance(transform.position, enemyPosition);
 
-            if (enemyMainVariables.GunObject)
-                RotateGunObjectExitPoint(playerPosition);
+        if (distance > 0.1f)
+            agent.SetDestination(enemyPosition);
+        else
+            agent.ResetPath();
 
-            RotateBodyMeshTowardsObj(playerPosition);
+        RotateGunAndBodyTowardsPlayer();
+
+        if (!isDroneStopped)
+        {
+            StopAllCoroutines();
+            isDroneStopped = true;
+        }
+
+        if (!isShootingPatternActive)
+            StartCoroutine(DefenseDronePattern(enemyPosition));
+
+        HandleRoaming();
+    }
+
+    private void HandleOffenseDroneMovement()
+    {
+        if (detectedPlayer)
+        {
+            Camera.main.GetComponent<Music>().Violence = 1;
+            RotateGunAndBodyTowardsPlayer();
 
             if (!isDroneStopped)
             {
+                agent.ResetPath();
                 StopAllCoroutines();
                 isDroneStopped = true;
             }
 
             if (!isShootingPatternActive)
-                StartCoroutine(DefenseDronePattern(enemyPosition));
-
-            if (!isRoaming)
-            {
-                isRoaming = true;
-                roamStartTime = Time.time;
-            }
-            else if (Time.time - roamStartTime >= 1.5f)
-            {
-                isRoaming = false;
-                agent.ResetPath();
-            }
+                StartCoroutine(OffenseDronePattern(Random.Range(0, 2), playerPosition));
         }
-        else if (enemyTypeVariables.OffenseDrone)
+        else
         {
-            if(detectedPlayer)
-            {
-                Camera.main.GetComponent<Music>().Violence = 1;
-
-                if (enemyMainVariables.GunObject)
-                    RotateGunObjectExitPoint(playerPosition);
-
-                RotateBodyMeshTowardsObj(playerPosition);
-
-                if (!isDroneStopped)
-                {
-                    agent.ResetPath();
-                    StopAllCoroutines();
-                    isDroneStopped = true;
-                }
-
-                if (!isShootingPatternActive)
-                    StartCoroutine(OffenseDronePattern(Random.Range(0, 2), playerPosition));
-            }
-            else
-            {
-                Camera.main.GetComponent<Music>().Violence = 0;
-            }
-            if (!isRoaming)
-            {
-                isRoaming = true;
-                roamStartTime = Time.time;
-            }
-            else if (Time.time - roamStartTime >= 1.5f)
-            {
-                isRoaming = false;
-                agent.ResetPath();
-            }
+            Camera.main.GetComponent<Music>().Violence = 0;
         }
-        else if (enemyTypeVariables.Small || enemyTypeVariables.Medium)
+
+        HandleRoaming();
+    }
+
+    private void HandleRegularEnemyMovement()
+    {
+        if (Vector3.Distance(transform.position, playerPosition) <= enemyMovementVariables.AvoidPlayerDistance)
         {
-            if (Vector3.Distance(transform.position, playerPosition) <= enemyMovementVariables.AvoidPlayerDistance)
-            {
-                if (enemyMainVariables.GunObject)
-                    RotateGunObjectExitPoint(playerPosition);
+            RotateGunAndBodyTowardsPlayer();
+        }
+        else
+        {
+            Vector3 offset = (transform.position - playerPosition).normalized * enemyMovementVariables.AvoidPlayerDistance;
+            agent.SetDestination(playerPosition + offset);
+        }
 
-                Vector3 direction = playerPosition - transform.position;
-                direction.y = 0;
-                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(direction), enemyMovementVariables.RotationSpeed * Time.deltaTime);
-            }
-            else
-            {
-                if (enemyMainVariables.GunObject)
-                    RotateGunObjectExitPoint(playerPosition);
+        HandleRoaming();
+    }
 
-                Vector3 offset = (transform.position - playerPosition).normalized * enemyMovementVariables.AvoidPlayerDistance;
-                agent.SetDestination(playerPosition + offset);
-            }
+    private void RotateGunAndBodyTowardsPlayer()
+    {
+        if (!canFacePlayer) return;
+
+        RotateBodyMeshTowardsObj(playerPosition);
+        RotateGunObjectExitPoint(playerPosition);
+    }
+
+    private void HandleRoaming()
+    {
+        if (!isRoaming)
+        {
+            isRoaming = true;
+            roamStartTime = Time.time;
+        }
+        else if (Time.time - roamStartTime >= 1.5f)
+        {
+            isRoaming = false;
+            agent.ResetPath();
         }
     }
 
