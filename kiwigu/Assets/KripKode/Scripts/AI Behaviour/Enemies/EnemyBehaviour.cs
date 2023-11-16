@@ -25,6 +25,8 @@ public class EnemyBehaviour : EnemyBase
     private float lastExecutionTime = 0f;
     private float interval;
     private Vector3 randomDestination;
+    private bool remembersPlayer;
+    private float rememberPlayerTime;
 
     protected override void Start()
     {
@@ -89,7 +91,17 @@ public class EnemyBehaviour : EnemyBase
 
     private void HandleOffenseDroneMovement()
     {
-        if (detectedPlayer)
+        if(detectedPlayer)
+        {
+            remembersPlayer = true;
+            rememberPlayerTime = Time.time;
+        }
+        else if (remembersPlayer && Time.time - rememberPlayerTime >= 8f)
+        {
+            remembersPlayer = false;
+        }
+
+        if (detectedPlayer || remembersPlayer)
         {
             Camera.main.GetComponent<Music>().Violence = 1;
             RotateGunAndBodyTowardsPlayer();
@@ -103,13 +115,13 @@ public class EnemyBehaviour : EnemyBase
 
             if (!isShootingPatternActive)
                 StartCoroutine(OffenseDronePattern(Random.Range(0, 2), playerPosition));
+
+            HandleRoaming();
         }
         else
         {
             Camera.main.GetComponent<Music>().Violence = 0;
         }
-
-        HandleRoaming();
     }
 
     private void HandleRegularEnemyMovement()

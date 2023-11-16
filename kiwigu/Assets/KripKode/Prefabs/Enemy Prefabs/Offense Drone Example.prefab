@@ -216,6 +216,7 @@ GameObject:
   - component: {fileID: 9115080600601322032}
   - component: {fileID: 9115080600601322047}
   - component: {fileID: 9115080600601322046}
+  - component: {fileID: -4592076318700362591}
   m_Layer: 9
   m_Name: Offense Drone Example
   m_TagString: DroneEnemy
@@ -272,16 +273,16 @@ MonoBehaviour:
   enemyMovementVariables:
     FleeDistance: 5
     FleeMovementVariation: 4
-    MovementSpeed: 9
+    MovementSpeed: 6
     AvoidPlayerDistance: 5
-    RotationSpeed: 180
+    RotationSpeed: 200
     EnemyAwareDistance: 20
     WanderRadius: 8
     WanderIdleVariation: 4
     DroneIdleTime: 2
   enemyGunStats:
     EnemyFireRate: 1
-    GunInaccuracy: 5
+    GunInaccuracy: 0
   enemyTypeVariables:
     Small: 0
     Medium: 0
@@ -302,10 +303,9 @@ MonoBehaviour:
   detectedEnemy: 0
   playerPosition: {x: 0, y: 0, z: 0}
   enemyPosition: {x: 0, y: 0, z: 0}
-  exitPointRotationSpeed: 180
-  verticalOffset: 1
-  movementDuration: 2
-  CanShoot: 0
+  sfxEmitterAvailable: {fileID: -4592076318700362591}
+  gunExitPointRotationSpeed: 180
+  droneHeightOffset: 0.25
 --- !u!195 &9115080600601322046
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -327,7 +327,40 @@ NavMeshAgent:
   m_Height: 2
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
-  m_ObstacleAvoidanceType: 4
+  m_ObstacleAvoidanceType: 0
+--- !u!114 &-4592076318700362591
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9115080600601322045}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a6610d2e704f1648819acc8d7460285, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CollisionTag: 
+  EventReference:
+    Guid:
+      Data1: -807209716
+      Data2: 1198973856
+      Data3: 1820108474
+      Data4: -1617302324
+    Path: event:/SFX_Shoot
+  Event: 
+  PlayEvent: 0
+  StopEvent: 0
+  AllowFadeout: 1
+  TriggerOnce: 0
+  Preload: 0
+  AllowNonRigidbodyDoppler: 0
+  Params:
+  - Name: Weapon
+    Value: 1
+  OverrideAttenuation: 0
+  OverrideMinDistance: 1
+  OverrideMaxDistance: 20
 --- !u!1 &9115080600602638112
 GameObject:
   m_ObjectHideFlags: 0
@@ -429,7 +462,7 @@ SphereCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.5
+  m_Radius: 0.75
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &9115080600602638114
 MonoBehaviour:
@@ -559,6 +592,10 @@ PrefabInstance:
       propertyPath: info
       value: 
       objectReference: {fileID: 11400000, guid: bf0eea35d06b0d24aaffe8ab45727748, type: 2}
+    - target: {fileID: 4914410258131161909, guid: ac1693904f6e1784b94d42fc61badb38, type: 3}
+      propertyPath: resistance
+      value: 0.5
+      objectReference: {fileID: 0}
     - target: {fileID: 5580866924456615346, guid: ac1693904f6e1784b94d42fc61badb38, type: 3}
       propertyPath: m_Name
       value: HookTarget
@@ -569,15 +606,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5728757122284842761, guid: ac1693904f6e1784b94d42fc61badb38, type: 3}
       propertyPath: m_LocalScale.x
-      value: 1.4685
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5728757122284842761, guid: ac1693904f6e1784b94d42fc61badb38, type: 3}
       propertyPath: m_LocalScale.y
-      value: 1.4685
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5728757122284842761, guid: ac1693904f6e1784b94d42fc61badb38, type: 3}
       propertyPath: m_LocalScale.z
-      value: 1.4685
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5728757122284842761, guid: ac1693904f6e1784b94d42fc61badb38, type: 3}
       propertyPath: m_LocalPosition.x
