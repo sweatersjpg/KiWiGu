@@ -149,11 +149,7 @@ public class MoveHook : MonoBehaviour
                 // sweatersController.instance.isEncombered = false;
             } else
             {
-                transform.parent = null;
-                hookTarget.resistance = 2;
-                hookTarget.gameObject.layer = LayerMask.NameToLayer("HookTarget");
-                hookTarget = null;
-                
+                ReturnHookTarget();
             }
         }
 
@@ -384,6 +380,14 @@ public class MoveHook : MonoBehaviour
         chain.SetPosition(1, pos);
     }
 
+    void ReturnHookTarget()
+    {
+        transform.parent = null;
+        hookTarget.resistance = hookTarget.maxResistance;
+        hookTarget.gameObject.layer = LayerMask.NameToLayer("HookTarget");
+        hookTarget = null;
+    }
+
     public void Pullback()
     {
         speed = 0;
@@ -394,16 +398,28 @@ public class MoveHook : MonoBehaviour
     {
         if (hookTarget)
         {
-            hookTarget.resistance = 0;
+            float t = hookTarget.maxResistance - hookTarget.resistance;
 
-            sweatersController player = sweatersController.instance;
-
-            Vector3 v = -(player.transform.position - transform.position).normalized * 30;
-            player.velocity.y = v.y;
-            player.maxSpeed = player.airSpeed;
-
+            if (t < 0.2)
+            {
+                hookTarget.resistance = 0;
+                LaunchPlayer(30);
+            } else
+            {
+                LaunchPlayer(30);
+                ReturnHookTarget();
+            }
         }
         speed = 0;
         G = new();
+    }
+
+    public void LaunchPlayer(float force)
+    {
+        sweatersController player = sweatersController.instance;
+
+        Vector3 v = -(player.transform.position - transform.position).normalized * force;
+        player.velocity.y = v.y;
+        player.maxSpeed = player.airSpeed;
     }
 }
