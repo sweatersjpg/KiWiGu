@@ -1,5 +1,13 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class EnemyHitboxRegister : EnemyBase { }
+public class EnemyHitboxRegister : MonoBehaviour
+{
+    public EnemyBase enemyBase;
+
+    public class HitboxScript
+    {
+        [Header("Hitbox")]
+        public bool CheckIfHitboxScript;
+        public EnemyBase enemyBehaviour;
+    }
+}

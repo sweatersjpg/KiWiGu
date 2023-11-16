@@ -221,7 +221,6 @@ public class MoveHook : MonoBehaviour
             ResolveCollision(hit);
             AddChainSegment(hit.point);
         }
-
     }
 
     void HookGun()

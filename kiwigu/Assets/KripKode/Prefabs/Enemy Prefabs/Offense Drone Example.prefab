@@ -217,6 +217,8 @@ GameObject:
   - component: {fileID: 9115080600601322047}
   - component: {fileID: 9115080600601322046}
   - component: {fileID: -4592076318700362591}
+  - component: {fileID: 773644979421818999}
+  - component: {fileID: -4933239182135165115}
   m_Layer: 9
   m_Name: Offense Drone Example
   m_TagString: DroneEnemy
@@ -283,14 +285,12 @@ MonoBehaviour:
   enemyGunStats:
     EnemyFireRate: 1
     GunInaccuracy: 0
+    gunExitPointRotationSpeed: 180
   enemyTypeVariables:
     Small: 0
     Medium: 0
     DefenseDrone: 0
     OffenseDrone: 1
-  hitBoxScript:
-    CheckIfHitboxScript: 0
-    enemyBehaviour: {fileID: 0}
   agent: {fileID: 0}
   currentHealth: 0
   currentShield: 0
@@ -303,8 +303,10 @@ MonoBehaviour:
   detectedEnemy: 0
   playerPosition: {x: 0, y: 0, z: 0}
   enemyPosition: {x: 0, y: 0, z: 0}
-  sfxEmitterAvailable: {fileID: -4592076318700362591}
-  gunExitPointRotationSpeed: 180
+  canFacePlayer: 1
+  gunObjectExitPoint: {fileID: 0}
+  startedFleeing: 0
+  sfxEmitterAvailable: {fileID: -4933239182135165115}
   droneHeightOffset: 0.25
 --- !u!195 &9115080600601322046
 NavMeshAgent:
@@ -358,6 +360,72 @@ MonoBehaviour:
   Params:
   - Name: Weapon
     Value: 1
+  OverrideAttenuation: 0
+  OverrideMinDistance: 1
+  OverrideMaxDistance: 20
+--- !u!114 &773644979421818999
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9115080600601322045}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a6610d2e704f1648819acc8d7460285, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CollisionTag: 
+  EventReference:
+    Guid:
+      Data1: -807209716
+      Data2: 1198973856
+      Data3: 1820108474
+      Data4: -1617302324
+    Path: event:/SFX_Shoot
+  Event: 
+  PlayEvent: 0
+  StopEvent: 0
+  AllowFadeout: 1
+  TriggerOnce: 0
+  Preload: 0
+  AllowNonRigidbodyDoppler: 0
+  Params:
+  - Name: Weapon
+    Value: 3
+  OverrideAttenuation: 0
+  OverrideMinDistance: 1
+  OverrideMaxDistance: 20
+--- !u!114 &-4933239182135165115
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9115080600601322045}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a6610d2e704f1648819acc8d7460285, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CollisionTag: 
+  EventReference:
+    Guid:
+      Data1: -807209716
+      Data2: 1198973856
+      Data3: 1820108474
+      Data4: -1617302324
+    Path: event:/SFX_Shoot
+  Event: 
+  PlayEvent: 0
+  StopEvent: 0
+  AllowFadeout: 1
+  TriggerOnce: 0
+  Preload: 0
+  AllowNonRigidbodyDoppler: 0
+  Params:
+  - Name: Weapon
+    Value: 3
   OverrideAttenuation: 0
   OverrideMinDistance: 1
   OverrideMaxDistance: 20
@@ -476,49 +544,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c575cb675417b9943863d6f2f6d9ee96, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyMainVariables:
-    canSeekGun: 0
-    spawnWithGun: 0
-    MaxHealth: 100
-    MaxShield: 100
-    GunObject: {fileID: 0}
-    EyesPosition: {fileID: 0}
-    BodyMesh: {fileID: 0}
-    HandPosition: {fileID: 0}
-    explosionPrefab: {fileID: 0}
-  enemyMovementVariables:
-    FleeDistance: 5
-    FleeMovementVariation: 4
-    MovementSpeed: 5
-    AvoidPlayerDistance: 7
-    RotationSpeed: 180
-    EnemyAwareDistance: 20
-    WanderRadius: 8
-    WanderIdleVariation: 0
-    DroneIdleTime: 2
-  enemyGunStats:
-    EnemyFireRate: 1
-    GunInaccuracy: 5
-  enemyTypeVariables:
-    Small: 0
-    Medium: 0
-    DefenseDrone: 0
-    OffenseDrone: 0
-  hitBoxScript:
-    CheckIfHitboxScript: 1
-    enemyBehaviour: {fileID: 9115080600601322047}
-  agent: {fileID: 0}
-  currentHealth: 0
-  currentShield: 0
-  isHoldingGun: 0
-  wasHit: 0
-  isWandering: 0
-  isShooting: 0
-  playerInSight: 0
-  detectedPlayer: 0
-  detectedEnemy: 0
-  playerPosition: {x: 0, y: 0, z: 0}
-  enemyPosition: {x: 0, y: 0, z: 0}
+  enemyBase: {fileID: 9115080600601322047}
 --- !u!1 &9115080601005013943
 GameObject:
   m_ObjectHideFlags: 0
@@ -591,7 +617,7 @@ PrefabInstance:
     - target: {fileID: 4914410258131161909, guid: ac1693904f6e1784b94d42fc61badb38, type: 3}
       propertyPath: info
       value: 
-      objectReference: {fileID: 11400000, guid: bf0eea35d06b0d24aaffe8ab45727748, type: 2}
+      objectReference: {fileID: 11400000, guid: 9cc677bcab148c54a86d5abc08a46064, type: 2}
     - target: {fileID: 4914410258131161909, guid: ac1693904f6e1784b94d42fc61badb38, type: 3}
       propertyPath: resistance
       value: 0.5
