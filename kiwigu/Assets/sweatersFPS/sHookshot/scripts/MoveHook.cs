@@ -11,6 +11,11 @@ public class MoveHook : MonoBehaviour
 
     [HideInInspector] public ThrowHook home;
 
+    public GameObject perfectHookFXprefab;
+    public GameObject perfectHookCircleFXprefab;
+
+    GameObject fx;
+
     public LineRenderer chain;
 
     //public float startingSpeed = 8;
@@ -244,6 +249,9 @@ public class MoveHook : MonoBehaviour
                     Pullback();
                     hookTarget = ht;
 
+                    Destroy(fx);
+                    fx = Instantiate(perfectHookFXprefab, transform);
+
                     ht.gameObject.layer = LayerMask.NameToLayer("GunHand");
 
                     // sweatersController.instance.isEncombered = true;
@@ -400,15 +408,23 @@ public class MoveHook : MonoBehaviour
         {
             float t = hookTarget.maxResistance - hookTarget.resistance;
 
-            if (t < 0.2)
+
+            if (t < 0.2) // perfect hook
             {
                 hookTarget.resistance = 0;
                 LaunchPlayer(30);
+
+                Destroy(fx);
+                fx = Instantiate(perfectHookCircleFXprefab, transform);
             } else
             {
                 LaunchPlayer(30);
                 ReturnHookTarget();
             }
+
+            fx.transform.parent = null;
+
+
         }
         speed = 0;
         G = new();
