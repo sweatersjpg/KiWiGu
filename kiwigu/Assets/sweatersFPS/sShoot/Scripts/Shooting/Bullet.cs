@@ -178,6 +178,7 @@ public class Bullet : MonoBehaviour
             {
                 enemy.TakeDamage(bulletDamage);
             }
+            
         }
         else if (hit.transform.gameObject.CompareTag("RigidTarget"))
         {
