@@ -47,11 +47,16 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _BorderThickness: 3
+    - _CollisionBorderThickness: 0.25
+    - _DamagePercent: 0
     - _FresnelPower: 3
     - _Offset: 0.6
     - _QueueControl: 0
     - _QueueOffset: 0
     m_Colors:
-    - _Emission: {r: 0, g: 0, b: 0, a: 1}
-    - _FresnelColor: {r: 0, g: 1.5972295, b: 33.89676, a: 1}
+    - _Emission: {r: 1, g: 0, b: 0, a: 1}
+    - _FresnelColor: {r: 0, g: 0.39930737, b: 8.47419, a: 1}
+    - _HarmfulColor: {r: 2, g: 0.840725, b: 0, a: 1}
+    - _HarmlessColor: {r: 0, g: 0.3993074, b: 8.47419, a: 1}
   m_BuildTextureStacks: []

@@ -21,10 +21,10 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Bubble
-  m_Shader: {fileID: -6465566751694194690, guid: 9618b8b02cc105447a9f5be7972a7181, type: 3}
+  m_Shader: {fileID: -6465566751694194690, guid: f4df96155abee084a8186e620704259b, type: 3}
   m_ValidKeywords: []
   m_InvalidKeywords: []
-  m_LightmapFlags: 2
+  m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: -1
@@ -33,14 +33,6 @@ Material:
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
-    - _SampleTexture2D_406323d60a854ace8c0a393e53722a49_Texture_1:
-        m_Texture: {fileID: 10300, guid: 0000000000000000f000000000000000, type: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _SampleTexture2D_a1fa7b30aea444989b7b4c40a44322e9_Texture_1:
-        m_Texture: {fileID: 10300, guid: 0000000000000000f000000000000000, type: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
     - unity_Lightmaps:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -55,11 +47,19 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _FresnelPower: 2.4
+    - _BorderThickness: 2
+    - _CollisionBorderThickness: 0.25
+    - _DamagePercent: 0
+    - _DistortionAmount: 0.15
+    - _FresnelPower: 2
     - _Offset: 0.25
+    - _PulseAmount: 0.01
+    - _PulseSpeed: 6
     - _QueueControl: 0
     - _QueueOffset: 0
+    - _Size: 100
     m_Colors:
-    - _Emission: {r: 1.9900227, g: 0.9110119, b: 0.55516803, a: 0}
-    - _FresnelColor: {r: 0.078431375, g: 1.7254902, b: 2.9960785, a: 1}
+    - _EmptyColor: {r: 0.07843135, g: 0.47870994, b: 2.9960785, a: 1}
+    - _FresnelColor: {r: 0, g: 0, b: 0, a: 0}
+    - _FullColor: {r: 2.1185474, g: 0.05545934, b: 0.11204209, a: 1}
   m_BuildTextureStacks: []
