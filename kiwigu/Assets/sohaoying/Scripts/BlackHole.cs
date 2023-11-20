@@ -15,7 +15,7 @@ public class BlackHole : MonoBehaviour
     [SerializeField] float debrisMaxScale = 5f;
     float debrisScale;
 
-    //[Range(0, 1)][SerializeField] float damagePercent;
+    //[Range(0, 1)][SerializeField] float damagePercent;    // for testing only
 
     void Start()
     {
@@ -24,7 +24,12 @@ public class BlackHole : MonoBehaviour
         debrisVFX = debris.GetComponent<VisualEffect>();
     }
 
-    internal void DamageAppearance(float newDamagePercent)    // newDamagePercent ranges from 0f to 1f (harmless -> about to pop respectively)
+    /*void FixedUpdate()
+    {
+        SetDamagePercent(damagePercent);    // for testing only
+    }*/
+
+    internal void SetDamagePercent(float newDamagePercent)    // newDamagePercent ranges from 0f to 1f (harmless -> about to pop respectively)
     {
         bubbleMat.SetFloat("_DamagePercent", newDamagePercent);
         coreMat.SetFloat("_DamagePercent", newDamagePercent);
