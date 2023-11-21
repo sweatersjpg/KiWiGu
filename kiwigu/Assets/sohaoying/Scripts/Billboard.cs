@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class Billboard : MonoBehaviour
 {
-    void LateUpdate()
+    void FixedUpdate()
     {
         transform.forward = Camera.main.transform.forward;
     }
