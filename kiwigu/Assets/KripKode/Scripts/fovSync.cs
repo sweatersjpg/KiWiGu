@@ -11,7 +11,7 @@ public class fovSync : MonoBehaviour
         cameraRef = Camera.main;
     }
 
-    private void Update()
+    private void LateUpdate()
     {
         gameObject.GetComponent<Camera>().fieldOfView = cameraRef.fieldOfView;
     }

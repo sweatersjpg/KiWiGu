@@ -24,9 +24,9 @@ public class PauseSystem : MonoBehaviour
     public float mouseSensitivityMin = 2;
     public float mouseSensitivityMax = 6;
 
-    public float musicVol = 0.1f;
-    public float sfxVol = 0.1f;
-    public float masterVol = 0.1f;
+    public static float musicVol = 0.1f;
+    public static float sfxVol = 0.1f;
+    public static float masterVol = 0.1f;
 
     FMOD.Studio.Bus musicBus;
     FMOD.Studio.Bus masterBus;
@@ -111,17 +111,20 @@ public class PauseSystem : MonoBehaviour
     //public void UpdateVolume(float value) => pauseSystem.masterMixer.SetFloat("volume", 10*Mathf.Log10(value));
     public void UpdateSfxVolume(float value)
     {
-        sfxBus.setVolume(value);
+        sfxVol = value;
+        sfxBus.setVolume(sfxVol);
     }
 
     public void UpdateMusicVolume(float value)
     {
-        musicBus.setVolume(value);
+        musicVol = value;
+        musicBus.setVolume(musicVol);
     }
 
     public void UpdateMasterVolume(float value)
     {
-        masterBus.setVolume(value);
+        masterVol = value;
+        masterBus.setVolume(masterVol);
     }
 
     public void UpdateSensitivity(float value)
