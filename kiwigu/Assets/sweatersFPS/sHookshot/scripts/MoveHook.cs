@@ -1,9 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.Windows;
-using static UnityEngine.GraphicsBuffer;
 
 public class MoveHook : MonoBehaviour
 {
@@ -222,7 +217,6 @@ public class MoveHook : MonoBehaviour
             ResolveCollision(hit);
             AddChainSegment(hit.point);
         }
-
     }
 
     void HookGun()

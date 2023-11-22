@@ -176,8 +176,9 @@ public class Bullet : MonoBehaviour
             EnemyBase enemy = hit.transform.gameObject.GetComponentInChildren<EnemyBase>();
             if (enemy != null)
             {
-                enemy.TakeDamage(bulletDamage);
+                enemy.GetComponentInChildren<EnemyHitboxRegister>().enemyBase.TakeDamage(bulletDamage);
             }
+            
         }
         else if (hit.transform.gameObject.CompareTag("RigidTarget"))
         {

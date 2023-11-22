@@ -21,6 +21,28 @@ public class AmmoUIDiscrete : MonoBehaviour
 
     [SerializeField] Transform ammoGrid;
 
+    private void Start()
+    {
+        gun = playerHand.GetComponentInChildren<ShootBullet>();
+
+        gun.ShootEvent.AddListener(UseBullet);
+        foreach (Image i in ammoImages)
+        {
+            i.sprite = sprites[0];  // full ammo image
+            i.color = Color.white;
+        }
+        foreach (Image i in iconImages) i.color = Color.white;
+
+        float count = gun.ammo.capacity - gun.ammo.count;
+        gun.ammo.count = gun.ammo.capacity;
+
+        for (int i = 0; i < count; i++)
+        {
+            gun.ammo.count -= 1;
+            UseBullet();
+        }
+    }
+
     void OnEnable()
     {
         ammoImages = new List<Image>(ammoGrid.GetComponentsInChildren<Image>());
@@ -30,37 +52,39 @@ public class AmmoUIDiscrete : MonoBehaviour
             if (i != null) iconImages.Add(i);
         }
 
-        FetchGun();
+        // FetchGun();
         foreach (Image i in ammoImages) i.color = Color.white;
+
+
     }
 
     void FixedUpdate()
     {
-        if (!FetchGun())
-        {
-            foreach (Image i in ammoImages)
-            {
-                i.sprite = sprites[1];  // empty bullet
-                i.color = emptyColor;
-            }
+        //if (!FetchGun())
+        //{
+        //    foreach (Image i in ammoImages)
+        //    {
+        //        i.sprite = sprites[1];  // empty bullet
+        //        i.color = emptyColor;
+        //    }
 
-            foreach (Image i in iconImages) i.color = emptyColor;
-            justSwapped = true;
+        //    foreach (Image i in iconImages) i.color = emptyColor;
+        //    justSwapped = true;
 
-            return;
-        }
+        //    return;
+        //}
 
-        if (justSwapped && (gun.ammo.count == gun.ammo.capacity))
-        {
-            justSwapped = false;
-            gun.ShootEvent.AddListener(UseBullet);
-            foreach (Image i in ammoImages)
-            {
-                i.sprite = sprites[0];  // full ammo image
-                i.color = Color.white;
-            }
-            foreach (Image i in iconImages) i.color = Color.white;
-        }
+        //if (justSwapped && (gun.ammo.count == gun.ammo.capacity))
+        //{
+        //    justSwapped = false;
+        //    gun.ShootEvent.AddListener(UseBullet);
+        //    foreach (Image i in ammoImages)
+        //    {
+        //        i.sprite = sprites[0];  // full ammo image
+        //        i.color = Color.white;
+        //    }
+        //    foreach (Image i in iconImages) i.color = Color.white;
+        //}
     }
 
     bool FetchGun()
