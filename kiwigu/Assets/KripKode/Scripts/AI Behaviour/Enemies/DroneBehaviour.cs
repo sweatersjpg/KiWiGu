@@ -231,7 +231,6 @@ public class DroneBehaviour : EnemyBase
         agent.ResetPath();
         yield return new WaitForSeconds(enemyMovementVariables.DroneIdleTime);
         isShootingPatternActive = false;    
-        isWandering = false;
 
         enemyMainVariables.BodyMesh.transform.localRotation = Quaternion.Euler(0, 0, 0);
     }
@@ -272,7 +271,6 @@ public class DroneBehaviour : EnemyBase
         agent.ResetPath();
         yield return new WaitForSeconds(enemyMovementVariables.DroneIdleTime);
         isShootingPatternActive = false;
-        isWandering = false;
 
         enemyMainVariables.BodyMesh.transform.localRotation = Quaternion.Euler(0, 0, 0);
     }
@@ -330,7 +328,7 @@ public class DroneBehaviour : EnemyBase
 
     private float EnemyShoot()
     {
-        if (!isHoldingGun)
+        if (!isHoldingGun || !playerInSight)
             return 0;
 
         HookTarget gun = transform.GetComponentInChildren<HookTarget>();

@@ -16,7 +16,6 @@ public class EnemyBase : MonoBehaviour
     [HideInInspector] public float currentShield;
     [HideInInspector] public bool isHoldingGun;
     [HideInInspector] public bool wasHit;
-    [HideInInspector] public bool isWandering;
     [HideInInspector] public bool isShooting;
     [HideInInspector] public bool playerInSight;
     [HideInInspector] public bool detectedPlayer;
@@ -26,15 +25,13 @@ public class EnemyBase : MonoBehaviour
     [HideInInspector] public bool canFacePlayer = true;
     [HideInInspector] public GameObject gunObjectExitPoint;
     [HideInInspector] public bool startedFleeing;
-
-    private Vector3 wanderTarget;
     private Vector3 initialPosition;
 
     protected virtual void Start()
     {
         SetTagBasedOnEnemyType();
 
-        if (enemyMainVariables.spawnWithGun && enemyMainVariables.GunObject)
+        if (enemyMainVariables.GunObject)
         {
             SetupInitialGun();
         }
@@ -69,15 +66,11 @@ public class EnemyBase : MonoBehaviour
     {
         if (enemyTypeVariables.OffenseDrone || enemyTypeVariables.Small || enemyTypeVariables.Medium)
             DetectPlayer();
+
         else if (enemyTypeVariables.DefenseDrone)
         {
             DetectPlayer();
             DetectEnemy();
-        }
-
-        if (!isWandering && !isShooting && !detectedPlayer)
-        {
-            StartCoroutine(Wander());
         }
     }
 
@@ -108,28 +101,6 @@ public class EnemyBase : MonoBehaviour
             .OrderBy(enemy => Vector3.Distance(transform.position, enemy.transform.position))
             .First()
             .transform.position;
-    }
-
-    public IEnumerator Wander()
-    {
-        wanderTarget = RandomWanderPoint();
-        agent.SetDestination(wanderTarget);
-        isWandering = true;
-
-        if (agent.isOnNavMesh) yield return new WaitUntil(() => agent.remainingDistance <= 0.5f);
-
-        yield return new WaitForSeconds(Random.Range(enemyMovementVariables.WanderIdleVariation - 1, enemyMovementVariables.WanderIdleVariation + 2));
-        isWandering = false;
-    }
-
-    public Vector3 RandomWanderPoint()
-    {
-        Vector3 randomDirection = Random.insideUnitSphere * enemyMovementVariables.WanderRadius;
-        randomDirection += initialPosition;
-        NavMeshHit hit;
-        NavMesh.SamplePosition(randomDirection, out hit, enemyMovementVariables.WanderRadius, NavMesh.AllAreas);
-
-        return hit.position;
     }
 
     public virtual void TakeDamage(float bulletDamage)
@@ -166,33 +137,25 @@ public class EnemyBase : MonoBehaviour
 
     public virtual bool CheckPlayerVisibility()
     {
-        Collider[] colliders = Physics.OverlapSphere(transform.position, enemyMovementVariables.EnemyAwareDistance);
+        Vector3 direction = playerPosition - enemyMainVariables.EyesPosition.transform.position + new Vector3(0, 0.5f, 0);
 
-        foreach (Collider collider in colliders)
+        if (Physics.Raycast(enemyMainVariables.EyesPosition.transform.position, direction, out RaycastHit hit, enemyMovementVariables.EnemyAwareDistance, ~LayerMask.GetMask("Enemy")))
         {
-            if (collider.CompareTag("Player"))
+            if (hit.collider.CompareTag("Player"))
             {
-                Vector3 direction = playerPosition - enemyMainVariables.EyesPosition.transform.position + new Vector3(0, 0.5f, 0);
-                RaycastHit[] hits = Physics.RaycastAll(enemyMainVariables.EyesPosition.transform.position, direction, enemyMovementVariables.EnemyAwareDistance, ~LayerMask.GetMask("Enemy"));
-
-                Debug.DrawRay(enemyMainVariables.EyesPosition.transform.position, direction, Color.red, 0.1f);
-
-                bool playerVisible = true;
-
-                foreach (RaycastHit hit in hits)
-                {
-                    if (hit.collider.CompareTag("Player"))
-                    {
-                        return true;
-                    }
-                }
-
-                return playerVisible;
+                Debug.DrawRay(enemyMainVariables.EyesPosition.transform.position, direction.normalized * hit.distance, Color.green, 0.1f);
+                return true;
+            }
+            else
+            {
+                Debug.DrawRay(enemyMainVariables.EyesPosition.transform.position, direction.normalized * hit.distance, Color.red, 0.1f);
+                return false;
             }
         }
 
         return false;
     }
+
 
     private void OnDestroy()
     {
@@ -205,10 +168,6 @@ public class EnemyBase : MonoBehaviour
     public class EnemyMainVariables
     {
         [Header("Enemy Main Variables")]
-        [Tooltip("Whether the enemy can seek a gun.")]
-        public bool canSeekGun;
-        [Tooltip("Whether the enemy spawns with a gun.")]
-        public bool spawnWithGun;
         [Range(10, 100)]
         [Tooltip("The maximum health of the enemy.")]
         public int MaxHealth = 100;
@@ -231,11 +190,8 @@ public class EnemyBase : MonoBehaviour
     {
         [Header("Enemy Movement")]
         [Range(1, 15)]
-        [Tooltip("The distance the enemy flees when in danger.")]
-        public int FleeDistance = 5;
-        [Range(1, 15)]
-        [Tooltip("Variation in the movement during fleeing.")]
-        public int FleeMovementVariation = 4;
+        [Tooltip("Variation in the movement while hiding.")]
+        public int MovementVariation = 4;
         [Range(1, 15)]
         [Tooltip("The movement speed of the enemy.")]
         public int MovementSpeed = 5;
@@ -248,12 +204,6 @@ public class EnemyBase : MonoBehaviour
         [Range(10, 25)]
         [Tooltip("The distance at which the enemy becomes aware of the player.")]
         public int EnemyAwareDistance = 20;
-        [Range(5, 20)]
-        [Tooltip("The radius for wandering.")]
-        public int WanderRadius = 8;
-        [Range(2, 8)]
-        [Tooltip("Variation in idle time during wandering.")]
-        public float WanderIdleVariation;
         [Range(1, 10)]
         [Tooltip("Idle time for a drone.")]
         public int DroneIdleTime = 2;
