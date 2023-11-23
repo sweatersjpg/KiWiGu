@@ -41,7 +41,7 @@ public class ArmIK : MonoBehaviour
 
         wrist.eulerAngles = target.eulerAngles;
 
-        shoulder.localPosition += Vector3.ClampMagnitude(target.position - holdPoint.position, maxShoulderDelta);
+        shoulder.position += Vector3.ClampMagnitude(target.position - holdPoint.position, maxShoulderDelta);
     }
 
 
