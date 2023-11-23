@@ -177,9 +177,9 @@ public class MiniMenuSystem : ScreenProgram
                     PauseSystem.pauseSystem.FOVmin,
                     PauseSystem.pauseSystem.FOVmax, PauseSystem.FOV);
             }
-            else if (setting.title == "music") value = PauseSystem.pauseSystem.musicVol;
-            else if (setting.title == "sfx") value = PauseSystem.pauseSystem.sfxVol;
-            else if (setting.title == "master") value = PauseSystem.pauseSystem.masterVol;
+            else if (setting.title == "music") value = PauseSystem.musicVol;
+            else if (setting.title == "sfx") value = PauseSystem.sfxVol;
+            else if (setting.title == "master") value = PauseSystem.masterVol;
         }
 
         public override void Draw(int x, int y)
