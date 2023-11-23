@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 3d93ad8b9aa95e648bf45543fcabd101
+guid: 8d144fde09fca46a19f956ac1e95ee01
 ModelImporter:
   serializedVersion: 21300
   internalIDToNameTable: []
@@ -7,8 +7,13 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: Player1
-    second: {fileID: 2100000, guid: 0be40514926c7784ab70a074040b7191, type: 2}
+      name: Armour
+    second: {fileID: 2100000, guid: 74ce1ae6c86764b238f4ef01d1e41b44, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Under
+    second: {fileID: 2100000, guid: 027a20d60c49344d0a217d28fc8a2591, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
@@ -61,7 +66,7 @@ ModelImporter:
     skinWeightsMode: 0
     maxBonesPerVertex: 4
     minBoneWeight: 0.001
-    optimizeBones: 0
+    optimizeBones: 1
     meshOptimizationFlags: -1
     indexFormat: 0
     secondaryUVAngleDistortion: 8
@@ -102,7 +107,7 @@ ModelImporter:
   autoGenerateAvatarMappingIfUnspecified: 1
   animationType: 2
   humanoidOversampling: 1
-  avatarSetup: 1
+  avatarSetup: 0
   addHumanoidExtraRootOnlyWhenUsingAvatar: 1
   remapMaterialsIfMaterialImportModeIsNone: 0
   additionalBone: 0

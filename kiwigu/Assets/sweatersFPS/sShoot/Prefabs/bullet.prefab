@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 745279074493107226}
   - component: {fileID: 745279074493107228}
   m_Layer: 0
-  m_Name: Bullet
+  m_Name: bullet
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -50,38 +50,19 @@ MonoBehaviour:
   gravity: -9.8
   acceleration: 0
   radius: 0.2
-  changeSize: 0
-  radiusOverLifetime:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
   trackTarget: 0
   trackingRadius: 1
   trackingSpeed: 2
-  lifeTime: 20
+  lifeTime: 2
   bulletMesh: {fileID: 6694657939304330507}
   bulletHolePrefab: {fileID: 7839328679860194084, guid: a8f58d7ed020d4940b3a031616ccfaa5, type: 3}
   sparksPrefab: {fileID: 7558042070311089840, guid: 4a757825a5bafce41a9ebb47f13d0190, type: 3}
+  spawnOnHit: []
+  charge: 0
+  ignoreMask:
+    serializedVersion: 2
+    m_Bits: 0
+  fromEnemy: 0
 --- !u!1 &2461556225837080315
 GameObject:
   m_ObjectHideFlags: 0

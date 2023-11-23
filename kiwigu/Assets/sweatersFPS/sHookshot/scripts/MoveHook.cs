@@ -1,9 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.Windows;
-using static UnityEngine.GraphicsBuffer;
 
 public class MoveHook : MonoBehaviour
 {
@@ -11,18 +6,27 @@ public class MoveHook : MonoBehaviour
 
     [HideInInspector] public ThrowHook home;
 
+    public GameObject perfectHookFXprefab;
+    public GameObject perfectHookCircleFXprefab;
+
+    GameObject fx;
+
     public LineRenderer chain;
 
     //public float startingSpeed = 8;
     public float hookRange = 5;
+    public float maxHookRange = 10;
     public float trackingAcceleration = 6;
-    // public float deceleration = 32;
+    public float gravity = 10;
+    public float deceleration = 32;
 
     public float catchDistance = 0.2f;
 
     // bool canCatch = false;
 
     GunInfo caughtGun;
+    Ammunition caughtGunAmmo;
+
     [HideInInspector] public HookTarget hookTarget;
     public float playerDistance = 4;
     public float distToHook = 0;
@@ -31,6 +35,7 @@ public class MoveHook : MonoBehaviour
 
     float speed;
     [HideInInspector] public Vector3 velocity;
+    Vector3 G = new();
 
     float deltaTime = 0;
 
@@ -41,14 +46,13 @@ public class MoveHook : MonoBehaviour
 
     void Start()
     {
-        float startingSpeed = Mathf.Sqrt(2 * trackingAcceleration * hookRange);
+        float startingSpeed = Mathf.Sqrt(2 * trackingAcceleration * hookRange / 2);
 
         velocity = transform.forward * startingSpeed;
 
-        Vector3 v = sweatersController.instance.velocity;
-        v.y = 0;
-
-        velocity += v;
+        //Vector3 v = sweatersController.instance.velocity;
+        //v.y = 0;
+        //velocity += v;
 
         speed = -velocity.magnitude;
 
@@ -79,25 +83,26 @@ public class MoveHook : MonoBehaviour
         //}
         if(headingBack && heading.magnitude < catchDistance)
         {
-            home.CatchHook(caughtGun);
+            home.CatchHook(caughtGun, caughtGunAmmo);
 
             Destroy(gameObject);
             return;
         }
 
-        if (speed > 0)
+        if (speed >= 0)
         {
             velocity = heading.normalized;
-            if(!headingBack)
+            if (!headingBack)
             {
                 headingBack = true;
                 home.PullBack();
+                maxHookRange = heading.magnitude;
             }
         }
 
-        if(hookTarget)
+        if (hookTarget)
         {
-            hookTarget.resistance -= deltaTime;
+            if(!hookTarget.tether) hookTarget.resistance -= deltaTime;
 
             if (hookTarget.resistance > 0)
             {
@@ -107,35 +112,94 @@ public class MoveHook : MonoBehaviour
 
                 Vector3 toPlayer = player.transform.position - transform.position;
 
-                distToHook = Mathf.Min(toPlayer.magnitude, distToHook);
+                //distToHook = Mathf.Min(toPlayer.magnitude, distToHook);
 
-                float distance = Mathf.Max(distToHook, playerDistance);
+                //float distance = Mathf.Max(distToHook, playerDistance);
+                //distance = Mathf.Min(distance, maxHookRange);
 
-                if (toPlayer.magnitude > distance)
-                {
-                    player.transform.position = transform.position + toPlayer.normalized * distance;
+                //speed += trackingAcceleration * deltaTime * 0.5f;
+                //maxHookRange -= Mathf.Min(speed * deltaTime, maxHookRange);
+                //speed += trackingAcceleration * deltaTime * 0.5f;
+
+                float distance = Mathf.Max(maxHookRange, playerDistance);
+
+                // grapple hook effect
+                if (heading.magnitude > distance)
+                {                    
+                    Vector3 target = transform.position + heading.normalized * distance;
+                    target += (player.transform.position - home.transform.position);
+
+                    player.transform.position = target;
+                    // Vector3 force = deltaTime * (target - player.transform.position);
 
                     Vector3 normal = -toPlayer.normalized;
                     player.velocity -= Vector3.Project(player.velocity, normal);
+
+                    // player.velocity += force;
                 }
 
                 return;
-            } else
+            } else if(!hookTarget.tether)
             {
+                DamageEnemy(transform);
                 transform.parent = null;
+
                 TakeHookTarget();
                 hookTarget = null;
-                sweatersController.instance.isEncombered = false;
+                // sweatersController.instance.isEncombered = false;
+            } else
+            {
+                ReturnHookTarget();
             }
         }
 
-        speed += trackingAcceleration * deltaTime * 0.5f;
+        if (headingBack) speed += trackingAcceleration * deltaTime * 0.5f;
+        else if (heading.magnitude > hookRange)
+        {
+            if (speed < -0.5f) speed += deceleration * deltaTime * 0.5f;
+            G += 0.5f * deltaTime * gravity * Vector3.down;
+        }
+
         velocity = velocity.normalized * Mathf.Abs(speed);
-        transform.position += velocity * deltaTime;
-        speed += trackingAcceleration * deltaTime * 0.5f;
+
+        if(headingBack)
+        {
+            maxHookRange -= Mathf.Min(speed * deltaTime, maxHookRange);
+        }
+
+        // restrict distance
+        if (heading.magnitude > maxHookRange)
+        {
+            transform.position = home.transform.position - heading.normalized * maxHookRange;
+
+            Vector3 normal = heading.normalized;
+            G -= Vector3.Project(G, normal);
+        }
+
+        Vector3 vel = G;
+        if (!headingBack) vel += velocity;
+
+        transform.position += vel * deltaTime;
+
+        if (headingBack) speed += trackingAcceleration * deltaTime * 0.5f;
+        else if (heading.magnitude > hookRange)
+        {
+            if (speed < -0.5f) speed += deceleration * deltaTime * 0.5f;
+            G += 0.5f * deltaTime * gravity * Vector3.down;
+        }
 
         DoPhysics();
         UpdateChain();
+    }
+
+    void DamageEnemy(Transform t)
+    {
+        EnemyBase e = t.GetComponentInParent<EnemyBase>();
+
+        if (e)
+        {
+            e.TakeDamage(99999);
+        }
     }
 
     void DoPhysics()
@@ -144,20 +208,20 @@ public class MoveHook : MonoBehaviour
 
         if(caughtGun == null) HookGun();
 
-        bool hasHit = Physics.SphereCast(pPosition, 0.25f, transform.position - pPosition, 
-            out RaycastHit hit, (transform.position - pPosition).magnitude, ~LayerMask.GetMask("GunHand", "Player", "HookTarget"));
+        bool hasHit = Physics.Raycast(pPosition, transform.position - pPosition, 
+            out RaycastHit hit, (transform.position - pPosition).magnitude,
+            ~LayerMask.GetMask("GunHand", "Player", "HookTarget", "TransparentFX"));
 
         if(hasHit)
         {
             ResolveCollision(hit);
             AddChainSegment(hit.point);
         }
-
     }
 
     void HookGun()
     {
-        bool hasHit = Physics.SphereCast(pPosition, 0.25f, transform.position - pPosition,
+        bool hasHit = Physics.SphereCast(pPosition, 1f, transform.position - pPosition,
             out RaycastHit hit, (transform.position - pPosition).magnitude, LayerMask.GetMask("HookTarget"));
 
         if (hasHit)
@@ -166,14 +230,21 @@ public class MoveHook : MonoBehaviour
             GameObject target = hit.transform.gameObject;
             HookTarget ht = target.transform.GetComponentInChildren<HookTarget>();
 
-            if (ht == null) caughtGun = target.transform.GetComponent<ThrownGun>().info;
+            if (ht == null)
+            {
+                caughtGun = target.transform.GetComponent<ThrownGun>().info;
+                caughtGunAmmo = target.transform.GetComponent<ThrownGun>().ammo; // transfer ammo info
+            }
             else
             {
                 ht.resistance -= deltaTime;
                 if (ht.resistance > 0)
                 {
-                    speed = 0.1f;
+                    Pullback();
                     hookTarget = ht;
+
+                    Destroy(fx);
+                    fx = Instantiate(perfectHookFXprefab, transform);
 
                     ht.gameObject.layer = LayerMask.NameToLayer("GunHand");
 
@@ -187,6 +258,7 @@ public class MoveHook : MonoBehaviour
 
                 target = ht.gameObject;
                 caughtGun = ht.info;
+                caughtGunAmmo = new Ammunition(ht.info.capacity); // max capacity
             }
 
             target.transform.parent = transform;
@@ -199,13 +271,14 @@ public class MoveHook : MonoBehaviour
                 Destroy(target.transform.GetComponent<Rigidbody>());
             }
 
-            speed = 0;
+            Pullback();
         }
     }
-
+    
     public void TakeThrownGun(GameObject target)
     {
         caughtGun = target.transform.GetComponent<ThrownGun>().info;
+        caughtGunAmmo = target.transform.GetComponent<ThrownGun>().ammo;
 
         target.transform.parent = transform;
         target.transform.localPosition = new();
@@ -217,13 +290,15 @@ public class MoveHook : MonoBehaviour
             Destroy(target.transform.GetComponent<Rigidbody>());
         }
 
-        speed = 0;
+        Pullback();
     }
 
     void TakeHookTarget()
     {
         GameObject target = hookTarget.gameObject;
+
         caughtGun = hookTarget.info;
+        caughtGunAmmo = new Ammunition(caughtGun.capacity);
 
         target.transform.parent = transform;
         target.transform.localPosition = new();
@@ -247,6 +322,8 @@ public class MoveHook : MonoBehaviour
         if (headingBack) return;
 
         speed /= 2;
+        G = new();
+        Invoke(nameof(Pullback), 0.2f);
 
         transform.position = hit.point;
 
@@ -286,7 +363,7 @@ public class MoveHook : MonoBehaviour
             //Vector3 v = Vector3.Project(p - h, r - h) + h;
             Vector3 v = (d.magnitude / chain.positionCount) * i * d.normalized + h;
 
-            p += 50 * deltaTime * ((v - p) / (headingBack ? 2 : 8));
+            p += 50 * deltaTime * ((v - p) / (headingBack ? 2 : 4));
 
             chain.SetPosition(i, p);
         }
@@ -303,5 +380,56 @@ public class MoveHook : MonoBehaviour
         }
 
         chain.SetPosition(1, pos);
+    }
+
+    void ReturnHookTarget()
+    {
+        transform.parent = null;
+        hookTarget.resistance = hookTarget.maxResistance;
+        hookTarget.gameObject.layer = LayerMask.NameToLayer("HookTarget");
+        hookTarget = null;
+    }
+
+    public void Pullback()
+    {
+        speed = 0;
+        G = new();
+    }
+
+    public void PullbackWithForce()
+    {
+        if (hookTarget)
+        {
+            float t = hookTarget.maxResistance - hookTarget.resistance;
+
+
+            if (t < 0.2) // perfect hook
+            {
+                hookTarget.resistance = 0;
+                LaunchPlayer(30);
+
+                Destroy(fx);
+                fx = Instantiate(perfectHookCircleFXprefab, transform);
+            } else
+            {
+                LaunchPlayer(30);
+                ReturnHookTarget();
+            }
+
+            fx.transform.parent = null;
+
+
+        }
+        speed = 0;
+        G = new();
+    }
+
+    public void LaunchPlayer(float force)
+    {
+        sweatersController player = sweatersController.instance;
+
+        Vector3 v = -(player.transform.position - transform.position).normalized * force;
+        player.velocity.y = v.y;
+        player.maxSpeed = player.airSpeed;
     }
 }

@@ -42,6 +42,9 @@ public class Bullet : MonoBehaviour
     [HideInInspector] public float charge;
 
     [HideInInspector] public LayerMask ignoreMask;
+    [HideInInspector] public bool fromEnemy = false;
+
+    [Space] public bool justInfo = false;
 
     // Start is called before the first frame update
     void Start()
@@ -58,6 +61,8 @@ public class Bullet : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (justInfo) return;
+        
         float time = Time.time - startTime;
 
         // if (target != null) transform.LookAt(target);
@@ -122,6 +127,8 @@ public class Bullet : MonoBehaviour
         bool hasHit = Physics.SphereCast(origin, radius, direction, out RaycastHit hit, direction.magnitude,
             LayerMask.GetMask("Enemy", "PhysicsObject"));
 
+        if (fromEnemy) hasHit = false;
+
         if(hasHit)
         {
             DoHit(hit, direction);
@@ -135,7 +142,6 @@ public class Bullet : MonoBehaviour
                 DoHit(hitTwo, direction);
             }
         }
-
     }
 
     //void CastRay(float time, float radius, LayerMask mask)
@@ -157,38 +163,43 @@ public class Bullet : MonoBehaviour
 
     void DoHit(RaycastHit hit, Vector3 direction)
     {
-        SpawnSparks(hit, direction);
-        bulletMesh.transform.position = hit.point;
-
-        foreach(GameObject s in spawnOnHit)
+        if (hit.transform.gameObject.layer == LayerMask.NameToLayer("EnergyWall"))
         {
-            GameObject o = Instantiate(s);
-            o.transform.position = hit.point;
+            if(Vector3.Dot(hit.transform.right, direction) > 0) return;
         }
-
-        if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Enemy"))
+        else if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Player"))
+        {
+            hit.transform.GetComponent<PlayerHealth>().DealDamage(bulletDamage, -direction);
+        }
+        else if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Enemy"))
         {
             EnemyBase enemy = hit.transform.gameObject.GetComponentInChildren<EnemyBase>();
             if (enemy != null)
             {
-                enemy.TakeDamage(bulletDamage);
+                enemy.GetComponentInChildren<EnemyHitboxRegister>().enemyBase.TakeDamage(bulletDamage);
             }
+            
         }
         else if (hit.transform.gameObject.CompareTag("RigidTarget"))
         {
             hit.transform.gameObject.GetComponent<PhysicsHit>().Hit(hit.point, transform.forward * speed);
 
-            Transform hole = Instantiate(bulletHolePrefab).transform;
-            hole.SetPositionAndRotation(hit.point, Quaternion.LookRotation(-hit.normal));
-            hole.parent = hit.transform;
+            SpawnHole(hit);
         }
         else
         {
             // Debug.Log(hit.transform.name);
 
-            Transform hole = Instantiate(bulletHolePrefab).transform;
-            hole.SetPositionAndRotation(hit.point, Quaternion.LookRotation(-hit.normal));
-            hole.parent = hit.transform;
+            SpawnHole(hit);
+        }
+
+        if (sparksPrefab != null) SpawnSparks(hit, direction);
+        bulletMesh.transform.position = hit.point;
+
+        foreach (GameObject s in spawnOnHit)
+        {
+            GameObject o = Instantiate(s);
+            o.transform.position = hit.point;
         }
 
         //Destroy(gameObject);
@@ -198,6 +209,15 @@ public class Bullet : MonoBehaviour
         if(view != null) Destroy(view.gameObject);
         // bulletMesh.SetActive(false);
         dead = true;
+    }
+
+    void SpawnHole(RaycastHit hit)
+    {
+        if (bulletHolePrefab == null) return;
+        
+        Transform hole = Instantiate(bulletHolePrefab).transform;
+        hole.SetPositionAndRotation(hit.point, Quaternion.LookRotation(-hit.normal));
+        hole.parent = hit.transform;
     }
 
     void SpawnSparks(RaycastHit hit, Vector3 direction)

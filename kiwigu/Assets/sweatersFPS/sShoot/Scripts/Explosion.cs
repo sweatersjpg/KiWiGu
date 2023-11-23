@@ -9,6 +9,8 @@ public class Explosion : MonoBehaviour
     [SerializeField] float finalRadius;
     [SerializeField] AnimationCurve explosionSize;
 
+    [SerializeField] float damageDealt = 20;
+
     [SerializeField] Transform explosionFX;
 
     List<Collider> alreadyHit;
@@ -36,7 +38,7 @@ public class Explosion : MonoBehaviour
 
         CheckRadius(scale / 2);
 
-        if (time > 1) Destroy(gameObject);
+        if (time > duration) Destroy(gameObject);
     }
 
     void CheckRadius(float radius)
@@ -45,14 +47,32 @@ public class Explosion : MonoBehaviour
 
         foreach(Collider hit in hits)
         {
-            if(hit.attachedRigidbody != null)
+            if (alreadyHit.Contains(hit)) return;
+
+            if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Player"))
             {
-                if (alreadyHit.Contains(hit)) return;
+                Vector3 direction = (transform.position - hit.transform.position);
+                hit.transform.GetComponent<PlayerHealth>().DealDamage(damageDealt, direction.normalized);
+
+                sweatersController.instance.velocity -= direction.normalized * 20;
+
+                alreadyHit.Add(hit);
+            }
+            else if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Enemy"))
+            {
+                EnemyBase enemy = hit.transform.gameObject.GetComponentInChildren<EnemyBase>();
+                if (enemy != null)
+                {
+                    enemy.TakeDamage(damageDealt);
+                    alreadyHit.Add(hit);
+                }
+            } else if (hit.attachedRigidbody != null)
+            {
                 alreadyHit.Add(hit);
 
                 //hit.attachedRigidbody.AddExplosionForce(force, transform.position, radius);
                 hit.attachedRigidbody.AddForce(force * (hit.transform.position - transform.position).normalized, ForceMode.Impulse);
-                print(hit.name);
+                // print(hit.name);
             }
 
         }

@@ -19,6 +19,8 @@ public class ThrowHook : MonoBehaviour
     Vector3 homePosition;
 
     Transform view;
+
+    GameObject hook;
     
     // Start is called before the first frame update
     void Start()
@@ -40,8 +42,11 @@ public class ThrowHook : MonoBehaviour
     {
         // ObstacleAvoidance();
 
-        if ((Input.GetMouseButtonDown(mouseButton) || Input.GetKeyDown(mouseButton == 0 ? KeyCode.Q : KeyCode.E))
-            && hasHook) Throw();
+        if (Input.GetMouseButtonDown(mouseButton) || Input.GetKeyDown(mouseButton == 0 ? KeyCode.Q : KeyCode.E))
+        {
+            if (hasHook) Throw();
+            else hook.GetComponent<MoveHook>().PullbackWithForce();
+        }
 
         view.localPosition += 50 * ((targetPosition - view.localPosition) / 4) * Time.deltaTime;
     }
@@ -74,7 +79,7 @@ public class ThrowHook : MonoBehaviour
 
     void Throw()
     {
-        GameObject hook = Instantiate(hookPrefab);
+        hook = Instantiate(hookPrefab);
         hook.transform.SetPositionAndRotation(transform.position, Quaternion.LookRotation(transform.forward));
         hook.transform.LookAt(AcquireTarget.instance.GetHookTarget());
 
@@ -87,8 +92,9 @@ public class ThrowHook : MonoBehaviour
         hasHook = false;
     }
 
-    public void CatchHook(GunInfo info)
+    public void CatchHook(GunInfo info, Ammunition ammo)
     {
+        CancelInvoke();
         hookView.SetActive(true);
 
         view.localPosition += new Vector3(0, 0, -0.4f);
@@ -98,7 +104,11 @@ public class ThrowHook : MonoBehaviour
 
         if(info != null)
         {
-            Instantiate(info.gunPrefab, transform.parent);
+            ShootBullet gun = Instantiate(info.gunPrefab, transform.parent).GetComponentInChildren<ShootBullet>();
+
+            gun.ammo = new Ammunition(ammo.capacity);
+            gun.ammo.count = ammo.count;
+
             Destroy(gameObject);
 
             view.localPosition = startPosition;
@@ -107,6 +117,13 @@ public class ThrowHook : MonoBehaviour
 
     public void PullBack()
     {
+        CancelInvoke();
         targetPosition = startPosition - new Vector3(0, 0, 0.5f);
+        Invoke(nameof(Reach), 0.5f);
+    }
+
+    public void Reach()
+    {
+        targetPosition = startPosition + new Vector3(0, 0, 0.2f);
     }
 }

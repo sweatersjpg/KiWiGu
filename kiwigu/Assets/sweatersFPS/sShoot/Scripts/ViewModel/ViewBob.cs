@@ -8,6 +8,7 @@ public class ViewBob : MonoBehaviour
 
     public float timeScale;
     public Vector3 delta;
+    public Vector3 rotationDelta;
 
     public Vector3 velocity;
 
@@ -48,7 +49,7 @@ public class ViewBob : MonoBehaviour
 
         if (!player.isGrounded) targetPosition = new(0, velocity.y * -0.01f, 0);
 
-        targetRotation = new(0, 0, Vector3.Dot(velocity, player.transform.right));
+        targetRotation = new(0, 0, Vector3.Dot(velocity, player.transform.right) * rotationDelta.z);
 
         if (Mathf.Abs(transform.parent.localPosition.x) < 0.01)
         {
