@@ -15,15 +15,22 @@ public class ArmIK : MonoBehaviour
     public Transform wrist;
 
     [Space]
+    public Transform head;
+
+    [Space]
     public float maxShoulderDelta = 0.2f;
+
+    Vector3 offset;
 
     void Start()
     {
-        
+        offset = head.localPosition - transform.localPosition;
     }
 
     private void LateUpdate()
     {
+        transform.localPosition = head.localPosition - offset;
+
         shoulder.localPosition = new();
         shoulder.LookAt(restPos);
         elbow.localEulerAngles = new();
@@ -42,6 +49,7 @@ public class ArmIK : MonoBehaviour
         wrist.eulerAngles = target.eulerAngles;
 
         shoulder.position += Vector3.ClampMagnitude(target.position - holdPoint.position, maxShoulderDelta);
+
     }
 
 
