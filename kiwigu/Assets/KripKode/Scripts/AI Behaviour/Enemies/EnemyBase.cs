@@ -9,7 +9,6 @@ public class EnemyBase : MonoBehaviour
     public EnemyMovementVariables enemyMovementVariables;
     public EnemyGunStats enemyGunStats;
     public EnemyTypeVariables enemyTypeVariables;
-    public HitboxScript hitBoxScript;
 
     [Header("Shared Variables")]
     [HideInInspector] public NavMeshAgent agent;
@@ -24,17 +23,15 @@ public class EnemyBase : MonoBehaviour
     [HideInInspector] public bool detectedEnemy;
     [HideInInspector] public Vector3 playerPosition;
     [HideInInspector] public Vector3 enemyPosition;
+    [HideInInspector] public bool canFacePlayer = true;
+    [HideInInspector] public GameObject gunObjectExitPoint;
+    [HideInInspector] public bool startedFleeing;
 
     private Vector3 wanderTarget;
     private Vector3 initialPosition;
 
-    private bool startedFleeing;
-
     protected virtual void Start()
     {
-        if (hitBoxScript.CheckIfHitboxScript)
-            return;
-
         SetTagBasedOnEnemyType();
 
         if (enemyMainVariables.spawnWithGun && enemyMainVariables.GunObject)
@@ -68,80 +65,8 @@ public class EnemyBase : MonoBehaviour
         isHoldingGun = true;
     }
 
-    public void EnemyBehaviour()
-    {
-        if (enemyTypeVariables.DefenseDrone || enemyTypeVariables.OffenseDrone)
-            return;
-
-        if (enemyMainVariables.GunObject)
-        {
-            HandleGunLogic();
-        }
-        else
-        {
-            HandleNoGunLogic();
-        }
-    }
-
-    private void HandleGunLogic()
-    {
-        if (IsAgentCloseToStation())
-        {
-            isHoldingGun = true;
-        }
-        else
-        {
-            HandleGunSeeking();
-        }
-    }
-
-    private void HandleGunSeeking()
-    {
-        if (enemyMainVariables.canSeekGun)
-        {
-            GameObject closestStation = FindClosestStationWithTag("EnemyRestockStation");
-
-            if (closestStation != null)
-            {
-                agent.SetDestination(closestStation.transform.position);
-            }
-        }
-        else
-        {
-            if (agent != null && (playerInSight || wasHit))
-            {
-                if (!startedFleeing)
-                {
-                    StartCoroutine(EnemyFlee());
-                }
-            }
-            else if (!isWandering)
-            {
-                StartCoroutine(Wander());
-            }
-        }
-    }
-
-    private void HandleNoGunLogic()
-    {
-        if (agent != null && (playerInSight || wasHit))
-        {
-            if (!startedFleeing)
-            {
-                StartCoroutine(EnemyFlee());
-            }
-        }
-        else if (!isWandering)
-        {
-            StartCoroutine(Wander());
-        }
-    }
-
     protected virtual void Update()
     {
-        if (hitBoxScript.CheckIfHitboxScript)
-            return;
-
         if (enemyTypeVariables.OffenseDrone || enemyTypeVariables.Small || enemyTypeVariables.Medium)
             DetectPlayer();
         else if (enemyTypeVariables.DefenseDrone)
@@ -185,86 +110,13 @@ public class EnemyBase : MonoBehaviour
             .transform.position;
     }
 
-
-    private IEnumerator EnemyFlee()
-    {
-        Vector3 fleeDestination = FindFleeDestination();
-
-        agent.SetDestination(fleeDestination);
-
-        yield return new WaitUntil(() => agent.remainingDistance < 0.5f);
-
-        startedFleeing = false;
-    }
-
-    private Vector3 FindFleeDestination()
-    {
-        Vector3 awayFromPlayer = transform.position - playerPosition;
-        awayFromPlayer.Normalize();
-
-        Vector3 fleeDestination = transform.position + awayFromPlayer * enemyMovementVariables.FleeDistance;
-
-        float randomOffsetX = Mathf.PerlinNoise(Time.time, 0) * 2 - 1;
-        float randomOffsetZ = Mathf.PerlinNoise(0, Time.time) * 2 - 1;
-        Vector3 randomOffset = new Vector3(randomOffsetX, 0f, randomOffsetZ) * enemyMovementVariables.FleeMovementVariation;
-        fleeDestination += randomOffset;
-
-        NavMeshHit hit;
-        if (NavMesh.SamplePosition(fleeDestination, out hit, enemyMovementVariables.FleeDistance, NavMesh.AllAreas))
-        {
-            return hit.position;
-        }
-        else
-        {
-            return transform.position;
-        }
-    }
-
-    private GameObject FindClosestStationWithTag(string tag)
-    {
-        GameObject[] stations = GameObject.FindGameObjectsWithTag(tag);
-        GameObject closestStation = null;
-        float closestDistance = Mathf.Infinity;
-
-        foreach (GameObject station in stations)
-        {
-            float distance = Vector3.Distance(transform.position, station.transform.position);
-
-            if (distance < closestDistance)
-            {
-                closestDistance = distance;
-                closestStation = station;
-            }
-        }
-
-        return closestStation;
-    }
-
-    private bool IsAgentCloseToStation()
-    {
-        GameObject[] stations = GameObject.FindGameObjectsWithTag("EnemyRestockStation");
-
-        foreach (GameObject station in stations)
-        {
-            float distance = Vector3.Distance(transform.position, station.transform.position);
-
-            if (distance <= 2)
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
     public IEnumerator Wander()
     {
         wanderTarget = RandomWanderPoint();
         agent.SetDestination(wanderTarget);
         isWandering = true;
 
-        if (agent.isOnNavMesh)
-            yield return new WaitUntil(() => agent.remainingDistance <= 0.5f);
+        if (agent.isOnNavMesh) yield return new WaitUntil(() => agent.remainingDistance <= 0.5f);
 
         yield return new WaitForSeconds(Random.Range(enemyMovementVariables.WanderIdleVariation - 1, enemyMovementVariables.WanderIdleVariation + 2));
         isWandering = false;
@@ -282,20 +134,17 @@ public class EnemyBase : MonoBehaviour
 
     public virtual void TakeDamage(float bulletDamage)
     {
-        if (hitBoxScript.CheckIfHitboxScript && hitBoxScript.enemyBehaviour)
+        wasHit = true;
+        if (currentShield < enemyMainVariables.MaxShield)
         {
-            hitBoxScript.enemyBehaviour.wasHit = true;
-            if (hitBoxScript.enemyBehaviour.currentShield < hitBoxScript.enemyBehaviour.enemyMainVariables.MaxShield)
-            {
-                hitBoxScript.enemyBehaviour.currentShield = Mathf.Min(hitBoxScript.enemyBehaviour.currentShield + bulletDamage, hitBoxScript.enemyBehaviour.enemyMainVariables.MaxShield);
-            }
-            else if (hitBoxScript.enemyBehaviour.currentHealth < hitBoxScript.enemyBehaviour.enemyMainVariables.MaxHealth)
-            {
-                hitBoxScript.enemyBehaviour.currentHealth = Mathf.Min(hitBoxScript.enemyBehaviour.currentHealth + bulletDamage, hitBoxScript.enemyBehaviour.enemyMainVariables.MaxHealth);
-            }
-
-            hitBoxScript.enemyBehaviour.CheckStats();
+            currentShield = Mathf.Min(currentShield + bulletDamage, enemyMainVariables.MaxShield);
         }
+        else if (currentHealth < enemyMainVariables.MaxHealth)
+        {
+            currentHealth = Mathf.Min(currentHealth + bulletDamage, enemyMainVariables.MaxHealth);
+        }
+
+        CheckStats();
     }
 
     public void CheckStats()
@@ -305,7 +154,7 @@ public class EnemyBase : MonoBehaviour
             if (isHoldingGun)
             {
                 HookTarget ht = GetComponentInChildren<HookTarget>();
-                if(ht != null) ht.BeforeDestroy();
+                if (ht != null) ht.BeforeDestroy();
 
                 isHoldingGun = false;
             }
@@ -347,7 +196,7 @@ public class EnemyBase : MonoBehaviour
 
     private void OnDestroy()
     {
-        if(Camera.main != null) Camera.main.GetComponent<Music>().Violence = 0;
+        if (Camera.main != null) Camera.main.GetComponent<Music>().Violence = 0;
         StopAllCoroutines();
     }
 
@@ -420,6 +269,7 @@ public class EnemyBase : MonoBehaviour
         [Range(0, 10)]
         [Tooltip("Inaccuracy of the enemy's gun.")]
         public int GunInaccuracy = 5;
+        [SerializeField] public float gunExitPointRotationSpeed = 180f;
     }
 
     [System.Serializable]
@@ -430,13 +280,5 @@ public class EnemyBase : MonoBehaviour
         public bool Medium;
         public bool DefenseDrone;
         public bool OffenseDrone;
-    }
-
-    [System.Serializable]
-    public class HitboxScript
-    {
-        [Header("Hitbox")]
-        public bool CheckIfHitboxScript;
-        public EnemyBehaviour enemyBehaviour;
     }
 }

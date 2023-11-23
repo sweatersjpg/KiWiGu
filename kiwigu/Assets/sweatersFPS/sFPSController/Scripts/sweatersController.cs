@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class sweatersController : MonoBehaviour
@@ -12,38 +13,42 @@ public class sweatersController : MonoBehaviour
     public Camera playerCamera;
     public GameObject playerHead;
     //public static bool paused = false;
+    public TextMeshProUGUI debugSpeedDisp;
 
     [Header("Movement Metrics")]
     public float maxJumpDistance = 4;
     public float maxJumpHeight = 2;
     public float minJumpHeight = 0.5f;
 
-    [Space]
+    [Header("Speed Limits")]
     public float runningSpeed = 7.5f;
     public float airSpeed = 10;
     public float crouchSpeed = 3.75f;
+    public float maxSpeedIncrease = 8;
+    public float maxSpeedDecay = 16;
+
+    [Header("Acceleration")]
     public float acceleration = 3.75f;
     public float airAcceleration = 3;
     public float encomberedAcceleration = 3;
 
-    [Space]
+    [Header("Deceleration")]
     public float deceleration = 4;
     public float turnDeceleration = 64;
     public float airDeceleration = 1;
-    public float maxSpeedDecay = 16;
-    public float slopeLimit = 45;
 
     [HideInInspector] public float gravity = 20f;
     [HideInInspector] public float jumpSpeed = 8.0f;
 
     [Space]
+    public float slopeLimit = 45;
     public float jumpBuffer = 0.2f;
     public float kyoteTime = 0.2f;
 
     float maxJumpGravity;
     float minJumpGravity;
 
-    float maxSpeed;
+    [HideInInspector] public float maxSpeed;
 
     [Space]
     public float lookSpeed = 2.0f;
@@ -107,7 +112,6 @@ public class sweatersController : MonoBehaviour
 
         // air time based on air acceleration and max speed
         float a = airAcceleration;
-
         float airTime = (-runningSpeed + Mathf.Sqrt((runningSpeed * runningSpeed) - 2 * a * (-maxJumpDistance))) / a;
 
         // air time based solely on max air speed
@@ -170,7 +174,11 @@ public class sweatersController : MonoBehaviour
 
         // deceleration based on ground air and movement
         float dec = input.magnitude > 0.1f ? turnDeceleration : deceleration;
-        dec = isGrounded && !isSliding ? deceleration : airDeceleration;
+        if(!isGrounded || isSliding)
+        {
+            dec = input.magnitude > 0.1f ? airDeceleration : 0;
+        }
+
         Vector3 vel = new(velocity.x, 0, velocity.z);
 
         float d = Mathf.Min(dec * deltaTime, Mathf.Abs(vel.x));
@@ -234,11 +242,18 @@ public class sweatersController : MonoBehaviour
             v = Vector3.ClampMagnitude(v, maxSpeed);
             velocity = new(v.x, velocity.y, v.z);
 
-        } else if (v.magnitude > maxSpeed) maxSpeed = v.magnitude;
+        }
+        else if (v.magnitude > maxSpeed)
+        {
+            //maxSpeed = v.magnitude;
+            maxSpeed += Mathf.Min(maxSpeedIncrease * deltaTime, airSpeed-maxSpeed);
+        }
         // increase maxSpeed to match airSpeed (w/o y)
 
+        if(debugSpeedDisp) debugSpeedDisp.text = "speed:\n" + Mathf.Floor(v.magnitude * 100) / 100;
+
         // clamp to airSpeed
-        v = Vector3.ClampMagnitude(v, airSpeed);
+        v = Vector3.ClampMagnitude(v, maxSpeed);
         velocity = new(v.x, velocity.y, v.z);
 
         velocity += 0.5f * deltaTime * force; // add half before moving

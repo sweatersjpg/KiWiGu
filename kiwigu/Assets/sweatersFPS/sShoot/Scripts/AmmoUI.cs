@@ -20,21 +20,27 @@ public class AmmoUI : MonoBehaviour
     void Start()
     {
         display = GetComponentInChildren<EnergyBar>();
+        gun = playerHand.GetComponentInChildren<ShootBullet>();
     }
 
     void FixedUpdate()
     {
-        if (!FetchGun()) {
-            display.TargetPercent = 0;
+        //if (!FetchGun()) {
+        //    display.TargetPercent = 0;
 
-            foreach (Image i in images) i.color = noWeaponColor;
+        //    foreach (Image i in images) i.color = noWeaponColor;
 
-            return;
-        }
+        //    return;
+        //}
 
         foreach (Image i in images) i.color = Color.white;
 
         display.TargetPercent = gun.ammo.count / gun.ammo.capacity;
+
+        if(display.TargetPercent == 0)
+        {
+            foreach (Image i in images) i.color = noWeaponColor;
+        }
     }
 
     bool FetchGun()

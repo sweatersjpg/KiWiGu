@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+using UnityEngine.Events;
 using FMODUnity;
 
 public class ShootBullet : MonoBehaviour
@@ -35,9 +36,13 @@ public class ShootBullet : MonoBehaviour
 
     float shotTimer = 0;
 
+    public UnityEvent ShootEvent;
+
     // Start is called before the first frame update
     void Start()
     {
+        if (ShootEvent == null) ShootEvent = new UnityEvent();
+
         shotTimer = 0;
 
         anim = transform.parent.GetComponent<GunHand>();
@@ -124,6 +129,8 @@ public class ShootBullet : MonoBehaviour
 
         chargeTimer = 0;
         // Debug.Log(charge);
+
+        ShootEvent.Invoke();
     }
 
     void SpawnBullet()

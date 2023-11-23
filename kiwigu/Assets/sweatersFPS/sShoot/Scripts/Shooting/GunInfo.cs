@@ -47,7 +47,9 @@ public class GunInfo : ScriptableObject
 
     [Header("Prefabs")]
     public GameObject bulletPrefab;
-    public GameObject gunPrefab; 
+    public GameObject gunPrefab;
+
+    public GameObject guUI;
     // its crazy that we have to do this but because the gun can't
     // reference itself as a prefab it's what needs to happen...
 }
