@@ -23,14 +23,11 @@ public class SmallEnemyBehaviour : EnemyBase
     {
         if (isPlayerVisible)
         {
-            if (!agent.pathPending && agent.remainingDistance <= agent.stoppingDistance)
-            {
-                FindAndSetNextCover();
-            }
+            MoveAroundCover();
         }
     }
 
-    private void FindAndSetNextCover()
+    private void MoveAroundCover()
     {
         GameObject[] coverObjects = GameObject.FindGameObjectsWithTag("Cover");
         GameObject nearestCover = null;
@@ -54,6 +51,7 @@ public class SmallEnemyBehaviour : EnemyBase
             agent.SetDestination(oppositePoint);
         }
     }
+
 
     // Maybe later
     private void RotateGunAndBodyTowardsPlayer()
