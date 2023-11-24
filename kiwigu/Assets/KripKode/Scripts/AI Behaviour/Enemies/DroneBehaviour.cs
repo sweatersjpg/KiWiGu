@@ -277,7 +277,7 @@ public class DroneBehaviour : EnemyBase
 
     protected override void Update()
     {
-        playerInSight = CheckPlayerVisibility();
+        isPlayerVisible = CheckPlayerVisibility();
 
         base.Update();
 
@@ -328,7 +328,7 @@ public class DroneBehaviour : EnemyBase
 
     private float EnemyShoot()
     {
-        if (!isHoldingGun || !playerInSight)
+        if (!isHoldingGun || !isPlayerVisible)
             return 0;
 
         HookTarget gun = transform.GetComponentInChildren<HookTarget>();

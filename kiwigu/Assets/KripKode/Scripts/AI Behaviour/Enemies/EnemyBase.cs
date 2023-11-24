@@ -17,7 +17,7 @@ public class EnemyBase : MonoBehaviour
     [HideInInspector] public bool isHoldingGun;
     [HideInInspector] public bool wasHit;
     [HideInInspector] public bool isShooting;
-    [HideInInspector] public bool playerInSight;
+    [HideInInspector] public bool isPlayerVisible;
     [HideInInspector] public bool detectedPlayer;
     [HideInInspector] public bool detectedEnemy;
     [HideInInspector] public Vector3 playerPosition;
@@ -201,7 +201,7 @@ public class EnemyBase : MonoBehaviour
         [Range(100, 200)]
         [Tooltip("The rotation speed of the enemy.")]
         public int RotationSpeed = 180;
-        [Range(10, 25)]
+        [Range(10, 100)]
         [Tooltip("The distance at which the enemy becomes aware of the player.")]
         public int EnemyAwareDistance = 20;
         [Range(1, 10)]

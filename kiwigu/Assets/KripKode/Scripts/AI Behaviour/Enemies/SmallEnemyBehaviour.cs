@@ -7,7 +7,7 @@ public class SmallEnemyBehaviour : EnemyBase
 {
     protected override void Update()
     {
-        playerInSight = CheckPlayerVisibility();
+        isPlayerVisible = CheckPlayerVisibility();
 
         base.Update();
 
@@ -21,13 +21,16 @@ public class SmallEnemyBehaviour : EnemyBase
 
     private void HandleRegularEnemyMovement()
     {
-        if (playerInSight)
+        if (isPlayerVisible)
         {
-            MoveAroundCover();
+            if (!agent.pathPending && agent.remainingDistance <= agent.stoppingDistance)
+            {
+                FindAndSetNextCover();
+            }
         }
     }
 
-    private void MoveAroundCover()
+    private void FindAndSetNextCover()
     {
         GameObject[] coverObjects = GameObject.FindGameObjectsWithTag("Cover");
         GameObject nearestCover = null;
@@ -51,7 +54,6 @@ public class SmallEnemyBehaviour : EnemyBase
             agent.SetDestination(oppositePoint);
         }
     }
-
 
     // Maybe later
     private void RotateGunAndBodyTowardsPlayer()
