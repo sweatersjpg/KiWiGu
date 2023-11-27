@@ -263,8 +263,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyMainVariables:
-    canSeekGun: 0
-    spawnWithGun: 1
     MaxHealth: 50
     MaxShield: 0
     GunObject: {fileID: 4006260289432868516, guid: e9f49a38ad200014aa4418f8035720f2, type: 3}
@@ -273,14 +271,11 @@ MonoBehaviour:
     HandPosition: {fileID: 9115080601005013943}
     explosionPrefab: {fileID: 1886320638105856866, guid: 868415f162da742468824c5743d47bae, type: 3}
   enemyMovementVariables:
-    FleeDistance: 5
-    FleeMovementVariation: 4
+    MovementVariation: 4
     MovementSpeed: 6
     AvoidPlayerDistance: 5
     RotationSpeed: 200
     EnemyAwareDistance: 20
-    WanderRadius: 8
-    WanderIdleVariation: 4
     DroneIdleTime: 2
   enemyGunStats:
     EnemyFireRate: 1
@@ -296,9 +291,8 @@ MonoBehaviour:
   currentShield: 0
   isHoldingGun: 0
   wasHit: 0
-  isWandering: 0
   isShooting: 0
-  playerInSight: 0
+  isPlayerVisible: 0
   detectedPlayer: 0
   detectedEnemy: 0
   playerPosition: {x: 0, y: 0, z: 0}
@@ -307,6 +301,7 @@ MonoBehaviour:
   gunObjectExitPoint: {fileID: 0}
   startedFleeing: 0
   sfxEmitterAvailable: {fileID: -4933239182135165115}
+  tellEffect: {fileID: 2838533942546750815, guid: 4ca2e9e9def890849859a51bbf24d3a0, type: 3}
   droneHeightOffset: 0.25
 --- !u!195 &9115080600601322046
 NavMeshAgent:

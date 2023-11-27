@@ -6,6 +6,7 @@ using UnityEngine.AI;
 public class DroneBehaviour : EnemyBase
 {
     [SerializeField] private StudioEventEmitter sfxEmitterAvailable;
+    [SerializeField] private GameObject tellEffect;
 
     private bool isDroneStopped;
     private bool isShootingPatternActive;
@@ -209,6 +210,7 @@ public class DroneBehaviour : EnemyBase
             if (pattern == 0 && isHoldingGun)
             {
                 canFacePlayer = false;
+                if (detectedPlayer) Instantiate(tellEffect, enemyMainVariables.BodyMesh.transform);
                 yield return new WaitForSeconds(0.25f);
                 if (detectedPlayer)
                     yield return new WaitForSeconds(EnemyShoot());
@@ -219,6 +221,7 @@ public class DroneBehaviour : EnemyBase
                 for (int j = 0; j < 3; j++)
                 {
                     yield return new WaitForSeconds(0.25f);
+                    if (isHoldingGun && detectedPlayer) Instantiate(tellEffect, enemyMainVariables.BodyMesh.transform);
                     canFacePlayer = false;
                     yield return new WaitForSeconds(0.25f);
                     if (isHoldingGun && detectedPlayer)

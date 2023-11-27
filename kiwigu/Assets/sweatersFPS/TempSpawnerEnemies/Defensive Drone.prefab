@@ -245,8 +245,7 @@ MonoBehaviour:
     HandPosition: {fileID: 2679767533817506634}
     explosionPrefab: {fileID: 1886320638105856866, guid: 868415f162da742468824c5743d47bae, type: 3}
   enemyMovementVariables:
-    FleeDistance: 5
-    FleeMovementVariation: 4
+    MovementVariation: 4
     MovementSpeed: 5
     AvoidPlayerDistance: 5
     RotationSpeed: 200
@@ -267,7 +266,7 @@ MonoBehaviour:
   isHoldingGun: 0
   wasHit: 0
   isShooting: 0
-  playerInSight: 0
+  isPlayerVisible: 0
   detectedPlayer: 0
   detectedEnemy: 0
   playerPosition: {x: 0, y: 0, z: 0}
@@ -276,6 +275,7 @@ MonoBehaviour:
   gunObjectExitPoint: {fileID: 0}
   startedFleeing: 0
   sfxEmitterAvailable: {fileID: 5183941454985437801}
+  tellEffect: {fileID: 2838533942546750815, guid: 4ca2e9e9def890849859a51bbf24d3a0, type: 3}
   droneHeightOffset: 0.4
 --- !u!195 &2679767533950694083
 NavMeshAgent:

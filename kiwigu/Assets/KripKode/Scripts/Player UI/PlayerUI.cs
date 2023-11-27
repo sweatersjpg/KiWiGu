@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class PlayerUI : MonoBehaviour
 {
     [Header("Radar")]
-    [SerializeField][Range(50, 200)] float radarSpeed;
+    [SerializeField][Range(50, 1000)] float radarSpeed;
     [SerializeField][Range(50, 500)] float radarRadius = 50f;
     [SerializeField] RectTransform radarCone;
     [SerializeField] GameObject enemyDotPrefab;
