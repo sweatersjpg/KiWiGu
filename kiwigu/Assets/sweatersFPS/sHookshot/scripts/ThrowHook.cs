@@ -37,6 +37,14 @@ public class ThrowHook : MonoBehaviour
         else mouseButton = 0;
     }
 
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Space) && !hasHook && !sweatersController.instance.isGrounded)
+        {
+            hook.GetComponent<MoveHook>().PullbackWithForce(30);
+        }
+    }
+
     // Update is called once per frame
     void LateUpdate()
     {
@@ -45,7 +53,7 @@ public class ThrowHook : MonoBehaviour
         if (Input.GetMouseButtonDown(mouseButton) || Input.GetKeyDown(mouseButton == 0 ? KeyCode.Q : KeyCode.E))
         {
             if (hasHook) Throw();
-            else hook.GetComponent<MoveHook>().PullbackWithForce();
+            else hook.GetComponent<MoveHook>().PullbackWithForce(0);
         }
 
         view.localPosition += 50 * ((targetPosition - view.localPosition) / 4) * Time.deltaTime;

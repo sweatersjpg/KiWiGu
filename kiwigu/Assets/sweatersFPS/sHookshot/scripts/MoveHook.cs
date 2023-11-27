@@ -399,7 +399,7 @@ public class MoveHook : MonoBehaviour
         G = new();
     }
 
-    public void PullbackWithForce()
+    public void PullbackWithForce(float force)
     {
         if (hookTarget)
         {
@@ -409,7 +409,7 @@ public class MoveHook : MonoBehaviour
             if (t < 0.2) // perfect hook
             {
                 hookTarget.resistance = 0;
-                LaunchPlayer(30);
+                if(force > 0) LaunchPlayer(force);
 
                 Destroy(fx);
                 fx = Instantiate(perfectHookCircleFXprefab, transform);
