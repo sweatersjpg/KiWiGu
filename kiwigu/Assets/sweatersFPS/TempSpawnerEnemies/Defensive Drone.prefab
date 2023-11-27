@@ -116,6 +116,7 @@ MonoBehaviour:
   throwGunPrefab: {fileID: 6087863177417318745, guid: 775df9a2e9013c54ab64a1c26875866b, type: 3}
   hasView: 1
   resistance: 0.5
+  maxResistance: 0
   tether: 0
 --- !u!1 &2679767532860941697
 GameObject:
@@ -206,7 +207,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2679767533950694080}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -236,8 +237,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyMainVariables:
-    canSeekGun: 0
-    spawnWithGun: 1
     MaxHealth: 75
     MaxShield: 0
     GunObject: {fileID: 4006260289432868516, guid: e9f49a38ad200014aa4418f8035720f2, type: 3}
@@ -252,8 +251,6 @@ MonoBehaviour:
     AvoidPlayerDistance: 5
     RotationSpeed: 200
     EnemyAwareDistance: 20
-    WanderRadius: 8
-    WanderIdleVariation: 4
     DroneIdleTime: 2
   enemyGunStats:
     EnemyFireRate: 1
@@ -269,7 +266,6 @@ MonoBehaviour:
   currentShield: 0
   isHoldingGun: 0
   wasHit: 0
-  isWandering: 0
   isShooting: 0
   playerInSight: 0
   detectedPlayer: 0

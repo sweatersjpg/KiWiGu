@@ -7,7 +7,7 @@ public class SmallEnemyBehaviour : EnemyBase
 {
     protected override void Update()
     {
-        playerInSight = CheckPlayerVisibility();
+        isPlayerVisible = CheckPlayerVisibility();
 
         base.Update();
 
@@ -21,17 +21,39 @@ public class SmallEnemyBehaviour : EnemyBase
 
     private void HandleRegularEnemyMovement()
     {
-        if (Vector3.Distance(transform.position, playerPosition) <= enemyMovementVariables.AvoidPlayerDistance)
+        if (isPlayerVisible)
         {
-            RotateGunAndBodyTowardsPlayer();
-        }
-        else
-        {
-            Vector3 offset = (transform.position - playerPosition).normalized * enemyMovementVariables.AvoidPlayerDistance;
-            agent.SetDestination(playerPosition + offset);
+            MoveAroundCover();
         }
     }
 
+    private void MoveAroundCover()
+    {
+        GameObject[] coverObjects = GameObject.FindGameObjectsWithTag("Cover");
+        GameObject nearestCover = null;
+        float minDistance = float.MaxValue;
+
+        foreach (GameObject coverObject in coverObjects)
+        {
+            float distance = Vector3.Distance(transform.position, coverObject.transform.position);
+            if (distance < minDistance)
+            {
+                minDistance = distance;
+                nearestCover = coverObject;
+            }
+        }
+
+        if (nearestCover != null)
+        {
+            Vector3 directionToPlayer = transform.position - playerPosition;
+            Vector3 oppositePoint = nearestCover.transform.position + directionToPlayer.normalized * minDistance;
+
+            agent.SetDestination(oppositePoint);
+        }
+    }
+
+
+    // Maybe later
     private void RotateGunAndBodyTowardsPlayer()
     {
         if (!canFacePlayer) return;
@@ -63,145 +85,5 @@ public class SmallEnemyBehaviour : EnemyBase
             targetRotation,
             Time.deltaTime * enemyGunStats.gunExitPointRotationSpeed
         );
-    }
-
-
-    ////////////////////////////////////////////
-    
-    private GameObject FindClosestStationWithTag(string tag)
-    {
-        GameObject[] stations = GameObject.FindGameObjectsWithTag(tag);
-        GameObject closestStation = null;
-        float closestDistance = Mathf.Infinity;
-
-        foreach (GameObject station in stations)
-        {
-            float distance = Vector3.Distance(transform.position, station.transform.position);
-
-            if (distance < closestDistance)
-            {
-                closestDistance = distance;
-                closestStation = station;
-            }
-        }
-
-        return closestStation;
-    }
-
-    private bool IsAgentCloseToStation()
-    {
-        GameObject[] stations = GameObject.FindGameObjectsWithTag("EnemyRestockStation");
-
-        foreach (GameObject station in stations)
-        {
-            float distance = Vector3.Distance(transform.position, station.transform.position);
-
-            if (distance <= 2)
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    public void EnemyBehaviour()
-    {
-        if (enemyMainVariables.GunObject)
-        {
-            HandleGunLogic();
-        }
-        else
-        {
-            HandleNoGunLogic();
-        }
-    }
-
-    private void HandleGunLogic()
-    {
-        if (IsAgentCloseToStation())
-        {
-            isHoldingGun = true;
-        }
-        else
-        {
-            HandleGunSeeking();
-        }
-    }
-
-    private void HandleGunSeeking()
-    {
-        if (enemyMainVariables.canSeekGun)
-        {
-            GameObject closestStation = FindClosestStationWithTag("EnemyRestockStation");
-
-            if (closestStation != null)
-            {
-                agent.SetDestination(closestStation.transform.position);
-            }
-        }
-        else
-        {
-            if (agent != null && (playerInSight || wasHit))
-            {
-                if (!startedFleeing)
-                {
-                    StartCoroutine(EnemyFlee());
-                }
-            }
-            else if (!isWandering)
-            {
-                StartCoroutine(Wander());
-            }
-        }
-    }
-
-    private void HandleNoGunLogic()
-    {
-        if (agent != null && (playerInSight || wasHit))
-        {
-            if (!startedFleeing)
-            {
-                StartCoroutine(EnemyFlee());
-            }
-        }
-        else if (!isWandering)
-        {
-            StartCoroutine(Wander());
-        }
-    }
-
-    private IEnumerator EnemyFlee()
-    {
-        Vector3 fleeDestination = FindFleeDestination();
-
-        agent.SetDestination(fleeDestination);
-
-        yield return new WaitUntil(() => agent.remainingDistance < 0.5f);
-
-        startedFleeing = false;
-    }
-
-    private Vector3 FindFleeDestination()
-    {
-        Vector3 awayFromPlayer = transform.position - playerPosition;
-        awayFromPlayer.Normalize();
-
-        Vector3 fleeDestination = transform.position + awayFromPlayer * enemyMovementVariables.FleeDistance;
-
-        float randomOffsetX = Mathf.PerlinNoise(Time.time, 0) * 2 - 1;
-        float randomOffsetZ = Mathf.PerlinNoise(0, Time.time) * 2 - 1;
-        Vector3 randomOffset = new Vector3(randomOffsetX, 0f, randomOffsetZ) * enemyMovementVariables.FleeMovementVariation;
-        fleeDestination += randomOffset;
-
-        NavMeshHit hit;
-        if (NavMesh.SamplePosition(fleeDestination, out hit, enemyMovementVariables.FleeDistance, NavMesh.AllAreas))
-        {
-            return hit.position;
-        }
-        else
-        {
-            return transform.position;
-        }
     }
 }

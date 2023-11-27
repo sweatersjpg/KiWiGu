@@ -462,8 +462,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyMainVariables:
-    canSeekGun: 0
-    spawnWithGun: 1
     MaxHealth: 50
     MaxShield: 0
     GunObject: {fileID: 4006260289432868516, guid: e9f49a38ad200014aa4418f8035720f2, type: 3}
@@ -478,8 +476,6 @@ MonoBehaviour:
     AvoidPlayerDistance: 5
     RotationSpeed: 200
     EnemyAwareDistance: 20
-    WanderRadius: 8
-    WanderIdleVariation: 4
     DroneIdleTime: 2
   enemyGunStats:
     EnemyFireRate: 1
@@ -495,7 +491,6 @@ MonoBehaviour:
   currentShield: 0
   isHoldingGun: 0
   wasHit: 0
-  isWandering: 0
   isShooting: 0
   playerInSight: 0
   detectedPlayer: 0
