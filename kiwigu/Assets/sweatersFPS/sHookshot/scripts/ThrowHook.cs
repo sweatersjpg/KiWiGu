@@ -41,7 +41,8 @@ public class ThrowHook : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Space) && !hasHook && !sweatersController.instance.isGrounded)
         {
-            hook.GetComponent<MoveHook>().PullbackWithForce(30);
+            MoveHook mh = hook.GetComponent<MoveHook>();
+            if (mh.hookTarget != null && mh.hookTarget.tether) hook.GetComponent<MoveHook>().PullbackWithForce(30);
         }
     }
 
