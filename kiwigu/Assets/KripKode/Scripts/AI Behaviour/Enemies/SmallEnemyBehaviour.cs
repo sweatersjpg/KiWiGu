@@ -5,6 +5,8 @@ using UnityEngine.AI;
 
 public class SmallEnemyBehaviour : EnemyBase
 {
+    [SerializeField] MeshCollider coverDetectCollider;
+
     protected override void Update()
     {
         isPlayerVisible = CheckPlayerVisibility();
@@ -25,28 +27,46 @@ public class SmallEnemyBehaviour : EnemyBase
         {
             MoveAroundCover();
         }
+        else
+        {
+            coverDetectCollider.enabled = false;
+        }
     }
 
     private void MoveAroundCover()
     {
-        GameObject[] coverObjects = GameObject.FindGameObjectsWithTag("Cover");
-        GameObject nearestCover = null;
-        float minDistance = float.MaxValue;
+        coverDetectCollider.enabled = true;
 
-        foreach (GameObject coverObject in coverObjects)
+        GameObject collidedCover = coverDetectCollider.GetComponent<EnemyCoverDetection>().coverObject;
+
+        if(collidedCover == null)
         {
-            float distance = Vector3.Distance(transform.position, coverObject.transform.position);
-            if (distance < minDistance)
+            GameObject[] coverObjects = GameObject.FindGameObjectsWithTag("Cover");
+            GameObject nearestCover = null;
+            float minDistance = float.MaxValue;
+
+            foreach (GameObject coverObject in coverObjects)
             {
-                minDistance = distance;
-                nearestCover = coverObject;
+                float distance = Vector3.Distance(transform.position, coverObject.transform.position);
+                if (distance < minDistance)
+                {
+                    minDistance = distance;
+                    nearestCover = coverObject;
+                }
+            }
+
+            if (nearestCover != null)
+            {
+                Vector3 directionToPlayer = transform.position - playerPosition;
+            Vector3 oppositePoint = nearestCover.transform.position + directionToPlayer.normalized;
+
+            agent.SetDestination(oppositePoint);
             }
         }
-
-        if (nearestCover != null)
+        else
         {
             Vector3 directionToPlayer = transform.position - playerPosition;
-            Vector3 oppositePoint = nearestCover.transform.position + directionToPlayer.normalized * minDistance;
+            Vector3 oppositePoint = collidedCover.transform.position + directionToPlayer.normalized;
 
             agent.SetDestination(oppositePoint);
         }
