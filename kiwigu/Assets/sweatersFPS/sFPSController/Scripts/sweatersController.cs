@@ -253,7 +253,13 @@ public class sweatersController : MonoBehaviour
         }
         // increase maxSpeed to match airSpeed (w/o y)
 
-        if(debugSpeedDisp) debugSpeedDisp.text = "speed:\n" + Mathf.Floor(v.magnitude * 100) / 100;
+        if (!wasGrounded && isGrounded) // when landing on the ground
+        {
+            maxSpeed -= maxSpeedDecay;
+            if (maxSpeed < targetSpeed) maxSpeed = targetSpeed;
+        }
+
+        if (debugSpeedDisp) debugSpeedDisp.text = "speed:\n" + Mathf.Floor(v.magnitude * 100) / 100;
 
         // clamp to airSpeed
         v = Vector3.ClampMagnitude(v, maxSpeed);
