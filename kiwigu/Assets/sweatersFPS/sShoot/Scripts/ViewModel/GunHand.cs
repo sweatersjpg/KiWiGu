@@ -63,12 +63,15 @@ public class GunHand : MonoBehaviour
         else deltaTime = Time.deltaTime;
 
         if (PauseSystem.paused) return;
-        
+
         //if (Input.GetMouseButtonDown(1)) ToggleDownSights();
         //if (Input.GetMouseButtonDown(0)) AnimateShoot();
 
-        if (Input.GetMouseButton(mouseButton) && aimTimer <= aimDelay) aimTimer += deltaTime;
-        if (!Input.GetMouseButton(mouseButton) && aimTimer >= 0) aimTimer -= deltaTime;
+        //if (Input.GetMouseButton(mouseButton) && aimTimer <= aimDelay) aimTimer += deltaTime;
+        //if (!Input.GetMouseButton(mouseButton) && aimTimer >= 0) aimTimer -= deltaTime;
+
+        if (Input.GetKey(KeyCode.LeftShift) && aimTimer <= aimDelay) aimTimer += deltaTime;
+        if (!Input.GetKey(KeyCode.LeftShift) && aimTimer >= 0) aimTimer -= deltaTime;
 
         //if (Input.GetMouseButtonUp(mouseButton))
         //{
@@ -150,8 +153,12 @@ public class GunHand : MonoBehaviour
         if (downSights) targetPosition = startPosition;
         else
         {
-            if (!cameraFX.ScopedIn()) targetPosition = new(-sightsPosition.x, -sightsPosition.y, startPosition.z);
-            else return;
+            //if (!cameraFX.ScopedIn())
+            //{
+                targetPosition = new(-sightsPosition.x, -sightsPosition.y, startPosition.z);
+                targetPosition += new Vector3(startPosition.x / 5, startPosition.y / 5, 0);
+            //}
+            //else return;
         }
 
         downSights = !downSights;
