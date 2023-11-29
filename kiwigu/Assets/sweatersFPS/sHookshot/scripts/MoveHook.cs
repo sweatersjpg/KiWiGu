@@ -405,8 +405,7 @@ public class MoveHook : MonoBehaviour
         {
             float t = hookTarget.maxResistance - hookTarget.resistance;
 
-
-            if (t < 0.2) // perfect hook
+            if (t < 0.4) // perfect hook
             {
                 hookTarget.resistance = 0;
                 if(force > 0) LaunchPlayer(force);
@@ -415,8 +414,7 @@ public class MoveHook : MonoBehaviour
                 fx = Instantiate(perfectHookCircleFXprefab, transform);
             } else
             {
-                LaunchPlayer(30);
-                ReturnHookTarget();
+                hookTarget.resistance = 0;
             }
 
             fx.transform.parent = null;
