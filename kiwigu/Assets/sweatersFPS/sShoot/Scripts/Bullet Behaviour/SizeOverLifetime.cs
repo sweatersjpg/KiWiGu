@@ -14,7 +14,16 @@ public class SizeOverLifetime : MonoBehaviour
     public float minSize;
     public AnimationCurve sizeOverLifetime;
 
+    [Space]
+    public BlackHoleVFX blackHole;
+    public Transform bubble;
+    public GameObject explosion;
+
     float size = 0;
+
+    [Space]
+    public float intensity;
+    public float maxSaturation;
 
     // Start is called before the first frame update
     void Start()
@@ -38,5 +47,18 @@ public class SizeOverLifetime : MonoBehaviour
         size += Time.deltaTime * 50 * (scale - size) / 2;
 
         transform.localScale = new(size * 2, size * 2, size * 2);
+
+
+        int saturation = bubble.childCount;
+
+        intensity = saturation / maxSaturation;
+
+        blackHole.SetDamagePercent(intensity);
+
+        if(intensity > 1)
+        {
+            Instantiate(explosion, transform.position, Quaternion.identity);
+            Destroy(gameObject);
+        }
     }
 }

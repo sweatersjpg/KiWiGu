@@ -21,6 +21,8 @@ public class ThrowHook : MonoBehaviour
     Transform view;
 
     GameObject hook;
+
+    bool jumpButtonPressed = false;
     
     // Start is called before the first frame update
     void Start()
@@ -39,7 +41,7 @@ public class ThrowHook : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space) && !hasHook && !sweatersController.instance.isGrounded)
+        if (Input.GetKeyDown(KeyCode.Space) && !hasHook && !sweatersController.instance.wasGrounded)
         {
             MoveHook mh = hook.GetComponent<MoveHook>();
             if (mh.hookTarget != null && mh.hookTarget.tether) hook.GetComponent<MoveHook>().PullbackWithForce(30);
@@ -57,12 +59,13 @@ public class ThrowHook : MonoBehaviour
             // else hook.GetComponent<MoveHook>().PullbackWithForce(0);
         }
 
-        if (Input.GetMouseButtonUp(mouseButton))
+        if (Input.GetMouseButtonUp(mouseButton) || Input.GetKeyUp(mouseButton == 0 ? KeyCode.Q : KeyCode.E))
         {
             if(!hasHook) hook.GetComponent<MoveHook>().PullbackWithForce(0);
         }
 
         view.localPosition += 50 * ((targetPosition - view.localPosition) / 4) * Time.deltaTime;
+
     }
 
     //void ObstacleAvoidance()

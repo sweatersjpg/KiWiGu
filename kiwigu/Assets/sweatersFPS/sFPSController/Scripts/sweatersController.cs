@@ -81,6 +81,8 @@ public class sweatersController : MonoBehaviour
 
     public bool isSliding;
     public bool isGrounded;
+    public bool wasGrounded;
+
     public bool isCrouching
     {
         get { return charController.height < standingHeight * 0.9f; }
@@ -155,6 +157,7 @@ public class sweatersController : MonoBehaviour
     void DoMovement()
     {
         isSliding = GetIsSliding();
+        wasGrounded = isGrounded;
         GetIsGrounded();
 
         Vector3 forward = transform.TransformDirection(Vector3.forward);

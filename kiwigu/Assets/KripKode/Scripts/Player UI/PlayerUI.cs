@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class PlayerUI : MonoBehaviour
 {
     [Header("Radar")]
+    [SerializeField] GameObject radar;
     [SerializeField][Range(50, 1000)] float radarSpeed;
     [SerializeField][Range(50, 500)] float radarRadius = 50f;
     [SerializeField] RectTransform radarCone;
@@ -26,6 +27,9 @@ public class PlayerUI : MonoBehaviour
 
     private void Update()
     {
+        if (Input.GetKeyDown(KeyCode.R)) radar.SetActive(!radar.activeSelf);
+
+        if (!radar.activeSelf) return;
         Radar();
         radarCone.Rotate(0f, 0f, -radarSpeed * Time.deltaTime);
     }

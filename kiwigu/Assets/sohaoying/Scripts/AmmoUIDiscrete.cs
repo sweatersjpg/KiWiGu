@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 public class AmmoUIDiscrete : MonoBehaviour
 {
-    bool justSwapped = true;
+    // bool justSwapped = true;
 
     ShootBullet gun;
 

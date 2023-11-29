@@ -390,6 +390,22 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 66449fe07135529438764cc95b9a082a, type: 3}
+--- !u!114 &5478948012552526028 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1603741071334439827, guid: 66449fe07135529438764cc95b9a082a, type: 3}
+  m_PrefabInstance: {fileID: 6505590612556866399}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7767398782270900952}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 671d9e628bfb57b4b956b8a642174f06, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &7767398781969004461 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 3567933066036974834, guid: 66449fe07135529438764cc95b9a082a, type: 3}
+  m_PrefabInstance: {fileID: 6505590612556866399}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &7767398782270900952 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 3567933066273778055, guid: 66449fe07135529438764cc95b9a082a, type: 3}
@@ -453,6 +469,11 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  blackHole: {fileID: 5478948012552526028}
+  bubble: {fileID: 7767398781969004461}
+  explosion: {fileID: 1886320638105856866, guid: 868415f162da742468824c5743d47bae, type: 3}
+  intensity: 0
+  maxSaturation: 4
 --- !u!4 &7767398782270900955 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3567933066273778052, guid: 66449fe07135529438764cc95b9a082a, type: 3}
