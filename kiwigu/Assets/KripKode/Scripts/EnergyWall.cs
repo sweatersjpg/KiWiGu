@@ -7,8 +7,9 @@ public class EnergyWall : MonoBehaviour
     public float scaleSpeed;
 
     private Vector3 initialPosition;
-    private Vector3 initialScale;
+
     private bool isScalingUp = false;
+    private bool isDoneTime;
 
     private void Start()
     {
@@ -18,30 +19,40 @@ public class EnergyWall : MonoBehaviour
 
     private void Update()
     {
-        if (isScalingUp)
-        {
-            UpdateScaling();
-        }
+        UpdateScaling();
     }
 
     private void InitializePositionAndScale()
     {
         initialPosition = transform.position;
-        initialScale = transform.localScale;
+
+        Vector3 newPosition = initialPosition + new Vector3(0, -0.5f);
+        transform.position = newPosition;
     }
 
     private void UpdateScaling()
     {
         Vector3 currentScale = transform.localScale;
-        currentScale.y += Time.deltaTime * scaleSpeed;
-        transform.localScale = currentScale;
 
-        Vector3 newPosition = initialPosition + Vector3.up * (currentScale.y - initialScale.y) / 2;
-        transform.position = newPosition;
+
+        if(!isDoneTime && isScalingUp)
+        {
+            currentScale.y += Time.deltaTime * scaleSpeed;
+            transform.localScale = currentScale;
+        }
+        else if(isDoneTime && !isScalingUp)
+        {
+            currentScale.y -= Time.deltaTime * scaleSpeed;
+            transform.localScale = currentScale;
+        }
 
         if (currentScale.y >= targetScale)
         {
             isScalingUp = false;
+        }
+        else if(currentScale.y <= 0)
+        {
+            Destroy(gameObject);
         }
     }
 
@@ -49,6 +60,7 @@ public class EnergyWall : MonoBehaviour
     {
         isScalingUp = true;
         yield return new WaitForSeconds(4);
-        //Destroy(gameObject);
+        isDoneTime = true;
+        isScalingUp = false;
     }
 }
