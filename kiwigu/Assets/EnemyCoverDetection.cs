@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class EnemyCoverDetection : MonoBehaviour
 {
+    [HideInInspector]
     public GameObject coverObject;
 
     private void OnTriggerEnter(Collider other)

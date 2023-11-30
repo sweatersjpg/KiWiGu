@@ -198,7 +198,7 @@ public class EnemyBase : MonoBehaviour
         [Range(5, 10)]
         [Tooltip("The distance at which the enemy avoids the player.")]
         public int AvoidPlayerDistance = 7;
-        [Range(100, 200)]
+        [Range(100, 1000)]
         [Tooltip("The rotation speed of the enemy.")]
         public int RotationSpeed = 180;
         [Range(10, 100)]
