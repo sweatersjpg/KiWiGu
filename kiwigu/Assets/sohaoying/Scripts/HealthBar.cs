@@ -1,3 +1,5 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -25,16 +27,16 @@ class HealthBar : MonoBehaviour
     float timeLeft;
     float prevTarget;
 
-    [SerializeField] GameObject healthBarLeft;
-    Material healthBarLeftMat;
-    [SerializeField] GameObject healthBarRight;
-    Material healthBarRightMat;
+    [SerializeField] List<Image> healthBarImages;
+    [SerializeField] List<Material> healthBarMaterials;
 
     void Start()
     {
         dist = leftBar.anchoredPosition3D.x;
-        healthBarLeftMat = healthBarLeft.GetComponent<Image>().material;
-        healthBarRightMat = healthBarRight.GetComponent<Image>().material;
+        foreach (Image i in healthBarImages)
+        {
+            healthBarMaterials.Add(i.GetComponent<Image>().material);
+        }
     }
 
     void Update()
@@ -70,7 +72,9 @@ class HealthBar : MonoBehaviour
         buffer = rightBar.anchoredPosition3D;
         rightBar.anchoredPosition3D = new Vector3(-dist * percent, buffer.y, buffer.z);
 
-        healthBarLeftMat.SetFloat("_DamagePercent", 1f - percent);
-        healthBarRightMat.SetFloat("_DamagePercent", 1f - percent);
+        foreach (Material m in healthBarMaterials)
+        {
+            m.SetFloat("_HPPercent", percent);
+        }
     }
 }
