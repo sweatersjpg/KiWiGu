@@ -280,6 +280,13 @@ public class DroneBehaviour : EnemyBase
 
     protected override void Update()
     {
+        if (PauseSystem.paused)
+        {
+            // StopAllCoroutines();
+            detectedPlayer = false;
+            return;
+        }
+
         isPlayerVisible = CheckPlayerVisibility();
 
         base.Update();

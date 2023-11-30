@@ -95,7 +95,7 @@ public class MoveHook : MonoBehaviour
             if (!headingBack)
             {
                 headingBack = true;
-                home.PullBack();
+                // home.PullBack();
                 maxHookRange = heading.magnitude;
             }
         }
@@ -397,6 +397,8 @@ public class MoveHook : MonoBehaviour
     {
         speed = 0;
         G = new();
+
+        // home.PullBack();
     }
 
     public void PullbackWithForce(float force)
@@ -419,10 +421,11 @@ public class MoveHook : MonoBehaviour
 
             fx.transform.parent = null;
 
-
         }
         speed = 0;
         G = new();
+
+        home.PullBack();
     }
 
     public void LaunchPlayer(float force)

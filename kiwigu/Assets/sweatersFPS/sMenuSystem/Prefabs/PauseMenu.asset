@@ -48,18 +48,19 @@ MonoBehaviour:
       type: 0
       content: []
       callBack: UpdateSfxVolume
-  - title: about
+  - title: credits
     onClick: 
     settings:
-    - title: About
+    - title: Credits
       type: 3
       content:
-      - This screen system is used for loading custom 'programs' that display on
-        a virtual screen
-      - This menu system for example is a Screen Program that uses scriptable objects
-        to display custom menus
-      - Pressing tab lets you switch to another Screen Program that has a cat that
-        you can pickup and drag around :)
+      - "\n  Slommy Studios"
+      - "Abby\n Environment Assets"
+      - "Carlo\n Programming"
+      - "Chris\n Levels & Design"
+      - "Sam\n Programming"
+      - "Sarita\n Music & VFX"
+      - "Tiggi\n Art & Modeling"
       callBack: 
   - title: reload
     onClick: ReloadScene

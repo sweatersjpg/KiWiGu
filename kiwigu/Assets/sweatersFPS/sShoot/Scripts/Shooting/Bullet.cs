@@ -38,6 +38,7 @@ public class Bullet : MonoBehaviour
     bool dead = false;
 
     float startTime;
+    float time;
 
     [HideInInspector] public float charge;
 
@@ -62,8 +63,12 @@ public class Bullet : MonoBehaviour
     void Update()
     {
         if (justInfo) return;
-        
-        float time = Time.time - startTime;
+        if(PauseSystem.paused)
+        {
+            return;
+        }
+
+        time += Time.deltaTime;
 
         // if (target != null) transform.LookAt(target);
 
