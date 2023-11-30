@@ -26,7 +26,7 @@ public class ViewBob : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        if (transform.parent.localPosition.x > 0) hand = 1;
+        if (transform.parent.parent.localScale.x > 0) hand = 1;
         else hand = -1;
 
         player = sweatersController.instance;
@@ -44,12 +44,12 @@ public class ViewBob : MonoBehaviour
         float X = Mathf.Sin(time * timeScale) * delta.x;
         float Z = Mathf.Sin(time * timeScale) * delta.z;
 
-        if (velocity.magnitude > 0.5f) targetPosition = new(-X, Y * hand, Z * hand);
+        if (velocity.magnitude > 0.5f) targetPosition = new(-X * hand, Y * hand, Z * hand);
         else targetPosition = new();
 
         if (!player.isGrounded) targetPosition = new(0, velocity.y * -0.01f, 0);
 
-        targetRotation = new(0, 0, Vector3.Dot(velocity, player.transform.right) * rotationDelta.z);
+        targetRotation = new(0, 0, Vector3.Dot(velocity, player.transform.right) * rotationDelta.z * hand);
 
         if (Mathf.Abs(transform.parent.localPosition.x) < 0.01)
         {
