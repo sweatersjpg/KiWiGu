@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 class HealthBar : MonoBehaviour
 {
@@ -24,9 +25,16 @@ class HealthBar : MonoBehaviour
     float timeLeft;
     float prevTarget;
 
+    [SerializeField] GameObject healthBarLeft;
+    Material healthBarLeftMat;
+    [SerializeField] GameObject healthBarRight;
+    Material healthBarRightMat;
+
     void Start()
     {
         dist = leftBar.anchoredPosition3D.x;
+        healthBarLeftMat = healthBarLeft.GetComponent<Image>().material;
+        healthBarRightMat = healthBarRight.GetComponent<Image>().material;
     }
 
     void Update()
@@ -61,5 +69,8 @@ class HealthBar : MonoBehaviour
         leftBar.anchoredPosition3D = new Vector3(dist * percent, buffer.y, buffer.z);
         buffer = rightBar.anchoredPosition3D;
         rightBar.anchoredPosition3D = new Vector3(-dist * percent, buffer.y, buffer.z);
+
+        healthBarLeftMat.SetFloat("_DamagePercent", 1f - percent);
+        healthBarRightMat.SetFloat("_DamagePercent", 1f - percent);
     }
 }
