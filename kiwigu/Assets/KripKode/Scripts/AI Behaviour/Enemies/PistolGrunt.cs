@@ -1,8 +1,10 @@
 using UnityEngine;
 
-public class SmallEnemyBehaviour : EnemyBase
+public class PistolGrunt : EnemyBase
 {
     [SerializeField] MeshCollider coverDetectCollider;
+    [SerializeField] Transform headBone;
+    [SerializeField] bool idle;
 
     protected override void Update()
     {
@@ -15,7 +17,16 @@ public class SmallEnemyBehaviour : EnemyBase
 
     public void EnemyMovement()
     {
+        if (idle)
+            return;
+
+        EnemyAnimations();
         HandleRegularEnemyMovement();
+    }
+
+    private void EnemyAnimations()
+    {
+        enemyMainVariables.animator.SetFloat("Movement", agent.velocity.magnitude);
     }
 
     private void HandleRegularEnemyMovement()
@@ -67,40 +78,5 @@ public class SmallEnemyBehaviour : EnemyBase
 
             agent.SetDestination(oppositePoint);
         }
-    }
-
-
-    // Maybe later
-    private void RotateGunAndBodyTowardsPlayer()
-    {
-        if (!canFacePlayer) return;
-
-        RotateBodyMeshTowardsObj(playerPosition);
-        RotateGunObjectExitPoint(playerPosition);
-    }
-
-    private void RotateBodyMeshTowardsObj(Vector3 objPos)
-    {
-        if (!canFacePlayer) return;
-
-        Quaternion rRot = Quaternion.LookRotation(objPos - enemyMainVariables.BodyMesh.transform.position);
-        enemyMainVariables.BodyMesh.transform.rotation = Quaternion.Slerp(enemyMainVariables.BodyMesh.transform.rotation, rRot, Time.deltaTime * 10);
-    }
-
-    private void RotateGunObjectExitPoint(Vector3 rotPos)
-    {
-        if (!canFacePlayer) return;
-
-        gunObjectExitPoint = enemyMainVariables.GunObject.transform.GetChild(0).gameObject;
-
-        Quaternion targetRotation = Quaternion.LookRotation(
-            (rotPos + new Vector3(Random.Range(-enemyGunStats.GunInaccuracy, enemyGunStats.GunInaccuracy), 1.5f, Random.Range(-enemyGunStats.GunInaccuracy, enemyGunStats.GunInaccuracy))) - gunObjectExitPoint.transform.position
-        );
-
-        gunObjectExitPoint.transform.rotation = Quaternion.Slerp(
-            gunObjectExitPoint.transform.rotation,
-            targetRotation,
-            Time.deltaTime * enemyGunStats.gunExitPointRotationSpeed
-        );
     }
 }

@@ -12,6 +12,7 @@ public class EnemyBase : MonoBehaviour
 
     [Header("Shared Variables")]
     [HideInInspector] public NavMeshAgent agent;
+    [HideInInspector] public bool animatingHit;
     [HideInInspector] public float currentHealth;
     [HideInInspector] public float currentShield;
     [HideInInspector] public bool isHoldingGun;
@@ -167,6 +168,7 @@ public class EnemyBase : MonoBehaviour
     [System.Serializable]
     public class EnemyMainVariables
     {
+        public Animator animator;
         [Header("Enemy Main Variables")]
         [Range(10, 100)]
         [Tooltip("The maximum health of the enemy.")]
@@ -198,7 +200,7 @@ public class EnemyBase : MonoBehaviour
         [Range(5, 10)]
         [Tooltip("The distance at which the enemy avoids the player.")]
         public int AvoidPlayerDistance = 7;
-        [Range(100, 200)]
+        [Range(100, 1000)]
         [Tooltip("The rotation speed of the enemy.")]
         public int RotationSpeed = 180;
         [Range(10, 100)]
