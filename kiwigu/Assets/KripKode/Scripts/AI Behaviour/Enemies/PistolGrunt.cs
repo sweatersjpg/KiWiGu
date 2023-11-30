@@ -3,7 +3,7 @@ using UnityEngine;
 public class PistolGrunt : EnemyBase
 {
     [SerializeField] MeshCollider coverDetectCollider;
-    [SerializeField] Animator animator;
+    [SerializeField] Transform headBone;
     [SerializeField] bool idle;
 
     protected override void Update()
@@ -26,7 +26,7 @@ public class PistolGrunt : EnemyBase
 
     private void EnemyAnimations()
     {
-        animator.SetFloat("Movement", agent.velocity.magnitude);
+        enemyMainVariables.animator.SetFloat("Movement", agent.velocity.magnitude);
     }
 
     private void HandleRegularEnemyMovement()

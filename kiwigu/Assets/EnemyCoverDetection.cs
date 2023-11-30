@@ -16,10 +16,6 @@ public class EnemyCoverDetection : MonoBehaviour
                 int randomIndex = Random.Range(0, arrayOfObjects.Length);
                 coverObject = arrayOfObjects[randomIndex];
             }
-            else
-            {
-                Debug.LogWarning("No objects with the 'Cover' tag found.");
-            }
         }
     }
 }
