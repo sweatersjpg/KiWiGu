@@ -67,16 +67,19 @@ public class PistolGrunt : EnemyBase
 
     private void CheckCrouch()
     {
-        if (agent.remainingDistance <= agent.stoppingDistance && !agent.pathPending)
+        if (agent.isOnNavMesh)
         {
-            if (isPlayerVisible && !isPlayerVisibleKnees)
+            if (agent.remainingDistance <= agent.stoppingDistance)
             {
-                enemyMainVariables.animator.SetBool("Crouching", true);
+                if (isPlayerVisible && !isPlayerVisibleKnees)
+                {
+                    enemyMainVariables.animator.SetBool("Crouching", true);
+                }
             }
-        }
-        else if (isPlayerVisible && isPlayerVisibleKnees)
-        {
-            enemyMainVariables.animator.SetBool("Crouching", false);
+            else if (isPlayerVisible && isPlayerVisibleKnees)
+            {
+                enemyMainVariables.animator.SetBool("Crouching", false);
+            }
         }
     }
 
@@ -124,6 +127,7 @@ public class PistolGrunt : EnemyBase
     {
         Vector3 directionToPlayer = transform.position - playerPosition;
         Vector3 oppositePoint = targetPosition + directionToPlayer.normalized;
-        agent.SetDestination(oppositePoint);
+
+        if (agent.isOnNavMesh) agent.SetDestination(oppositePoint);
     }
 }
