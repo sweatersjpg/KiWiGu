@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class HitBoxSpawner : MonoBehaviour
@@ -16,9 +15,9 @@ public class HitBoxSpawner : MonoBehaviour
 
     private void Update()
     {
-        if (!hasSpawned && transform.childCount == 0)
+        if (!hasSpawned && transform.childCount == 0 && !IsInvoking("SpawnPrefab"))
         {
-            SpawnPrefab();
+            Invoke("SpawnPrefab", 2f);
         }
     }
 
@@ -36,7 +35,7 @@ public class HitBoxSpawner : MonoBehaviour
 
     private IEnumerator ResetSpawnFlag()
     {
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(2);
         hasSpawned = false;
     }
 }

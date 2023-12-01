@@ -8,16 +8,24 @@ public class PistolGrunt : EnemyBase
 
     protected override void Update()
     {
-        isPlayerVisible = CheckPlayerVisibility();
+        isPlayerVisible = CheckEyesVisibility();
+
+        if(enemyMainVariables.hasKnees)
+            isPlayerVisibleKnees = CheckKneesVisibility();
 
         base.Update();
 
         EnemyMovement();
     }
 
+    protected override void HitBase()
+    {
+        base.HitBase();
+    }
+
     public void EnemyMovement()
     {
-        if (idle)
+        if (idle || enemyMainVariables.animator.GetComponent<HitVariable>().wasHit)
             return;
 
         EnemyAnimations();
@@ -43,6 +51,8 @@ public class PistolGrunt : EnemyBase
 
     private void MoveAroundCover()
     {
+        if (enemyMainVariables.animator.GetComponent<HitVariable>().wasHit) return;
+
         coverDetectCollider.enabled = true;
 
         GameObject collidedCover = coverDetectCollider.GetComponent<EnemyCoverDetection>().coverObject;

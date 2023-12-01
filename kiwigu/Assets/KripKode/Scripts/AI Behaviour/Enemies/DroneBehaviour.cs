@@ -287,7 +287,7 @@ public class DroneBehaviour : EnemyBase
             return;
         }
 
-        isPlayerVisible = CheckPlayerVisibility();
+        isPlayerVisible = CheckEyesVisibility();
 
         base.Update();
 

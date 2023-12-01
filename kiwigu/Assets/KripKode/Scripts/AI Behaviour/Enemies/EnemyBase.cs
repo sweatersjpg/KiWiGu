@@ -12,21 +12,18 @@ public class EnemyBase : MonoBehaviour
 
     [Header("Shared Variables")]
     [HideInInspector] public NavMeshAgent agent;
-    [HideInInspector] public bool animatingHit;
     [HideInInspector] public float currentHealth;
     [HideInInspector] public float currentShield;
     [HideInInspector] public bool isHoldingGun;
-    [HideInInspector] public bool wasHit;
     [HideInInspector] public bool isShooting;
     [HideInInspector] public bool isPlayerVisible;
+    [HideInInspector] public bool isPlayerVisibleKnees;
     [HideInInspector] public bool detectedPlayer;
     [HideInInspector] public bool detectedEnemy;
     [HideInInspector] public Vector3 playerPosition;
     [HideInInspector] public Vector3 enemyPosition;
     [HideInInspector] public bool canFacePlayer = true;
     [HideInInspector] public GameObject gunObjectExitPoint;
-    [HideInInspector] public bool startedFleeing;
-    private Vector3 initialPosition;
 
     protected virtual void Start()
     {
@@ -36,8 +33,6 @@ public class EnemyBase : MonoBehaviour
         {
             SetupInitialGun();
         }
-
-        initialPosition = transform.position;
 
         agent = GetComponent<NavMeshAgent>();
         if (agent != null)
@@ -106,7 +101,8 @@ public class EnemyBase : MonoBehaviour
 
     public virtual void TakeDamage(float bulletDamage)
     {
-        wasHit = true;
+        if (enemyMainVariables.canBeHitAnim) HitBase();
+
         if (currentShield < enemyMainVariables.MaxShield)
         {
             currentShield = Mathf.Min(currentShield + bulletDamage, enemyMainVariables.MaxShield);
@@ -117,6 +113,22 @@ public class EnemyBase : MonoBehaviour
         }
 
         CheckStats();
+    }
+
+    protected virtual void HitBase()
+    {
+        agent.enabled = false;
+        StartCoroutine(PlayHitAnimation(enemyMainVariables.animator));
+    }
+
+    private IEnumerator PlayHitAnimation(Animator animator)
+    {
+        animator.SetInteger("HitIndex", Random.Range(0, 3));
+        animator.SetTrigger("Hit");
+
+        yield return new WaitForSeconds(1.5f);
+
+        agent.enabled = true;
     }
 
     public void CheckStats()
@@ -136,11 +148,16 @@ public class EnemyBase : MonoBehaviour
         }
     }
 
-    public virtual bool CheckPlayerVisibility()
+    public virtual bool CheckEyesVisibility()
     {
         Vector3 direction = playerPosition - enemyMainVariables.EyesPosition.transform.position + new Vector3(0, 0.5f, 0);
 
-        if (Physics.Raycast(enemyMainVariables.EyesPosition.transform.position, direction, out RaycastHit hit, enemyMovementVariables.EnemyAwareDistance, ~LayerMask.GetMask("Enemy")))
+        int enemyLayer = LayerMask.GetMask("EnemyLayer");
+        int coverBehaviourLayer = LayerMask.GetMask("CoverBehaviour");
+        int layerMask = enemyLayer | ~coverBehaviourLayer;
+
+
+        if (Physics.Raycast(enemyMainVariables.EyesPosition.transform.position, direction, out RaycastHit hit, enemyMovementVariables.EnemyAwareDistance, layerMask))
         {
             if (hit.collider.CompareTag("Player"))
             {
@@ -157,6 +174,30 @@ public class EnemyBase : MonoBehaviour
         return false;
     }
 
+    public virtual bool CheckKneesVisibility()
+    {
+        Vector3 direction = playerPosition - enemyMainVariables.KneesPosition.transform.position + new Vector3(0, 0.5f, 0);
+
+        int enemyLayer = LayerMask.GetMask("EnemyLayer");
+        int coverBehaviourLayer = LayerMask.GetMask("CoverBehaviour");
+        int layerMask = enemyLayer | ~coverBehaviourLayer;
+
+        if (Physics.Raycast(enemyMainVariables.KneesPosition.transform.position, direction, out RaycastHit hit, enemyMovementVariables.EnemyAwareDistance, layerMask))
+        {
+            if (hit.collider.CompareTag("Player"))
+            {
+                Debug.DrawRay(enemyMainVariables.KneesPosition.transform.position, direction.normalized * hit.distance, Color.green, 0.1f);
+                return true;
+            }
+            else
+            {
+                Debug.DrawRay(enemyMainVariables.KneesPosition.transform.position, direction.normalized * hit.distance, Color.red, 0.1f);
+                return false;
+            }
+        }
+
+        return false;
+    }
 
     private void OnDestroy()
     {
@@ -168,6 +209,7 @@ public class EnemyBase : MonoBehaviour
     [System.Serializable]
     public class EnemyMainVariables
     {
+        public bool canBeHitAnim;
         public Animator animator;
         [Header("Enemy Main Variables")]
         [Range(10, 100)]
@@ -180,6 +222,8 @@ public class EnemyBase : MonoBehaviour
         public GameObject GunObject;
         [Tooltip("The GameObject representing the position of the enemy's eyes.")]
         public GameObject EyesPosition;
+        public bool hasKnees;
+        public GameObject KneesPosition;
         [Tooltip("The GameObject representing the enemy's body mesh.")]
         public GameObject BodyMesh;
         [Tooltip("Make sure Hand Transform is attached as a child of the Body Object!")]

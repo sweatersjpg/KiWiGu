@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.AI;
 using UnityEngine.UI;
 
 public class Bullet : MonoBehaviour
@@ -173,57 +174,8 @@ public class Bullet : MonoBehaviour
         if (enemy == null || enemy.enemyBase == null || enemy.enemyBase.enemyMainVariables == null || enemy.enemyBase.enemyMainVariables.animator == null)
             return;
 
-        Animator animator = enemy.enemyBase.enemyMainVariables.animator;
-
         enemy.enemyBase.TakeDamage(bulletDamage * damageMultiplier);
-
-        if (!enemy.enemyBase.animatingHit &&
-            !animator.GetCurrentAnimatorStateInfo(0).IsTag("Hit") &&
-            !animator.GetBool("AnimatingHit"))
-        {
-            enemy.enemyBase.animatingHit = true;
-            StartCoroutine(PlayHitAnimation(enemy, animator));
-        }
     }
-
-    private IEnumerator PlayHitAnimation(EnemyHitboxRegister enemy, Animator animator)
-    {
-        if (animator == null || enemy == null || enemy.enemyBase == null)
-        {
-            yield break;
-        }
-
-        yield return new WaitForSeconds(0.1f);
-
-        if (animator == null || enemy == null || enemy.enemyBase == null)
-        {
-            yield break;
-        }
-
-        animator.SetBool("AnimatingHit", true);
-        animator.SetInteger("HitIndex", Random.Range(0, 3));
-        animator.SetTrigger("Hit");
-
-        while (animator.GetCurrentAnimatorStateInfo(0).IsTag("Hit"))
-        {
-            if (enemy == null || enemy.enemyBase == null)
-            {
-                yield break;
-            }
-
-            yield return null;
-        }
-
-        if (enemy == null || enemy.enemyBase == null)
-        {
-            yield break;
-        }
-
-        enemy.enemyBase.animatingHit = false;
-        animator.SetBool("AnimatingHit", false);
-    }
-
-
 
     void DoHit(RaycastHit hit, Vector3 direction)
     {
