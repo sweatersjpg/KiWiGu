@@ -181,7 +181,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Burst Drone
+  m_text: Example Drone
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -2212,63 +2212,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1001 &1238012887
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 6676047680005783688, guid: 782727668c5378649b9cb95abcb20ba6, type: 3}
-      propertyPath: m_RootOrder
-      value: 8
-      objectReference: {fileID: 0}
-    - target: {fileID: 6676047680005783688, guid: 782727668c5378649b9cb95abcb20ba6, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 24.25
-      objectReference: {fileID: 0}
-    - target: {fileID: 6676047680005783688, guid: 782727668c5378649b9cb95abcb20ba6, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6676047680005783688, guid: 782727668c5378649b9cb95abcb20ba6, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -22.75
-      objectReference: {fileID: 0}
-    - target: {fileID: 6676047680005783688, guid: 782727668c5378649b9cb95abcb20ba6, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6676047680005783688, guid: 782727668c5378649b9cb95abcb20ba6, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6676047680005783688, guid: 782727668c5378649b9cb95abcb20ba6, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6676047680005783688, guid: 782727668c5378649b9cb95abcb20ba6, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6676047680005783688, guid: 782727668c5378649b9cb95abcb20ba6, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6676047680005783688, guid: 782727668c5378649b9cb95abcb20ba6, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6676047680005783688, guid: 782727668c5378649b9cb95abcb20ba6, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6676047680005783691, guid: 782727668c5378649b9cb95abcb20ba6, type: 3}
-      propertyPath: m_Name
-      value: Behaviour Small
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 782727668c5378649b9cb95abcb20ba6, type: 3}
 --- !u!1 &1355655738
 GameObject:
   m_ObjectHideFlags: 0
@@ -2493,7 +2436,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f17d03e69b4e85447b4b06ac525f5303, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  prefabToSpawn: {fileID: 3506965143688729042, guid: 8c636dd72ed520949bd6169342a54b51, type: 3}
+  prefabToSpawn: {fileID: 4630185753279768600, guid: c9ca5484c0264064a8ff033e14aeafef, type: 3}
 --- !u!1 &1552200207
 GameObject:
   m_ObjectHideFlags: 0
@@ -3304,7 +3247,7 @@ GameObject:
   - component: {fileID: 1877969962}
   - component: {fileID: 1877969961}
   m_Layer: 0
-  m_Name: Cover
+  m_Name: Small Cover
   m_TagString: Cover
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 1
@@ -3318,8 +3261,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1877969959}
   m_LocalRotation: {x: -0, y: -0.7071067, z: -0, w: 0.70710695}
-  m_LocalPosition: {x: 6, y: 2.5, z: 3}
-  m_LocalScale: {x: 1, y: 5, z: 1}
+  m_LocalPosition: {x: 6, y: 0.5, z: 3}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1179637292}

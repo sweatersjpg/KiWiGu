@@ -152,12 +152,11 @@ public class EnemyBase : MonoBehaviour
     {
         Vector3 direction = playerPosition - enemyMainVariables.EyesPosition.transform.position + new Vector3(0, 0.5f, 0);
 
-        int enemyLayer = LayerMask.GetMask("EnemyLayer");
-        int coverBehaviourLayer = LayerMask.GetMask("CoverBehaviour");
-        int layerMask = enemyLayer | ~coverBehaviourLayer;
+        int layersToIgnore = LayerMask.GetMask("Enemy", "CoverBehaviour");
+        int finalLayerMask = ~layersToIgnore;
 
 
-        if (Physics.Raycast(enemyMainVariables.EyesPosition.transform.position, direction, out RaycastHit hit, enemyMovementVariables.EnemyAwareDistance, layerMask))
+        if (Physics.Raycast(enemyMainVariables.EyesPosition.transform.position, direction, out RaycastHit hit, enemyMovementVariables.EnemyAwareDistance, finalLayerMask))
         {
             if (hit.collider.CompareTag("Player"))
             {
@@ -178,11 +177,10 @@ public class EnemyBase : MonoBehaviour
     {
         Vector3 direction = playerPosition - enemyMainVariables.KneesPosition.transform.position + new Vector3(0, 0.5f, 0);
 
-        int enemyLayer = LayerMask.GetMask("EnemyLayer");
-        int coverBehaviourLayer = LayerMask.GetMask("CoverBehaviour");
-        int layerMask = enemyLayer | ~coverBehaviourLayer;
+        int layersToIgnore = LayerMask.GetMask("Enemy", "CoverBehaviour");
+        int finalLayerMask = ~layersToIgnore;
 
-        if (Physics.Raycast(enemyMainVariables.KneesPosition.transform.position, direction, out RaycastHit hit, enemyMovementVariables.EnemyAwareDistance, layerMask))
+        if (Physics.Raycast(enemyMainVariables.KneesPosition.transform.position, direction, out RaycastHit hit, enemyMovementVariables.EnemyAwareDistance, finalLayerMask))
         {
             if (hit.collider.CompareTag("Player"))
             {

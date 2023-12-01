@@ -8,14 +8,17 @@ public class PistolGrunt : EnemyBase
 
     protected override void Update()
     {
-        isPlayerVisible = CheckEyesVisibility();
-
-        if(enemyMainVariables.hasKnees)
-            isPlayerVisibleKnees = CheckKneesVisibility();
-
         base.Update();
 
-        EnemyMovement();
+        isPlayerVisible = CheckEyesVisibility();
+
+        if (enemyMainVariables.hasKnees)
+            isPlayerVisibleKnees = CheckKneesVisibility();
+
+        if (!idle && !enemyMainVariables.animator.GetComponent<HitVariable>().wasHit)
+        {
+            EnemyMovement();
+        }
     }
 
     protected override void HitBase()
@@ -23,11 +26,8 @@ public class PistolGrunt : EnemyBase
         base.HitBase();
     }
 
-    public void EnemyMovement()
+    private void EnemyMovement()
     {
-        if (idle || enemyMainVariables.animator.GetComponent<HitVariable>().wasHit)
-            return;
-
         EnemyAnimations();
         HandleRegularEnemyMovement();
     }
@@ -39,13 +39,44 @@ public class PistolGrunt : EnemyBase
 
     private void HandleRegularEnemyMovement()
     {
-        if (isPlayerVisible)
+        CheckCrouch();
+
+        if (enemyMainVariables.hasKnees)
         {
-            MoveAroundCover();
+            if (isPlayerVisibleKnees)
+            {
+                MoveAroundCover();
+            }
+            else
+            {
+                coverDetectCollider.enabled = false;
+            }
         }
         else
         {
-            coverDetectCollider.enabled = false;
+            if (isPlayerVisible)
+            {
+                MoveAroundCover();
+            }
+            else
+            {
+                coverDetectCollider.enabled = false;
+            }
+        }
+    }
+
+    private void CheckCrouch()
+    {
+        if (agent.remainingDistance <= agent.stoppingDistance && !agent.pathPending)
+        {
+            if (isPlayerVisible && !isPlayerVisibleKnees)
+            {
+                enemyMainVariables.animator.SetBool("Crouching", true);
+            }
+        }
+        else if (isPlayerVisible && isPlayerVisibleKnees)
+        {
+            enemyMainVariables.animator.SetBool("Crouching", false);
         }
     }
 
@@ -57,36 +88,42 @@ public class PistolGrunt : EnemyBase
 
         GameObject collidedCover = coverDetectCollider.GetComponent<EnemyCoverDetection>().coverObject;
 
-        if(collidedCover == null)
+        if (collidedCover == null)
         {
-            GameObject[] coverObjects = GameObject.FindGameObjectsWithTag("Cover");
-            GameObject nearestCover = null;
-            float minDistance = float.MaxValue;
-
-            foreach (GameObject coverObject in coverObjects)
-            {
-                float distance = Vector3.Distance(transform.position, coverObject.transform.position);
-                if (distance < minDistance)
-                {
-                    minDistance = distance;
-                    nearestCover = coverObject;
-                }
-            }
-
-            if (nearestCover != null)
-            {
-                Vector3 directionToPlayer = transform.position - playerPosition;
-            Vector3 oppositePoint = nearestCover.transform.position + directionToPlayer.normalized;
-
-            agent.SetDestination(oppositePoint);
-            }
+            FindAndMoveToNearestCover();
         }
         else
         {
-            Vector3 directionToPlayer = transform.position - playerPosition;
-            Vector3 oppositePoint = collidedCover.transform.position + directionToPlayer.normalized;
-
-            agent.SetDestination(oppositePoint);
+            MoveToOppositePoint(collidedCover.transform.position);
         }
+    }
+
+    private void FindAndMoveToNearestCover()
+    {
+        GameObject[] coverObjects = GameObject.FindGameObjectsWithTag("Cover");
+        GameObject nearestCover = null;
+        float minDistance = float.MaxValue;
+
+        foreach (GameObject coverObject in coverObjects)
+        {
+            float distance = Vector3.Distance(transform.position, coverObject.transform.position);
+            if (distance < minDistance)
+            {
+                minDistance = distance;
+                nearestCover = coverObject;
+            }
+        }
+
+        if (nearestCover != null)
+        {
+            MoveToOppositePoint(nearestCover.transform.position);
+        }
+    }
+
+    private void MoveToOppositePoint(Vector3 targetPosition)
+    {
+        Vector3 directionToPlayer = transform.position - playerPosition;
+        Vector3 oppositePoint = targetPosition + directionToPlayer.normalized;
+        agent.SetDestination(oppositePoint);
     }
 }
