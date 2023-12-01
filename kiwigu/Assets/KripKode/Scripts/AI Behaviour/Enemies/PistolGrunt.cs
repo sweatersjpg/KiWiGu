@@ -1,10 +1,13 @@
+using System.Collections;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class PistolGrunt : EnemyBase
 {
     [SerializeField] MeshCollider coverDetectCollider;
     [SerializeField] Transform headBone;
     [SerializeField] bool idle;
+    private bool sWander;
 
     protected override void Update()
     {
@@ -28,8 +31,40 @@ public class PistolGrunt : EnemyBase
 
     private void EnemyMovement()
     {
+        if (!isPlayerVisible && !sWander)
+        {
+            sWander = true;
+            StartCoroutine(WanderRandomly());
+        }
+
         EnemyAnimations();
         HandleRegularEnemyMovement();
+    }
+
+    private IEnumerator WanderRandomly()
+    {
+        while (!isPlayerVisible)
+        {
+            Vector3 randomDirection = Random.insideUnitSphere * enemyMovementVariables.WanderRadius;
+
+            Vector3 destination = initialPosition + randomDirection;
+
+            NavMeshHit hit;
+            NavMesh.SamplePosition(destination, out hit, enemyMovementVariables.WanderRadius, 1);
+            Vector3 finalPosition = hit.position;
+
+            agent.SetDestination(finalPosition);
+
+            yield return new WaitForSeconds(enemyMovementVariables.IdleTime);
+
+            agent.isStopped = true;
+
+            yield return new WaitForSeconds(1f);
+
+            agent.isStopped = false;
+        }
+
+        sWander = false;
     }
 
     private void EnemyAnimations()

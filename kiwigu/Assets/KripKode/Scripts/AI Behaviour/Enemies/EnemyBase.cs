@@ -24,10 +24,12 @@ public class EnemyBase : MonoBehaviour
     [HideInInspector] public Vector3 enemyPosition;
     [HideInInspector] public bool canFacePlayer = true;
     [HideInInspector] public GameObject gunObjectExitPoint;
+    [HideInInspector] public Vector3 initialPosition;
 
     protected virtual void Start()
     {
         SetTagBasedOnEnemyType();
+        initialPosition = transform.position;
 
         if (enemyMainVariables.GunObject)
         {
@@ -234,11 +236,10 @@ public class EnemyBase : MonoBehaviour
     {
         [Header("Enemy Movement")]
         [Range(1, 15)]
-        [Tooltip("Variation in the movement while hiding.")]
-        public int MovementVariation = 4;
-        [Range(1, 15)]
         [Tooltip("The movement speed of the enemy.")]
         public int MovementSpeed = 5;
+        [Range(3, 10)]
+        public float WanderRadius = 7;
         [Range(5, 10)]
         [Tooltip("The distance at which the enemy avoids the player.")]
         public int AvoidPlayerDistance = 7;
@@ -249,8 +250,7 @@ public class EnemyBase : MonoBehaviour
         [Tooltip("The distance at which the enemy becomes aware of the player.")]
         public int EnemyAwareDistance = 20;
         [Range(1, 10)]
-        [Tooltip("Idle time for a drone.")]
-        public int DroneIdleTime = 2;
+        public int IdleTime = 2;
     }
 
     [System.Serializable]

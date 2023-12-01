@@ -10,8 +10,6 @@ public class DroneBehaviour : EnemyBase
 
     private bool isDroneStopped;
     private bool isShootingPatternActive;
-    private bool isRoaming;
-    private float roamStartTime;
 
     // Drone Pattern Variables
     [SerializeField] private float droneHeightOffset = 0.25f;
@@ -24,6 +22,7 @@ public class DroneBehaviour : EnemyBase
     private Vector3 randomDestination;
     private bool remembersPlayer;
     private float rememberPlayerTime;
+    private bool sWander;
 
     protected override void Start()
     {
@@ -45,6 +44,12 @@ public class DroneBehaviour : EnemyBase
 
     public void EnemyMovement()
     {
+        if (!isPlayerVisible && !sWander)
+        {
+            sWander = true;
+            StartCoroutine(WanderRandomly());
+        }
+
         if (enemyTypeVariables.DefenseDrone && detectedEnemy)
         {
             HandleDefenseDroneMovement();
@@ -53,6 +58,32 @@ public class DroneBehaviour : EnemyBase
         {
             HandleOffenseDroneMovement();
         }
+    }
+
+    private IEnumerator WanderRandomly()
+    {
+        while (!isPlayerVisible)
+        {
+            Vector3 randomDirection = Random.insideUnitSphere * enemyMovementVariables.WanderRadius;
+
+            Vector3 destination = initialPosition + randomDirection;
+
+            NavMeshHit hit;
+            NavMesh.SamplePosition(destination, out hit, enemyMovementVariables.WanderRadius, 1);
+            Vector3 finalPosition = hit.position;
+
+            agent.SetDestination(finalPosition);
+
+            yield return new WaitForSeconds(enemyMovementVariables.IdleTime);
+
+            agent.isStopped = true;
+
+            yield return new WaitForSeconds(1f);
+
+            agent.isStopped = false;
+        }
+
+        sWander = false;
     }
 
     private void HandleDefenseDroneMovement()
@@ -74,8 +105,6 @@ public class DroneBehaviour : EnemyBase
 
         if (!isShootingPatternActive)
             StartCoroutine(DefenseDronePattern(enemyPosition));
-
-        HandleRoaming();
     }
 
     private void HandleOffenseDroneMovement()
@@ -104,8 +133,6 @@ public class DroneBehaviour : EnemyBase
 
             if (!isShootingPatternActive)
                 StartCoroutine(OffenseDronePattern(Random.Range(0, 2), playerPosition));
-
-            HandleRoaming();
         }
         else
         {
@@ -119,20 +146,6 @@ public class DroneBehaviour : EnemyBase
 
         RotateBodyMeshTowardsObj(playerPosition);
         RotateGunObjectExitPoint(playerPosition);
-    }
-
-    private void HandleRoaming()
-    {
-        if (!isRoaming)
-        {
-            isRoaming = true;
-            roamStartTime = Time.time;
-        }
-        else if (Time.time - roamStartTime >= 1.5f)
-        {
-            isRoaming = false;
-            agent.ResetPath();
-        }
     }
 
     private void RotateBodyMeshTowardsObj(Vector3 objPos)
@@ -232,7 +245,7 @@ public class DroneBehaviour : EnemyBase
         }
 
         agent.ResetPath();
-        yield return new WaitForSeconds(enemyMovementVariables.DroneIdleTime);
+        yield return new WaitForSeconds(enemyMovementVariables.IdleTime);
         isShootingPatternActive = false;    
 
         enemyMainVariables.BodyMesh.transform.localRotation = Quaternion.Euler(0, 0, 0);
@@ -272,7 +285,7 @@ public class DroneBehaviour : EnemyBase
         }
 
         agent.ResetPath();
-        yield return new WaitForSeconds(enemyMovementVariables.DroneIdleTime);
+        yield return new WaitForSeconds(enemyMovementVariables.IdleTime);
         isShootingPatternActive = false;
 
         enemyMainVariables.BodyMesh.transform.localRotation = Quaternion.Euler(0, 0, 0);
