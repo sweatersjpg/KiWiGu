@@ -10,6 +10,7 @@ public class DroneBehaviour : EnemyBase
 
     private bool isDroneStopped;
     private bool isShootingPatternActive;
+    float nextWanderTime;
 
     // Drone Pattern Variables
     [SerializeField] private float droneHeightOffset = 0.25f;
@@ -22,7 +23,6 @@ public class DroneBehaviour : EnemyBase
     private Vector3 randomDestination;
     private bool remembersPlayer;
     private float rememberPlayerTime;
-    private bool sWander;
 
     protected override void Start()
     {
@@ -44,12 +44,6 @@ public class DroneBehaviour : EnemyBase
 
     public void EnemyMovement()
     {
-        if (!isPlayerVisible && !sWander)
-        {
-            sWander = true;
-            StartCoroutine(WanderRandomly());
-        }
-
         if (enemyTypeVariables.DefenseDrone && detectedEnemy)
         {
             HandleDefenseDroneMovement();
@@ -58,32 +52,24 @@ public class DroneBehaviour : EnemyBase
         {
             HandleOffenseDroneMovement();
         }
+
+        if(!isShootingPatternActive)
+        {
+            WanderRandomly();
+        }
     }
 
-    private IEnumerator WanderRandomly()
+    private void WanderRandomly()
     {
-        while (!isPlayerVisible)
+        if (Time.time > nextWanderTime)
         {
-            Vector3 randomDirection = Random.insideUnitSphere * enemyMovementVariables.WanderRadius;
+            Vector3 randomPoint = initialPosition + Random.insideUnitSphere * enemyMovementVariables.WanderRadius;
+            randomPoint.y = transform.position.y;
 
-            Vector3 destination = initialPosition + randomDirection;
+            if (agent.isOnNavMesh) agent.SetDestination(randomPoint);
 
-            NavMeshHit hit;
-            NavMesh.SamplePosition(destination, out hit, enemyMovementVariables.WanderRadius, 1);
-            Vector3 finalPosition = hit.position;
-
-            agent.SetDestination(finalPosition);
-
-            yield return new WaitForSeconds(enemyMovementVariables.IdleTime);
-
-            agent.isStopped = true;
-
-            yield return new WaitForSeconds(1f);
-
-            agent.isStopped = false;
+            nextWanderTime = Time.time + enemyMovementVariables.IdleTime;
         }
-
-        sWander = false;
     }
 
     private void HandleDefenseDroneMovement()
@@ -109,7 +95,7 @@ public class DroneBehaviour : EnemyBase
 
     private void HandleOffenseDroneMovement()
     {
-        if(detectedPlayer)
+        if(isPlayerVisible)
         {
             remembersPlayer = true;
             rememberPlayerTime = Time.time;
@@ -119,7 +105,7 @@ public class DroneBehaviour : EnemyBase
             remembersPlayer = false;
         }
 
-        if (detectedPlayer || remembersPlayer)
+        if (isPlayerVisible || remembersPlayer)
         {
             Camera.main.GetComponent<Music>().Violence = 1;
             RotateGunAndBodyTowardsPlayer();
@@ -206,26 +192,27 @@ public class DroneBehaviour : EnemyBase
 
             droneMoveTime = distanceToTarget / agent.speed;
 
-            if (agent.isOnNavMesh)
-                yield return new WaitUntil(() => !agent.pathPending && agent.remainingDistance < 0.1f);
-
             if (droneSwitch)
             {
-                MoveUp();
+                MoveUp(distanceToPlayer);
                 droneSwitch = false;
             }
             else
             {
-                MoveDown();
+                MoveDown(distanceToPlayer);
                 droneSwitch = true;
             }
+
+            if (agent.isOnNavMesh)
+                yield return new WaitUntil(() => !agent.pathPending && agent.remainingDistance < 0.1f);
+
 
             if (pattern == 0 && isHoldingGun)
             {
                 canFacePlayer = false;
-                if (detectedPlayer) Instantiate(tellEffect, enemyMainVariables.BodyMesh.transform);
+                if (isPlayerVisible) Instantiate(tellEffect, enemyMainVariables.BodyMesh.transform);
                 yield return new WaitForSeconds(0.25f);
-                if (detectedPlayer)
+                if (isPlayerVisible)
                     yield return new WaitForSeconds(EnemyShoot());
                 canFacePlayer = true;
             }
@@ -234,10 +221,10 @@ public class DroneBehaviour : EnemyBase
                 for (int j = 0; j < 3; j++)
                 {
                     yield return new WaitForSeconds(0.25f);
-                    if (isHoldingGun && detectedPlayer) Instantiate(tellEffect, enemyMainVariables.BodyMesh.transform);
+                    if (isHoldingGun && isPlayerVisible) Instantiate(tellEffect, enemyMainVariables.BodyMesh.transform);
                     canFacePlayer = false;
                     yield return new WaitForSeconds(0.25f);
-                    if (isHoldingGun && detectedPlayer)
+                    if (isHoldingGun && isPlayerVisible)
                         yield return new WaitForSeconds(EnemyShoot());
                     canFacePlayer = true;
                 }
@@ -268,18 +255,18 @@ public class DroneBehaviour : EnemyBase
 
             if (droneSwitch)
             {
-                MoveUp();
+                MoveUp(distanceToTarget);
                 droneSwitch = false;
             }
             else
             {
-                MoveDown();
+                MoveDown(distanceToTarget);
                 droneSwitch = true;
             }
 
             canFacePlayer = false;
             yield return new WaitForSeconds(0.25f);
-            if (detectedPlayer)
+            if (isPlayerVisible)
                 yield return new WaitForSeconds(EnemyShoot());
             canFacePlayer = true;
         }
@@ -296,11 +283,10 @@ public class DroneBehaviour : EnemyBase
         if (PauseSystem.paused)
         {
             // StopAllCoroutines();
-            detectedPlayer = false;
+            isPlayerVisible = false;
             return;
         }
 
-        isPlayerVisible = CheckEyesVisibility();
 
         base.Update();
 
@@ -309,17 +295,19 @@ public class DroneBehaviour : EnemyBase
         if (!isShootingPatternActive && (enemyTypeVariables.DefenseDrone || enemyTypeVariables.OffenseDrone))
         {
             enemyMainVariables.BodyMesh.transform.localPosition = Vector3.Lerp(enemyMainVariables.BodyMesh.transform.localPosition, targetYPos, Time.deltaTime * 2);
+           
+            float distanceToPlayer = Vector3.Distance(transform.position, playerPosition);
 
             if (Time.time - lastExecutionTime >= interval)
             {
                 if (droneSwitch)
                 {
-                    MoveUp();
+                    MoveUp(distanceToPlayer);
                     droneSwitch = false;
                 }
                 else
                 {
-                    MoveDown();
+                    MoveDown(distanceToPlayer);
                     droneSwitch = true;
                 }
 
@@ -333,20 +321,20 @@ public class DroneBehaviour : EnemyBase
         }
     }
 
-    private void MoveUp()
+    private void MoveUp(float distanceToPlayer)
     {
         if (isShootingPatternActive)
-            targetYPos.y = initialYPosition + (droneHeightOffset * 5);
+            targetYPos.y = initialYPosition + Mathf.Min(droneHeightOffset * 5, distanceToPlayer);
         else
-            targetYPos.y = initialYPosition + droneHeightOffset;
+            targetYPos.y = initialYPosition + Mathf.Min(droneHeightOffset, distanceToPlayer);
     }
 
-    private void MoveDown()
+    private void MoveDown(float distanceToPlayer)
     {
         if (isShootingPatternActive)
-            targetYPos.y = initialYPosition - (droneHeightOffset * 5);
+            targetYPos.y = initialYPosition - Mathf.Min(droneHeightOffset * 5, distanceToPlayer);
         else
-            targetYPos.y = initialYPosition - droneHeightOffset;
+            targetYPos.y = initialYPosition - Mathf.Min(droneHeightOffset, distanceToPlayer);
     }
 
     private float EnemyShoot()
