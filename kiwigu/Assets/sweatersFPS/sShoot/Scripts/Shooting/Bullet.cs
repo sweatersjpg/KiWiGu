@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Burst.CompilerServices;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
@@ -171,8 +172,8 @@ public class Bullet : MonoBehaviour
 
     private void ApplyDamage(EnemyHitboxRegister enemy, float damageMultiplier)
     {
-        if (enemy == null || enemy.enemyBase == null || enemy.enemyBase.enemyMainVariables == null || enemy.enemyBase.enemyMainVariables.animator == null)
-            return;
+        //if (enemy == null || enemy.enemyBase == null || enemy.enemyBase.enemyMainVariables == null || enemy.enemyBase.enemyMainVariables.animator == null)
+        //    return;
 
         enemy.enemyBase.TakeDamage(bulletDamage * damageMultiplier);
     }
@@ -190,6 +191,8 @@ public class Bullet : MonoBehaviour
         else if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Enemy"))
         {
             EnemyHitboxRegister enemy = hit.transform.gameObject.GetComponent<EnemyHitboxRegister>();
+
+
             if (enemy != null)
             {
                 if (enemy.doubleDamage)

@@ -89,7 +89,7 @@ public class GunHand : MonoBehaviour
         // view.localPosition += 50 * ((targetPosition - view.localPosition) / 4) * deltaTime;
 
         anim.SetBool("outOfAmmo", outOfAmmo);
-        Debug.Log(outOfAmmo);
+        // Debug.Log(outOfAmmo);
 
         if (!hasGun)
         {
