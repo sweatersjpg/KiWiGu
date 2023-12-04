@@ -18,16 +18,17 @@ public class EnemyBase : MonoBehaviour
     [HideInInspector] public bool isShooting;
     [HideInInspector] public bool isPlayerVisible;
     [HideInInspector] public bool isPlayerVisibleKnees;
-    [HideInInspector] public bool detectedPlayer;
     [HideInInspector] public bool detectedEnemy;
     [HideInInspector] public Vector3 playerPosition;
     [HideInInspector] public Vector3 enemyPosition;
     [HideInInspector] public bool canFacePlayer = true;
     [HideInInspector] public GameObject gunObjectExitPoint;
+    [HideInInspector] public Vector3 initialPosition;
 
     protected virtual void Start()
     {
         SetTagBasedOnEnemyType();
+        initialPosition = transform.position;
 
         if (enemyMainVariables.GunObject)
         {
@@ -60,14 +61,37 @@ public class EnemyBase : MonoBehaviour
 
     protected virtual void Update()
     {
-        if (enemyTypeVariables.OffenseDrone || enemyTypeVariables.Small || enemyTypeVariables.Medium)
+        if (enemyTypeVariables.OffenseDrone || enemyTypeVariables.Small)
+        {
             DetectPlayer();
 
+        }
         else if (enemyTypeVariables.DefenseDrone)
         {
             DetectPlayer();
             DetectEnemy();
         }
+
+        isPlayerVisible = CheckEyesVisibility();
+
+        if (enemyMainVariables.hasKnees)
+            isPlayerVisibleKnees = CheckKneesVisibility();
+    }
+
+    public virtual void TakeDamage(float bulletDamage)
+    {
+        if (enemyMainVariables.canBeHitAnim) HitBase();
+
+        if (currentShield < enemyMainVariables.MaxShield)
+        {
+            currentShield = Mathf.Min(currentShield + bulletDamage, enemyMainVariables.MaxShield);
+        }
+        else if (currentHealth < enemyMainVariables.MaxHealth)
+        {
+            currentHealth = Mathf.Min(currentHealth + bulletDamage, enemyMainVariables.MaxHealth);
+        }
+
+        CheckStats();
     }
 
     private void DetectPlayer()
@@ -75,8 +99,6 @@ public class EnemyBase : MonoBehaviour
         GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
 
         if (players.Length == 0) return;
-
-        detectedPlayer = players.Any(player => Vector3.Distance(transform.position, player.transform.position) < enemyMovementVariables.EnemyAwareDistance);
 
         playerPosition = players
             .OrderBy(player => Vector3.Distance(transform.position, player.transform.position))
@@ -97,22 +119,6 @@ public class EnemyBase : MonoBehaviour
             .OrderBy(enemy => Vector3.Distance(transform.position, enemy.transform.position))
             .First()
             .transform.position;
-    }
-
-    public virtual void TakeDamage(float bulletDamage)
-    {
-        if (enemyMainVariables.canBeHitAnim) HitBase();
-
-        if (currentShield < enemyMainVariables.MaxShield)
-        {
-            currentShield = Mathf.Min(currentShield + bulletDamage, enemyMainVariables.MaxShield);
-        }
-        else if (currentHealth < enemyMainVariables.MaxHealth)
-        {
-            currentHealth = Mathf.Min(currentHealth + bulletDamage, enemyMainVariables.MaxHealth);
-        }
-
-        CheckStats();
     }
 
     protected virtual void HitBase()
@@ -234,11 +240,10 @@ public class EnemyBase : MonoBehaviour
     {
         [Header("Enemy Movement")]
         [Range(1, 15)]
-        [Tooltip("Variation in the movement while hiding.")]
-        public int MovementVariation = 4;
-        [Range(1, 15)]
         [Tooltip("The movement speed of the enemy.")]
         public int MovementSpeed = 5;
+        [Range(3, 10)]
+        public float WanderRadius = 7;
         [Range(5, 10)]
         [Tooltip("The distance at which the enemy avoids the player.")]
         public int AvoidPlayerDistance = 7;
@@ -249,8 +254,7 @@ public class EnemyBase : MonoBehaviour
         [Tooltip("The distance at which the enemy becomes aware of the player.")]
         public int EnemyAwareDistance = 20;
         [Range(1, 10)]
-        [Tooltip("Idle time for a drone.")]
-        public int DroneIdleTime = 2;
+        public int IdleTime = 2;
     }
 
     [System.Serializable]

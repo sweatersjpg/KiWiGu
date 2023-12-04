@@ -1,4 +1,6 @@
+using System.Collections;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class PistolGrunt : EnemyBase
 {
@@ -6,14 +8,12 @@ public class PistolGrunt : EnemyBase
     [SerializeField] Transform headBone;
     [SerializeField] bool idle;
 
+    float nextWanderTime;
+    bool hiding;
+
     protected override void Update()
     {
         base.Update();
-
-        isPlayerVisible = CheckEyesVisibility();
-
-        if (enemyMainVariables.hasKnees)
-            isPlayerVisibleKnees = CheckKneesVisibility();
 
         if (!idle && !enemyMainVariables.animator.GetComponent<HitVariable>().wasHit)
         {
@@ -35,34 +35,50 @@ public class PistolGrunt : EnemyBase
     private void EnemyAnimations()
     {
         enemyMainVariables.animator.SetFloat("Movement", agent.velocity.magnitude);
+
+        if (enemyMainVariables.animator.GetFloat("Movement") > 0.1f)
+        {
+            enemyMainVariables.animator.SetBool("Crouching", false);
+        }
     }
 
     private void HandleRegularEnemyMovement()
     {
         CheckCrouch();
 
-        if (enemyMainVariables.hasKnees)
+        float playerDistance = Vector3.Distance(transform.position, playerPosition);
+
+        if (playerDistance <= enemyMovementVariables.AvoidPlayerDistance && isPlayerVisible)
         {
-            if (isPlayerVisibleKnees)
+            if (enemyMainVariables.hasKnees)
             {
-                MoveAroundCover();
+                if (isPlayerVisibleKnees)
+                {
+                    MoveAroundCover();
+                }
+                else
+                {
+                    coverDetectCollider.enabled = false;
+                }
             }
             else
             {
-                coverDetectCollider.enabled = false;
+                if (isPlayerVisible)
+                {
+                    MoveAroundCover();
+                }
+                else
+                {
+                    coverDetectCollider.enabled = false;
+                }
             }
         }
-        else
+        else if (!hiding && playerDistance > enemyMovementVariables.AvoidPlayerDistance)
         {
-            if (isPlayerVisible)
-            {
-                MoveAroundCover();
-            }
-            else
-            {
-                coverDetectCollider.enabled = false;
-            }
+            WanderRandomly();
         }
+
+        hiding = !(isPlayerVisible && isPlayerVisibleKnees);
     }
 
     private void CheckCrouch()
@@ -98,6 +114,19 @@ public class PistolGrunt : EnemyBase
         else
         {
             MoveToOppositePoint(collidedCover.transform.position);
+        }
+    }
+
+    private void WanderRandomly()
+    {
+        if (Time.time > nextWanderTime)
+        {
+            Vector3 randomPoint = initialPosition + Random.insideUnitSphere * enemyMovementVariables.WanderRadius;
+            randomPoint.y = transform.position.y;
+
+            if (agent.isOnNavMesh) agent.SetDestination(randomPoint);
+
+            nextWanderTime = Time.time + enemyMovementVariables.IdleTime;
         }
     }
 

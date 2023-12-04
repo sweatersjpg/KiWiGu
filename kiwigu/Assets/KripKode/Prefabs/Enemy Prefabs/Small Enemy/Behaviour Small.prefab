@@ -2309,12 +2309,12 @@ MonoBehaviour:
     HandPosition: {fileID: 6676047679721046988}
     explosionPrefab: {fileID: 1886320638105856866, guid: 868415f162da742468824c5743d47bae, type: 3}
   enemyMovementVariables:
-    MovementVariation: 1
     MovementSpeed: 4
-    AvoidPlayerDistance: 7
+    WanderRadius: 7
+    AvoidPlayerDistance: 10
     RotationSpeed: 600
     EnemyAwareDistance: 20
-    DroneIdleTime: 2
+    IdleTime: 5
   enemyGunStats:
     EnemyFireRate: 1
     GunInaccuracy: 5
@@ -2331,12 +2331,12 @@ MonoBehaviour:
   isShooting: 0
   isPlayerVisible: 0
   isPlayerVisibleKnees: 0
-  detectedPlayer: 0
   detectedEnemy: 0
   playerPosition: {x: 0, y: 0, z: 0}
   enemyPosition: {x: 0, y: 0, z: 0}
   canFacePlayer: 1
   gunObjectExitPoint: {fileID: 0}
+  initialPosition: {x: 0, y: 0, z: 0}
   coverDetectCollider: {fileID: 6676047678913096999}
   headBone: {fileID: 6676047679242226566}
   idle: 0
