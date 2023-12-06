@@ -126,8 +126,8 @@ public class GunHand : MonoBehaviour
             // targetAngle = -45;
             // targetPosition = startPosition + new Vector3(0, 0.3f, -0.2f);
             canShoot = false;
-            anim.Play("throw");
-            Invoke(nameof(ThrowGun), 0.2f);
+            anim.Play("swap");
+            Invoke(nameof(ThrowGun), 0.05f);
         }
         // else targetAngle = 0;
 
@@ -161,9 +161,9 @@ public class GunHand : MonoBehaviour
         gun.info = info;
 
         gunView.gameObject.SetActive(false);
-        Invoke(nameof(SetHasGun), 0.4f);
+        Invoke(nameof(SetHasGun), 0.7f);
 
-        Invoke(nameof(AnimateSwap), 0.2f);
+        // Invoke(nameof(AnimateSwap), 0.5f);
         // targetPosition = startPosition + new Vector3(0, -1f, 0.5f);
     }
 
@@ -198,8 +198,8 @@ public class GunHand : MonoBehaviour
         
     }
 
-    public void AnimateSwap()
-    {
-        anim.Play("swap");
-    }
+    //public void AnimateSwap()
+    //{
+    //    anim.Play("swap");
+    //}
 }

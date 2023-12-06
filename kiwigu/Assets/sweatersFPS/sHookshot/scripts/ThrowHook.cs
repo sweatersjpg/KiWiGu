@@ -61,7 +61,7 @@ public class ThrowHook : MonoBehaviour
         {
             if (hasHook)
             {
-                Invoke(nameof(Throw), 0.2f);
+                Invoke(nameof(Throw), 0.05f);
                 anim.Play("throw");
             }
             // else hook.GetComponent<MoveHook>().PullbackWithForce(0);
