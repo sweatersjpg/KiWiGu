@@ -1,6 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Burst.CompilerServices;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.AI;
 using UnityEngine.UI;
 
 public class Bullet : MonoBehaviour
@@ -38,6 +41,7 @@ public class Bullet : MonoBehaviour
     bool dead = false;
 
     float startTime;
+    float time;
 
     [HideInInspector] public float charge;
 
@@ -52,9 +56,9 @@ public class Bullet : MonoBehaviour
         // velocity = transform.forward * speed;
         startTime = Time.time;
 
-        if(trackTarget) target = AcquireTarget.instance.GetBulletTarget();
+        if (trackTarget) target = AcquireTarget.instance.GetBulletTarget();
         if (target != null) ogTarget = target;
-        
+
         ogTargetPosition = AcquireTarget.instance.target;
     }
 
@@ -62,8 +66,12 @@ public class Bullet : MonoBehaviour
     void Update()
     {
         if (justInfo) return;
-        
-        float time = Time.time - startTime;
+        if (PauseSystem.paused)
+        {
+            return;
+        }
+
+        time += Time.deltaTime;
 
         // if (target != null) transform.LookAt(target);
 
@@ -97,7 +105,7 @@ public class Bullet : MonoBehaviour
         {
             Vector3 tpos = target.position;
 
-            tpos = (tpos - transform.position).normalized * 
+            tpos = (tpos - transform.position).normalized *
                 (bulletMesh.transform.position - transform.position).magnitude + transform.position;
 
             Vector3 dir = (tpos - bulletMesh.transform.position);
@@ -129,10 +137,11 @@ public class Bullet : MonoBehaviour
 
         if (fromEnemy) hasHit = false;
 
-        if(hasHit)
+        if (hasHit)
         {
             DoHit(hit, direction);
-        } else
+        }
+        else
         {
             bool hasHitTwoElectricBoogaloo = Physics.Raycast(origin, direction, out RaycastHit hitTwo, direction.magnitude,
                 ignoreMask);
@@ -146,7 +155,7 @@ public class Bullet : MonoBehaviour
 
     //void CastRay(float time, float radius, LayerMask mask)
     //{
-        
+
     //    Vector3 origin = EvaluateLocation(time - Time.deltaTime);
     //    Vector3 direction = EvaluateLocation(time) - origin;
 
@@ -161,11 +170,19 @@ public class Bullet : MonoBehaviour
     //    }
     //}
 
+    private void ApplyDamage(EnemyHitboxRegister enemy, float damageMultiplier)
+    {
+        //if (enemy == null || enemy.enemyBase == null || enemy.enemyBase.enemyMainVariables == null || enemy.enemyBase.enemyMainVariables.animator == null)
+        //    return;
+
+        enemy.enemyBase.TakeDamage(bulletDamage * damageMultiplier);
+    }
+
     void DoHit(RaycastHit hit, Vector3 direction)
     {
         if (hit.transform.gameObject.layer == LayerMask.NameToLayer("EnergyWall"))
         {
-            if(Vector3.Dot(hit.transform.right, direction) > 0) return;
+            if (Vector3.Dot(hit.transform.right, direction) > 0) return;
         }
         else if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Player"))
         {
@@ -173,12 +190,20 @@ public class Bullet : MonoBehaviour
         }
         else if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Enemy"))
         {
-            EnemyBase enemy = hit.transform.gameObject.GetComponentInChildren<EnemyBase>();
+            EnemyHitboxRegister enemy = hit.transform.gameObject.GetComponent<EnemyHitboxRegister>();
+
+
             if (enemy != null)
             {
-                enemy.GetComponentInChildren<EnemyHitboxRegister>().enemyBase.TakeDamage(bulletDamage);
+                if (enemy.doubleDamage)
+                    ApplyDamage(enemy, 2f);
+                else if (enemy.lessDamage)
+                    ApplyDamage(enemy, 1.5f);
+                else if (enemy.leastDamage)
+                    ApplyDamage(enemy, 0.5f);
+                else
+                    ApplyDamage(enemy, 1f);
             }
-            
         }
         else if (hit.transform.gameObject.CompareTag("RigidTarget"))
         {
@@ -206,7 +231,7 @@ public class Bullet : MonoBehaviour
         lifeTime = Time.time - startTime + 0.5f;
 
         MeshRenderer view = bulletMesh.GetComponentInChildren<MeshRenderer>();
-        if(view != null) Destroy(view.gameObject);
+        if (view != null) Destroy(view.gameObject);
         // bulletMesh.SetActive(false);
         dead = true;
     }
@@ -214,7 +239,7 @@ public class Bullet : MonoBehaviour
     void SpawnHole(RaycastHit hit)
     {
         if (bulletHolePrefab == null) return;
-        
+
         Transform hole = Instantiate(bulletHolePrefab).transform;
         hole.SetPositionAndRotation(hit.point, Quaternion.LookRotation(-hit.normal));
         hole.parent = hit.transform;

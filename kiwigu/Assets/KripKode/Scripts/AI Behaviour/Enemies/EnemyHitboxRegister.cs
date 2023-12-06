@@ -3,11 +3,8 @@ using UnityEngine;
 public class EnemyHitboxRegister : MonoBehaviour
 {
     public EnemyBase enemyBase;
-
-    public class HitboxScript
-    {
-        [Header("Hitbox")]
-        public bool CheckIfHitboxScript;
-        public EnemyBase enemyBehaviour;
-    }
+    public bool isPhysicalShield;
+    public bool doubleDamage;
+    public bool lessDamage;
+    public bool leastDamage;
 }

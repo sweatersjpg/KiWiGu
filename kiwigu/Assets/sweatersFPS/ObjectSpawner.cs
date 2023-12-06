@@ -7,6 +7,8 @@ public class ObjectSpawner : MonoBehaviour
 
     public GameObject thingPrefab;
 
+    public GunInfo gunType;
+
     public int numberOfThings = 1;
     public float spawnDelay = 4;
 
@@ -35,6 +37,9 @@ public class ObjectSpawner : MonoBehaviour
     void SpawnThing()
     {
         GameObject thing = Instantiate(thingPrefab, transform.position, Quaternion.identity);
+
+        if (gunType != null) thing.GetComponentInChildren<HookTarget>().info = gunType;
+
         things.Add(thing);
     }
 }

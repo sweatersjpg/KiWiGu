@@ -1,4 +1,7 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 class HealthBar : MonoBehaviour
 {
@@ -24,9 +27,16 @@ class HealthBar : MonoBehaviour
     float timeLeft;
     float prevTarget;
 
+    [SerializeField] List<Image> healthBarImages;
+    [SerializeField] List<Material> healthBarMaterials;
+
     void Start()
     {
         dist = leftBar.anchoredPosition3D.x;
+        foreach (Image i in healthBarImages)
+        {
+            healthBarMaterials.Add(i.GetComponent<Image>().material);
+        }
     }
 
     void Update()
@@ -61,5 +71,10 @@ class HealthBar : MonoBehaviour
         leftBar.anchoredPosition3D = new Vector3(dist * percent, buffer.y, buffer.z);
         buffer = rightBar.anchoredPosition3D;
         rightBar.anchoredPosition3D = new Vector3(-dist * percent, buffer.y, buffer.z);
+
+        foreach (Material m in healthBarMaterials)
+        {
+            m.SetFloat("_HPPercent", percent);
+        }
     }
 }

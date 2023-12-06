@@ -95,7 +95,7 @@ public class MoveHook : MonoBehaviour
             if (!headingBack)
             {
                 headingBack = true;
-                home.PullBack();
+                // home.PullBack();
                 maxHookRange = heading.magnitude;
             }
         }
@@ -121,7 +121,10 @@ public class MoveHook : MonoBehaviour
                 //maxHookRange -= Mathf.Min(speed * deltaTime, maxHookRange);
                 //speed += trackingAcceleration * deltaTime * 0.5f;
 
-                float distance = Mathf.Max(maxHookRange, playerDistance);
+                distToHook = Mathf.Min(heading.magnitude+1, distToHook);
+
+                //float distance = Mathf.Max(maxHookRange, playerDistance);
+                float distance = Mathf.Max(distToHook, playerDistance);
 
                 // grapple hook effect
                 if (heading.magnitude > distance)
@@ -206,7 +209,7 @@ public class MoveHook : MonoBehaviour
     {
         // raycast from ppos to pos
 
-        if(caughtGun == null) HookGun();
+        if(caughtGun == null && !headingBack) HookGun();
 
         bool hasHit = Physics.Raycast(pPosition, transform.position - pPosition, 
             out RaycastHit hit, (transform.position - pPosition).magnitude,
@@ -394,34 +397,35 @@ public class MoveHook : MonoBehaviour
     {
         speed = 0;
         G = new();
+
+        // home.PullBack();
     }
 
-    public void PullbackWithForce()
+    public void PullbackWithForce(float force)
     {
         if (hookTarget)
         {
             float t = hookTarget.maxResistance - hookTarget.resistance;
 
-
-            if (t < 0.2) // perfect hook
+            if (t < 0.4) // perfect hook
             {
                 hookTarget.resistance = 0;
-                LaunchPlayer(30);
+                if(force > 0) LaunchPlayer(force);
 
                 Destroy(fx);
                 fx = Instantiate(perfectHookCircleFXprefab, transform);
             } else
             {
-                LaunchPlayer(30);
-                ReturnHookTarget();
+                hookTarget.resistance = 0;
             }
 
             fx.transform.parent = null;
 
-
         }
         speed = 0;
         G = new();
+
+        home.PullBack();
     }
 
     public void LaunchPlayer(float force)

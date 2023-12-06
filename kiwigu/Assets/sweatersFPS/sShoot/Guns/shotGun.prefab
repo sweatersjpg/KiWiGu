@@ -154,8 +154,6 @@ MonoBehaviour:
   hasGun: 1
   thrownGunPrefab: {fileID: 6087863177417318745, guid: 775df9a2e9013c54ab64a1c26875866b, type: 3}
   hookShotPrefab: {fileID: 3935398618193876659, guid: 22a38e184f7b5844b993bf31543b79eb, type: 3}
-  view: {fileID: 0}
-  parent: {fileID: 0}
   outOfAmmo: 0
 --- !u!1 &5937121610997750445
 GameObject:
@@ -211,6 +209,9 @@ MonoBehaviour:
   ammo:
     capacity: 0
     count: 0
+  ShootEvent:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &5907362789698556798
 MonoBehaviour:
   m_ObjectHideFlags: 0

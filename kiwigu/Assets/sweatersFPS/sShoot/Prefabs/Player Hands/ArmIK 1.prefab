@@ -106,15 +106,15 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7193337480478230344}
-  m_LocalRotation: {x: -0.029935095, y: 0.17946383, z: -0.16178513, w: 0.96990836}
-  m_LocalPosition: {x: 0.025508327, y: 0.0511486, z: 0.05363439}
+  m_LocalRotation: {x: 0.1267889, y: 0.06297769, z: -0.25712883, w: 0.9559514}
+  m_LocalPosition: {x: 0.0432, y: 0.0511486, z: 0.0537}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7193337481448890097}
   m_Father: {fileID: 7193337480779364228}
   m_RootOrder: 3
-  m_LocalEulerAnglesHint: {x: 0, y: 20.966, z: -18.94}
+  m_LocalEulerAnglesHint: {x: 15.95, y: 3.291, z: -29.649}
 --- !u!1 &7193337480556809225
 GameObject:
   m_ObjectHideFlags: 0
@@ -352,6 +352,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7193337481077278521}
   - component: {fileID: 7193337481077278520}
+  - component: {fileID: 6674693591369503044}
   m_Layer: 0
   m_Name: ArmIK 1
   m_TagString: Untagged
@@ -395,7 +396,41 @@ MonoBehaviour:
   shoulder: {fileID: 7193337480556809224}
   elbow: {fileID: 7193337481399407225}
   wrist: {fileID: 7193337480779364228}
+  head: {fileID: 0}
   maxShoulderDelta: 2
+--- !u!114 &6674693591369503044
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7193337481077278526}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7dd5b68f2d9b0ed41a8701ac6f800508, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pointerPivots:
+  - {fileID: 7193337480625889750}
+  - {fileID: 7193337481189847756}
+  - {fileID: 7193337480869949693}
+  middlePivots:
+  - {fileID: 7193337480833120306}
+  - {fileID: 7193337482193252244}
+  - {fileID: 7193337482102415988}
+  pinkyPivots:
+  - {fileID: 7193337481708830019}
+  - {fileID: 7193337481412811613}
+  - {fileID: 7193337481014873297}
+  closedness: 1
+  pointer: 0.75
+  middle: 1
+  pinky: 1
+  closed: 70
+  jointWeights:
+  - 1
+  - 2
+  - 1
 --- !u!1 &7193337481119606238
 GameObject:
   m_ObjectHideFlags: 0
@@ -546,14 +581,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7193337481448890102}
-  m_LocalRotation: {x: 0.009416648, y: -0.16935872, z: 0.23058596, w: 0.95815396}
+  m_LocalRotation: {x: 0.04674152, y: -0.05356364, z: -0.18205611, w: 0.980715}
   m_LocalPosition: {x: 0.023399983, y: 0.028837247, z: 0.06872012}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 7193337480478230347}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 5.517, y: -18.765, z: 26.15}
+  m_LocalEulerAnglesHint: {x: 4.139, y: -7.031, z: -21.287}
 --- !u!1 &7193337481525053705
 GameObject:
   m_ObjectHideFlags: 0

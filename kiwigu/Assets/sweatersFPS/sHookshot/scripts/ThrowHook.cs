@@ -13,28 +13,43 @@ public class ThrowHook : MonoBehaviour
 
     bool hasHook = true;
 
-    Vector3 targetPosition;
+    //Vector3 targetPosition;
 
-    Vector3 startPosition;
-    Vector3 homePosition;
+    //Vector3 startPosition;
+    //Vector3 homePosition;
 
-    Transform view;
+    //Transform view;
 
     GameObject hook;
+
+    Animator anim;
     
     // Start is called before the first frame update
     void Start()
     {
-        view = transform.parent.parent;
+        // view = transform.parent.parent;
 
-        startPosition = view.localPosition;
-        homePosition = startPosition;
-        targetPosition = startPosition;
+        //startPosition = view.localPosition;
+        //homePosition = startPosition;
+        //targetPosition = startPosition;
 
-        view.localPosition += new Vector3(0, -1, -0.2f);
+        // view.localPosition += new Vector3(0, -1, -0.2f);
 
-        if (view.localPosition.x > 0) mouseButton = 1;
+        //if (view.localPosition.x > 0) mouseButton = 1;
+        //else mouseButton = 0;
+        anim = GetComponentInParent<Animator>();
+
+        if (transform.parent.parent.parent.localScale.x < 0) mouseButton = 1;
         else mouseButton = 0;
+    }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Space) && !hasHook && !sweatersController.instance.wasGrounded)
+        {
+            MoveHook mh = hook.GetComponent<MoveHook>();
+            if (mh.hookTarget != null && mh.hookTarget.tether) hook.GetComponent<MoveHook>().PullbackWithForce(30);
+        }
     }
 
     // Update is called once per frame
@@ -44,38 +59,23 @@ public class ThrowHook : MonoBehaviour
 
         if (Input.GetMouseButtonDown(mouseButton) || Input.GetKeyDown(mouseButton == 0 ? KeyCode.Q : KeyCode.E))
         {
-            if (hasHook) Throw();
-            else hook.GetComponent<MoveHook>().PullbackWithForce();
+            if (hasHook)
+            {
+                Invoke(nameof(Throw), 0.05f);
+                anim.Play("throw");
+            }
+            // else hook.GetComponent<MoveHook>().PullbackWithForce(0);
         }
 
-        view.localPosition += 50 * ((targetPosition - view.localPosition) / 4) * Time.deltaTime;
+        if (Input.GetMouseButtonUp(mouseButton) || Input.GetKeyUp(mouseButton == 0 ? KeyCode.Q : KeyCode.E))
+        {
+            if (!hasHook) hook.GetComponent<MoveHook>().PullbackWithForce(0);
+            else CancelInvoke(nameof(Throw));
+        }
+
+        // view.localPosition += 50 * ((targetPosition - view.localPosition) / 4) * Time.deltaTime;
+
     }
-
-    //void ObstacleAvoidance()
-    //{
-    //    Vector3 origin = transform.parent.position + new Vector3(0, transform.localPosition.y, 0);
-    //    Vector3 direction = (transform.position - origin).normalized;
-
-    //    Debug.DrawRay(origin, direction);
-
-    //    RaycastHit hit;
-
-    //    bool hasHit = Physics.Raycast(origin, direction, out hit, direction.magnitude, ~LayerMask.GetMask("GunHand", "Player"));
-
-    //    Vector3 offset = new(0, 0, 0);
-
-    //    if (hasHit)
-    //    {
-    //        offset = hit.point - (origin + direction);
-
-    //        targetPosition = transform.InverseTransformPoint(transform.TransformPoint(startPosition) + (hit.normal + new Vector3(0, -1, 0)) * offset.magnitude);
-
-    //        return;
-    //    }
-
-    //    targetPosition = homePosition;
-
-    //}
 
     void Throw()
     {
@@ -86,10 +86,15 @@ public class ThrowHook : MonoBehaviour
         hook.GetComponent<MoveHook>().home = this;
 
         hookView.SetActive(false);
-        view.localPosition += new Vector3(0, 0, 0.4f);
-        homePosition = startPosition + new Vector3(0, 0, 0.2f);
+        //view.localPosition += new Vector3(0, 0, 0.4f);
+        //homePosition = startPosition + new Vector3(0, 0, 0.2f);
 
         hasHook = false;
+    }
+
+    public void AnimateCatch()
+    {
+        anim.Play("catch");
     }
 
     public void CatchHook(GunInfo info, Ammunition ammo)
@@ -97,8 +102,8 @@ public class ThrowHook : MonoBehaviour
         CancelInvoke();
         hookView.SetActive(true);
 
-        view.localPosition += new Vector3(0, 0, -0.4f);
-        targetPosition = startPosition;
+        //view.localPosition += new Vector3(0, 0, -0.4f);
+        //targetPosition = startPosition;
 
         hasHook = true;
 
@@ -111,19 +116,20 @@ public class ThrowHook : MonoBehaviour
 
             Destroy(gameObject);
 
-            view.localPosition = startPosition;
+            //view.localPosition = startPosition;
         }
     }
 
     public void PullBack()
     {
-        CancelInvoke();
-        targetPosition = startPosition - new Vector3(0, 0, 0.5f);
-        Invoke(nameof(Reach), 0.5f);
+        //CancelInvoke();
+        //targetPosition = startPosition - new Vector3(0, 0, 0.5f);
+        //Invoke(nameof(Reach), 0.5f);
+        anim.Play("pull");
     }
 
     public void Reach()
     {
-        targetPosition = startPosition + new Vector3(0, 0, 0.2f);
+        // targetPosition = startPosition + new Vector3(0, 0, 0.2f);
     }
 }

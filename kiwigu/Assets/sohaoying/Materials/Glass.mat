@@ -21,7 +21,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Glass
-  m_Shader: {fileID: -6465566751694194690, guid: f4df96155abee084a8186e620704259b, type: 3}
+  m_Shader: {fileID: -6465566751694194690, guid: da7027bbd7ea76844ba190f992fc6ae7, type: 3}
   m_ValidKeywords: []
   m_InvalidKeywords: []
   m_LightmapFlags: 4
@@ -33,6 +33,14 @@ Material:
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
+    - _BumpMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MainTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - unity_Lightmaps:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -47,7 +55,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _BorderThickness: 2
+    - _BorderThickness: 1.8
     - _CollisionBorderThickness: 0.25
     - _DamagePercent: 0
     - _DistortionAmount: 0.15
@@ -57,9 +65,10 @@ Material:
     - _PulseSpeed: 6
     - _QueueControl: 0
     - _QueueOffset: 0
+    - _Shininess: 0.078125
     - _Size: 100
     m_Colors:
-    - _EmptyColor: {r: 0.5882353, g: 1.4980392, b: 1.1843138, a: 1}
+    - _EmptyColor: {r: 0.9056604, g: 0.5108071, b: 0.11595381, a: 1}
     - _FresnelColor: {r: 0, g: 0, b: 0, a: 0}
-    - _FullColor: {r: 2.1185474, g: 0.05545934, b: 0.11204209, a: 1}
+    - _FullColor: {r: 0.2025764, g: 3.072409, b: 3.2243412, a: 1}
   m_BuildTextureStacks: []

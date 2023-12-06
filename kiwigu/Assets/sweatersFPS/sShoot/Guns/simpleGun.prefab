@@ -265,6 +265,9 @@ MonoBehaviour:
   ammo:
     capacity: 0
     count: 0
+  ShootEvent:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &7469679520379502396
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -383,14 +386,12 @@ MonoBehaviour:
   obstructed: 0
   downSights: 0
   mouseButton: 1
-  aimDelay: 0.3
+  aimDelay: 0.11
   info: {fileID: 11400000, guid: 67e1ee40f3b2f4c4381001dca3be3fba, type: 2}
   canShoot: 0
   hasGun: 1
   thrownGunPrefab: {fileID: 6087863177417318745, guid: 775df9a2e9013c54ab64a1c26875866b, type: 3}
   hookShotPrefab: {fileID: 3935398618193876659, guid: 22a38e184f7b5844b993bf31543b79eb, type: 3}
-  view: {fileID: 0}
-  parent: {fileID: 0}
   outOfAmmo: 0
 --- !u!1001 &171419497081210547
 PrefabInstance:

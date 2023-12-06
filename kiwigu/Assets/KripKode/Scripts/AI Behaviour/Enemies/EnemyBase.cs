@@ -15,31 +15,25 @@ public class EnemyBase : MonoBehaviour
     [HideInInspector] public float currentHealth;
     [HideInInspector] public float currentShield;
     [HideInInspector] public bool isHoldingGun;
-    [HideInInspector] public bool wasHit;
-    [HideInInspector] public bool isWandering;
     [HideInInspector] public bool isShooting;
-    [HideInInspector] public bool playerInSight;
-    [HideInInspector] public bool detectedPlayer;
+    [HideInInspector] public bool isPlayerVisible;
+    [HideInInspector] public bool isPlayerVisibleKnees;
     [HideInInspector] public bool detectedEnemy;
     [HideInInspector] public Vector3 playerPosition;
     [HideInInspector] public Vector3 enemyPosition;
     [HideInInspector] public bool canFacePlayer = true;
     [HideInInspector] public GameObject gunObjectExitPoint;
-    [HideInInspector] public bool startedFleeing;
-
-    private Vector3 wanderTarget;
-    private Vector3 initialPosition;
+    [HideInInspector] public Vector3 initialPosition;
 
     protected virtual void Start()
     {
         SetTagBasedOnEnemyType();
+        initialPosition = transform.position;
 
-        if (enemyMainVariables.spawnWithGun && enemyMainVariables.GunObject)
+        if (enemyMainVariables.GunObject)
         {
             SetupInitialGun();
         }
-
-        initialPosition = transform.position;
 
         agent = GetComponent<NavMeshAgent>();
         if (agent != null)
@@ -67,18 +61,37 @@ public class EnemyBase : MonoBehaviour
 
     protected virtual void Update()
     {
-        if (enemyTypeVariables.OffenseDrone || enemyTypeVariables.Small || enemyTypeVariables.Medium)
+        if (enemyTypeVariables.OffenseDrone || enemyTypeVariables.Small)
+        {
             DetectPlayer();
+
+        }
         else if (enemyTypeVariables.DefenseDrone)
         {
             DetectPlayer();
             DetectEnemy();
         }
 
-        if (!isWandering && !isShooting && !detectedPlayer)
+        isPlayerVisible = CheckEyesVisibility();
+
+        if (enemyMainVariables.hasKnees)
+            isPlayerVisibleKnees = CheckKneesVisibility();
+    }
+
+    public virtual void TakeDamage(float bulletDamage)
+    {
+        if (enemyMainVariables.canBeHitAnim) HitBase();
+
+        if (currentShield < enemyMainVariables.MaxShield)
         {
-            StartCoroutine(Wander());
+            currentShield = Mathf.Min(currentShield + bulletDamage, enemyMainVariables.MaxShield);
         }
+        else if (currentHealth < enemyMainVariables.MaxHealth)
+        {
+            currentHealth = Mathf.Min(currentHealth + bulletDamage, enemyMainVariables.MaxHealth);
+        }
+
+        CheckStats();
     }
 
     private void DetectPlayer()
@@ -86,8 +99,6 @@ public class EnemyBase : MonoBehaviour
         GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
 
         if (players.Length == 0) return;
-
-        detectedPlayer = players.Any(player => Vector3.Distance(transform.position, player.transform.position) < enemyMovementVariables.EnemyAwareDistance);
 
         playerPosition = players
             .OrderBy(player => Vector3.Distance(transform.position, player.transform.position))
@@ -110,41 +121,20 @@ public class EnemyBase : MonoBehaviour
             .transform.position;
     }
 
-    public IEnumerator Wander()
+    protected virtual void HitBase()
     {
-        wanderTarget = RandomWanderPoint();
-        agent.SetDestination(wanderTarget);
-        isWandering = true;
-
-        if (agent.isOnNavMesh) yield return new WaitUntil(() => agent.remainingDistance <= 0.5f);
-
-        yield return new WaitForSeconds(Random.Range(enemyMovementVariables.WanderIdleVariation - 1, enemyMovementVariables.WanderIdleVariation + 2));
-        isWandering = false;
+        agent.enabled = false;
+        StartCoroutine(PlayHitAnimation(enemyMainVariables.animator));
     }
 
-    public Vector3 RandomWanderPoint()
+    private IEnumerator PlayHitAnimation(Animator animator)
     {
-        Vector3 randomDirection = Random.insideUnitSphere * enemyMovementVariables.WanderRadius;
-        randomDirection += initialPosition;
-        NavMeshHit hit;
-        NavMesh.SamplePosition(randomDirection, out hit, enemyMovementVariables.WanderRadius, NavMesh.AllAreas);
+        animator.SetInteger("HitIndex", Random.Range(0, 3));
+        animator.SetTrigger("Hit");
 
-        return hit.position;
-    }
+        yield return new WaitForSeconds(1.5f);
 
-    public virtual void TakeDamage(float bulletDamage)
-    {
-        wasHit = true;
-        if (currentShield < enemyMainVariables.MaxShield)
-        {
-            currentShield = Mathf.Min(currentShield + bulletDamage, enemyMainVariables.MaxShield);
-        }
-        else if (currentHealth < enemyMainVariables.MaxHealth)
-        {
-            currentHealth = Mathf.Min(currentHealth + bulletDamage, enemyMainVariables.MaxHealth);
-        }
-
-        CheckStats();
+        agent.enabled = true;
     }
 
     public void CheckStats()
@@ -164,30 +154,49 @@ public class EnemyBase : MonoBehaviour
         }
     }
 
-    public virtual bool CheckPlayerVisibility()
+    public virtual bool CheckEyesVisibility()
     {
-        Collider[] colliders = Physics.OverlapSphere(transform.position, enemyMovementVariables.EnemyAwareDistance);
+        Vector3 direction = playerPosition - enemyMainVariables.EyesPosition.transform.position + new Vector3(0, 0.5f, 0);
 
-        foreach (Collider collider in colliders)
+        int layersToIgnore = LayerMask.GetMask("Enemy", "CoverBehaviour");
+        int finalLayerMask = ~layersToIgnore;
+
+
+        if (Physics.Raycast(enemyMainVariables.EyesPosition.transform.position, direction, out RaycastHit hit, enemyMovementVariables.EnemyAwareDistance, finalLayerMask))
         {
-            if (collider.CompareTag("Player"))
+            if (hit.collider.CompareTag("Player"))
             {
-                Vector3 direction = playerPosition - enemyMainVariables.EyesPosition.transform.position + new Vector3(0, 0.5f, 0);
-                RaycastHit[] hits = Physics.RaycastAll(enemyMainVariables.EyesPosition.transform.position, direction, enemyMovementVariables.EnemyAwareDistance, ~LayerMask.GetMask("Enemy"));
+                Debug.DrawRay(enemyMainVariables.EyesPosition.transform.position, direction.normalized * hit.distance, Color.green, 0.1f);
+                return true;
+            }
+            else
+            {
+                Debug.DrawRay(enemyMainVariables.EyesPosition.transform.position, direction.normalized * hit.distance, Color.red, 0.1f);
+                return false;
+            }
+        }
 
-                Debug.DrawRay(enemyMainVariables.EyesPosition.transform.position, direction, Color.red, 0.1f);
+        return false;
+    }
 
-                bool playerVisible = true;
+    public virtual bool CheckKneesVisibility()
+    {
+        Vector3 direction = playerPosition - enemyMainVariables.KneesPosition.transform.position + new Vector3(0, 0.5f, 0);
 
-                foreach (RaycastHit hit in hits)
-                {
-                    if (hit.collider.CompareTag("Player"))
-                    {
-                        return true;
-                    }
-                }
+        int layersToIgnore = LayerMask.GetMask("Enemy", "CoverBehaviour");
+        int finalLayerMask = ~layersToIgnore;
 
-                return playerVisible;
+        if (Physics.Raycast(enemyMainVariables.KneesPosition.transform.position, direction, out RaycastHit hit, enemyMovementVariables.EnemyAwareDistance, finalLayerMask))
+        {
+            if (hit.collider.CompareTag("Player"))
+            {
+                Debug.DrawRay(enemyMainVariables.KneesPosition.transform.position, direction.normalized * hit.distance, Color.green, 0.1f);
+                return true;
+            }
+            else
+            {
+                Debug.DrawRay(enemyMainVariables.KneesPosition.transform.position, direction.normalized * hit.distance, Color.red, 0.1f);
+                return false;
             }
         }
 
@@ -204,11 +213,9 @@ public class EnemyBase : MonoBehaviour
     [System.Serializable]
     public class EnemyMainVariables
     {
+        public bool canBeHitAnim;
+        public Animator animator;
         [Header("Enemy Main Variables")]
-        [Tooltip("Whether the enemy can seek a gun.")]
-        public bool canSeekGun;
-        [Tooltip("Whether the enemy spawns with a gun.")]
-        public bool spawnWithGun;
         [Range(10, 100)]
         [Tooltip("The maximum health of the enemy.")]
         public int MaxHealth = 100;
@@ -219,6 +226,8 @@ public class EnemyBase : MonoBehaviour
         public GameObject GunObject;
         [Tooltip("The GameObject representing the position of the enemy's eyes.")]
         public GameObject EyesPosition;
+        public bool hasKnees;
+        public GameObject KneesPosition;
         [Tooltip("The GameObject representing the enemy's body mesh.")]
         public GameObject BodyMesh;
         [Tooltip("Make sure Hand Transform is attached as a child of the Body Object!")]
@@ -231,32 +240,21 @@ public class EnemyBase : MonoBehaviour
     {
         [Header("Enemy Movement")]
         [Range(1, 15)]
-        [Tooltip("The distance the enemy flees when in danger.")]
-        public int FleeDistance = 5;
-        [Range(1, 15)]
-        [Tooltip("Variation in the movement during fleeing.")]
-        public int FleeMovementVariation = 4;
-        [Range(1, 15)]
         [Tooltip("The movement speed of the enemy.")]
         public int MovementSpeed = 5;
+        [Range(3, 10)]
+        public float WanderRadius = 7;
         [Range(5, 10)]
         [Tooltip("The distance at which the enemy avoids the player.")]
         public int AvoidPlayerDistance = 7;
-        [Range(100, 200)]
+        [Range(100, 1000)]
         [Tooltip("The rotation speed of the enemy.")]
         public int RotationSpeed = 180;
-        [Range(10, 25)]
+        [Range(10, 100)]
         [Tooltip("The distance at which the enemy becomes aware of the player.")]
         public int EnemyAwareDistance = 20;
-        [Range(5, 20)]
-        [Tooltip("The radius for wandering.")]
-        public int WanderRadius = 8;
-        [Range(2, 8)]
-        [Tooltip("Variation in idle time during wandering.")]
-        public float WanderIdleVariation;
         [Range(1, 10)]
-        [Tooltip("Idle time for a drone.")]
-        public int DroneIdleTime = 2;
+        public int IdleTime = 2;
     }
 
     [System.Serializable]

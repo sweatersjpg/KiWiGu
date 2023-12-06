@@ -116,6 +116,7 @@ MonoBehaviour:
   throwGunPrefab: {fileID: 6087863177417318745, guid: 775df9a2e9013c54ab64a1c26875866b, type: 3}
   hasView: 1
   resistance: 0.5
+  maxResistance: 0
   tether: 0
 --- !u!1 &3506965143308518502
 GameObject:
@@ -437,6 +438,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyBase: {fileID: 3506965143688729040}
+  isPhysicalShield: 0
+  doubleDamage: 0
+  lessDamage: 0
+  leastDamage: 0
 --- !u!1 &3506965143688729042
 GameObject:
   m_ObjectHideFlags: 0
@@ -496,24 +501,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyMainVariables:
-    canSeekGun: 0
-    spawnWithGun: 1
+    canBeHitAnim: 0
+    animator: {fileID: 0}
     MaxHealth: 50
     MaxShield: 0
     GunObject: {fileID: 4006260289432868516, guid: e9f49a38ad200014aa4418f8035720f2, type: 3}
     EyesPosition: {fileID: 3506965144744887955}
+    hasKnees: 0
+    KneesPosition: {fileID: 0}
     BodyMesh: {fileID: 3506965143686890703}
     HandPosition: {fileID: 3506965144358750296}
     explosionPrefab: {fileID: 1886320638105856866, guid: 868415f162da742468824c5743d47bae, type: 3}
   enemyMovementVariables:
-    FleeDistance: 5
-    FleeMovementVariation: 4
+    MovementVariation: 4
     MovementSpeed: 6
     AvoidPlayerDistance: 5
     RotationSpeed: 200
     EnemyAwareDistance: 20
-    WanderRadius: 8
-    WanderIdleVariation: 4
     DroneIdleTime: 2
   enemyGunStats:
     EnemyFireRate: 1
@@ -528,18 +532,17 @@ MonoBehaviour:
   currentHealth: 0
   currentShield: 0
   isHoldingGun: 0
-  wasHit: 0
-  isWandering: 0
   isShooting: 0
-  playerInSight: 0
+  isPlayerVisible: 0
+  isPlayerVisibleKnees: 0
   detectedPlayer: 0
   detectedEnemy: 0
   playerPosition: {x: 0, y: 0, z: 0}
   enemyPosition: {x: 0, y: 0, z: 0}
   canFacePlayer: 1
   gunObjectExitPoint: {fileID: 0}
-  startedFleeing: 0
   sfxEmitterAvailable: {fileID: 8457169307855506602}
+  tellEffect: {fileID: 2838533942546750815, guid: 4ca2e9e9def890849859a51bbf24d3a0, type: 3}
   droneHeightOffset: 0.25
 --- !u!195 &3506965143688729041
 NavMeshAgent:

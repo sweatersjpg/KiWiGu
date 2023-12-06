@@ -60,7 +60,7 @@ public class Explosion : MonoBehaviour
             }
             else if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Enemy"))
             {
-                EnemyBase enemy = hit.transform.gameObject.GetComponentInChildren<EnemyBase>();
+                EnemyBase enemy = hit.transform.gameObject.GetComponentInParent<EnemyBase>();
                 if (enemy != null)
                 {
                     enemy.TakeDamage(damageDealt);

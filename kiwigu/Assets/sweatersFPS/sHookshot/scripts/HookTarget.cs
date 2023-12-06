@@ -17,10 +17,10 @@ public class HookTarget : MonoBehaviour
 
     private void Start()
     {        
-        Mesh mesh = gunView.GetComponent<MeshFilter>().sharedMesh;
+        // Mesh mesh = info.gunPrefab.GetComponentInChildren<MeshFilter>().sharedMesh;
         if (hasView)
         {
-            gunView.GetComponent<MeshFilter>().mesh = mesh;
+            gunView.GetComponent<MeshFilter>().mesh = info.gunPrefab.GetComponentInChildren<MeshFilter>().sharedMesh;
             gunView.GetComponent<MeshRenderer>().sharedMaterial = info.gunPrefab.GetComponentInChildren<MeshRenderer>().sharedMaterial;
         }
 
