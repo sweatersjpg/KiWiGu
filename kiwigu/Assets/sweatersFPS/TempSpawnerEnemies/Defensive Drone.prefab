@@ -237,20 +237,24 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyMainVariables:
+    canBeHitAnim: 0
+    animator: {fileID: 0}
     MaxHealth: 75
     MaxShield: 0
     GunObject: {fileID: 4006260289432868516, guid: e9f49a38ad200014aa4418f8035720f2, type: 3}
     EyesPosition: {fileID: 2679767532860941697}
+    hasKnees: 0
+    KneesPosition: {fileID: 0}
     BodyMesh: {fileID: 2679767533952526301}
     HandPosition: {fileID: 2679767533817506634}
     explosionPrefab: {fileID: 7636364201620702995, guid: b5816ea69c8765740b42c416d1463566, type: 3}
   enemyMovementVariables:
-    MovementVariation: 4
     MovementSpeed: 5
+    WanderRadius: 7
     AvoidPlayerDistance: 5
     RotationSpeed: 200
     EnemyAwareDistance: 20
-    DroneIdleTime: 2
+    IdleTime: 2
   enemyGunStats:
     EnemyFireRate: 1
     GunInaccuracy: 0
@@ -264,16 +268,15 @@ MonoBehaviour:
   currentHealth: 0
   currentShield: 0
   isHoldingGun: 0
-  wasHit: 0
   isShooting: 0
   isPlayerVisible: 0
-  detectedPlayer: 0
+  isPlayerVisibleKnees: 0
   detectedEnemy: 0
   playerPosition: {x: 0, y: 0, z: 0}
   enemyPosition: {x: 0, y: 0, z: 0}
   canFacePlayer: 1
   gunObjectExitPoint: {fileID: 0}
-  startedFleeing: 0
+  initialPosition: {x: 0, y: 0, z: 0}
   sfxEmitterAvailable: {fileID: 5183941454985437801}
   tellEffect: {fileID: 2838533942546750815, guid: 4ca2e9e9def890849859a51bbf24d3a0, type: 3}
   droneHeightOffset: 0.4
@@ -450,6 +453,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyBase: {fileID: 2679767533950694082}
+  isPhysicalShield: 0
+  doubleDamage: 0
+  lessDamage: 0
+  leastDamage: 0
 --- !u!1 &2679767534726094366
 GameObject:
   m_ObjectHideFlags: 0
