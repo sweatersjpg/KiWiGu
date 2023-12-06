@@ -24,6 +24,7 @@ public class EnemyBase : MonoBehaviour
     [HideInInspector] public bool canFacePlayer = true;
     [HideInInspector] public GameObject gunObjectExitPoint;
     [HideInInspector] public Vector3 initialPosition;
+    [HideInInspector] public bool gotHit;
 
     protected virtual void Start()
     {
@@ -123,6 +124,7 @@ public class EnemyBase : MonoBehaviour
 
     protected virtual void HitBase()
     {
+        gotHit = true;
         agent.enabled = false;
         StartCoroutine(PlayHitAnimation(enemyMainVariables.animator));
     }
