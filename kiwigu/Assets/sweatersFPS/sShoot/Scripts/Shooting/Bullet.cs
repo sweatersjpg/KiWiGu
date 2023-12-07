@@ -49,6 +49,8 @@ public class Bullet : MonoBehaviour
     [HideInInspector] public bool fromEnemy = false;
 
     [Space] public bool justInfo = false;
+    public GameObject rbObject;
+    public float rbForce = 10;
 
     // Start is called before the first frame update
     void Start()
@@ -60,12 +62,31 @@ public class Bullet : MonoBehaviour
         if (target != null) ogTarget = target;
 
         ogTargetPosition = AcquireTarget.instance.target;
+
+        if(justInfo)
+        {
+            GameObject o = Instantiate(rbObject, transform);
+            o.transform.parent = null;
+
+            Vector3 forceDirection = o.transform.forward;
+
+            Rigidbody rb = o.GetComponent<Rigidbody>();
+
+            if(!fromEnemy)
+            {
+                Vector3 vel = new(sweatersController.instance.velocity.x, 0, sweatersController.instance.velocity.z);
+
+                rb.AddForce(vel / 2, ForceMode.VelocityChange);
+            }
+            rb.AddForce(forceDirection * 10f, ForceMode.Impulse);
+
+            Destroy(gameObject);
+        }
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (justInfo) return;
         if (PauseSystem.paused)
         {
             return;

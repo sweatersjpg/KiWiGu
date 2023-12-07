@@ -213,7 +213,7 @@ public class MoveHook : MonoBehaviour
 
         bool hasHit = Physics.Raycast(pPosition, transform.position - pPosition, 
             out RaycastHit hit, (transform.position - pPosition).magnitude,
-            ~LayerMask.GetMask("GunHand", "Player", "HookTarget", "TransparentFX"));
+            ~LayerMask.GetMask("GunHand", "Player", "HookTarget", "TransparentFX", "EnergyWall"));
 
         if(hasHit)
         {
