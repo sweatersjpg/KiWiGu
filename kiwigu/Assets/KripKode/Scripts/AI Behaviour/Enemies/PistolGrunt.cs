@@ -157,7 +157,8 @@ public class PistolGrunt : EnemyBase
                 yield return null;
             }
 
-            agent.ResetPath();
+            if(agent.isOnNavMesh)
+                agent.ResetPath();
 
             enemyMainVariables.animator.SetBool("shooting", true);
 
