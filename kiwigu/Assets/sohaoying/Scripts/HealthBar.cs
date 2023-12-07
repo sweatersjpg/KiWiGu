@@ -13,7 +13,7 @@ class HealthBar : MonoBehaviour
     set local x on LeftBar and RightBar to some value until the health bar looks correct for full HP
     */
 
-    [Range(0, 1)]
+    [Range(0f, 1f)]
     [SerializeField] internal float TargetPercent = 1f; // call from any other class and the script will behave
                                                         // e.g. HealthBar healthBar = GetComponent<HealthBar>();
                                                         // healthBar.TargetPercent = currentHealth / totalHealth;
@@ -65,7 +65,7 @@ class HealthBar : MonoBehaviour
         ApplyPercent(displayPercent);
     }
 
-    void ApplyPercent(float percent)
+    void ApplyPercent(float percent) // range 0f, 1f
     {
         Vector3 buffer = leftBar.anchoredPosition3D;
         leftBar.anchoredPosition3D = new Vector3(dist * percent, buffer.y, buffer.z);
@@ -76,5 +76,10 @@ class HealthBar : MonoBehaviour
         {
             m.SetFloat("_HPPercent", percent);
         }
+    }
+
+    void OnApplicationQuit()
+    {
+        ApplyPercent(1f);   // reset materials
     }
 }
