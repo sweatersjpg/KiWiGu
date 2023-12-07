@@ -47,7 +47,7 @@ public class HookHUD : MonoBehaviour
     {
         //return Physics.Raycast(transform.position, transform.forward, out hit, maxDistance) &&
         //       hit.collider.CompareTag("HookTarget");
-        hit = AcquireTarget.instance.GetHookTarget();
+        hit = AcquireTarget.instance.GetJustHookTarget();
 
         return Vector3.Distance(transform.position, hit) < maxDistance;
     }
