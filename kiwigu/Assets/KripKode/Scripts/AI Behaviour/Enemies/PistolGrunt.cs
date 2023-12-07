@@ -72,6 +72,9 @@ public class PistolGrunt : EnemyBase
             StartCoroutine(ShootPlayer());
         }
 
+        if(coolDown)
+            enemyMainVariables.animator.SetBool("shooting", false);
+
         if (gotHit)
         {
             CheckCrouch();
@@ -118,9 +121,8 @@ public class PistolGrunt : EnemyBase
         if (timesShot >= 3)
         {
             coolDown = true;
-            timesShot = 0;
-            enemyMainVariables.animator.SetBool("shooting", false);
             yield return new WaitForSeconds(3);
+            timesShot = 0;
             coolDown = false;
             yield break;
         }
