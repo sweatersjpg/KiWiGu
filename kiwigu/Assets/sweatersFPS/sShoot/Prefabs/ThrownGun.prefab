@@ -137,10 +137,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6087863177417318722}
-  - component: {fileID: 142976417105683084}
   - component: {fileID: 6087863177417318726}
   - component: {fileID: 1205933901838987336}
   - component: {fileID: 6087863177417318723}
+  - component: {fileID: 281034215637957169}
   m_Layer: 10
   m_Name: ThrownGun
   m_TagString: RigidTarget
@@ -165,19 +165,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &142976417105683084
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6087863177417318745}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 0.18126643, y: 0.32679856, z: 0.50440234}
-  m_Center: {x: -0.0045811236, y: 0.0069149286, z: -0.009643771}
 --- !u!54 &6087863177417318726
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -227,3 +214,16 @@ MonoBehaviour:
     capacity: 0
     count: 0
   explosion: {fileID: 1886320638105856866, guid: 868415f162da742468824c5743d47bae, type: 3}
+--- !u!135 &281034215637957169
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6087863177417318745}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.26822245
+  m_Center: {x: 0, y: 0, z: 0}
