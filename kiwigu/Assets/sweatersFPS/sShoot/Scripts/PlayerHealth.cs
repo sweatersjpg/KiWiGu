@@ -7,7 +7,7 @@ public class PlayerHealth : MonoBehaviour
     [SerializeField] GameObject daddy;
     [SerializeField] GameObject directionalPrefab;
     [SerializeField] HealthBar healthBar;
-    
+
     float health;
 
     [Space]
@@ -67,10 +67,12 @@ public class PlayerHealth : MonoBehaviour
 
         regenBuffer = regenBufferTime;
         health -= damage;
+
+        Glitch.TriggerFX();
     }
 
     void CheckStats()
-    {        
+    {
         if (health >= 0 && !(killFloor && transform.position.y < killFloor.position.y)) return;
 
         PauseSystem.pauseSystem.ReloadScene();
