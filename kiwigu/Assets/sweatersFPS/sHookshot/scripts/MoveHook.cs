@@ -209,7 +209,7 @@ public class MoveHook : MonoBehaviour
     {
         // raycast from ppos to pos
 
-        if(caughtGun == null) HookGun();
+        if(caughtGun == null && !headingBack) HookGun();
 
         bool hasHit = Physics.Raycast(pPosition, transform.position - pPosition, 
             out RaycastHit hit, (transform.position - pPosition).magnitude,

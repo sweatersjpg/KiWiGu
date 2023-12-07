@@ -91,14 +91,6 @@ public class GunHand : MonoBehaviour
         anim.SetBool("outOfAmmo", outOfAmmo);
         // Debug.Log(outOfAmmo);
 
-        if (!hasGun)
-        {
-            // view.localPosition = startPosition;
-            Instantiate(hookShotPrefab, transform.parent);
-            Destroy(gameObject);
-            anim.SetBool("outOfAmmo", false);
-        }
-
         //if((targetPosition - view.localPosition).magnitude < 0.01 && !hasGun)
         //{
         //    view.localPosition = startPosition;
@@ -161,15 +153,18 @@ public class GunHand : MonoBehaviour
         gun.info = info;
 
         gunView.gameObject.SetActive(false);
-        Invoke(nameof(SetHasGun), 0.7f);
+        hasGun = false;
+        Invoke(nameof(SwapToHook), 0.7f);
 
         // Invoke(nameof(AnimateSwap), 0.5f);
         // targetPosition = startPosition + new Vector3(0, -1f, 0.5f);
     }
 
-    public void SetHasGun()
+    public void SwapToHook()
     {
-        hasGun = false;
+        Instantiate(hookShotPrefab, transform.parent);
+        Destroy(gameObject);
+        anim.SetBool("outOfAmmo", false);
     }
 
     public void ToggleDownSights()
