@@ -103,6 +103,15 @@ public class sweatersController : MonoBehaviour
     {
         charController = GetComponent<CharacterController>();
 
+        if(CheckPointSystem.spawnPoint != null)
+        {
+            charController.enabled = false;
+
+            transform.position = CheckPointSystem.spawnPoint;
+
+            charController.enabled = true;
+        }
+
         // Lock cursor
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;

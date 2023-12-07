@@ -9,11 +9,7 @@ public class AmmoUIManager : MonoBehaviour
     public Transform playerHand;
     public GameObject hookIcon;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-
-    }
+    [SerializeField] List<GameObject> controls;
 
     void FixedUpdate()
     {
@@ -26,6 +22,11 @@ public class AmmoUIManager : MonoBehaviour
 
             // enable hook image
             hookIcon.SetActive(true);
+            // disable keyboard control tooltips
+            foreach (GameObject o in controls)
+            {
+                o.SetActive(false);
+            }
         }
 
         if (fetchedGun != null && display == null)
@@ -34,6 +35,11 @@ public class AmmoUIManager : MonoBehaviour
             if (!fetchedGun.anim.info.guUI) return;
 
             hookIcon.SetActive(false);
+            // enable keyboard control tooltips
+            foreach (GameObject o in controls)
+            {
+                o.SetActive(true);
+            }
 
             display = Instantiate(fetchedGun.anim.info.guUI, transform);
 
