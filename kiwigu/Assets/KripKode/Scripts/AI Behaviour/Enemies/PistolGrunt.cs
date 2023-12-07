@@ -145,6 +145,8 @@ public class PistolGrunt : EnemyBase
             yield return null;
         }
 
+        timesShot = 0;
+
         StartCoroutine(CoolDown());
     }
 
@@ -155,7 +157,6 @@ public class PistolGrunt : EnemyBase
         doingShootPattern = false;
         coolDown = true;
         yield return new WaitForSeconds(3);
-        timesShot = 0;
         coolDown = false;
     }
 
