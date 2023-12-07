@@ -254,7 +254,9 @@ public class PistolGrunt : EnemyBase
     {
         if (!canFacePlayer) return;
 
-        RotateNavMeshAgentTowardsObj(playerPosition);
+        if (agent.isOnNavMesh)
+            RotateNavMeshAgentTowardsObj(playerPosition);
+
         RotateGunObjectExitPoint(playerPosition);
     }
 

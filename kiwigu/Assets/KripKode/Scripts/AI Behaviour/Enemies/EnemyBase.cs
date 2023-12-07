@@ -164,15 +164,15 @@ public class EnemyBase : MonoBehaviour
                 isHoldingGun = false;
             }
 
-            if(enemyMainVariables.explosionPrefab!= null)
+            if (enemyMainVariables.explosionPrefab != null)
                 Instantiate(enemyMainVariables.explosionPrefab, enemyMainVariables.BodyMesh.transform.position, Quaternion.identity);
 
             if (hasAnimationDeath)
             {
-
                 enemyMainVariables.animator.SetTrigger("Dead");
                 Destroy(gameObject, 5f);
-            } else if (!hasAnimationDeath)
+            }
+            else if (!hasAnimationDeath)
             {
                 Destroy(gameObject);
             }
