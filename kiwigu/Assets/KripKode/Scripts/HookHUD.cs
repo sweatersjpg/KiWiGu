@@ -8,14 +8,20 @@ public class HookHUD : MonoBehaviour
     public float maxDistance = 12f;
     public float lerpSpeed = 5f;
 
+    public GameObject hookIconLeft;
+    public GameObject hookIconRight;
+
     private void Update()
     {
-        UpdateHookIcon();
-
         if (!CheckForHookTarget(out _))
         {
             LerpIconToCenter();
         }
+
+        if (!hookIconLeft.activeInHierarchy && !hookIconRight.activeInHierarchy) 
+            return;
+
+        UpdateHookIcon();
     }
 
     private void UpdateHookIcon()
@@ -31,11 +37,10 @@ public class HookHUD : MonoBehaviour
     private void LerpIconToCenter()
     {
         Vector3 targetLocalPosition = new Vector3(0f, 0f, 0f);
+        Color targetColor = new Color(1f, 1f, 1f, 0f);
 
         reticleIcon.rectTransform.localPosition = Vector3.Lerp(reticleIcon.rectTransform.localPosition, targetLocalPosition, Time.deltaTime * lerpSpeed);
-
-        //float targetScale = 0.5f;
-        //hookIcon.rectTransform.localScale = Vector3.Lerp(hookIcon.rectTransform.localScale, new Vector3(targetScale, targetScale, 1f), Time.deltaTime * lerpSpeed);
+        reticleIcon.color = Color.Lerp(reticleIcon.color, targetColor, Time.deltaTime * (lerpSpeed * 2));
     }
 
     private bool CheckForHookTarget(out RaycastHit hit)
@@ -46,12 +51,10 @@ public class HookHUD : MonoBehaviour
 
     private void UpdateIconProperties(RaycastHit hit)
     {
-        float distance = Vector3.Distance(transform.position, hit.transform.position);
-
-        //float scale = 1.75f - Mathf.Clamp01(distance / maxDistance);
-        //hookIcon.rectTransform.localScale = new Vector3(scale, scale, 1f);
-
         Vector3 screenPos = Camera.main.WorldToScreenPoint(hit.transform.position);
         reticleIcon.rectTransform.position = screenPos + new Vector3(0, 10f, 0);
+
+        Color targetColor = new Color(1f, 1f, 1f, 1f);
+        reticleIcon.color = Color.Lerp(reticleIcon.color, targetColor, Time.deltaTime * (lerpSpeed * 4));
     }
 }
