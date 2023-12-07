@@ -211,7 +211,7 @@ public class PistolGrunt : EnemyBase
     IEnumerator PanicCountdown()
     {
         panicDone = true;
-        yield return new WaitForSeconds(6f);
+        yield return new WaitForSeconds(15f);
         gotHit = false;
         panicDone = false;
     }

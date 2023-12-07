@@ -528,7 +528,7 @@ MonoBehaviour:
   enemyMainVariables:
     canBeHitAnim: 0
     animator: {fileID: 0}
-    MaxHealth: 75
+    MaxHealth: 25
     MaxShield: 0
     GunObject: {fileID: 4006260289432868516, guid: e9f49a38ad200014aa4418f8035720f2, type: 3}
     EyesPosition: {fileID: 6392932621811529256}
@@ -536,10 +536,10 @@ MonoBehaviour:
     KneesPosition: {fileID: 0}
     BodyMesh: {fileID: 6392932622901015668}
     HandPosition: {fileID: 6392932621424867555}
-    explosionPrefab: {fileID: 1886320638105856866, guid: 868415f162da742468824c5743d47bae, type: 3}
+    explosionPrefab: {fileID: 2190457889308190310, guid: 35028c628f823654796d7e73f96ebc9a, type: 3}
   enemyMovementVariables:
-    MovementSpeed: 5
-    WanderRadius: 7
+    MovementSpeed: 6
+    WanderRadius: 10
     AvoidPlayerDistance: 5
     RotationSpeed: 200
     EnemyAwareDistance: 20
@@ -572,7 +572,7 @@ MonoBehaviour:
   isDead: 0
   sfxEmitterAvailable: {fileID: 4213468535051792832}
   tellEffect: {fileID: 2838533942546750815, guid: 4ca2e9e9def890849859a51bbf24d3a0, type: 3}
-  droneHeightOffset: 0.4
+  droneHeightOffset: 0.25
 --- !u!195 &6392932622902321514
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -582,7 +582,7 @@ NavMeshAgent:
   m_GameObject: {fileID: 6392932622902321513}
   m_Enabled: 1
   m_AgentTypeID: 0
-  m_Radius: 0.1
+  m_Radius: 0.001
   m_Speed: 3.5
   m_Acceleration: 50
   avoidancePriority: 50
