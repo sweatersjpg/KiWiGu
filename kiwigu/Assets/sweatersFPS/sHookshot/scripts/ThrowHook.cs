@@ -63,7 +63,7 @@ public class ThrowHook : MonoBehaviour
                 }
             }
         }
-        else if (mh.hookTarget != null && mh.hookTarget.tether && sweatersController.instance.wasGrounded)
+        else if (mh != null && mh.hookTarget != null && mh.hookTarget.tether && sweatersController.instance.wasGrounded)
         {
             PlayerUI.SetLeapTooltipActive(false);
         }
