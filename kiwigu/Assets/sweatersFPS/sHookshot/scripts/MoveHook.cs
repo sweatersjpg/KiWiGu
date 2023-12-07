@@ -199,7 +199,7 @@ public class MoveHook : MonoBehaviour
     {
         EnemyBase e = t.GetComponentInParent<EnemyBase>();
 
-        if (e)
+        if (e && (e.enemyTypeVariables.DefenseDrone || e.enemyTypeVariables.OffenseDrone))
         {
             e.TakeDamage(99999);
         }
