@@ -493,6 +493,7 @@ MonoBehaviour:
     Medium: 0
     DefenseDrone: 0
     OffenseDrone: 1
+  hasAnimationDeath: 0
   agent: {fileID: 0}
   currentHealth: 0
   currentShield: 0
@@ -502,10 +503,13 @@ MonoBehaviour:
   isPlayerVisibleKnees: 0
   detectedEnemy: 0
   playerPosition: {x: 0, y: 0, z: 0}
+  playerEyesPosition: {x: 0, y: 0, z: 0}
   enemyPosition: {x: 0, y: 0, z: 0}
   canFacePlayer: 1
   gunObjectExitPoint: {fileID: 0}
   initialPosition: {x: 0, y: 0, z: 0}
+  gotHit: 0
+  isDead: 0
   sfxEmitterAvailable: {fileID: 411905591284249952}
   tellEffect: {fileID: 2838533942546750815, guid: 4ca2e9e9def890849859a51bbf24d3a0, type: 3}
   droneHeightOffset: 0.25
@@ -518,7 +522,7 @@ NavMeshAgent:
   m_GameObject: {fileID: 4630185753279768600}
   m_Enabled: 1
   m_AgentTypeID: 0
-  m_Radius: 0.5
+  m_Radius: 0.1
   m_Speed: 3.5
   m_Acceleration: 50
   avoidancePriority: 50
