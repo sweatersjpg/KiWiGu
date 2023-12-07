@@ -114,7 +114,7 @@ public class EnemyBase : MonoBehaviour
 
     private void DetectEnemy()
     {
-        GameObject[] enemies = GameObject.FindGameObjectsWithTag("DroneEnemy");
+        GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
 
         if (enemies.Length == 0)
             return;
