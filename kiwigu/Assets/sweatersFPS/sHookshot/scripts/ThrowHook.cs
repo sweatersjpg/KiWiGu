@@ -22,10 +22,12 @@ public class ThrowHook : MonoBehaviour
 
     GameObject hook;
 
+    MoveHook mh;
+
     Animator anim;
 
     bool keyPressed = false;
-    
+
     // Start is called before the first frame update
     void Start()
     {
@@ -47,10 +49,23 @@ public class ThrowHook : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space) && !hasHook && !sweatersController.instance.wasGrounded)
+        if (!hasHook && !sweatersController.instance.wasGrounded)
         {
-            MoveHook mh = hook.GetComponent<MoveHook>();
-            if (mh.hookTarget != null && mh.hookTarget.tether) hook.GetComponent<MoveHook>().PullbackWithForce(30);
+            PlayerUI.SetLeapTooltipActive(false);
+
+            if (mh.hookTarget != null && mh.hookTarget.tether)
+            {
+                PlayerUI.SetLeapTooltipActive(true);
+
+                if (Input.GetKeyDown(KeyCode.Space))
+                {
+                    mh.PullbackWithForce(30);   // originally hook.GetComponent<MoveHook>() instead of mh. changed this for the tooltip but change it back if something breaks
+                }
+            }
+        }
+        else if (sweatersController.instance.wasGrounded)
+        {
+            PlayerUI.SetLeapTooltipActive(false);
         }
     }
 
@@ -89,6 +104,8 @@ public class ThrowHook : MonoBehaviour
 
         hook.GetComponent<MoveHook>().home = this;
 
+        mh = hook.GetComponent<MoveHook>();
+
         hookView.SetActive(false);
         //view.localPosition += new Vector3(0, 0, 0.4f);
         //homePosition = startPosition + new Vector3(0, 0, 0.2f);
@@ -111,7 +128,7 @@ public class ThrowHook : MonoBehaviour
 
         hasHook = true;
 
-        if(info != null)
+        if (info != null)
         {
             ShootBullet gun = Instantiate(info.gunPrefab, transform.parent).GetComponentInChildren<ShootBullet>();
 
