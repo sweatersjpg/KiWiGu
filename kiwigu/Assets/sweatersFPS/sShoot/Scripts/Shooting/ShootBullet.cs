@@ -72,8 +72,8 @@ public class ShootBullet : MonoBehaviour
         bool canShoot = (Time.time - shotTimer) > 1 / info.fireRate && anim.canShoot && anim.hasGun;
         anim.canShoot = canShoot;
 
-        bool doShoot = (info.canAim || info.canCharge) ?
-            Input.GetMouseButtonDown(anim.mouseButton) : Input.GetMouseButtonDown(anim.mouseButton);
+        bool doShoot = (info.canCharge) ?
+            Input.GetMouseButtonUp(anim.mouseButton) : Input.GetMouseButtonDown(anim.mouseButton);
         if (info.fullAuto) doShoot = Input.GetMouseButton(anim.mouseButton);
 
         if (info.canCharge)

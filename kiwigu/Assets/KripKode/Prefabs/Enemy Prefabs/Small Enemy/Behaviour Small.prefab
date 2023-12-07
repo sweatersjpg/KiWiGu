@@ -2216,9 +2216,9 @@ MonoBehaviour:
   enemyMovementVariables:
     MovementSpeed: 4
     WanderRadius: 7
-    AvoidPlayerDistance: 10
+    AvoidPlayerDistance: 15
     RotationSpeed: 600
-    EnemyAwareDistance: 20
+    EnemyAwareDistance: 40
     IdleTime: 5
   enemyGunStats:
     EnemyFireRate: 1
@@ -2245,12 +2245,12 @@ MonoBehaviour:
   gunObjectExitPoint: {fileID: 0}
   initialPosition: {x: 0, y: 0, z: 0}
   gotHit: 0
+  isDead: 0
   sfxEmitterAvailable: {fileID: 1054877758685681121}
   coverDetectCollider: {fileID: 6676047678913096999}
   headBone: {fileID: 6676047679242226566}
   idle: 0
   doingShootPattern: 0
-  canShootPlayer: 1
   timesShot: 0
 --- !u!114 &1054877758685681121
 MonoBehaviour:

@@ -13,6 +13,7 @@ public class SizeOverLifetime : MonoBehaviour
     public float maxSize;
     public float minSize;
     public AnimationCurve sizeOverLifetime;
+    public AnimationCurve intensityOverLifetime;
 
     [Space]
     public BlackHoleVFX blackHole;
@@ -46,12 +47,13 @@ public class SizeOverLifetime : MonoBehaviour
         if (scale < 0) scale = 0;
         size += Time.deltaTime * 50 * (scale - size) / 2;
 
-        transform.localScale = new(size * 2, size * 2, size * 2);
+        bullet.radius = scale * 0.8f;
 
+        transform.localScale = new(size * 2, size * 2, size * 2);
 
         int saturation = bubble.childCount;
 
-        intensity = saturation / maxSaturation;
+        intensity = saturation / maxSaturation + intensityOverLifetime.Evaluate(time / bullet.lifeTime) * maxSaturation;
 
         blackHole.SetDamagePercent(intensity);
 

@@ -50,7 +50,7 @@ MonoBehaviour:
   speed: 370
   gravity: -9.8
   acceleration: 0
-  radius: 0.01
+  radius: 0.8
   trackTarget: 0
   trackingRadius: 2
   trackingSpeed: 2
@@ -65,6 +65,8 @@ MonoBehaviour:
     m_Bits: 0
   fromEnemy: 0
   justInfo: 0
+  rbObject: {fileID: 0}
+  rbForce: 10
 --- !u!1 &7168401629478513263
 GameObject:
   m_ObjectHideFlags: 0
@@ -465,6 +467,39 @@ MonoBehaviour:
       tangentMode: 0
       weightedMode: 0
       inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  intensityOverLifetime:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 0.9784827
+      value: 0.33220577
+      inSlope: 1.0593851
+      outSlope: 1.0593851
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.054895416
+      outWeight: 1
+    - serializedVersion: 3
+      time: 1
+      value: 1.0462286
+      inSlope: 8.969348
+      outSlope: 8.969348
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.8068449
       outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
