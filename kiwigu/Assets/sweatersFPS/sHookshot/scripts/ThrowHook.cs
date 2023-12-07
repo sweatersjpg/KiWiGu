@@ -23,6 +23,8 @@ public class ThrowHook : MonoBehaviour
     GameObject hook;
 
     Animator anim;
+
+    bool keyPressed = false;
     
     // Start is called before the first frame update
     void Start()
@@ -57,10 +59,11 @@ public class ThrowHook : MonoBehaviour
     {
         // ObstacleAvoidance();
 
-        if (Input.GetMouseButtonDown(mouseButton) || Input.GetKeyDown(mouseButton == 0 ? KeyCode.Q : KeyCode.E))
+        if (Input.GetMouseButton(mouseButton) || Input.GetKey(mouseButton == 0 ? KeyCode.Q : KeyCode.E))
         {
-            if (hasHook)
+            if (hasHook && !keyPressed)
             {
+                keyPressed = true;
                 Invoke(nameof(Throw), 0.05f);
                 anim.Play("throw");
             }
@@ -71,6 +74,7 @@ public class ThrowHook : MonoBehaviour
         {
             if (!hasHook) hook.GetComponent<MoveHook>().PullbackWithForce(0);
             else CancelInvoke(nameof(Throw));
+            keyPressed = false;
         }
 
         // view.localPosition += 50 * ((targetPosition - view.localPosition) / 4) * Time.deltaTime;
