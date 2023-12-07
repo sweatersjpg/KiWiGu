@@ -1,7 +1,5 @@
 using FMODUnity;
 using System.Collections;
-using System.Net.Sockets;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class PistolGrunt : EnemyBase
@@ -70,12 +68,12 @@ public class PistolGrunt : EnemyBase
     {
         float playerDistance = Vector3.Distance(transform.position, playerPosition);
 
-        if (!hiding && !doingShootPattern && isPlayerVisible && canShootPlayer && !coolDown)
+        if (!hiding && !doingShootPattern && isPlayerVisible && canShootPlayer && !coolDown && isHoldingGun)
         {
             StartCoroutine(ShootPlayer());
         }
 
-        if(coolDown)
+        if(coolDown || !isHoldingGun)
             enemyMainVariables.animator.SetBool("shooting", false);
 
         if (gotHit)
@@ -121,38 +119,57 @@ public class PistolGrunt : EnemyBase
 
     IEnumerator ShootPlayer()
     {
-        if (timesShot >= 3)
+        while (true)
         {
-            coolDown = true;
-            yield return new WaitForSeconds(3);
-            timesShot = 0;
-            coolDown = false;
-            yield break;
-        }
-
-        canFacePlayer = true;
-
-        while (isPlayerVisible && !gotHit && timesShot < 3)
-        {
-            agent.SetDestination(playerPosition);
-
-            while (Vector3.Distance(transform.position, playerPosition) > enemyMovementVariables.AvoidPlayerDistance)
+            if (!isHoldingGun)
             {
+                canFacePlayer = false;
+                enemyMainVariables.animator.SetBool("shooting", false);
+                doingShootPattern = false;
+                yield break;
+            }
+
+            if (timesShot >= 3)
+            {
+                coolDown = true;
+                yield return new WaitForSeconds(3);
+                timesShot = 0;
+                coolDown = false;
+                yield break;
+            }
+
+            canFacePlayer = true;
+
+            while (isPlayerVisible && !gotHit && timesShot < 3)
+            {
+                agent.SetDestination(playerPosition);
+
+                while (Vector3.Distance(transform.position, playerPosition) > enemyMovementVariables.AvoidPlayerDistance)
+                {
+                    if (!isHoldingGun)
+                    {
+                        canFacePlayer = false;
+                        enemyMainVariables.animator.SetBool("shooting", false);
+                        doingShootPattern = false;
+                        yield break;
+                    }
+
+                    yield return null;
+                }
+
+                agent.ResetPath();
+
+                enemyMainVariables.animator.SetBool("shooting", true);
+                doingShootPattern = true;
+
                 yield return null;
             }
 
-            agent.ResetPath();
+            canFacePlayer = false;
 
-            enemyMainVariables.animator.SetBool("shooting", true);
-            doingShootPattern = true;
-
-            yield return null;
+            enemyMainVariables.animator.SetBool("shooting", false);
+            doingShootPattern = false;
         }
-
-        canFacePlayer = false;
-
-        enemyMainVariables.animator.SetBool("shooting", false);
-        doingShootPattern = false;
     }
 
     private void WanderRandomly()
