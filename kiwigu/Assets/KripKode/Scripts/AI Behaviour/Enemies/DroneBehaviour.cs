@@ -254,7 +254,7 @@ public class DroneBehaviour : EnemyBase
 
             if (agent.isOnNavMesh)
             {
-                yield return new WaitUntil(() => !agent.pathPending && agent.remainingDistance < 0.5f);
+                yield return new WaitUntil(() => !agent.pathPending && agent.remainingDistance < 1.5f);
             }
 
             if (droneSwitch)

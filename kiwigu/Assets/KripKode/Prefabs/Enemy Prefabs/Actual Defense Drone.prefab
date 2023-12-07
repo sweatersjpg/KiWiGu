@@ -538,8 +538,8 @@ MonoBehaviour:
     HandPosition: {fileID: 6392932621424867555}
     explosionPrefab: {fileID: 7636364201620702995, guid: b5816ea69c8765740b42c416d1463566, type: 3}
   enemyMovementVariables:
-    MovementSpeed: 6
-    WanderRadius: 10
+    MovementSpeed: 5
+    WanderRadius: 7
     AvoidPlayerDistance: 5
     RotationSpeed: 200
     EnemyAwareDistance: 20
@@ -572,7 +572,7 @@ MonoBehaviour:
   isDead: 0
   sfxEmitterAvailable: {fileID: 4213468535051792832}
   tellEffect: {fileID: 2838533942546750815, guid: 4ca2e9e9def890849859a51bbf24d3a0, type: 3}
-  droneHeightOffset: 0.25
+  droneHeightOffset: 0.4
 --- !u!195 &6392932622902321514
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -582,7 +582,7 @@ NavMeshAgent:
   m_GameObject: {fileID: 6392932622902321513}
   m_Enabled: 1
   m_AgentTypeID: 0
-  m_Radius: 0.001
+  m_Radius: 0.01
   m_Speed: 3.5
   m_Acceleration: 50
   avoidancePriority: 50
