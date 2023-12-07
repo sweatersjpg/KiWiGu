@@ -273,10 +273,12 @@ MonoBehaviour:
   isPlayerVisibleKnees: 0
   detectedEnemy: 0
   playerPosition: {x: 0, y: 0, z: 0}
+  playerEyesPosition: {x: 0, y: 0, z: 0}
   enemyPosition: {x: 0, y: 0, z: 0}
   canFacePlayer: 1
   gunObjectExitPoint: {fileID: 0}
   initialPosition: {x: 0, y: 0, z: 0}
+  gotHit: 0
   sfxEmitterAvailable: {fileID: 5183941454985437801}
   tellEffect: {fileID: 2838533942546750815, guid: 4ca2e9e9def890849859a51bbf24d3a0, type: 3}
   droneHeightOffset: 0.4
@@ -294,7 +296,7 @@ NavMeshAgent:
   m_Acceleration: 50
   avoidancePriority: 50
   m_AngularSpeed: 120
-  m_StoppingDistance: 0
+  m_StoppingDistance: 1
   m_AutoTraverseOffMeshLink: 1
   m_AutoBraking: 1
   m_AutoRepath: 1
