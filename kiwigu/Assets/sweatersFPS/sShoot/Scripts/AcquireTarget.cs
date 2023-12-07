@@ -84,6 +84,7 @@ public class AcquireTarget : MonoBehaviour
             Vector3 target = hit.point;
 
             if (ht) target = ht.transform.position;
+            else target = transform.position + transform.forward * maxDistance;
 
             if ((target - transform.position).magnitude < minDistance)
             {
