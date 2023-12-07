@@ -140,10 +140,25 @@ public class PistolGrunt : EnemyBase
                 yield break;
             }
 
-            enemyMainVariables.animator.SetBool("shooting", true);
+            float distanceToPlayer = Vector3.Distance(transform.position, playerPosition);
+
+            if (distanceToPlayer > enemyMovementVariables.AvoidPlayerDistance)
+            {
+                if (agent != null && agent.isOnNavMesh)
+                {
+                    agent.SetDestination(playerPosition);
+                }
+            }
+            else
+            {
+                agent.ResetPath();
+                enemyMainVariables.animator.SetBool("shooting", true);
+            }
 
             yield return null;
         }
+
+        timesShot = 0;
 
         StartCoroutine(CoolDown());
     }
@@ -155,7 +170,6 @@ public class PistolGrunt : EnemyBase
         doingShootPattern = false;
         coolDown = true;
         yield return new WaitForSeconds(3);
-        timesShot = 0;
         coolDown = false;
     }
 
