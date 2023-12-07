@@ -15,7 +15,6 @@ public class PistolGrunt : EnemyBase
 
     bool hiding;
     public bool doingShootPattern;
-    public bool canShootPlayer = true;
 
     Vector3 hidingPos;
 
@@ -68,7 +67,7 @@ public class PistolGrunt : EnemyBase
     {
         float playerDistance = Vector3.Distance(transform.position, playerPosition);
 
-        if (!hiding && !doingShootPattern && isPlayerVisible && canShootPlayer && !coolDown && isHoldingGun)
+        if (!hiding && !doingShootPattern && isPlayerVisible && !coolDown && isHoldingGun && (Vector3.Distance(transform.position, playerPosition) < enemyMovementVariables.EnemyAwareDistance))
         {
             StartCoroutine(ShootPlayer());
         }
@@ -129,46 +128,35 @@ public class PistolGrunt : EnemyBase
             yield break;
         }
 
-        if (timesShot >= 3)
-        {
-            coolDown = true;
-            yield return new WaitForSeconds(3);
-            timesShot = 0;
-            coolDown = false;
-            yield break;
-        }
-
         canFacePlayer = true;
 
         while (isPlayerVisible && !gotHit && timesShot < 3)
         {
-            agent.SetDestination(playerPosition);
-
-            while (Vector3.Distance(transform.position, playerPosition) > enemyMovementVariables.AvoidPlayerDistance)
+            if (!isHoldingGun)
             {
-                if (!isHoldingGun)
-                {
-                    canFacePlayer = false;
-                    enemyMainVariables.animator.SetBool("shooting", false);
-                    doingShootPattern = false;
-                    yield break;
-                }
-
-                yield return null;
+                canFacePlayer = false;
+                enemyMainVariables.animator.SetBool("shooting", false);
+                doingShootPattern = false;
+                yield break;
             }
-
-            if(agent.isOnNavMesh)
-                agent.ResetPath();
 
             enemyMainVariables.animator.SetBool("shooting", true);
 
             yield return null;
         }
 
-        canFacePlayer = false;
+        StartCoroutine(CoolDown());
+    }
 
+    IEnumerator CoolDown()
+    {
+        canFacePlayer = false;
         enemyMainVariables.animator.SetBool("shooting", false);
         doingShootPattern = false;
+        coolDown = true;
+        yield return new WaitForSeconds(3);
+        timesShot = 0;
+        coolDown = false;
     }
 
     private void WanderRandomly()
