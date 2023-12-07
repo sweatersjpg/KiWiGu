@@ -26,7 +26,7 @@ public class HookHUD : MonoBehaviour
 
     private void UpdateHookIcon()
     {
-        bool hitHookTarget = CheckForHookTarget(out RaycastHit hit);
+        bool hitHookTarget = CheckForHookTarget(out Vector3 hit);
 
         if (hitHookTarget)
         {
@@ -43,15 +43,18 @@ public class HookHUD : MonoBehaviour
         reticleIcon.color = Color.Lerp(reticleIcon.color, targetColor, Time.deltaTime * (lerpSpeed * 2));
     }
 
-    private bool CheckForHookTarget(out RaycastHit hit)
+    private bool CheckForHookTarget(out Vector3 hit)
     {
-        return Physics.Raycast(transform.position, transform.forward, out hit, maxDistance) &&
-               hit.collider.CompareTag("HookTarget");
+        //return Physics.Raycast(transform.position, transform.forward, out hit, maxDistance) &&
+        //       hit.collider.CompareTag("HookTarget");
+        hit = AcquireTarget.instance.GetHookTarget();
+
+        return Vector3.Distance(transform.position, hit) < maxDistance;
     }
 
-    private void UpdateIconProperties(RaycastHit hit)
+    private void UpdateIconProperties(Vector3 hit)
     {
-        Vector3 screenPos = Camera.main.WorldToScreenPoint(hit.transform.position);
+        Vector3 screenPos = Camera.main.WorldToScreenPoint(hit);
         reticleIcon.rectTransform.position = screenPos + new Vector3(0, 10f, 0);
 
         Color targetColor = new Color(1f, 1f, 1f, 1f);
