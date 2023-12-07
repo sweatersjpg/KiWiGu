@@ -20,6 +20,7 @@ public class EnemyBase : MonoBehaviour
     [HideInInspector] public bool isPlayerVisibleKnees;
     [HideInInspector] public bool detectedEnemy;
     [HideInInspector] public Vector3 playerPosition;
+    [HideInInspector] public Vector3 playerEyesPosition;
     [HideInInspector] public Vector3 enemyPosition;
     [HideInInspector] public bool canFacePlayer = true;
     [HideInInspector] public GameObject gunObjectExitPoint;
@@ -105,6 +106,10 @@ public class EnemyBase : MonoBehaviour
             .OrderBy(player => Vector3.Distance(transform.position, player.transform.position))
             .First()
             .transform.position;
+
+        playerEyesPosition = players
+            .OrderBy(player => Vector3.Distance(transform.position, player.transform.position))
+            .First().GetComponentInChildren<Camera>().transform.position;
     }
 
     private void DetectEnemy()
@@ -158,7 +163,7 @@ public class EnemyBase : MonoBehaviour
 
     public virtual bool CheckEyesVisibility()
     {
-        Vector3 direction = playerPosition - enemyMainVariables.EyesPosition.transform.position + new Vector3(0, 0.5f, 0);
+        Vector3 direction = playerEyesPosition - enemyMainVariables.EyesPosition.transform.position;
 
         int layersToIgnore = LayerMask.GetMask("Enemy", "CoverBehaviour");
         int finalLayerMask = ~layersToIgnore;

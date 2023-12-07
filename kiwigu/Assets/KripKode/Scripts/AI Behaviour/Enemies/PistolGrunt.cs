@@ -1,5 +1,7 @@
 using FMODUnity;
 using System.Collections;
+using System.Net.Sockets;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class PistolGrunt : EnemyBase
@@ -19,6 +21,11 @@ public class PistolGrunt : EnemyBase
 
     Vector3 hidingPos;
 
+    bool panicDone;
+
+    public int timesShot;
+    bool coolDown;
+
     protected override void Update()
     {
         base.Update();
@@ -26,6 +33,12 @@ public class PistolGrunt : EnemyBase
         if (!idle && !enemyMainVariables.animator.GetComponent<HitVariable>().wasHit)
         {
             EnemyMovement();
+        }
+
+        if (doingShootPattern)
+        {
+            Camera.main.GetComponent<Music>().Violence = 1;
+            RotateGunAndBodyTowardsPlayer();
         }
     }
 
@@ -54,13 +67,10 @@ public class PistolGrunt : EnemyBase
     {
         float playerDistance = Vector3.Distance(transform.position, playerPosition);
 
-        if (!hiding && !doingShootPattern && isPlayerVisible && canShootPlayer)
+        if (!hiding && !doingShootPattern && isPlayerVisible && canShootPlayer && !coolDown)
         {
             StartCoroutine(ShootPlayer());
         }
-
-        if (canShootPlayer)
-            return;
 
         if (gotHit)
         {
@@ -97,7 +107,7 @@ public class PistolGrunt : EnemyBase
             WanderRandomly();
         }
 
-        if (agent.remainingDistance > agent.stoppingDistance)
+        if (agent.isOnNavMesh && agent.remainingDistance > agent.stoppingDistance)
         {
             hiding = false;
         }
@@ -105,19 +115,38 @@ public class PistolGrunt : EnemyBase
 
     IEnumerator ShootPlayer()
     {
-        doingShootPattern = true;
-
-        agent.SetDestination(playerPosition);
-
-        while (Vector3.Distance(transform.position, playerPosition) > enemyMovementVariables.AvoidPlayerDistance)
+        if (timesShot >= 3)
         {
+            coolDown = true;
+            timesShot = 0;
+            enemyMainVariables.animator.SetBool("shooting", false);
+            yield return new WaitForSeconds(3);
+            coolDown = false;
+            yield break;
+        }
+
+        canFacePlayer = true;
+
+        while (isPlayerVisible && !gotHit && timesShot < 3)
+        {
+            agent.SetDestination(playerPosition);
+
+            while (Vector3.Distance(transform.position, playerPosition) > enemyMovementVariables.AvoidPlayerDistance)
+            {
+                yield return null;
+            }
+
+            agent.ResetPath();
+
+            enemyMainVariables.animator.SetBool("shooting", true);
+            doingShootPattern = true;
+
             yield return null;
         }
 
-        agent.ResetPath();
+        canFacePlayer = false;
 
-        yield return new WaitForSeconds(EnemyShoot());
-
+        enemyMainVariables.animator.SetBool("shooting", false);
         doingShootPattern = false;
     }
 
@@ -145,12 +174,23 @@ public class PistolGrunt : EnemyBase
                     enemyMainVariables.animator.SetBool("Crouching", true);
                 }
                 hiding = true;
+
+                if (!panicDone)
+                    StartCoroutine(PanicCountdown());
             }
             else if (isPlayerVisible && isPlayerVisibleKnees)
             {
                 enemyMainVariables.animator.SetBool("Crouching", false);
             }
         }
+    }
+
+    IEnumerator PanicCountdown()
+    {
+        panicDone = true;
+        yield return new WaitForSeconds(6f);
+        gotHit = false;
+        panicDone = false;
     }
 
     private void MoveAroundCover()
@@ -170,7 +210,6 @@ public class PistolGrunt : EnemyBase
             MoveToOppositePoint(collidedCover.transform.position);
         }
     }
-
 
     private void FindAndMoveToNearestCover()
     {
@@ -206,7 +245,44 @@ public class PistolGrunt : EnemyBase
         }
     }
 
-    private float EnemyShoot()
+    private void RotateGunAndBodyTowardsPlayer()
+    {
+        if (!canFacePlayer) return;
+
+        RotateNavMeshAgentTowardsObj(playerPosition);
+        RotateGunObjectExitPoint(playerPosition);
+    }
+
+    private void RotateNavMeshAgentTowardsObj(Vector3 objPos)
+    {
+        if (!canFacePlayer) return;
+
+        agent.SetDestination(agent.transform.position);
+
+        Quaternion targetRotation = Quaternion.LookRotation(objPos - agent.transform.position);
+
+        agent.transform.rotation = Quaternion.Slerp(agent.transform.rotation, targetRotation, Time.deltaTime * 10);
+    }
+
+
+    private void RotateGunObjectExitPoint(Vector3 rotPos)
+    {
+        if (!canFacePlayer) return;
+
+        gunObjectExitPoint = enemyMainVariables.GunObject.transform.GetChild(0).gameObject;
+
+        Quaternion targetRotation = Quaternion.LookRotation(
+            (rotPos + new Vector3(Random.Range(-enemyGunStats.GunInaccuracy, enemyGunStats.GunInaccuracy), 1.5f, Random.Range(-enemyGunStats.GunInaccuracy, enemyGunStats.GunInaccuracy))) - gunObjectExitPoint.transform.position
+        );
+
+        gunObjectExitPoint.transform.rotation = Quaternion.Slerp(
+            gunObjectExitPoint.transform.rotation,
+            targetRotation,
+            Time.deltaTime * enemyGunStats.gunExitPointRotationSpeed
+        );
+    }
+
+    public float EnemyShoot()
     {
         if (!isHoldingGun || !isPlayerVisible)
             return 0;
@@ -239,6 +315,8 @@ public class PistolGrunt : EnemyBase
 
     private void SpawnBullet()
     {
+        timesShot++;
+
         HookTarget gun = transform.GetComponentInChildren<HookTarget>();
         GunInfo info = gun.info;
 
