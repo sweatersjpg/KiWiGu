@@ -100,7 +100,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &466616898
 RectTransform:
   m_ObjectHideFlags: 0
@@ -176,7 +176,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &631305372
 RectTransform:
   m_ObjectHideFlags: 0
@@ -567,6 +567,18 @@ PrefabInstance:
       propertyPath: playerHand
       value: 
       objectReference: {fileID: 5730165146906018569}
+    - target: {fileID: 531113215620966062, guid: 73b86d05d1d17744f9a29363010998fa, type: 3}
+      propertyPath: controls.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 531113215620966062, guid: 73b86d05d1d17744f9a29363010998fa, type: 3}
+      propertyPath: controls.Array.data[0]
+      value: 
+      objectReference: {fileID: 1310481371528716352}
+    - target: {fileID: 531113215620966062, guid: 73b86d05d1d17744f9a29363010998fa, type: 3}
+      propertyPath: controls.Array.data[1]
+      value: 
+      objectReference: {fileID: 631305371}
     - target: {fileID: 712427209824493182, guid: 73b86d05d1d17744f9a29363010998fa, type: 3}
       propertyPath: m_RootOrder
       value: 7
@@ -725,7 +737,7 @@ PrefabInstance:
       objectReference: {fileID: 1085298666956177797, guid: 2769aeaf19c37ec479bff647c0c825b3, type: 2}
     - target: {fileID: 4621109232130023528, guid: 73b86d05d1d17744f9a29363010998fa, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4910754589806659251, guid: 73b86d05d1d17744f9a29363010998fa, type: 3}
       propertyPath: m_RootOrder
@@ -733,7 +745,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6005617109094571797, guid: 73b86d05d1d17744f9a29363010998fa, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6600814717318548869, guid: 73b86d05d1d17744f9a29363010998fa, type: 3}
       propertyPath: m_RootOrder
@@ -759,8 +771,30 @@ PrefabInstance:
       propertyPath: playerHand
       value: 
       objectReference: {fileID: 503587350607660749}
+    - target: {fileID: 7625524103902511820, guid: 73b86d05d1d17744f9a29363010998fa, type: 3}
+      propertyPath: controls.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7625524103902511820, guid: 73b86d05d1d17744f9a29363010998fa, type: 3}
+      propertyPath: controls.Array.data[0]
+      value: 
+      objectReference: {fileID: 96411161863921469}
+    - target: {fileID: 7625524103902511820, guid: 73b86d05d1d17744f9a29363010998fa, type: 3}
+      propertyPath: controls.Array.data[1]
+      value: 
+      objectReference: {fileID: 466616897}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 73b86d05d1d17744f9a29363010998fa, type: 3}
+--- !u!1 &96411161863921469 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6005617109094571797, guid: 73b86d05d1d17744f9a29363010998fa, type: 3}
+  m_PrefabInstance: {fileID: 5912867328040566824}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1310481371528716352 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4621109232130023528, guid: 73b86d05d1d17744f9a29363010998fa, type: 3}
+  m_PrefabInstance: {fileID: 5912867328040566824}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &4185604093173562427 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7501019227488844819, guid: 73b86d05d1d17744f9a29363010998fa, type: 3}
