@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -9,6 +10,7 @@ public class EnemyBase : MonoBehaviour
     public EnemyMovementVariables enemyMovementVariables;
     public EnemyGunStats enemyGunStats;
     public EnemyTypeVariables enemyTypeVariables;
+    public bool hasAnimationDeath;
 
     [Header("Shared Variables")]
     [HideInInspector] public NavMeshAgent agent;
@@ -26,6 +28,8 @@ public class EnemyBase : MonoBehaviour
     [HideInInspector] public GameObject gunObjectExitPoint;
     [HideInInspector] public Vector3 initialPosition;
     [HideInInspector] public bool gotHit;
+    [HideInInspector] public bool isDead;
+
 
     protected virtual void Start()
     {
@@ -82,6 +86,9 @@ public class EnemyBase : MonoBehaviour
 
     public virtual void TakeDamage(float bulletDamage)
     {
+        if (isDead)
+            return;
+
         if (enemyMainVariables.canBeHitAnim) HitBase();
 
         if (currentShield < enemyMainVariables.MaxShield)
@@ -143,11 +150,12 @@ public class EnemyBase : MonoBehaviour
 
         agent.enabled = true;
     }
-
     public void CheckStats()
     {
-        if (currentHealth >= enemyMainVariables.MaxHealth)
+        if (currentHealth >= enemyMainVariables.MaxHealth && !isDead)
         {
+            isDead = true;
+
             if (isHoldingGun)
             {
                 HookTarget ht = GetComponentInChildren<HookTarget>();
@@ -156,8 +164,18 @@ public class EnemyBase : MonoBehaviour
                 isHoldingGun = false;
             }
 
-            Instantiate(enemyMainVariables.explosionPrefab, enemyMainVariables.BodyMesh.transform.position, Quaternion.identity);
-            Destroy(gameObject);
+            if(enemyMainVariables.explosionPrefab!= null)
+                Instantiate(enemyMainVariables.explosionPrefab, enemyMainVariables.BodyMesh.transform.position, Quaternion.identity);
+
+            if (hasAnimationDeath)
+            {
+
+                enemyMainVariables.animator.SetTrigger("Dead");
+                Destroy(gameObject, 5f);
+            } else if (!hasAnimationDeath)
+            {
+                Destroy(gameObject);
+            }
         }
     }
 

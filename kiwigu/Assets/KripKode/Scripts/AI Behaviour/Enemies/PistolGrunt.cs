@@ -28,6 +28,9 @@ public class PistolGrunt : EnemyBase
 
     protected override void Update()
     {
+        if (isDead)
+            return;
+
         base.Update();
 
         if (!idle && !enemyMainVariables.animator.GetComponent<HitVariable>().wasHit)
