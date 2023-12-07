@@ -119,6 +119,8 @@ public class PistolGrunt : EnemyBase
 
     IEnumerator ShootPlayer()
     {
+        doingShootPattern = true;
+
         if (!isHoldingGun)
         {
             canFacePlayer = false;
@@ -158,7 +160,6 @@ public class PistolGrunt : EnemyBase
             agent.ResetPath();
 
             enemyMainVariables.animator.SetBool("shooting", true);
-            doingShootPattern = true;
 
             yield return null;
         }
