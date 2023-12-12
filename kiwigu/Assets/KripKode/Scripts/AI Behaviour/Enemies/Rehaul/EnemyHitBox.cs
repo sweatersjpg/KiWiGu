@@ -1,8 +1,8 @@
 using UnityEngine;
 
-public class EnemyHitboxRegister : MonoBehaviour
+public class EnemyHitBox : MonoBehaviour
 {
-    public EnemyBase enemyBase;
+    public string ReferenceScript;
     public bool isPhysicalShield;
     public bool doubleDamage;
     public bool lessDamage;
