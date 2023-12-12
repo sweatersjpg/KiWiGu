@@ -63,7 +63,7 @@ public class Bullet : MonoBehaviour
 
         ogTargetPosition = AcquireTarget.instance.target;
 
-        if(justInfo)
+        if (justInfo)
         {
             GameObject o = Instantiate(rbObject, transform);
             o.transform.parent = null;
@@ -72,7 +72,7 @@ public class Bullet : MonoBehaviour
 
             Rigidbody rb = o.GetComponent<Rigidbody>();
 
-            if(!fromEnemy)
+            if (!fromEnemy)
             {
                 Vector3 vel = new(sweatersController.instance.velocity.x, 0, sweatersController.instance.velocity.z);
 
@@ -191,12 +191,42 @@ public class Bullet : MonoBehaviour
     //    }
     //}
 
-    private void ApplyDamage(EnemyHitboxRegister enemy, float damageMultiplier)
+    private void ApplyDamage(EnemyHitBox enemy, float damageMultiplier)
     {
-        //if (enemy == null || enemy.enemyBase == null || enemy.enemyBase.enemyMainVariables == null || enemy.enemyBase.enemyMainVariables.animator == null)
-        //    return;
+        if (enemy == null)
+            return;
 
-        enemy.enemyBase.TakeDamage(bulletDamage * damageMultiplier);
+        var scriptType = System.Type.GetType(enemy.ReferenceScript);
+
+        Transform rootParent = GetRootParent(enemy.transform);
+
+        if (rootParent != null)
+        {
+            var enemyComponent = rootParent.GetComponent(scriptType) as MonoBehaviour;
+
+            if (enemyComponent != null)
+            {
+                var takeDamageMethod = scriptType.GetMethod("TakeDamage");
+
+                if (takeDamageMethod != null)
+                {
+                    takeDamageMethod.Invoke(enemyComponent, new object[] { bulletDamage * damageMultiplier });
+                }
+            }
+        }
+    }
+
+    private Transform GetRootParent(Transform child)
+    {
+        Transform parent = child.parent;
+
+        while (parent != null)
+        {
+            child = parent;
+            parent = child.parent;
+        }
+
+        return child;
     }
 
     void DoHit(RaycastHit hit, Vector3 direction)
@@ -211,8 +241,7 @@ public class Bullet : MonoBehaviour
         }
         else if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Enemy"))
         {
-            EnemyHitboxRegister enemy = hit.transform.gameObject.GetComponent<EnemyHitboxRegister>();
-
+            EnemyHitBox enemy = hit.transform.gameObject.GetComponent<EnemyHitBox>();
 
             if (enemy != null)
             {
