@@ -474,7 +474,7 @@ MonoBehaviour:
     KneesPosition: {fileID: 0}
     BodyMesh: {fileID: 6761830921263795062}
     HandPosition: {fileID: 6761830921934079969}
-    explosionPrefab: {fileID: 1886320638105856866, guid: 868415f162da742468824c5743d47bae, type: 3}
+    explosionPrefab: {fileID: 7636364201620702995, guid: b5816ea69c8765740b42c416d1463566, type: 3}
   enemyMovementVariables:
     MovementSpeed: 5
     WanderRadius: 7
@@ -491,6 +491,7 @@ MonoBehaviour:
     Medium: 0
     DefenseDrone: 1
     OffenseDrone: 0
+  hasAnimationDeath: 0
   agent: {fileID: 0}
   currentHealth: 0
   currentShield: 0
@@ -506,6 +507,7 @@ MonoBehaviour:
   gunObjectExitPoint: {fileID: 0}
   initialPosition: {x: 0, y: 0, z: 0}
   gotHit: 0
+  isDead: 0
   sfxEmitterAvailable: {fileID: 4546283166040002242}
   tellEffect: {fileID: 2838533942546750815, guid: 4ca2e9e9def890849859a51bbf24d3a0, type: 3}
   droneHeightOffset: 0.4
