@@ -81,7 +81,7 @@ public class MoveHook : MonoBehaviour
         //} else if(heading.magnitude > catchDistance) {
         //    canCatch = true;
         //}
-        if (headingBack && heading.magnitude < catchDistance)
+        if (headingBack && heading.magnitude < catchDistance && !hookTarget)
         {
             home.CatchHook(caughtGun, caughtGunAmmo);
 
@@ -472,6 +472,6 @@ public class MoveHook : MonoBehaviour
         Vector3 v = (player.transform.position - transform.position).normalized;
 
         player.velocity.y = Mathf.Min(Mathf.Abs(v.y) + 0.5f, 1) * force;
-        player.maxSpeed = player.airSpeed;
+        player.maxSpeed += 5;
     }
 }

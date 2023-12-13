@@ -559,7 +559,7 @@ MonoBehaviour:
     m_RotationOrder: 4
   transitionDuration: 0.25
   fovSpeedScale: 0.5
-  tiltIntensity: 0
+  tiltIntensity: 0.1
 --- !u!114 &1623970847784269070
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -713,10 +713,10 @@ MonoBehaviour:
   maxJumpHeight: 2.5
   minJumpHeight: 1
   runningSpeed: 8
-  airSpeed: 20
+  airSpeed: 40
   crouchSpeed: 4
-  maxSpeedIncrease: 6
-  maxSpeedDecay: 16
+  maxSpeedIncrease: 4
+  maxSpeedDecay: 8
   acceleration: 96
   airAcceleration: 24
   encomberedAcceleration: 3

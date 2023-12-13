@@ -9,6 +9,7 @@ public class ViewBob : MonoBehaviour
     public float timeScale;
     public Vector3 delta;
     public Vector3 rotationDelta;
+    public float deltaLimit;
 
     public Vector3 velocity;
 
@@ -40,14 +41,17 @@ public class ViewBob : MonoBehaviour
 
         if (!PauseSystem.paused) time += Time.deltaTime * new Vector2(velocity.x, velocity.z).magnitude;
 
-        float Y = Mathf.Sin(time * timeScale) * delta.y;
-        float X = Mathf.Sin(time * timeScale) * delta.x;
-        float Z = Mathf.Sin(time * timeScale) * delta.z;
+        // float Y = Mathf.Abs(Mathf.Sin(time * timeScale / 2 + (hand < 0 ? Mathf.PI/2 : 0))) * delta.y;
+        float Y = Mathf.Abs(Mathf.Sin(time * timeScale)) * delta.y;
 
-        if (velocity.magnitude > 0.5f) targetPosition = new(-X * hand, Y * hand, Z * hand);
+        float X = Mathf.Abs(Mathf.Sin(time * timeScale / 2 + (hand < 0 ? Mathf.PI / 2 : 0))) * delta.x;
+        float Z = Mathf.Abs(Mathf.Sin(time * timeScale / 2 + (hand < 0 ? Mathf.PI / 2 : 0))) * delta.z;
+
+        if (velocity.magnitude > 0.5f) targetPosition = new(X, Y - delta.y*2, Z);
         else targetPosition = new();
 
         if (!player.isGrounded) targetPosition = new(0, velocity.y * -0.01f, 0);
+        targetPosition = Vector3.ClampMagnitude(targetPosition, deltaLimit);
 
         targetRotation = new(0, 0, Vector3.Dot(velocity, player.transform.right) * rotationDelta.z * hand);
 
@@ -58,6 +62,8 @@ public class ViewBob : MonoBehaviour
         }
 
         transform.localPosition += (targetPosition - transform.localPosition) / 4 * Time.deltaTime * 50;
+
+        cameraFX.RequestRecoil(- transform.localPosition.y * 20);
 
         rotation += (targetRotation - rotation) / 4 * Time.deltaTime * 50;
 

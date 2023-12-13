@@ -55,9 +55,11 @@ public class HookHUD : MonoBehaviour
     private void UpdateIconProperties(Vector3 hit)
     {
         Vector3 screenPos = Camera.main.WorldToScreenPoint(hit);
-        reticleIcon.rectTransform.position = screenPos + new Vector3(0, 10f, 0);
+        // reticleIcon.rectTransform.position = screenPos + new Vector3(0, 10f, 0);
+        reticleIcon.rectTransform.position = Vector3.Lerp(reticleIcon.rectTransform.position,
+            screenPos + new Vector3(0, 10f, 0), Time.deltaTime * lerpSpeed * 2);
 
         Color targetColor = new Color(1f, 1f, 1f, 1f);
-        reticleIcon.color = Color.Lerp(reticleIcon.color, targetColor, Time.deltaTime * (lerpSpeed * 4));
+        reticleIcon.color = Color.Lerp(reticleIcon.color, targetColor, Time.deltaTime * (lerpSpeed * 2));
     }
 }
