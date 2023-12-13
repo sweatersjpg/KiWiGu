@@ -275,7 +275,6 @@ public class PistolGrunt : MonoBehaviour
                 }
             }
         }
-
         return false;
     }
 
