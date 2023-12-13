@@ -408,6 +408,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3567933066273778052}
   - component: {fileID: 1603741071334439827}
+  - component: {fileID: 6474359019176767405}
   m_Layer: 1
   m_Name: BlackHoleFX
   m_TagString: Untagged
@@ -424,7 +425,7 @@ Transform:
   m_GameObject: {fileID: 3567933066273778055}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.1, y: 0.1, z: 0.1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3567933066058383041}
@@ -449,7 +450,102 @@ MonoBehaviour:
   debris: {fileID: 3567933066058383040}
   debrisMinScale: 0.8
   debrisMaxScale: 5
-  damagePercent: 1
+--- !u!114 &6474359019176767405
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3567933066273778055}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a6189574b3817874d9b6115565f8f8b4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bullet: {fileID: 0}
+  target: {fileID: 0}
+  maxSize: 1
+  minSize: 0.2
+  sizeOverLifetime:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 10.510949
+      outSlope: 10.510949
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.05881812
+    - serializedVersion: 3
+      time: 0.19677734
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 0.8981481
+      value: 1.0097324
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 0.9976852
+      value: 0.00486618
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  intensityOverLifetime:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 0.9784827
+      value: 0.33220577
+      inSlope: 1.0593851
+      outSlope: 1.0593851
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.054895416
+      outWeight: 1
+    - serializedVersion: 3
+      time: 1
+      value: 1.0462286
+      inSlope: 8.969348
+      outSlope: 8.969348
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.8068449
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  blackHole: {fileID: 1603741071334439827}
+  bubble: {fileID: 3567933066036974834}
+  explosion: {fileID: 1886320638105856866, guid: 868415f162da742468824c5743d47bae, type: 3}
+  intensity: 0
+  maxSaturation: 4
 --- !u!1 &6490983341762323538
 GameObject:
   m_ObjectHideFlags: 0
