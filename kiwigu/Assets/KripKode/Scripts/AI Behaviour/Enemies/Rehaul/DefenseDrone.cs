@@ -37,6 +37,7 @@ public class DefenseDrone : MonoBehaviour
     [Header("Drone Defense Settings")]
     [SerializeField] private Transform bulletExitPoint;
     [SerializeField] private float defendCooldown;
+    [SerializeField] private string defendTag;
 
     [Space(10)]
     [Header("Drone Body Mesh")]
@@ -232,7 +233,7 @@ public class DefenseDrone : MonoBehaviour
 
     private void DetectEnemy()
     {
-        GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
+        GameObject[] enemies = GameObject.FindGameObjectsWithTag(defendTag);
 
         if (enemies.Length == 0)
             return;

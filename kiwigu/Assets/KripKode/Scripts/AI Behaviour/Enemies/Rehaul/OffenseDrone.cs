@@ -162,7 +162,6 @@ public class OffenseDrone : MonoBehaviour
             {
                 agent.SetDestination(adjustedDestination);
             }
-
         }
     }
 
