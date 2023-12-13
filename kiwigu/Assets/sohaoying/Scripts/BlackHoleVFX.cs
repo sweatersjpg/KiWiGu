@@ -22,6 +22,8 @@ public class BlackHoleVFX : MonoBehaviour
         bubbleMat = bubble.GetComponent<Renderer>().material;
         coreMat = core.GetComponent<Renderer>().material;
         debrisVFX = debris.GetComponent<VisualEffect>();
+
+        SetDamagePercent(1f);
     }
 
     /*void FixedUpdate()
