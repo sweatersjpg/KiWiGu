@@ -17,6 +17,9 @@ public class PistolGrunt : MonoBehaviour
     [Range(0, 100)]
     [SerializeField] private float shield;
     private bool isHoldingGun;
+    private float currentHealth;
+    private float currentShield;
+    private bool isDead;
 
     [Space(10)]
     [Header("Enemy Movement Settings")]
@@ -52,6 +55,7 @@ public class PistolGrunt : MonoBehaviour
     [Header("Enemy Attack Settings")]
     [SerializeField] Transform BulletExitPoint;
     public bool isShooting;
+    GunInfo info;
 
     private bool gotHit;
 
@@ -297,6 +301,41 @@ public class PistolGrunt : MonoBehaviour
         return navHit.position;
     }
 
+    public virtual void TakeDamage(float bulletDamage)
+    {
+        if (isDead)
+            return;
+
+        if (currentShield < shield)
+        {
+            currentShield = Mathf.Min(currentShield + bulletDamage, shield);
+        }
+        else if (currentHealth < health)
+        {
+            currentHealth = Mathf.Min(currentHealth + bulletDamage, health);
+        }
+
+        CheckStats();
+    }
+
+    public void CheckStats()
+    {
+        if (currentHealth >= health && !isDead)
+        {
+            isDead = true;
+
+            if (isHoldingGun)
+            {
+                HookTarget ht = GetComponentInChildren<HookTarget>();
+                if (ht != null) ht.BeforeDestroy();
+
+                isHoldingGun = false;
+            }
+
+            Destroy(gameObject);
+        }
+    }
+
     private float EnemyShoot()
     {
         if (!isHoldingGun || !IsPlayerVisible())
@@ -333,7 +372,9 @@ public class PistolGrunt : MonoBehaviour
         }
 
         HookTarget gun = transform.GetComponentInChildren<HookTarget>();
-        GunInfo info = gun.info;
+
+        if (gun)
+            info = gun.info;
 
         GameObject bullet = Instantiate(info.bulletPrefab, BulletExitPoint.transform.position, BulletExitPoint.transform.rotation);
 
