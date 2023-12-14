@@ -201,6 +201,7 @@ MonoBehaviour:
   resistance: 0.5
   maxResistance: 0
   tether: 0
+  blockSteal: 0
 --- !u!1 &695158395439763589
 GameObject:
   m_ObjectHideFlags: 0
@@ -703,7 +704,6 @@ MonoBehaviour:
   shield: 0
   explosionPrefab: {fileID: 7636364201620702995, guid: b5816ea69c8765740b42c416d1463566, type: 3}
   droneState: 0
-  isHoldingGun: 0
   eyesPosition: {fileID: 5626756182098279481}
   seekRange: 25
   wanderSpeed: 4
@@ -714,7 +714,7 @@ MonoBehaviour:
   wanderWaitTime: 5
   rememberWaitTime: 10
   bulletExitPoint: {fileID: 5626756182752326348}
-  defendCooldown: 2
+  defendCooldown: 1
   defendTag: Enemy
   droneBody: {fileID: 695158395439763589}
   floatValue: 0.5

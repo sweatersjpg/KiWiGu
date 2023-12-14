@@ -156,6 +156,7 @@ public class DefenseDrone : MonoBehaviour
 
         if (IsPlayerWithinRange())
         {
+            Debug.Log("within range");
             if(timeSinceLastShot > defendCooldown)
             {
                 EnemyShoot();
@@ -218,8 +219,13 @@ public class DefenseDrone : MonoBehaviour
 
         foreach (Collider hitCollider in hitColliders)
         {
+            Vector3 rayDirection = hitCollider.transform.position - eyesPosition.position - new Vector3(0, -1, 0);
+
+            // Draw debug ray
+            Debug.DrawRay(eyesPosition.position, rayDirection, Color.green);
+
             RaycastHit hit;
-            if (Physics.Raycast(eyesPosition.position, hitCollider.transform.position - eyesPosition.position - new Vector3(0, -1, 0), out hit, seekRange, ~combinedLayerMask))
+            if (Physics.Raycast(eyesPosition.position, rayDirection, out hit, seekRange, ~combinedLayerMask))
             {
                 if (hit.collider.CompareTag("Player"))
                 {
@@ -231,6 +237,7 @@ public class DefenseDrone : MonoBehaviour
 
         return false;
     }
+
 
     private void DetectEnemy()
     {
@@ -280,13 +287,20 @@ public class DefenseDrone : MonoBehaviour
 
     private bool IsPlayerWithinRange()
     {
-        float distanceTolerance = 0.5f;
-        float distanceToDestination = Vector3.Distance(transform.position, detectedPlayer.transform.position);
+        if(detectedPlayer)
+        {
+            float distanceTolerance = 0.5f;
+            float distanceToDestination = Vector3.Distance(transform.position, detectedPlayer.transform.position);
 
-        if (distanceToDestination < (keepDistance + distanceTolerance))
-            return true;
+            if (distanceToDestination < (awareDistance + distanceTolerance))
+                return true;
+            else
+                return false;
+        }
         else
+        {
             return false;
+        }
     }
 
     public virtual void TakeDamage(float bulletDamage)
