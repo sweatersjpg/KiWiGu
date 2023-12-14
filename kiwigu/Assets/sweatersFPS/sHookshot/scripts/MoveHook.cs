@@ -280,6 +280,15 @@ public class MoveHook : MonoBehaviour
             GameObject target = hit.transform.gameObject;
             HookTarget ht = target.transform.GetComponentInChildren<HookTarget>();
 
+            if(ht.blockSteal)
+            {
+                if(GetRootParent(target.transform).CompareTag("Enemy") && GetRootParent(target.transform).GetComponent<PistolGrunt>())
+                {
+                    GetRootParent(target.transform).GetComponent<PistolGrunt>().TakeDamage(5);
+                }
+                return;
+            }
+
             if (ht == null)
             {
                 caughtGun = target.transform.GetComponent<ThrownGun>().info;

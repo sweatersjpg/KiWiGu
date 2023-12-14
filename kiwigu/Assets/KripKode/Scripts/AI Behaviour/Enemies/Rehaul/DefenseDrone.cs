@@ -8,15 +8,16 @@ using UnityEngine.AI;
 public class DefenseDrone : MonoBehaviour
 {
     public enum DroneState { Wandering, Defending };
-
     [SerializeField] private StudioEventEmitter sfxEmitterAvailable;
-    [SerializeField] private float health = 100f;
-    [SerializeField] private float shield = 100f;
-    [SerializeField] private GameObject explosionPrefab;
-    [SerializeField] private DroneState droneState = DroneState.Wandering;
 
     [Header("Drone Basic Settings")]
-    [SerializeField] private bool isHoldingGun;
+    [Range(0, 100)]
+    [SerializeField] private float health;
+    [Range(0, 100)]
+    [SerializeField] private float shield;
+    [SerializeField] private GameObject explosionPrefab;
+    [SerializeField] private DroneState droneState = DroneState.Wandering;
+    bool isHoldingGun;
 
     [Space(10)]
     [Header("Drone Seeking Settings")]
