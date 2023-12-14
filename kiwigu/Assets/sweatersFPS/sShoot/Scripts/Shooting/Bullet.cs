@@ -43,7 +43,7 @@ public class Bullet : MonoBehaviour
 
     public GameObject[] spawnOnHit;
 
-    bool dead = false;
+    public bool dead = false;
 
     float startTime;
     float time;
