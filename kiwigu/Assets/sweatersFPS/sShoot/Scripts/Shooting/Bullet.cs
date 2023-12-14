@@ -38,7 +38,7 @@ public class Bullet : MonoBehaviour
 
     public GameObject[] spawnOnHit;
 
-    bool dead = false;
+    public bool dead = false;
 
     float startTime;
     float time;
@@ -63,7 +63,7 @@ public class Bullet : MonoBehaviour
 
         ogTargetPosition = AcquireTarget.instance.target;
 
-        if(justInfo)
+        if (justInfo)
         {
             GameObject o = Instantiate(rbObject, transform);
             o.transform.parent = null;
@@ -72,7 +72,7 @@ public class Bullet : MonoBehaviour
 
             Rigidbody rb = o.GetComponent<Rigidbody>();
 
-            if(!fromEnemy)
+            if (!fromEnemy)
             {
                 Vector3 vel = new(sweatersController.instance.velocity.x, 0, sweatersController.instance.velocity.z);
 

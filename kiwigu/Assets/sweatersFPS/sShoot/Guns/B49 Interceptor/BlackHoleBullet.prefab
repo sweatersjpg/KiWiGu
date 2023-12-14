@@ -58,8 +58,8 @@ MonoBehaviour:
   bulletMesh: {fileID: 7168401629478513263}
   bulletHolePrefab: {fileID: 7839328679860194084, guid: a8f58d7ed020d4940b3a031616ccfaa5, type: 3}
   sparksPrefab: {fileID: 7558042070311089840, guid: 4a757825a5bafce41a9ebb47f13d0190, type: 3}
-  spawnOnHit:
-  - {fileID: 3567933066273778055, guid: 5caaaca09a7234e4fa3546bc337f6fd2, type: 3}
+  spawnOnHit: []
+  dead: 0
   charge: 0
   ignoreMask:
     serializedVersion: 2
@@ -387,6 +387,34 @@ PrefabInstance:
       propertyPath: target
       value: 
       objectReference: {fileID: 4570687430845626531}
+    - target: {fileID: 6474359019176767405, guid: 66449fe07135529438764cc95b9a082a, type: 3}
+      propertyPath: intensityOverLifetime.m_Curve.Array.data[0].inSlope
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6474359019176767405, guid: 66449fe07135529438764cc95b9a082a, type: 3}
+      propertyPath: intensityOverLifetime.m_Curve.Array.data[1].inSlope
+      value: 0.15330078
+      objectReference: {fileID: 0}
+    - target: {fileID: 6474359019176767405, guid: 66449fe07135529438764cc95b9a082a, type: 3}
+      propertyPath: intensityOverLifetime.m_Curve.Array.data[0].outSlope
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6474359019176767405, guid: 66449fe07135529438764cc95b9a082a, type: 3}
+      propertyPath: intensityOverLifetime.m_Curve.Array.data[1].inWeight
+      value: 0.19999999
+      objectReference: {fileID: 0}
+    - target: {fileID: 6474359019176767405, guid: 66449fe07135529438764cc95b9a082a, type: 3}
+      propertyPath: intensityOverLifetime.m_Curve.Array.data[1].outSlope
+      value: 0.15330078
+      objectReference: {fileID: 0}
+    - target: {fileID: 6474359019176767405, guid: 66449fe07135529438764cc95b9a082a, type: 3}
+      propertyPath: intensityOverLifetime.m_Curve.Array.data[0].outWeight
+      value: 0.33333334
+      objectReference: {fileID: 0}
+    - target: {fileID: 6474359019176767405, guid: 66449fe07135529438764cc95b9a082a, type: 3}
+      propertyPath: intensityOverLifetime.m_Curve.Array.data[0].tangentMode
+      value: 34
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 66449fe07135529438764cc95b9a082a, type: 3}
 --- !u!4 &7767398782270900955 stripped
