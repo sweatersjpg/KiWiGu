@@ -16,6 +16,7 @@ public class PistolGrunt : MonoBehaviour
     [SerializeField] private float health;
     [Range(0, 100)]
     [SerializeField] private float shield;
+    [SerializeField] private Animator animator;
     private bool isHoldingGun;
     private float currentHealth;
     private float currentShield;
@@ -27,6 +28,7 @@ public class PistolGrunt : MonoBehaviour
     [SerializeField] private float seekSpeed;
     [SerializeField] private float panicSpeed;
     [SerializeField] private float keepDistance;
+    [SerializeField] private float shootDistance;
     [SerializeField] private float wanderWaitTime;
     [SerializeField] private float wanderRadius;
     [SerializeField] private float rememberWaitTime;
@@ -49,13 +51,17 @@ public class PistolGrunt : MonoBehaviour
     [Header("Enemy Panic Settings")]
     [SerializeField] private float hideTime;
     private bool isHiding;
-    private float hideTimer;
+    public float hideTimer;
+    private GameObject lastSelectedCover;
 
     [Space(10)]
     [Header("Enemy Attack Settings")]
     [SerializeField] Transform BulletExitPoint;
+    [SerializeField] float GunInaccuracy;
     public bool isShooting;
     GunInfo info;
+    float shootTimer;
+    bool animDone;
 
     private bool gotHit;
 
@@ -71,6 +77,9 @@ public class PistolGrunt : MonoBehaviour
 
     private void Update()
     {
+        if (isDead)
+            return;
+
         StateManager();
         Wander();
         Seek();
@@ -81,6 +90,33 @@ public class PistolGrunt : MonoBehaviour
 
     private void StateManager()
     {
+        if (agent.velocity.magnitude <= 0.1f)
+        {
+            animator.SetBool("walk", false);
+            animator.SetBool("run", false);
+        }
+
+        if (isShooting)
+        {
+            RotateGunAndBodyTowardsPlayer();
+        }
+
+        if (isHiding)
+        {
+            hideTimer += Time.deltaTime;
+
+            if (hideTimer >= hideTime)
+            {
+                gotHit = false;
+                animator.SetBool("crouching", false);
+                isHiding = false;
+                hideTimer = 0;
+            }
+
+            return;
+        }
+
+
         if (isShooting && !gotHit)
             return;
 
@@ -104,6 +140,11 @@ public class PistolGrunt : MonoBehaviour
         {
             agent.speed = wanderSpeed;
 
+            if (agent.velocity.magnitude >= 0.1f)
+            {
+                animator.SetBool("walk", true);
+            }
+
             wanderTimer += Time.deltaTime;
 
             if (wanderTimer >= wanderWaitTime)
@@ -121,9 +162,14 @@ public class PistolGrunt : MonoBehaviour
         {
             agent.speed = seekSpeed;
 
+            if (agent.velocity.magnitude >= 0.1f)
+            {
+                animator.SetBool("run", true);
+            }
+
             Vector3 adjustedDestination = detectedPlayer.transform.position - (detectedPlayer.transform.position - transform.position).normalized * keepDistance;
 
-            if (IsPlayerInRange() && !isShooting)
+            if (IsPlayerWithinRange() && !isShooting)
             {
                 agent.SetDestination(transform.position);
                 enemyState = EnemyState.Shoot;
@@ -139,22 +185,15 @@ public class PistolGrunt : MonoBehaviour
     {
         if (enemyState == EnemyState.Panic)
         {
+            if (isHiding)
+                return;
+
             agent.speed = panicSpeed;
 
-            if (isHiding)
+            if (agent.velocity.magnitude >= 0.1f)
             {
-                hideTimer += Time.deltaTime;
-                if (hideTimer >= hideTime)
-                {
-                    if (IsPlayerVisible())
-                    {
-                        isHiding = false;
-                    }
-                }
-                return;
+                animator.SetBool("run", true);
             }
-
-            hideTimer = 0f;
 
             if (!loggedHidingObject)
             {
@@ -170,6 +209,7 @@ public class PistolGrunt : MonoBehaviour
             if (distance <= 3f)
             {
                 loggedHidingObject = false;
+                animator.SetBool("crouching", true);
                 isHiding = true;
             }
             else
@@ -183,6 +223,9 @@ public class PistolGrunt : MonoBehaviour
     {
         if (enemyState == EnemyState.Shoot)
         {
+            if (isShooting)
+                return;
+
             StartCoroutine(ShootRoutine());
         }
     }
@@ -190,7 +233,18 @@ public class PistolGrunt : MonoBehaviour
     IEnumerator ShootRoutine()
     {
         isShooting = true;
-        yield return new WaitForSeconds(EnemyShoot());
+
+        animator.SetTrigger("shoot");
+
+        yield return null; // wait a framerino
+
+        while (animDone)
+        {
+            yield return null;
+        }
+
+        animator.ResetTrigger("shoot");
+
         isShooting = false;
     }
 
@@ -210,7 +264,16 @@ public class PistolGrunt : MonoBehaviour
 
         if (nearbyCovers.Count > 0)
         {
-            return nearbyCovers[Random.Range(0, nearbyCovers.Count)];
+            GameObject selectedCover = null;
+
+            do
+            {
+                selectedCover = nearbyCovers[Random.Range(0, nearbyCovers.Count)];
+            } while (selectedCover == lastSelectedCover);
+
+            lastSelectedCover = selectedCover;
+
+            return selectedCover;
         }
         else
         {
@@ -231,6 +294,38 @@ public class PistolGrunt : MonoBehaviour
             agent.SetDestination(oppositePoint);
             hidingPos = oppositePoint;
         }
+    }
+
+    private void RotateGunAndBodyTowardsPlayer()
+    {
+        if (!isShooting) return;
+
+        if (agent.isOnNavMesh)
+            RotateNavMeshAgentTowardsObj(detectedPlayer.transform.position);
+
+        RotateGunObjectExitPoint(detectedPlayer.transform.position);
+    }
+
+    private void RotateNavMeshAgentTowardsObj(Vector3 objPos)
+    {
+        if (!isShooting) return;
+
+        agent.SetDestination(agent.transform.position);
+
+        Quaternion targetRotation = Quaternion.LookRotation(objPos - agent.transform.position);
+
+        agent.transform.rotation = Quaternion.Slerp(agent.transform.rotation, targetRotation, Time.deltaTime * 10);
+    }
+
+    private void RotateGunObjectExitPoint(Vector3 playerPosition)
+    {
+        if (!isShooting) return;
+
+        Vector3 targetPosition = new Vector3(playerPosition.x + Random.Range(-GunInaccuracy, GunInaccuracy), playerPosition.y + 1f, playerPosition.z + Random.Range(-GunInaccuracy, GunInaccuracy));
+        Vector3 direction = targetPosition - BulletExitPoint.transform.position;
+        Quaternion targetRotation = Quaternion.LookRotation(direction);
+
+        BulletExitPoint.transform.rotation = targetRotation;
     }
 
     private void RememberPlayer()
@@ -278,12 +373,12 @@ public class PistolGrunt : MonoBehaviour
         return false;
     }
 
-    private bool IsPlayerInRange()
+    private bool IsPlayerWithinRange()
     {
         float distanceTolerance = 0.5f;
         float distanceToDestination = Vector3.Distance(transform.position, detectedPlayer.transform.position);
 
-        if (Mathf.Abs(distanceToDestination - keepDistance) <= distanceTolerance)
+        if (distanceToDestination < (shootDistance + distanceTolerance))
             return true;
         else
             return false;
@@ -300,10 +395,29 @@ public class PistolGrunt : MonoBehaviour
         return navHit.position;
     }
 
+    public void SwitchAnim()
+    {
+        animDone = !animDone;
+    }
+
+    public void ShootEvent()
+    {
+        EnemyShoot();
+    }
+
+    public virtual void TakeGun()
+    {
+        isHoldingGun = false;
+        isShooting = false;
+        enemyState = EnemyState.Panic;
+    }
+
     public virtual void TakeDamage(float bulletDamage)
     {
         if (isDead)
             return;
+
+        gotHit = true;
 
         if (currentShield < shield)
         {
@@ -329,9 +443,12 @@ public class PistolGrunt : MonoBehaviour
                 if (ht != null) ht.BeforeDestroy();
 
                 isHoldingGun = false;
+                isShooting = false;
             }
 
-            Destroy(gameObject);
+            agent.SetDestination(transform.position);
+            animator.SetTrigger("Dead");
+            Destroy(gameObject, 5);
         }
     }
 
@@ -344,6 +461,7 @@ public class PistolGrunt : MonoBehaviour
         if (gun == null)
         {
             isHoldingGun = false;
+            isShooting = false;
             return 0;
         }
         GunInfo info = gun.info;
@@ -364,7 +482,7 @@ public class PistolGrunt : MonoBehaviour
 
     private void SpawnBullet()
     {
-        if(!isHoldingGun)
+        if (!isHoldingGun)
         {
             isShooting = false;
             return;

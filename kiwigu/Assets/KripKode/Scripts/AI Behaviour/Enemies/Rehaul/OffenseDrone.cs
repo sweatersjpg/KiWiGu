@@ -153,7 +153,7 @@ public class OffenseDrone : MonoBehaviour
 
             Vector3 adjustedDestination = detectedPlayer.transform.position - (detectedPlayer.transform.position - transform.position).normalized * keepDistance;
 
-            if (IsPlayerInRange())
+            if (IsPlayerWithinRange())
             {
                 agent.SetDestination(transform.position);
                 droneState = DroneState.Attacking;
@@ -247,12 +247,12 @@ public class OffenseDrone : MonoBehaviour
         }
     }
 
-    private bool IsPlayerInRange()
+    private bool IsPlayerWithinRange()
     {
         float distanceTolerance = 0.5f;
         float distanceToDestination = Vector3.Distance(transform.position, detectedPlayer.transform.position);
 
-        if (Mathf.Abs(distanceToDestination - keepDistance) <= distanceTolerance)
+        if (distanceToDestination < (keepDistance + distanceTolerance))
             return true;
         else
             return false;

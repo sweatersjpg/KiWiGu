@@ -153,7 +153,7 @@ public class DefenseDrone : MonoBehaviour
         Vector3 adjustedDestination = enemyPosition - (enemyPosition - transform.position).normalized * keepDistance;
         agent.SetDestination(adjustedDestination);
 
-        if (IsPlayerInRange())
+        if (IsPlayerWithinRange())
         {
             if(timeSinceLastShot > defendCooldown)
             {
@@ -277,16 +277,15 @@ public class DefenseDrone : MonoBehaviour
         droneBody.transform.position = droneFloatPosition;
     }
 
-    private bool IsPlayerInRange()
+    private bool IsPlayerWithinRange()
     {
-        if (!detectedPlayer)
-            return false;
+        float distanceTolerance = 0.5f;
+        float distanceToDestination = Vector3.Distance(transform.position, detectedPlayer.transform.position);
 
-        if (Vector3.Distance(transform.position, detectedPlayer.transform.position) <= awareDistance)
-        {
+        if (distanceToDestination < (keepDistance + distanceTolerance))
             return true;
-        }
-        return false;
+        else
+            return false;
     }
 
     public virtual void TakeDamage(float bulletDamage)
