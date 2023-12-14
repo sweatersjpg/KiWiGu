@@ -321,11 +321,8 @@ public class Bullet : MonoBehaviour
     {
         for(int i = 0; i < HitFX.Length; i++)
         {
-            Debug.Log(hit.transform.gameObject.layer);
-
             if (HitFXLayers[i] != (HitFXLayers[i] | (1 << hit.transform.gameObject.layer))) continue;
 
-            Debug.Log("spawnedFX");
             SpawnHitFX(hit, direction, HitFX[i]);
 
             return true;

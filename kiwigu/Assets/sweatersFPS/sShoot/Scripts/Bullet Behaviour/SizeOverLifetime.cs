@@ -63,8 +63,6 @@ public class SizeOverLifetime : MonoBehaviour
 
         blackHole.SetDamagePercent(intensity);
 
-        Debug.Log(lifeTime);
-
         if (lifeTime > 0.8 && !hasExploded)
         {
             bullet.dead = true;
