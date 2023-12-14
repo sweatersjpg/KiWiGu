@@ -2,9 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.Burst.CompilerServices;
 using Unity.VisualScripting;
+using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.UI;
+using static UnityEditor.Experimental.GraphView.GraphView;
 
 public class Bullet : MonoBehaviour
 {
@@ -35,6 +37,9 @@ public class Bullet : MonoBehaviour
 
     [Space]
     public GameObject sparksPrefab;
+    [Space]
+    public GameObject[] HitFX;
+    public LayerMask[] HitFXLayers;
 
     public GameObject[] spawnOnHit;
 
@@ -268,7 +273,11 @@ public class Bullet : MonoBehaviour
             SpawnHole(hit);
         }
 
-        if (sparksPrefab != null) SpawnSparks(hit, direction);
+        if (sparksPrefab != null || HitFX.Length > 0)
+        {
+            if (!SpawnSpecialHitFX(hit, direction)) SpawnHitFX(hit, direction, sparksPrefab);
+        }
+
         bulletMesh.transform.position = hit.point;
 
         foreach (GameObject s in spawnOnHit)
@@ -295,7 +304,7 @@ public class Bullet : MonoBehaviour
         hole.parent = hit.transform;
     }
 
-    void SpawnSparks(RaycastHit hit, Vector3 direction)
+    void SpawnHitFX(RaycastHit hit, Vector3 direction, GameObject prefab)
     {
         Vector3 d = direction;
         Vector3 n = hit.normal;
@@ -304,8 +313,25 @@ public class Bullet : MonoBehaviour
 
         Vector3 facing = r;
 
-        Transform sparks = Instantiate(sparksPrefab).transform;
+        Transform sparks = Instantiate(prefab).transform;
         sparks.SetPositionAndRotation(hit.point, Quaternion.LookRotation(facing));
+    }
+
+    bool SpawnSpecialHitFX(RaycastHit hit, Vector3 direction)
+    {
+        for(int i = 0; i < HitFX.Length; i++)
+        {
+            Debug.Log(hit.transform.gameObject.layer);
+
+            if (HitFXLayers[i] != (HitFXLayers[i] | (1 << hit.transform.gameObject.layer))) continue;
+
+            Debug.Log("spawnedFX");
+            SpawnHitFX(hit, direction, HitFX[i]);
+
+            return true;
+        }
+
+        return false;
     }
 
     Vector3 EvaluateLocation(float time)
