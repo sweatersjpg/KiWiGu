@@ -443,8 +443,6 @@ public class PistolGrunt : MonoBehaviour
         if (isDead)
             return;
 
-        gotHit = true;
-
         if (currentShield < shield)
         {
             StartLerpShieldProgress();
@@ -452,6 +450,7 @@ public class PistolGrunt : MonoBehaviour
         }
         else if (currentHealth < health)
         {
+            gotHit = true;
             currentHealth = Mathf.Min(currentHealth + bulletDamage, health);
         }
 
