@@ -200,11 +200,11 @@ public class Bullet : MonoBehaviour
 
         Transform rootParent = GetRootParent(enemy.transform);
 
-        if (rootParent != null)
+        if (rootParent != null && scriptType != null)
         {
             var enemyComponent = rootParent.GetComponent(scriptType) as MonoBehaviour;
 
-            if (enemyComponent != null)
+            if (enemyComponent != null) 
             {
                 var takeDamageMethod = scriptType.GetMethod("TakeDamage");
 

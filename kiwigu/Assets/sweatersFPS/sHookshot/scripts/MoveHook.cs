@@ -199,27 +199,29 @@ public class MoveHook : MonoBehaviour
 
     void DamageEnemy(Transform t)
     {
-        if (GetRootParent(t).gameObject.CompareTag("Drone"))
-        {
-            EnemyHitBox e = t.GetComponentInParent<EnemyHitBox>();
+        EnemyHitBox e = t.GetComponentInParent<EnemyHitBox>();
 
-            if (e)
+        if (e)
+        {
+            Transform rootParent = GetRootParent(e.transform);
+
+            if (rootParent != null)
             {
                 var scriptType = System.Type.GetType(e.ReferenceScript);
 
-                Transform rootParent = GetRootParent(e.transform);
-
-                if (rootParent != null)
+                if (scriptType != null)
                 {
                     var enemyComponent = rootParent.GetComponent(scriptType) as MonoBehaviour;
 
                     if (enemyComponent != null)
                     {
-                        var takeDamageMethod = scriptType.GetMethod("TakeDamage");
-
-                        if (takeDamageMethod != null)
+                        if (rootParent.gameObject.CompareTag("Drone"))
                         {
-                            takeDamageMethod.Invoke(enemyComponent, new object[] { 9999 });
+                            CallMethodSafely(enemyComponent, "TakeDamage", new object[] { 9999 });
+                        }
+                        else if (rootParent.gameObject.CompareTag("Enemy"))
+                        {
+                            CallMethodSafely(enemyComponent, "TakeGun", null);
                         }
                     }
                 }
@@ -227,6 +229,15 @@ public class MoveHook : MonoBehaviour
         }
     }
 
+    void CallMethodSafely(MonoBehaviour component, string methodName, object[] parameters)
+    {
+        var method = component.GetType().GetMethod(methodName);
+
+        if (method != null)
+        {
+            method.Invoke(component, parameters);
+        }
+    }
 
     private Transform GetRootParent(Transform child)
     {
