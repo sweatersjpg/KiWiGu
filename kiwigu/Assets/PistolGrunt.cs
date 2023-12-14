@@ -495,6 +495,12 @@ public class PistolGrunt : MonoBehaviour
 
     public void CheckStats()
     {
+        if (currentShield >= shield)
+        {
+            ht.blockSteal = false;
+            Destroy(shieldObject);
+        }
+
         if (currentHealth >= health && !isDead)
         {
             isDead = true;
@@ -511,12 +517,6 @@ public class PistolGrunt : MonoBehaviour
             agent.SetDestination(transform.position);
             animator.SetTrigger("Dead");
             Destroy(gameObject, 5);
-        }
-
-        if(currentShield >= shield)
-        {
-            ht.blockSteal = true;
-            Destroy(shieldObject);
         }
     }
 
