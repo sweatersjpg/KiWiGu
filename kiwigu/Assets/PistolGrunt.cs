@@ -17,6 +17,13 @@ public class PistolGrunt : MonoBehaviour
     [Range(0, 100)]
     [SerializeField] private float shield;
     [SerializeField] private Animator animator;
+    [SerializeField] private GameObject shieldObject;
+    private bool lerpingShield = false;
+    private Material shieldMaterial;
+    private float shieldLerpStartTime;
+    private float shieldLerpDuration = 0.15f;
+    private float startShieldValue;
+    private float targetShieldValue;
     private bool isHoldingGun;
     private float currentHealth;
     private float currentShield;
@@ -32,6 +39,7 @@ public class PistolGrunt : MonoBehaviour
     [SerializeField] private float wanderWaitTime;
     [SerializeField] private float wanderRadius;
     [SerializeField] private float rememberWaitTime;
+    HookTarget ht;
     private NavMeshAgent agent;
     private float wanderTimer;
     private Vector3 initialPosition;
@@ -57,6 +65,7 @@ public class PistolGrunt : MonoBehaviour
     [Space(10)]
     [Header("Enemy Attack Settings")]
     [SerializeField] Transform BulletExitPoint;
+    [SerializeField] float shootCooldown;
     [SerializeField] float GunInaccuracy;
     public bool isShooting;
     GunInfo info;
@@ -67,16 +76,26 @@ public class PistolGrunt : MonoBehaviour
 
     private void Start()
     {
-        HookTarget ht = GetComponentInChildren<HookTarget>();
+        ht = GetComponentInChildren<HookTarget>();
         if (ht)
             isHoldingGun = true;
 
         agent = GetComponent<NavMeshAgent>();
         initialPosition = transform.position;
+
+        if(shield > 0 && ht)
+        {
+            ht.blockSteal = true;
+        }
     }
 
     private void Update()
     {
+        if (lerpingShield)
+        {
+            LerpShieldProgressUpdate();
+        }
+
         if (isDead)
             return;
 
@@ -120,7 +139,7 @@ public class PistolGrunt : MonoBehaviour
         if (isShooting && !gotHit)
             return;
 
-        if (gotHit || !isHoldingGun)
+        if ((gotHit || !isHoldingGun) && currentShield >= shield)
         {
             enemyState = EnemyState.Panic;
         }
@@ -244,6 +263,8 @@ public class PistolGrunt : MonoBehaviour
         }
 
         animator.ResetTrigger("shoot");
+
+        yield return new WaitForSeconds(shootCooldown);
 
         isShooting = false;
     }
@@ -378,7 +399,7 @@ public class PistolGrunt : MonoBehaviour
         float distanceTolerance = 0.5f;
         float distanceToDestination = Vector3.Distance(transform.position, detectedPlayer.transform.position);
 
-        if (distanceToDestination < (shootDistance + distanceTolerance))
+        if (distanceToDestination < (shootDistance + distanceTolerance) && IsPlayerVisible())
             return true;
         else
             return false;
@@ -405,6 +426,11 @@ public class PistolGrunt : MonoBehaviour
         EnemyShoot();
     }
 
+    IEnumerator ShootFloat()
+    {
+        yield return new WaitForSeconds(EnemyShoot());
+    }
+
     public virtual void TakeGun()
     {
         isHoldingGun = false;
@@ -421,6 +447,7 @@ public class PistolGrunt : MonoBehaviour
 
         if (currentShield < shield)
         {
+            StartLerpShieldProgress();
             currentShield = Mathf.Min(currentShield + bulletDamage, shield);
         }
         else if (currentHealth < health)
@@ -431,15 +458,56 @@ public class PistolGrunt : MonoBehaviour
         CheckStats();
     }
 
+    private void StartLerpShieldProgress()
+    {
+        shieldMaterial = shieldObject.GetComponent<Renderer>().material;
+        shieldLerpStartTime = Time.time;
+        startShieldValue = shieldMaterial.GetFloat("_Progress");
+        targetShieldValue = 4f;
+        lerpingShield = true;
+    }
+
+    private void LerpShieldProgressUpdate()
+    {
+        float elapsedTime = Time.time - shieldLerpStartTime;
+
+        if (elapsedTime < shieldLerpDuration)
+        {
+            float progress = Mathf.Lerp(startShieldValue, targetShieldValue, elapsedTime / shieldLerpDuration);
+            shieldMaterial.SetFloat("_Progress", progress);
+        }
+        else
+        {
+            shieldMaterial.SetFloat("_Progress", targetShieldValue);
+            lerpingShield = false;
+
+            StartReverseLerp();
+        }
+    }
+
+    private void StartReverseLerp()
+    {
+        shieldLerpStartTime = Time.time;
+        startShieldValue = targetShieldValue;
+        targetShieldValue = 0f;
+        lerpingShield = true;
+    }
+
     public void CheckStats()
     {
+        if (currentShield >= shield)
+        {
+            ht.blockSteal = false;
+            Destroy(shieldObject);
+        }
+
         if (currentHealth >= health && !isDead)
         {
             isDead = true;
 
             if (isHoldingGun)
             {
-                HookTarget ht = GetComponentInChildren<HookTarget>();
+                GetComponentInChildren<HookTarget>();
                 if (ht != null) ht.BeforeDestroy();
 
                 isHoldingGun = false;
