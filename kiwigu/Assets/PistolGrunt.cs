@@ -450,6 +450,8 @@ public class PistolGrunt : MonoBehaviour
         }
         else if (currentHealth < health)
         {
+            agent.SetDestination(transform.position);
+            animator.SetTrigger("Hit");
             gotHit = true;
             currentHealth = Mathf.Min(currentHealth + bulletDamage, health);
         }
