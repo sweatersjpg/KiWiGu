@@ -451,6 +451,7 @@ public class PistolGrunt : MonoBehaviour
         else if (currentHealth < health)
         {
             agent.SetDestination(transform.position);
+            animator.SetInteger("HitIndex", Random.Range(0, 3));
             animator.SetTrigger("Hit");
             gotHit = true;
             currentHealth = Mathf.Min(currentHealth + bulletDamage, health);
@@ -516,6 +517,7 @@ public class PistolGrunt : MonoBehaviour
             }
 
             agent.SetDestination(transform.position);
+            animator.SetInteger("DeadIndex", Random.Range(0, 3));
             animator.SetTrigger("Dead");
             Destroy(gameObject, 5);
         }
