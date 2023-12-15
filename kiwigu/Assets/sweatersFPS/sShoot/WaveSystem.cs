@@ -5,8 +5,6 @@ using UnityEngine;
 public class WaveSystem : MonoBehaviour
 {
 
-    [SerializeField] Transform[] spawnPoints;
-
     [Space]
     [SerializeField] EnemyWave[] waves;
 
@@ -36,9 +34,9 @@ public class WaveSystem : MonoBehaviour
     {
         freeSpawnPoints = new List<Transform>();
 
-        for(int i = 0; i < spawnPoints.Length; i++)
+        for(int i = 0; i < waves[currentWave].SpawnPoints.childCount; i++)
         {
-            freeSpawnPoints.Add(spawnPoints[i]);
+            freeSpawnPoints.Add(waves[currentWave].SpawnPoints.GetChild(i));
         }
     }
 
