@@ -20,6 +20,7 @@ public class HellfireEnemy : MonoBehaviour
     [SerializeField] private float shield;
     [SerializeField] private Animator animator;
     [SerializeField] private GameObject shieldObject;
+    [SerializeField] private GameObject BrokenShieldIndicator;
     private bool lerpingShield = false;
     private Material shieldMaterial;
     private float shieldLerpStartTime;
@@ -395,7 +396,8 @@ public class HellfireEnemy : MonoBehaviour
 
         GameObject newHookTarget = Instantiate(hookTarget, hookTargetPosition.position, Quaternion.identity);
         Transform parentTransform = hookTargetPosition;
-        newHookTarget.transform.parent = parentTransform; 
+        newHookTarget.transform.parent = parentTransform;
+        newHookTarget.transform.localRotation = Quaternion.identity;
 
         isHoldingGun = true;
         restocking = false;
@@ -462,8 +464,12 @@ public class HellfireEnemy : MonoBehaviour
     {
         if (currentShield >= shield)
         {
-            ht.blockSteal = false;
-            Destroy(shieldObject);
+            if(shieldObject)
+            {
+                Instantiate(BrokenShieldIndicator, shieldObject.transform.position, Quaternion.identity);
+                ht.blockSteal = false;
+                Destroy(shieldObject);
+            }
         }
 
         if (currentHealth >= health && !isDead)
