@@ -1,14 +1,61 @@
-using System.Collections;
 using UnityEngine;
-using static EnemyBase;
+using System;
+using System.Reflection;
 
 public class HitVariable : MonoBehaviour
 {
-    public bool wasHit;
-    public PistolGrunt PistolGrunt;
+    public string HitReferenceScript;
+
+    public void SwitchAnim()
+    {
+        Type type = Type.GetType(HitReferenceScript);
+
+        if (type != null)
+        {
+            Component hitComponent = GetRootParent(gameObject.transform).GetComponent(type);
+
+            if (hitComponent != null)
+            {
+                MethodInfo method = type.GetMethod("SwitchAnim");
+
+                if (method != null)
+                {
+                    method.Invoke(hitComponent, null);
+                }
+            }
+        }
+    }
 
     public void ShootEvent()
     {
-        PistolGrunt.EnemyShoot();
+        Type type = Type.GetType(HitReferenceScript);
+
+        if (type != null)
+        {
+            Component hitComponent = GetRootParent(gameObject.transform).GetComponent(type);
+
+            if (hitComponent != null)
+            {
+                MethodInfo method = type.GetMethod("ShootEvent");
+
+                if (method != null)
+                {
+                    method.Invoke(hitComponent, null);
+                }
+            }
+        }
+    }
+
+    private Transform GetRootParent(Transform child)
+    {
+        Transform parent = child.parent;
+
+        while (parent != null)
+        {
+            child = parent;
+            parent = child.parent;
+        }
+
+        return child;
     }
 }

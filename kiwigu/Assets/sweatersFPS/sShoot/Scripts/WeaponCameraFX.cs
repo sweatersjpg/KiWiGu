@@ -32,7 +32,7 @@ public class WeaponCameraFX : MonoBehaviour
     {
         sweatersController player = sweatersController.instance;
 
-        float targetTilt = Input.GetAxis("Mouse X") * tiltIntensity;
+        float targetTilt = Vector3.Dot(player.velocity, player.transform.right) * tiltIntensity;
         if (PauseSystem.paused) targetTilt = 0;
 
         tilt += (targetTilt - tilt) / 4 * Time.deltaTime * 50;

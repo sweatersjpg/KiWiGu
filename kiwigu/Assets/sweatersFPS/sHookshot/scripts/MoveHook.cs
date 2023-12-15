@@ -81,7 +81,7 @@ public class MoveHook : MonoBehaviour
         //} else if(heading.magnitude > catchDistance) {
         //    canCatch = true;
         //}
-        if(headingBack && heading.magnitude < catchDistance)
+        if (headingBack && heading.magnitude < catchDistance && !hookTarget)
         {
             home.CatchHook(caughtGun, caughtGunAmmo);
 
@@ -102,7 +102,7 @@ public class MoveHook : MonoBehaviour
 
         if (hookTarget)
         {
-            if(!hookTarget.tether) hookTarget.resistance -= deltaTime;
+            if (!hookTarget.tether) hookTarget.resistance -= deltaTime;
 
             if (hookTarget.resistance > 0)
             {
@@ -121,14 +121,14 @@ public class MoveHook : MonoBehaviour
                 //maxHookRange -= Mathf.Min(speed * deltaTime, maxHookRange);
                 //speed += trackingAcceleration * deltaTime * 0.5f;
 
-                distToHook = Mathf.Min(heading.magnitude+1, distToHook);
+                distToHook = Mathf.Min(heading.magnitude + 1, distToHook);
 
                 //float distance = Mathf.Max(maxHookRange, playerDistance);
                 float distance = Mathf.Max(distToHook, playerDistance);
 
                 // grapple hook effect
                 if (heading.magnitude > distance)
-                {                    
+                {
                     Vector3 target = transform.position + heading.normalized * distance;
                     target += (player.transform.position - home.transform.position);
 
@@ -142,7 +142,8 @@ public class MoveHook : MonoBehaviour
                 }
 
                 return;
-            } else if(!hookTarget.tether)
+            }
+            else if (!hookTarget.tether)
             {
                 DamageEnemy(transform);
                 transform.parent = null;
@@ -150,7 +151,8 @@ public class MoveHook : MonoBehaviour
                 TakeHookTarget();
                 hookTarget = null;
                 // sweatersController.instance.isEncombered = false;
-            } else
+            }
+            else
             {
                 ReturnHookTarget();
             }
@@ -165,7 +167,7 @@ public class MoveHook : MonoBehaviour
 
         velocity = velocity.normalized * Mathf.Abs(speed);
 
-        if(headingBack)
+        if (headingBack)
         {
             maxHookRange -= Mathf.Min(speed * deltaTime, maxHookRange);
         }
@@ -197,25 +199,70 @@ public class MoveHook : MonoBehaviour
 
     void DamageEnemy(Transform t)
     {
-        EnemyBase e = t.GetComponentInParent<EnemyBase>();
+        EnemyHitBox e = t.GetComponentInParent<EnemyHitBox>();
 
-        if (e && (e.enemyTypeVariables.DefenseDrone || e.enemyTypeVariables.OffenseDrone))
+        if (e)
         {
-            e.TakeDamage(99999);
+            Transform rootParent = GetRootParent(e.transform);
+
+            if (rootParent != null)
+            {
+                var scriptType = System.Type.GetType(e.ReferenceScript);
+
+                if (scriptType != null)
+                {
+                    var enemyComponent = rootParent.GetComponent(scriptType) as MonoBehaviour;
+
+                    if (enemyComponent != null)
+                    {
+                        if (rootParent.gameObject.CompareTag("Drone"))
+                        {
+                            CallMethodSafely(enemyComponent, "TakeDamage", new object[] { 9999 });
+                        }
+                        else if (rootParent.gameObject.CompareTag("Enemy"))
+                        {
+                            CallMethodSafely(enemyComponent, "TakeGun", null);
+                        }
+                    }
+                }
+            }
         }
+    }
+
+    void CallMethodSafely(MonoBehaviour component, string methodName, object[] parameters)
+    {
+        var method = component.GetType().GetMethod(methodName);
+
+        if (method != null)
+        {
+            method.Invoke(component, parameters);
+        }
+    }
+
+    private Transform GetRootParent(Transform child)
+    {
+        Transform parent = child.parent;
+
+        while (parent != null)
+        {
+            child = parent;
+            parent = child.parent;
+        }
+
+        return child;
     }
 
     void DoPhysics()
     {
         // raycast from ppos to pos
 
-        if(caughtGun == null && !headingBack) HookGun();
+        if (caughtGun == null && !headingBack) HookGun();
 
-        bool hasHit = Physics.Raycast(pPosition, transform.position - pPosition, 
+        bool hasHit = Physics.Raycast(pPosition, transform.position - pPosition,
             out RaycastHit hit, (transform.position - pPosition).magnitude,
-            ~LayerMask.GetMask("GunHand", "Player", "HookTarget", "TransparentFX", "EnergyWall"));
+            ~LayerMask.GetMask("GunHand", "Player", "HookTarget", "TransparentFX"));
 
-        if(hasHit)
+        if (hasHit)
         {
             ResolveCollision(hit);
             AddChainSegment(hit.point);
@@ -232,6 +279,15 @@ public class MoveHook : MonoBehaviour
 
             GameObject target = hit.transform.gameObject;
             HookTarget ht = target.transform.GetComponentInChildren<HookTarget>();
+
+            if(ht.blockSteal)
+            {
+                if(GetRootParent(target.transform).CompareTag("Enemy") && GetRootParent(target.transform).GetComponent<HellfireEnemy>())
+                {
+                    GetRootParent(target.transform).GetComponent<HellfireEnemy>().TakeDamage(5);
+                }
+                return;
+            }
 
             if (ht == null)
             {
@@ -277,7 +333,7 @@ public class MoveHook : MonoBehaviour
             Pullback();
         }
     }
-    
+
     public void TakeThrownGun(GameObject target)
     {
         caughtGun = target.transform.GetComponent<ThrownGun>().info;
@@ -316,7 +372,7 @@ public class MoveHook : MonoBehaviour
 
     void ResolveCollision(RaycastHit hit)
     {
-        
+
         if (hit.transform.gameObject.CompareTag("RigidTarget"))
         {
             hit.transform.gameObject.GetComponent<PhysicsHit>().Hit(hit.point, velocity);
@@ -347,15 +403,15 @@ public class MoveHook : MonoBehaviour
         //    chainPointTimer = 0;
         //    AddChainSegment(transform.position + Random.insideUnitSphere * 0.1f - velocity.normalized * 0.1f);
         //}
-        if(!headingBack && (chain.GetPosition(0) - chain.GetPosition(1)).magnitude > chainSegmentSize)
+        if (!headingBack && (chain.GetPosition(0) - chain.GetPosition(1)).magnitude > chainSegmentSize)
         {
             AddChainSegment(transform.position + Random.insideUnitSphere * 0.1f - velocity.normalized * 0.1f);
         }
-        
+
         chain.SetPosition(chain.positionCount - 1, home.transform.position);
         chain.SetPosition(0, transform.position);
 
-        for(int i = 1; i < chain.positionCount-1; i++)
+        for (int i = 1; i < chain.positionCount - 1; i++)
         {
             Vector3 p = chain.GetPosition(i);
 
@@ -377,7 +433,7 @@ public class MoveHook : MonoBehaviour
         chain.positionCount++;
 
         // shift positions down
-        for(int i = chain.positionCount-2; i >= 1; i--)
+        for (int i = chain.positionCount - 2; i >= 1; i--)
         {
             chain.SetPosition(i + 1, chain.GetPosition(i));
         }
@@ -410,11 +466,12 @@ public class MoveHook : MonoBehaviour
             if (t < 0.4) // perfect hook
             {
                 hookTarget.resistance = 0;
-                if(force > 0) LaunchPlayer(force);
+                if (force > 0) LaunchPlayer(force);
 
                 Destroy(fx);
                 fx = Instantiate(perfectHookCircleFXprefab, transform);
-            } else
+            }
+            else
             {
                 hookTarget.resistance = 0;
             }
@@ -434,7 +491,7 @@ public class MoveHook : MonoBehaviour
 
         Vector3 v = (player.transform.position - transform.position).normalized;
 
-        player.velocity.y = Mathf.Min(Mathf.Abs(v.y)+0.5f, 1) * force;
-        player.maxSpeed = player.airSpeed;
+        player.velocity.y = Mathf.Min(Mathf.Abs(v.y) + 0.5f, 1) * force;
+        player.maxSpeed += 5;
     }
 }

@@ -33,7 +33,7 @@ public class Explosion : MonoBehaviour
     {
         float time = Time.time - startTime;
 
-        float scale = explosionSize.Evaluate(time/duration) * finalRadius;
+        float scale = explosionSize.Evaluate(time / duration) * finalRadius;
         transform.localScale = new(scale, scale, scale);
 
         CheckRadius(scale / 2);
@@ -45,7 +45,7 @@ public class Explosion : MonoBehaviour
     {
         Collider[] hits = Physics.OverlapSphere(transform.position, radius);
 
-        foreach(Collider hit in hits)
+        foreach (Collider hit in hits)
         {
             if (alreadyHit.Contains(hit)) return;
 
@@ -60,13 +60,31 @@ public class Explosion : MonoBehaviour
             }
             else if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Enemy"))
             {
-                EnemyBase enemy = hit.transform.gameObject.GetComponentInParent<EnemyBase>();
+                EnemyHitBox enemy = hit.transform.gameObject.GetComponentInParent<EnemyHitBox>();
                 if (enemy != null)
                 {
-                    enemy.TakeDamage(damageDealt);
+                    var scriptType = System.Type.GetType(enemy.ReferenceScript);
+
+                    Transform rootParent = GetRootParent(enemy.transform);
+
+                    if (rootParent != null)
+                    {
+                        var enemyComponent = rootParent.GetComponent(scriptType) as MonoBehaviour;
+
+                        if (enemyComponent != null)
+                        {
+                            var takeDamageMethod = scriptType.GetMethod("TakeDamage");
+
+                            if (takeDamageMethod != null)
+                            {
+                                takeDamageMethod.Invoke(enemyComponent, new object[] { damageDealt });
+                            }
+                        }
+                    }
                     alreadyHit.Add(hit);
                 }
-            } else if (hit.attachedRigidbody != null)
+            }
+            else if (hit.attachedRigidbody != null)
             {
                 alreadyHit.Add(hit);
 
@@ -74,8 +92,19 @@ public class Explosion : MonoBehaviour
                 hit.attachedRigidbody.AddForce(force * (hit.transform.position - transform.position).normalized, ForceMode.Impulse);
                 // print(hit.name);
             }
-
         }
     }
 
+    private Transform GetRootParent(Transform child)
+    {
+        Transform parent = child.parent;
+
+        while (parent != null)
+        {
+            child = parent;
+            parent = child.parent;
+        }
+
+        return child;
+    }
 }

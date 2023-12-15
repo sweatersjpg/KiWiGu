@@ -2,9 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.Burst.CompilerServices;
 using Unity.VisualScripting;
+using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.UI;
+using static UnityEditor.Experimental.GraphView.GraphView;
 
 public class Bullet : MonoBehaviour
 {
@@ -35,6 +37,9 @@ public class Bullet : MonoBehaviour
 
     [Space]
     public GameObject sparksPrefab;
+    [Space]
+    public GameObject[] HitFX;
+    public LayerMask[] HitFXLayers;
 
     public GameObject[] spawnOnHit;
 
@@ -191,12 +196,42 @@ public class Bullet : MonoBehaviour
     //    }
     //}
 
-    private void ApplyDamage(EnemyHitboxRegister enemy, float damageMultiplier)
+    private void ApplyDamage(EnemyHitBox enemy, float damageMultiplier)
     {
-        //if (enemy == null || enemy.enemyBase == null || enemy.enemyBase.enemyMainVariables == null || enemy.enemyBase.enemyMainVariables.animator == null)
-        //    return;
+        if (enemy == null)
+            return;
 
-        enemy.enemyBase.TakeDamage(bulletDamage * damageMultiplier);
+        var scriptType = System.Type.GetType(enemy.ReferenceScript);
+
+        Transform rootParent = GetRootParent(enemy.transform);
+
+        if (rootParent != null && scriptType != null)
+        {
+            var enemyComponent = rootParent.GetComponent(scriptType) as MonoBehaviour;
+
+            if (enemyComponent != null) 
+            {
+                var takeDamageMethod = scriptType.GetMethod("TakeDamage");
+
+                if (takeDamageMethod != null)
+                {
+                    takeDamageMethod.Invoke(enemyComponent, new object[] { bulletDamage * damageMultiplier });
+                }
+            }
+        }
+    }
+
+    private Transform GetRootParent(Transform child)
+    {
+        Transform parent = child.parent;
+
+        while (parent != null)
+        {
+            child = parent;
+            parent = child.parent;
+        }
+
+        return child;
     }
 
     void DoHit(RaycastHit hit, Vector3 direction)
@@ -211,8 +246,7 @@ public class Bullet : MonoBehaviour
         }
         else if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Enemy"))
         {
-            EnemyHitboxRegister enemy = hit.transform.gameObject.GetComponent<EnemyHitboxRegister>();
-
+            EnemyHitBox enemy = hit.transform.gameObject.GetComponent<EnemyHitBox>();
 
             if (enemy != null)
             {
@@ -239,7 +273,11 @@ public class Bullet : MonoBehaviour
             SpawnHole(hit);
         }
 
-        if (sparksPrefab != null) SpawnSparks(hit, direction);
+        if (sparksPrefab != null || HitFX.Length > 0)
+        {
+            if (!SpawnSpecialHitFX(hit, direction)) SpawnHitFX(hit, direction, sparksPrefab);
+        }
+
         bulletMesh.transform.position = hit.point;
 
         foreach (GameObject s in spawnOnHit)
@@ -266,7 +304,7 @@ public class Bullet : MonoBehaviour
         hole.parent = hit.transform;
     }
 
-    void SpawnSparks(RaycastHit hit, Vector3 direction)
+    void SpawnHitFX(RaycastHit hit, Vector3 direction, GameObject prefab)
     {
         Vector3 d = direction;
         Vector3 n = hit.normal;
@@ -275,8 +313,22 @@ public class Bullet : MonoBehaviour
 
         Vector3 facing = r;
 
-        Transform sparks = Instantiate(sparksPrefab).transform;
+        Transform sparks = Instantiate(prefab).transform;
         sparks.SetPositionAndRotation(hit.point, Quaternion.LookRotation(facing));
+    }
+
+    bool SpawnSpecialHitFX(RaycastHit hit, Vector3 direction)
+    {
+        for(int i = 0; i < HitFX.Length; i++)
+        {
+            if (HitFXLayers[i] != (HitFXLayers[i] | (1 << hit.transform.gameObject.layer))) continue;
+
+            SpawnHitFX(hit, direction, HitFX[i]);
+
+            return true;
+        }
+
+        return false;
     }
 
     Vector3 EvaluateLocation(float time)
