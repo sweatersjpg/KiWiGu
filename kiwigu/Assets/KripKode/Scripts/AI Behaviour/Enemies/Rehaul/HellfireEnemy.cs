@@ -21,6 +21,7 @@ public class HellfireEnemy : MonoBehaviour
     [SerializeField] private Animator animator;
     [SerializeField] private GameObject shieldObject;
     [SerializeField] private GameObject BrokenShieldIndicator;
+    [SerializeField] private GameObject ragdoll;
     private bool lerpingShield = false;
     private Material shieldMaterial;
     private float shieldLerpStartTime;
@@ -508,9 +509,13 @@ public class HellfireEnemy : MonoBehaviour
             }
 
             agent.SetDestination(transform.position);
-            animator.SetInteger("DeadIndex", Random.Range(0, 3));
-            animator.SetTrigger("Dead");
-            Destroy(gameObject, 5);
+            //animator.SetInteger("DeadIndex", Random.Range(0, 3));
+            //animator.SetTrigger("Dead");
+
+            GameObject Ragdollerino = Instantiate(ragdoll, transform.position, transform.rotation);
+            Destroy(Ragdollerino, 15f);
+
+            Destroy(gameObject);
         }
     }
 
