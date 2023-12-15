@@ -70,13 +70,16 @@ public class PistolGrunt : MonoBehaviour
     [Header("Enemy Attack Settings")]
     [SerializeField] Transform BulletExitPoint;
     [SerializeField] float shootCooldown;
-    [SerializeField] float GunInaccuracy;
     public bool isShooting;
     GunInfo info;
     float shootTimer;
     bool animDone;
 
     private bool gotHit;
+    private float maxRotationTime = 0.25f;
+    private Quaternion startRotation;
+    private float currentRotationTime;
+    private bool isRotating;
 
     private void Start()
     {
@@ -429,18 +432,39 @@ public class PistolGrunt : MonoBehaviour
 
         Quaternion targetRotation = Quaternion.LookRotation(objPos - agent.transform.position);
 
-        agent.transform.rotation = Quaternion.Slerp(agent.transform.rotation, targetRotation, Time.deltaTime * 10);
+        if(isShooting)
+        {
+            agent.transform.rotation = Quaternion.Slerp(agent.transform.rotation, targetRotation, Time.deltaTime * 4f);
+        }
+        else
+        {
+            agent.transform.rotation = Quaternion.Slerp(agent.transform.rotation, targetRotation, Time.deltaTime * 10);
+        }
     }
 
     private void RotateGunObjectExitPoint(Vector3 playerPosition)
     {
-        if (!isShooting) return;
-
-        Vector3 targetPosition = new Vector3(playerPosition.x + Random.Range(-GunInaccuracy, GunInaccuracy), playerPosition.y + 1f, playerPosition.z + Random.Range(-GunInaccuracy, GunInaccuracy));
+        Vector3 targetPosition = new Vector3(playerPosition.x, playerPosition.y + 1f, playerPosition.z);
         Vector3 direction = targetPosition - BulletExitPoint.transform.position;
+
         Quaternion targetRotation = Quaternion.LookRotation(direction);
 
-        BulletExitPoint.transform.rotation = targetRotation;
+        if (isRotating)
+        {
+            currentRotationTime += Time.deltaTime;
+            float t = Mathf.Clamp01(currentRotationTime / maxRotationTime);
+
+            BulletExitPoint.transform.rotation = Quaternion.Lerp(startRotation, targetRotation, t);
+
+            if (currentRotationTime >= maxRotationTime)
+            {
+                isRotating = false;
+            }
+        }
+
+        startRotation = BulletExitPoint.transform.rotation;
+        currentRotationTime = 0f;
+        isRotating = true;
     }
 
     private void RememberPlayer()
