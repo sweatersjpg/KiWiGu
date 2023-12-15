@@ -103,7 +103,7 @@ public class sweatersController : MonoBehaviour
     {
         charController = GetComponent<CharacterController>();
 
-        if(CheckPointSystem.spawnPoint != null)
+        if(!CheckPointSystem.spawnPoint.Equals(new Vector3()))
         {
             charController.enabled = false;
 

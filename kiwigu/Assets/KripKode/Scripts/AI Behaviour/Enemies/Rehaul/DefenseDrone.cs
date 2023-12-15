@@ -156,7 +156,7 @@ public class DefenseDrone : MonoBehaviour
 
         if (IsPlayerWithinRange())
         {
-            Debug.Log("within range");
+            // Debug.Log("within range");
             if(timeSinceLastShot > defendCooldown)
             {
                 EnemyShoot();
