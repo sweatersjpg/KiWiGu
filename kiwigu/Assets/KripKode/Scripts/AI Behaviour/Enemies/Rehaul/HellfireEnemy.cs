@@ -430,6 +430,10 @@ public class HellfireEnemy : MonoBehaviour
         if (currentShield < shield)
         {
             StartLerpShieldProgress();
+
+            float healthPercent = 1.0f - Mathf.Clamp01(currentShield / shield);
+            shieldMaterial.SetFloat("_HealthPercent", healthPercent);
+
             currentShield = Mathf.Min(currentShield + bulletDamage, shield);
         }
         else if (currentHealth < health)
@@ -482,7 +486,7 @@ public class HellfireEnemy : MonoBehaviour
     {
         if (currentShield >= shield)
         {
-            if(shieldObject)
+            if (shieldObject)
             {
                 Instantiate(BrokenShieldIndicator, shieldObject.transform.position, Quaternion.identity);
                 ht.blockSteal = false;
