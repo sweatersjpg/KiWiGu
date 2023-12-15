@@ -5,6 +5,8 @@ using UnityEngine;
 public class WaveSystem : MonoBehaviour
 {
 
+    public GameObject spawnFX;
+
     [Space]
     [SerializeField] EnemyWave[] waves;
 
