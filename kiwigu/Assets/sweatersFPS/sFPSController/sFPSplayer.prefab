@@ -873,8 +873,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   timeScale: 1
-  delta: {x: 0.02, y: 0.01, z: 0}
+  delta: {x: 0.05, y: 0.05, z: 0.05}
   rotationDelta: {x: 0, y: 0, z: 0.5}
+  deltaLimit: 0.1
   velocity: {x: 0, y: 0, z: 0}
   cameraFX: {fileID: 4619342294562106012}
 --- !u!1 &7049817264240251262
@@ -927,8 +928,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   timeScale: 1
-  delta: {x: 0.02, y: 0.01, z: 0}
+  delta: {x: 0.05, y: 0.05, z: 0.05}
   rotationDelta: {x: 0, y: 0, z: 0.5}
+  deltaLimit: 0.1
   velocity: {x: 0, y: 0, z: 0}
   cameraFX: {fileID: 4619342294562106012}
 --- !u!114 &49666585

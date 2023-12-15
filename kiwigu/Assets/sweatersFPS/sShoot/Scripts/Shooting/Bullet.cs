@@ -159,7 +159,7 @@ public class Bullet : MonoBehaviour
         bulletMesh.transform.position = origin;
 
         bool hasHit = Physics.SphereCast(origin, radius, direction, out RaycastHit hit, direction.magnitude,
-            LayerMask.GetMask("Enemy", "PhysicsObject"));
+            LayerMask.GetMask("Enemy", "PhysicsObject", "Player"));
 
         if (fromEnemy) hasHit = false;
 
