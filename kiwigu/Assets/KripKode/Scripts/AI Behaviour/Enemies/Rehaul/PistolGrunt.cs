@@ -70,7 +70,6 @@ public class PistolGrunt : MonoBehaviour
     [Header("Enemy Attack Settings")]
     [SerializeField] Transform BulletExitPoint;
     [SerializeField] float shootCooldown;
-    [SerializeField] float GunInaccuracy;
     public bool isShooting;
     GunInfo info;
     float shootTimer;
@@ -429,17 +428,24 @@ public class PistolGrunt : MonoBehaviour
 
         Quaternion targetRotation = Quaternion.LookRotation(objPos - agent.transform.position);
 
-        agent.transform.rotation = Quaternion.Slerp(agent.transform.rotation, targetRotation, Time.deltaTime * 10);
+        if(isShooting)
+        {
+            agent.transform.rotation = Quaternion.Slerp(agent.transform.rotation, targetRotation, Time.deltaTime * 4f);
+        }
+        else
+        {
+            agent.transform.rotation = Quaternion.Slerp(agent.transform.rotation, targetRotation, Time.deltaTime * 10);
+        }
     }
 
     private void RotateGunObjectExitPoint(Vector3 playerPosition)
     {
         if (!isShooting) return;
 
-        Vector3 targetPosition = new Vector3(playerPosition.x + Random.Range(-GunInaccuracy, GunInaccuracy), playerPosition.y + 1f, playerPosition.z + Random.Range(-GunInaccuracy, GunInaccuracy));
+        Vector3 targetPosition = new Vector3(playerPosition.x, playerPosition.y + 1f, playerPosition.z);
         Vector3 direction = targetPosition - BulletExitPoint.transform.position;
         Quaternion targetRotation = Quaternion.LookRotation(direction);
-
+        
         BulletExitPoint.transform.rotation = targetRotation;
     }
 
