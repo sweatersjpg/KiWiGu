@@ -626,23 +626,40 @@ public class PistolGrunt : MonoBehaviour
         {
             isDead = true;
 
+            GameObject Ragdollerino = Instantiate(ragdoll, transform.position, transform.rotation);
+
             if (isHoldingGun)
             {
+                EnableHookTargetsRecursively(Ragdollerino.transform);
+
                 GetComponentInChildren<HookTarget>();
                 if (ht != null) ht.BeforeDestroy();
 
                 isHoldingGun = false;
                 isShooting = false;
             }
-
             agent.SetDestination(transform.position);
+
             //animator.SetInteger("DeadIndex", Random.Range(0, 3));
             //animator.SetTrigger("Dead");
 
-            GameObject Ragdollerino = Instantiate(ragdoll, transform.position, transform.rotation);
             Destroy(Ragdollerino, 15f);
-
             Destroy(gameObject);
+        }
+    }
+
+    private void EnableHookTargetsRecursively(Transform parent)
+    {
+        HookTarget hookTarget = parent.GetComponent<HookTarget>();
+
+        if (hookTarget != null)
+        {
+            hookTarget.gameObject.SetActive(true);
+        }
+
+        foreach (Transform child in parent)
+        {
+            EnableHookTargetsRecursively(child);
         }
     }
 
