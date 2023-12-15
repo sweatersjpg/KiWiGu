@@ -8,7 +8,7 @@ public class PistolGrunt : MonoBehaviour
 {
     [SerializeField] private StudioEventEmitter sfxEmitterAvailable;
 
-    public enum EnemyState { Wandering, Seek, Panic, Shoot };
+    public enum EnemyState { Wandering, Seek, Panic, Shoot, Restock };
     [SerializeField] private EnemyState enemyState = EnemyState.Wandering;
 
     [Header("Drone Basic Settings")]
@@ -54,10 +54,14 @@ public class PistolGrunt : MonoBehaviour
     private bool loggedHidingObject;
     private GameObject loggedGameObject;
     private Vector3 hidingPos;
+    private bool restocking;
+    private bool gotBalls;
 
     [Space(10)]
     [Header("Enemy Panic Settings")]
     [SerializeField] private float hideTime;
+    [SerializeField] private GameObject hookTarget;
+    [SerializeField] private Transform hookTargetPosition;
     private bool isHiding;
     public float hideTimer;
     private GameObject lastSelectedCover;
@@ -66,7 +70,6 @@ public class PistolGrunt : MonoBehaviour
     [Header("Enemy Attack Settings")]
     [SerializeField] Transform BulletExitPoint;
     [SerializeField] float shootCooldown;
-    [SerializeField] float GunInaccuracy;
     public bool isShooting;
     GunInfo info;
     float shootTimer;
@@ -104,12 +107,13 @@ public class PistolGrunt : MonoBehaviour
         Seek();
         Panic();
         Shoot();
+        Restock();
         RememberPlayer();
     }
 
     private void StateManager()
     {
-        if (agent.velocity.magnitude <= 0.1f)
+        if (!restocking && agent.velocity.magnitude <= 0.1f)
         {
             animator.SetBool("walk", false);
             animator.SetBool("run", false);
@@ -126,10 +130,18 @@ public class PistolGrunt : MonoBehaviour
 
             if (hideTimer >= hideTime)
             {
+                isShooting = false;
                 gotHit = false;
                 animator.SetBool("crouching", false);
-                isHiding = false;
+                
+                if(!isHoldingGun)
+                {
+                    enemyState = EnemyState.Restock;
+                    gotBalls = true;
+                }
+
                 hideTimer = 0;
+                isHiding = false;
             }
 
             return;
@@ -139,9 +151,17 @@ public class PistolGrunt : MonoBehaviour
         if (isShooting && !gotHit)
             return;
 
-        if ((gotHit || !isHoldingGun) && currentShield >= shield)
+        if (!gotBalls && gotHit && isHoldingGun && currentShield >= shield)
         {
             enemyState = EnemyState.Panic;
+        }
+        else if (!gotBalls &&gotHit && !isHoldingGun && currentShield >= shield)
+        {
+            enemyState = EnemyState.Panic;
+        }
+        else if (gotBalls && !isHoldingGun && currentShield >= shield)
+        {
+            enemyState = EnemyState.Restock;
         }
         else if (!IsPlayerVisible() && !rememberPlayer)
         {
@@ -249,6 +269,79 @@ public class PistolGrunt : MonoBehaviour
         }
     }
 
+    private void Restock()
+    {
+        if (enemyState == EnemyState.Restock)
+        {
+            if (restocking)
+                return;
+
+            agent.speed = panicSpeed;
+
+            if (agent.velocity.magnitude >= 0.1f)
+            {
+                animator.SetBool("run", true);
+            }
+
+            GameObject[] restockStations = GameObject.FindGameObjectsWithTag("EnemyRestockStation");
+            GameObject nearestRestockStation = null;
+            float shortestDistance = Mathf.Infinity;
+
+            foreach (GameObject restockStation in restockStations)
+            {
+                float distanceToRestockStation = Vector3.Distance(transform.position, restockStation.transform.position);
+
+                if (distanceToRestockStation < shortestDistance)
+                {
+                    shortestDistance = distanceToRestockStation;
+                    nearestRestockStation = restockStation;
+                }
+            }
+            if (nearestRestockStation != null)
+            {
+                agent.SetDestination(nearestRestockStation.transform.position);
+            }
+
+            if (Vector3.Distance(transform.position, nearestRestockStation.transform.position) <= 1f)
+            {
+                RestockGun();
+            }
+        }
+    }
+
+    public virtual void RestockGun()
+    {
+        if (!restocking)
+            StartCoroutine(DelayedRestock());
+    }
+
+    IEnumerator DelayedRestock()
+    {
+        restocking = true;
+
+        animator.SetBool("walk", false);
+        animator.SetBool("run", false);
+
+        yield return new WaitForSeconds(1);
+
+        animator.SetBool("run", true);
+
+        Vector3 newPos = RandomNavSphere(transform.position, wanderRadius, -1);
+        agent.SetDestination(newPos);
+
+        yield return new WaitForSeconds(2);
+
+        GameObject newHookTarget = Instantiate(hookTarget, hookTargetPosition.position, Quaternion.identity);
+        Transform parentTransform = hookTargetPosition;
+        newHookTarget.transform.parent = parentTransform;
+        newHookTarget.transform.localRotation = Quaternion.identity;
+
+        isHoldingGun = true;
+        restocking = false;
+        isShooting = false;
+        gotBalls = false;
+    }
+
     IEnumerator ShootRoutine()
     {
         isShooting = true;
@@ -335,17 +428,24 @@ public class PistolGrunt : MonoBehaviour
 
         Quaternion targetRotation = Quaternion.LookRotation(objPos - agent.transform.position);
 
-        agent.transform.rotation = Quaternion.Slerp(agent.transform.rotation, targetRotation, Time.deltaTime * 10);
+        if(isShooting)
+        {
+            agent.transform.rotation = Quaternion.Slerp(agent.transform.rotation, targetRotation, Time.deltaTime * 4f);
+        }
+        else
+        {
+            agent.transform.rotation = Quaternion.Slerp(agent.transform.rotation, targetRotation, Time.deltaTime * 10);
+        }
     }
 
     private void RotateGunObjectExitPoint(Vector3 playerPosition)
     {
         if (!isShooting) return;
 
-        Vector3 targetPosition = new Vector3(playerPosition.x + Random.Range(-GunInaccuracy, GunInaccuracy), playerPosition.y + 1f, playerPosition.z + Random.Range(-GunInaccuracy, GunInaccuracy));
+        Vector3 targetPosition = new Vector3(playerPosition.x, playerPosition.y + 1f, playerPosition.z);
         Vector3 direction = targetPosition - BulletExitPoint.transform.position;
         Quaternion targetRotation = Quaternion.LookRotation(direction);
-
+        
         BulletExitPoint.transform.rotation = targetRotation;
     }
 
@@ -435,7 +535,7 @@ public class PistolGrunt : MonoBehaviour
     {
         isHoldingGun = false;
         isShooting = false;
-        enemyState = EnemyState.Panic;
+        gotHit = true;
     }
 
     public virtual void TakeDamage(float bulletDamage)

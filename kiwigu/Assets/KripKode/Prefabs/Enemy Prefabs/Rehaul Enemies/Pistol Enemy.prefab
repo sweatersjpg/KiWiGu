@@ -193,6 +193,37 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!1 &3424095017521631619
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4628476891705420053}
+  m_Layer: 11
+  m_Name: Hook Point
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4628476891705420053
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3424095017521631619}
+  m_LocalRotation: {x: 0.000000029802308, y: 0.000000093132215, z: 0.000000022351731, w: 1}
+  m_LocalPosition: {x: -0.027, y: 0.15, z: -0.088}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6396152856584079699}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6396152856584079696
 GameObject:
   m_ObjectHideFlags: 0
@@ -223,6 +254,7 @@ Transform:
   m_Children:
   - {fileID: 6396152858233542118}
   - {fileID: 6618363012954170831}
+  - {fileID: 4628476891705420053}
   - {fileID: 6396152856749699664}
   m_Father: {fileID: 6396152858036184542}
   m_RootOrder: 3
@@ -321,7 +353,7 @@ Transform:
   m_Children:
   - {fileID: 6396152857318487043}
   m_Father: {fileID: 6396152856584079699}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: -1.4429717, y: -0.44348302, z: 12.342971}
 --- !u!1 &6396152856781358593
 GameObject:
@@ -386,7 +418,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ReferenceScript: PistolGrunt
-  isPhysicalShield: 0
   doubleDamage: 0
   lessDamage: 0
   leastDamage: 0
@@ -451,7 +482,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ReferenceScript: PistolGrunt
-  isPhysicalShield: 0
   doubleDamage: 0
   lessDamage: 0
   leastDamage: 0
@@ -579,7 +609,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ReferenceScript: 
-  isPhysicalShield: 0
   doubleDamage: 1
   lessDamage: 0
   leastDamage: 0
@@ -739,7 +768,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ReferenceScript: PistolGrunt
-  isPhysicalShield: 0
   doubleDamage: 0
   lessDamage: 0
   leastDamage: 1
@@ -804,7 +832,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ReferenceScript: PistolGrunt
-  isPhysicalShield: 0
   doubleDamage: 0
   lessDamage: 1
   leastDamage: 0
@@ -1059,7 +1086,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ReferenceScript: PistolGrunt
-  isPhysicalShield: 0
   doubleDamage: 0
   lessDamage: 0
   leastDamage: 1
@@ -1156,7 +1182,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ReferenceScript: PistolGrunt
-  isPhysicalShield: 0
   doubleDamage: 0
   lessDamage: 1
   leastDamage: 0
@@ -1252,7 +1277,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ReferenceScript: PistolGrunt
-  isPhysicalShield: 0
   doubleDamage: 0
   lessDamage: 0
   leastDamage: 0
@@ -1381,7 +1405,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ReferenceScript: PistolGrunt
-  isPhysicalShield: 0
   doubleDamage: 0
   lessDamage: 1
   leastDamage: 0
@@ -1994,11 +2017,12 @@ MonoBehaviour:
   rememberWaitTime: 10
   eyesPosition: {fileID: 6396152858631440492}
   seekRange: 20
-  hideTime: 3
+  hideTime: 5
+  hookTarget: {fileID: 7882388365707268293, guid: 0b73ac51743c40b49bc75746f2830236, type: 3}
+  hookTargetPosition: {fileID: 4628476891705420053}
   hideTimer: 0
   BulletExitPoint: {fileID: 6396152858233542118}
   shootCooldown: 0.5
-  GunInaccuracy: 2
   isShooting: 0
 --- !u!1 &6396152858036184543
 GameObject:
@@ -2128,7 +2152,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ReferenceScript: PistolGrunt
-  isPhysicalShield: 0
   doubleDamage: 0
   lessDamage: 1
   leastDamage: 0
@@ -2420,7 +2443,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ReferenceScript: PistolGrunt
-  isPhysicalShield: 0
   doubleDamage: 0
   lessDamage: 1
   leastDamage: 0
@@ -2583,7 +2605,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ReferenceScript: PistolGrunt
-  isPhysicalShield: 0
   doubleDamage: 0
   lessDamage: 0
   leastDamage: 0
@@ -2743,7 +2764,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ReferenceScript: PistolGrunt
-  isPhysicalShield: 0
   doubleDamage: 0
   lessDamage: 1
   leastDamage: 0
@@ -2899,8 +2919,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6425155342778750836}
-  m_LocalRotation: {x: 0.000000029802308, y: 0.000000093132215, z: 0.000000022351731, w: 1}
-  m_LocalPosition: {x: -0.027, y: 0.15, z: -0.088}
+  m_LocalRotation: {x: 0.00000017881383, y: 0.00000005960461, z: 0.000000007450576, w: 1}
+  m_LocalPosition: {x: -0.026999503, y: 0.14999938, z: -0.08800095}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
