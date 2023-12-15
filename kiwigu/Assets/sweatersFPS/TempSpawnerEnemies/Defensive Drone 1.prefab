@@ -403,6 +403,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyBase: {fileID: 6761830921264062057}
+  isPhysicalShield: 0
+  doubleDamage: 0
+  lessDamage: 0
+  leastDamage: 0
 --- !u!1 &6761830921264062059
 GameObject:
   m_ObjectHideFlags: 0
@@ -430,7 +434,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6761830921264062059}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -460,20 +464,24 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyMainVariables:
+    canBeHitAnim: 0
+    animator: {fileID: 0}
     MaxHealth: 75
     MaxShield: 0
     GunObject: {fileID: 4006260289432868516, guid: e9f49a38ad200014aa4418f8035720f2, type: 3}
     EyesPosition: {fileID: 6761830922321791274}
+    hasKnees: 0
+    KneesPosition: {fileID: 0}
     BodyMesh: {fileID: 6761830921263795062}
     HandPosition: {fileID: 6761830921934079969}
-    explosionPrefab: {fileID: 1886320638105856866, guid: 868415f162da742468824c5743d47bae, type: 3}
+    explosionPrefab: {fileID: 7636364201620702995, guid: b5816ea69c8765740b42c416d1463566, type: 3}
   enemyMovementVariables:
-    MovementVariation: 4
     MovementSpeed: 5
+    WanderRadius: 7
     AvoidPlayerDistance: 5
     RotationSpeed: 200
     EnemyAwareDistance: 20
-    DroneIdleTime: 2
+    IdleTime: 2
   enemyGunStats:
     EnemyFireRate: 1
     GunInaccuracy: 0
@@ -483,20 +491,23 @@ MonoBehaviour:
     Medium: 0
     DefenseDrone: 1
     OffenseDrone: 0
+  hasAnimationDeath: 0
   agent: {fileID: 0}
   currentHealth: 0
   currentShield: 0
   isHoldingGun: 0
-  wasHit: 0
   isShooting: 0
   isPlayerVisible: 0
-  detectedPlayer: 0
+  isPlayerVisibleKnees: 0
   detectedEnemy: 0
   playerPosition: {x: 0, y: 0, z: 0}
+  playerEyesPosition: {x: 0, y: 0, z: 0}
   enemyPosition: {x: 0, y: 0, z: 0}
   canFacePlayer: 1
   gunObjectExitPoint: {fileID: 0}
-  startedFleeing: 0
+  initialPosition: {x: 0, y: 0, z: 0}
+  gotHit: 0
+  isDead: 0
   sfxEmitterAvailable: {fileID: 4546283166040002242}
   tellEffect: {fileID: 2838533942546750815, guid: 4ca2e9e9def890849859a51bbf24d3a0, type: 3}
   droneHeightOffset: 0.4
@@ -514,7 +525,7 @@ NavMeshAgent:
   m_Acceleration: 50
   avoidancePriority: 50
   m_AngularSpeed: 120
-  m_StoppingDistance: 0
+  m_StoppingDistance: 1
   m_AutoTraverseOffMeshLink: 1
   m_AutoBraking: 1
   m_AutoRepath: 1

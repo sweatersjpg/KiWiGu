@@ -13,11 +13,14 @@ public class SizeOverLifetime : MonoBehaviour
     public float maxSize;
     public float minSize;
     public AnimationCurve sizeOverLifetime;
+    public AnimationCurve intensityOverLifetime;
 
     [Space]
     public BlackHoleVFX blackHole;
     public Transform bubble;
     public GameObject explosion;
+    public GameObject blackHoleExplosion;
+    bool hasExploded;
 
     float size = 0;
 
@@ -46,18 +49,34 @@ public class SizeOverLifetime : MonoBehaviour
         if (scale < 0) scale = 0;
         size += Time.deltaTime * 50 * (scale - size) / 2;
 
+        bullet.radius = scale * 0.8f;
+
         transform.localScale = new(size * 2, size * 2, size * 2);
 
 
         int saturation = bubble.childCount;
 
-        intensity = saturation / maxSaturation;
+        float lifeTime = Mathf.Max(time / bullet.lifeTime, saturation / maxSaturation);
+        startTime = Time.time - (lifeTime * bullet.lifeTime);
+
+        intensity = intensityOverLifetime.Evaluate(lifeTime);
 
         blackHole.SetDamagePercent(intensity);
 
-        if(intensity > 1)
+        Debug.Log(lifeTime);
+
+        if (lifeTime > 0.8 && !hasExploded)
         {
-            Instantiate(explosion, transform.position, Quaternion.identity);
+            bullet.dead = true;
+            GameObject newBlackHoleExplosion = Instantiate(blackHoleExplosion, transform.position, Quaternion.identity);
+            newBlackHoleExplosion.transform.localScale = Vector3.one * size;
+            hasExploded = true;
+        }
+
+        if (lifeTime >= 0.98)
+        {
+            GameObject newExplosion = Instantiate(explosion, transform.position, Quaternion.identity);
+            newExplosion.transform.localScale = Vector3.one * size;
             Destroy(gameObject);
         }
     }

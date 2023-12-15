@@ -2,6 +2,8 @@ using FMODUnity;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
+using static MiniMenuSystem;
+using static UnityEngine.ParticleSystem;
 
 public class DroneBehaviour : EnemyBase
 {
@@ -77,7 +79,10 @@ public class DroneBehaviour : EnemyBase
         float distance = Vector3.Distance(transform.position, enemyPosition);
 
         if (distance > 0.1f)
-            agent.SetDestination(enemyPosition);
+        {
+            if(agent.isOnNavMesh)
+                agent.SetDestination(enemyPosition);
+        }
         else
             agent.ResetPath();
 
@@ -241,17 +246,16 @@ public class DroneBehaviour : EnemyBase
     private IEnumerator DefenseDronePattern(Vector3 theProtectorPosition)
     {
         isShootingPatternActive = true;
-
         for (int i = 0; i < 3; i++)
         {
             Vector3 currentPosition = transform.position;
-
-            float distanceToTarget = Vector3.Distance(currentPosition, randomDestination);
-
+            float distanceToTarget = Vector3.Distance(currentPosition, theProtectorPosition);
             droneMoveTime = distanceToTarget / agent.speed;
 
             if (agent.isOnNavMesh)
-                yield return new WaitUntil(() => !agent.pathPending && agent.remainingDistance < 0.1f);
+            {
+                yield return new WaitUntil(() => !agent.pathPending && agent.remainingDistance < 1.5f);
+            }
 
             if (droneSwitch)
             {
@@ -266,12 +270,18 @@ public class DroneBehaviour : EnemyBase
 
             canFacePlayer = false;
             yield return new WaitForSeconds(0.25f);
+
             if (isPlayerVisible)
+            {
                 yield return new WaitForSeconds(EnemyShoot());
+            }
+
             canFacePlayer = true;
         }
 
-        agent.ResetPath();
+        if(agent.isOnNavMesh)
+            agent.ResetPath();
+
         yield return new WaitForSeconds(enemyMovementVariables.IdleTime);
         isShootingPatternActive = false;
 

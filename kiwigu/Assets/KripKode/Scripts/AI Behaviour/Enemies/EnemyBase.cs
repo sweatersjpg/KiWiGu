@@ -9,6 +9,7 @@ public class EnemyBase : MonoBehaviour
     public EnemyMovementVariables enemyMovementVariables;
     public EnemyGunStats enemyGunStats;
     public EnemyTypeVariables enemyTypeVariables;
+    public bool hasAnimationDeath;
 
     [Header("Shared Variables")]
     [HideInInspector] public NavMeshAgent agent;
@@ -20,10 +21,14 @@ public class EnemyBase : MonoBehaviour
     [HideInInspector] public bool isPlayerVisibleKnees;
     [HideInInspector] public bool detectedEnemy;
     [HideInInspector] public Vector3 playerPosition;
+    [HideInInspector] public Vector3 playerEyesPosition;
     [HideInInspector] public Vector3 enemyPosition;
     [HideInInspector] public bool canFacePlayer = true;
     [HideInInspector] public GameObject gunObjectExitPoint;
     [HideInInspector] public Vector3 initialPosition;
+    [HideInInspector] public bool gotHit;
+    [HideInInspector] public bool isDead;
+
 
     protected virtual void Start()
     {
@@ -80,6 +85,9 @@ public class EnemyBase : MonoBehaviour
 
     public virtual void TakeDamage(float bulletDamage)
     {
+        if (isDead)
+            return;
+
         if (enemyMainVariables.canBeHitAnim) HitBase();
 
         if (currentShield < enemyMainVariables.MaxShield)
@@ -104,11 +112,15 @@ public class EnemyBase : MonoBehaviour
             .OrderBy(player => Vector3.Distance(transform.position, player.transform.position))
             .First()
             .transform.position;
+
+        playerEyesPosition = players
+            .OrderBy(player => Vector3.Distance(transform.position, player.transform.position))
+            .First().GetComponentInChildren<Camera>().transform.position;
     }
 
     private void DetectEnemy()
     {
-        GameObject[] enemies = GameObject.FindGameObjectsWithTag("DroneEnemy");
+        GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
 
         if (enemies.Length == 0)
             return;
@@ -123,6 +135,7 @@ public class EnemyBase : MonoBehaviour
 
     protected virtual void HitBase()
     {
+        gotHit = true;
         agent.enabled = false;
         StartCoroutine(PlayHitAnimation(enemyMainVariables.animator));
     }
@@ -136,11 +149,12 @@ public class EnemyBase : MonoBehaviour
 
         agent.enabled = true;
     }
-
     public void CheckStats()
     {
-        if (currentHealth >= enemyMainVariables.MaxHealth)
+        if (currentHealth >= enemyMainVariables.MaxHealth && !isDead)
         {
+            isDead = true;
+
             if (isHoldingGun)
             {
                 HookTarget ht = GetComponentInChildren<HookTarget>();
@@ -149,14 +163,24 @@ public class EnemyBase : MonoBehaviour
                 isHoldingGun = false;
             }
 
-            Instantiate(enemyMainVariables.explosionPrefab, enemyMainVariables.BodyMesh.transform.position, Quaternion.identity);
-            Destroy(gameObject);
+            if (enemyMainVariables.explosionPrefab != null)
+                Instantiate(enemyMainVariables.explosionPrefab, enemyMainVariables.BodyMesh.transform.position, Quaternion.identity);
+
+            if (hasAnimationDeath)
+            {
+                enemyMainVariables.animator.SetTrigger("Dead");
+                Destroy(gameObject, 5f);
+            }
+            else if (!hasAnimationDeath)
+            {
+                Destroy(gameObject);
+            }
         }
     }
 
     public virtual bool CheckEyesVisibility()
     {
-        Vector3 direction = playerPosition - enemyMainVariables.EyesPosition.transform.position + new Vector3(0, 0.5f, 0);
+        Vector3 direction = playerEyesPosition - enemyMainVariables.EyesPosition.transform.position;
 
         int layersToIgnore = LayerMask.GetMask("Enemy", "CoverBehaviour");
         int finalLayerMask = ~layersToIgnore;
@@ -244,13 +268,13 @@ public class EnemyBase : MonoBehaviour
         public int MovementSpeed = 5;
         [Range(3, 10)]
         public float WanderRadius = 7;
-        [Range(5, 10)]
+        [Range(5, 15)]
         [Tooltip("The distance at which the enemy avoids the player.")]
         public int AvoidPlayerDistance = 7;
         [Range(100, 1000)]
         [Tooltip("The rotation speed of the enemy.")]
         public int RotationSpeed = 180;
-        [Range(10, 100)]
+        [Range(15, 100)]
         [Tooltip("The distance at which the enemy becomes aware of the player.")]
         public int EnemyAwareDistance = 20;
         [Range(1, 10)]

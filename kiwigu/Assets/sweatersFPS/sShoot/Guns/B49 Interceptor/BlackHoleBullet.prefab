@@ -50,7 +50,7 @@ MonoBehaviour:
   speed: 370
   gravity: -9.8
   acceleration: 0
-  radius: 0.01
+  radius: 0.8
   trackTarget: 0
   trackingRadius: 2
   trackingSpeed: 2
@@ -59,12 +59,15 @@ MonoBehaviour:
   bulletHolePrefab: {fileID: 7839328679860194084, guid: a8f58d7ed020d4940b3a031616ccfaa5, type: 3}
   sparksPrefab: {fileID: 7558042070311089840, guid: 4a757825a5bafce41a9ebb47f13d0190, type: 3}
   spawnOnHit: []
+  dead: 0
   charge: 0
   ignoreMask:
     serializedVersion: 2
     m_Bits: 0
   fromEnemy: 0
   justInfo: 0
+  rbObject: {fileID: 0}
+  rbForce: 10
 --- !u!1 &7168401629478513263
 GameObject:
   m_ObjectHideFlags: 0
@@ -333,18 +336,6 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3567933066273778052, guid: 66449fe07135529438764cc95b9a082a, type: 3}
-      propertyPath: m_LocalScale.x
-      value: 0.1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3567933066273778052, guid: 66449fe07135529438764cc95b9a082a, type: 3}
-      propertyPath: m_LocalScale.y
-      value: 0.1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3567933066273778052, guid: 66449fe07135529438764cc95b9a082a, type: 3}
-      propertyPath: m_LocalScale.z
-      value: 0.1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3567933066273778052, guid: 66449fe07135529438764cc95b9a082a, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
       objectReference: {fileID: 0}
@@ -388,92 +379,44 @@ PrefabInstance:
       propertyPath: m_Name
       value: BlackHole
       objectReference: {fileID: 0}
+    - target: {fileID: 6474359019176767405, guid: 66449fe07135529438764cc95b9a082a, type: 3}
+      propertyPath: bullet
+      value: 
+      objectReference: {fileID: 745279074493107228}
+    - target: {fileID: 6474359019176767405, guid: 66449fe07135529438764cc95b9a082a, type: 3}
+      propertyPath: target
+      value: 
+      objectReference: {fileID: 4570687430845626531}
+    - target: {fileID: 6474359019176767405, guid: 66449fe07135529438764cc95b9a082a, type: 3}
+      propertyPath: intensityOverLifetime.m_Curve.Array.data[0].inSlope
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6474359019176767405, guid: 66449fe07135529438764cc95b9a082a, type: 3}
+      propertyPath: intensityOverLifetime.m_Curve.Array.data[1].inSlope
+      value: 0.15330078
+      objectReference: {fileID: 0}
+    - target: {fileID: 6474359019176767405, guid: 66449fe07135529438764cc95b9a082a, type: 3}
+      propertyPath: intensityOverLifetime.m_Curve.Array.data[0].outSlope
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6474359019176767405, guid: 66449fe07135529438764cc95b9a082a, type: 3}
+      propertyPath: intensityOverLifetime.m_Curve.Array.data[1].inWeight
+      value: 0.19999999
+      objectReference: {fileID: 0}
+    - target: {fileID: 6474359019176767405, guid: 66449fe07135529438764cc95b9a082a, type: 3}
+      propertyPath: intensityOverLifetime.m_Curve.Array.data[1].outSlope
+      value: 0.15330078
+      objectReference: {fileID: 0}
+    - target: {fileID: 6474359019176767405, guid: 66449fe07135529438764cc95b9a082a, type: 3}
+      propertyPath: intensityOverLifetime.m_Curve.Array.data[0].outWeight
+      value: 0.33333334
+      objectReference: {fileID: 0}
+    - target: {fileID: 6474359019176767405, guid: 66449fe07135529438764cc95b9a082a, type: 3}
+      propertyPath: intensityOverLifetime.m_Curve.Array.data[0].tangentMode
+      value: 34
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 66449fe07135529438764cc95b9a082a, type: 3}
---- !u!114 &5478948012552526028 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 1603741071334439827, guid: 66449fe07135529438764cc95b9a082a, type: 3}
-  m_PrefabInstance: {fileID: 6505590612556866399}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7767398782270900952}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 671d9e628bfb57b4b956b8a642174f06, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!4 &7767398781969004461 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 3567933066036974834, guid: 66449fe07135529438764cc95b9a082a, type: 3}
-  m_PrefabInstance: {fileID: 6505590612556866399}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &7767398782270900952 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 3567933066273778055, guid: 66449fe07135529438764cc95b9a082a, type: 3}
-  m_PrefabInstance: {fileID: 6505590612556866399}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &6474359019176767405
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7767398782270900952}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a6189574b3817874d9b6115565f8f8b4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  bullet: {fileID: 745279074493107228}
-  target: {fileID: 4570687430845626531}
-  maxSize: 1
-  minSize: 0.2
-  sizeOverLifetime:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 10.510949
-      outSlope: 10.510949
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0.05881812
-    - serializedVersion: 3
-      time: 0.19677734
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 0.8981481
-      value: 1.0097324
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 0.9976852
-      value: 0.00486618
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  blackHole: {fileID: 5478948012552526028}
-  bubble: {fileID: 7767398781969004461}
-  explosion: {fileID: 1886320638105856866, guid: 868415f162da742468824c5743d47bae, type: 3}
-  intensity: 0
-  maxSaturation: 4
 --- !u!4 &7767398782270900955 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3567933066273778052, guid: 66449fe07135529438764cc95b9a082a, type: 3}

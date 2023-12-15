@@ -199,7 +199,7 @@ public class MoveHook : MonoBehaviour
     {
         EnemyBase e = t.GetComponentInParent<EnemyBase>();
 
-        if (e)
+        if (e && (e.enemyTypeVariables.DefenseDrone || e.enemyTypeVariables.OffenseDrone))
         {
             e.TakeDamage(99999);
         }
@@ -213,7 +213,7 @@ public class MoveHook : MonoBehaviour
 
         bool hasHit = Physics.Raycast(pPosition, transform.position - pPosition, 
             out RaycastHit hit, (transform.position - pPosition).magnitude,
-            ~LayerMask.GetMask("GunHand", "Player", "HookTarget", "TransparentFX"));
+            ~LayerMask.GetMask("GunHand", "Player", "HookTarget", "TransparentFX", "EnergyWall"));
 
         if(hasHit)
         {
@@ -432,8 +432,9 @@ public class MoveHook : MonoBehaviour
     {
         sweatersController player = sweatersController.instance;
 
-        Vector3 v = -(player.transform.position - transform.position).normalized * force;
-        player.velocity.y = v.y;
+        Vector3 v = (player.transform.position - transform.position).normalized;
+
+        player.velocity.y = Mathf.Min(Mathf.Abs(v.y)+0.5f, 1) * force;
         player.maxSpeed = player.airSpeed;
     }
 }

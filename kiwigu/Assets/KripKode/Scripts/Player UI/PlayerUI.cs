@@ -5,6 +5,8 @@ using UnityEngine.UI;
 
 public class PlayerUI : MonoBehaviour
 {
+    static GameObject leapTooltip;
+
     [Header("Radar")]
     [SerializeField] GameObject radar;
     [SerializeField][Range(50, 1000)] float radarSpeed;
@@ -23,6 +25,7 @@ public class PlayerUI : MonoBehaviour
     private void Start()
     {
         player = GameObject.FindGameObjectWithTag("Player")?.transform;
+        leapTooltip = transform.Find("LeapTooltip").gameObject;
     }
 
     private void Update()
@@ -32,6 +35,11 @@ public class PlayerUI : MonoBehaviour
         if (!radar.activeSelf) return;
         Radar();
         radarCone.Rotate(0f, 0f, -radarSpeed * Time.deltaTime);
+    }
+
+    public static void SetLeapTooltipActive(bool state)
+    {
+        leapTooltip.SetActive(state);
     }
 
     void Radar()
