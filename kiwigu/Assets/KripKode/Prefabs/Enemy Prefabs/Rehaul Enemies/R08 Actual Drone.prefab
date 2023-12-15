@@ -118,6 +118,7 @@ MonoBehaviour:
   resistance: 0.5
   maxResistance: 0
   tether: 0
+  blockSteal: 0
 --- !u!1 &3670382882948306628
 GameObject:
   m_ObjectHideFlags: 0
@@ -350,7 +351,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3670382883293643632}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 46.92964, y: 0.7320038, z: -0.7037163}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -571,7 +572,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ReferenceScript: OffenseDrone
-  isPhysicalShield: 0
   doubleDamage: 0
   lessDamage: 0
   leastDamage: 0

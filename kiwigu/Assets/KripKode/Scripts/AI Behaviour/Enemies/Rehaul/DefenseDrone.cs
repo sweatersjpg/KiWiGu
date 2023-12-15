@@ -50,6 +50,7 @@ public class DefenseDrone : MonoBehaviour
     private Vector3 initialPosition;
     private float wanderTimer;
     private float initialDroneBodyPositionY;
+    private Vector3 initialLocalPosition;
     private Vector3 droneFloatPosition;
     private bool isMovingUp;
 
@@ -74,8 +75,10 @@ public class DefenseDrone : MonoBehaviour
         agent = GetComponent<NavMeshAgent>();
         initialDroneBodyPositionY = agent.height;
 
-        droneFloatPosition = new Vector3(droneBody.transform.position.x, initialDroneBodyPositionY, droneBody.transform.position.z);
-        droneBody.transform.position = droneFloatPosition;
+        droneFloatPosition = new Vector3(droneBody.transform.localPosition.x, initialDroneBodyPositionY, droneBody.transform.localPosition.z);
+        droneBody.transform.localPosition = droneFloatPosition;
+
+        initialLocalPosition = droneBody.transform.localPosition;
 
         initialPosition = transform.position;
     }
@@ -268,21 +271,21 @@ public class DefenseDrone : MonoBehaviour
 
     private void MoveBody(float direction)
     {
-        float targetHeight = initialDroneBodyPositionY + direction;
+        float targetHeight = initialLocalPosition.y + direction;
 
-        if (isMovingUp && droneBody.transform.position.y >= targetHeight)
+        if (isMovingUp && droneBody.transform.localPosition.y >= targetHeight)
         {
             isMovingUp = false;
         }
-        else if (!isMovingUp && droneBody.transform.position.y <= targetHeight)
+        else if (!isMovingUp && droneBody.transform.localPosition.y <= targetHeight)
         {
             isMovingUp = true;
         }
 
-        float newY = Mathf.MoveTowards(droneBody.transform.position.y, targetHeight, floatSpeed * Time.deltaTime);
+        float newY = Mathf.MoveTowards(droneBody.transform.localPosition.y, targetHeight, floatSpeed * Time.deltaTime);
 
-        droneFloatPosition = new Vector3(droneBody.transform.position.x, newY, droneBody.transform.position.z);
-        droneBody.transform.position = droneFloatPosition;
+        droneFloatPosition = new Vector3(droneBody.transform.localPosition.x, newY, droneBody.transform.localPosition.z);
+        droneBody.transform.localPosition = droneFloatPosition;
     }
 
     private bool IsPlayerWithinRange()

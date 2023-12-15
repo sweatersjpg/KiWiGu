@@ -553,6 +553,9 @@ public class PistolGrunt : MonoBehaviour
 
     private void SpawnBullet()
     {
+        if (!animDone)
+            return;
+
         if (!isHoldingGun)
         {
             isShooting = false;
