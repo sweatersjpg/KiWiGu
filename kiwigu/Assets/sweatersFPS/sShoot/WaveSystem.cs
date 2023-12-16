@@ -1,11 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class WaveSystem : MonoBehaviour
 {
     public Transform requiredCheckPoint;
     public GameObject spawnFX;
+
+    public bool isEnding = false;
 
     [Space]
     [SerializeField] EnemyWave[] waves;
@@ -88,6 +91,7 @@ public class WaveSystem : MonoBehaviour
         // execute next wave
         currentWave++;
         if (currentWave < waves.Length) StartCoroutine(nameof(StartWave));
+        else if(isEnding) SceneManager.LoadScene(1);
     }
 
     IEnumerator SpawnEnemies(int index)
