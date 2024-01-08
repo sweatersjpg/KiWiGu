@@ -2594,7 +2594,7 @@ MeshRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8707260385946198753}
   m_Enabled: 1
-  m_CastShadows: 1
+  m_CastShadows: 0
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
   m_StaticShadowCaster: 0
@@ -2870,8 +2870,8 @@ Transform:
   m_GameObject: {fileID: 8931406875862246907}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 26.821182, y: 0, z: -9.431015}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 1.2, y: 1.2, z: 1.2}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 8331016768589346907}
   - {fileID: 8931406875959441898}
@@ -2956,6 +2956,7 @@ MonoBehaviour:
   animator: {fileID: 815600489792796424}
   shieldObject: {fileID: 8707260385946198753}
   BrokenShieldIndicator: {fileID: 5046152788282611147, guid: 79b3f31201dc23a4589d3a4ce1699922, type: 3}
+  ragdoll: {fileID: 8931406875862246907, guid: 2b4aa26ac3195e447a973e86b3fcf5c5, type: 3}
   wanderSpeed: 3
   seekSpeed: 4
   panicSpeed: 5
