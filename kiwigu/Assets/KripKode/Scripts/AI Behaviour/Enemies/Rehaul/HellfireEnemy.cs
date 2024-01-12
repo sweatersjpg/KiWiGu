@@ -67,8 +67,7 @@ public class HellfireEnemy : MonoBehaviour
     private GunInfo info;
     private float shootTimer;
     private bool animDone;
-
-    private float maxRotationTime = 0.25f;
+    private float maxRotationTime = 0.05f; // smooothers
     private Quaternion startRotation;
     private float currentRotationTime;
     private bool isRotating;
@@ -115,15 +114,15 @@ public class HellfireEnemy : MonoBehaviour
             animator.SetBool("walk", false);
             animator.SetBool("run", false);
         }
-
-        if (isShooting)
-        {
+        
+        if(isShooting)
             RotateGunAndBodyTowardsPlayer();
-        }
 
+        // If shooting, do nothing
         if (isShooting)
             return;
 
+        // Set the enemy state based on conditions
         if (!isHoldingGun)
         {
             enemyState = EnemyState.Restock;
@@ -132,7 +131,7 @@ public class HellfireEnemy : MonoBehaviour
         {
             enemyState = EnemyState.Wandering;
         }
-        else if (IsPlayerVisible() || rememberPlayer)
+        else
         {
             enemyState = EnemyState.Seek;
         }
