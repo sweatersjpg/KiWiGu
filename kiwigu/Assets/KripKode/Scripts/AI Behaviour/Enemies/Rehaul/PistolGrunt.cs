@@ -77,7 +77,7 @@ public class PistolGrunt : MonoBehaviour
     bool animDone;
 
     private bool gotHit;
-    private float maxRotationTime = 0.25f;
+    private float maxRotationTime = 0.035f; // smooothers
     private Quaternion startRotation;
     private float currentRotationTime;
     private bool isRotating;
@@ -125,9 +125,7 @@ public class PistolGrunt : MonoBehaviour
         }
 
         if (isShooting)
-        {
             RotateGunAndBodyTowardsPlayer();
-        }
 
         if (isHiding)
         {
@@ -160,7 +158,7 @@ public class PistolGrunt : MonoBehaviour
         {
             enemyState = EnemyState.Panic;
         }
-        else if (!gotBalls &&gotHit && !isHoldingGun && currentShield >= shield)
+        else if (!gotBalls && gotHit && !isHoldingGun && currentShield >= shield)
         {
             enemyState = EnemyState.Panic;
         }

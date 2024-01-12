@@ -580,7 +580,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5626756182752326387}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.325, z: 0.3499999}
+  m_LocalPosition: {x: 0, y: -0.325, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -708,13 +708,17 @@ MonoBehaviour:
   wanderSpeed: 4
   seekSpeed: 8
   wanderRadius: 10
-  keepDistance: 3
-  awareDistance: 25
+  keepDistance: 1
+  awareDistance: 35
   wanderWaitTime: 5
   rememberWaitTime: 10
+  grenadePrefab: {fileID: 8717934894555608452, guid: 3830eb4640e015948b6f2ceca1b7ecd9, type: 3}
   bulletExitPoint: {fileID: 5626756182752326348}
-  defendCooldown: 1
+  defendCooldown: 4
   defendTag: Enemy
+  rotationSpeed: 60
+  spawnRadius: 2
+  numGrenades: 3
   droneBody: {fileID: 695158395439763589}
   floatValue: 0.5
   floatSpeed: 0.75
