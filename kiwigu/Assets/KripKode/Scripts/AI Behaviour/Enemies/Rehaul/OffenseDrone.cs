@@ -241,11 +241,11 @@ public class OffenseDrone : MonoBehaviour
             Vector3 localDirection = transform.InverseTransformDirection(direction);
             Quaternion lookRotation = Quaternion.LookRotation(new Vector3(localDirection.x, localDirection.y, localDirection.z));
 
-            if(isShooting)
-            {
-                DroneBody.transform.localRotation = Quaternion.Slerp(DroneBody.transform.localRotation, lookRotation, Time.deltaTime * 4f); ;
-            }
-            else
+            //if(isShooting)
+            //{
+            //    DroneBody.transform.localRotation = Quaternion.Slerp(DroneBody.transform.localRotation, lookRotation, Time.deltaTime * 4f); ;
+            //}
+            //else
             {
                 DroneBody.transform.localRotation = Quaternion.Slerp(DroneBody.transform.localRotation, lookRotation, Time.deltaTime * 20f); ;
             }
