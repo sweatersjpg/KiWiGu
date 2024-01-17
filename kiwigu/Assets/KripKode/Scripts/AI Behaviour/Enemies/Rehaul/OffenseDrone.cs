@@ -302,7 +302,9 @@ public class OffenseDrone : MonoBehaviour
         Collider[] hitColliders = Physics.OverlapSphere(eyesPosition.position, seekRange);
         int layerMask = LayerMask.GetMask("Enemy");
         int layerMask2 = LayerMask.GetMask("HookTarget");
-        int combinedLayerMask = layerMask | layerMask2;
+        int layerMask3 = LayerMask.GetMask("EnergyWall");
+
+        int combinedLayerMask = layerMask | layerMask2 | layerMask3;
 
         foreach (Collider hitCollider in hitColliders)
         {
