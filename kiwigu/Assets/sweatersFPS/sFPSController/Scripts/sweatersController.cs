@@ -31,11 +31,13 @@ public class sweatersController : MonoBehaviour
     public float acceleration = 3.75f;
     public float airAcceleration = 3;
     public float encomberedAcceleration = 3;
+    public float grappleAcceleration = 0;
 
     [Header("Deceleration")]
     public float deceleration = 4;
     public float turnDeceleration = 64;
     public float airDeceleration = 1;
+    public float grappleDeceleration = 0;
 
     [HideInInspector] public float gravity = 20f;
     [HideInInspector] public float jumpSpeed = 8.0f;
@@ -78,6 +80,7 @@ public class sweatersController : MonoBehaviour
     bool jumpJustReleased = false;
 
     public bool isEncombered;
+    public bool isGrappling;
 
     public bool isSliding;
     public bool isGrounded;
@@ -152,6 +155,8 @@ public class sweatersController : MonoBehaviour
 
         DoMovement();
 
+        isGrappling = false;
+
         UpdateHeight();
 
         if(Input.GetKeyDown(KeyCode.O))
@@ -181,7 +186,8 @@ public class sweatersController : MonoBehaviour
 
         // acceleration based on ground or air
         float acc = isGrounded && !isSliding ? acceleration : airAcceleration;
-        if (isEncombered) acc = encomberedAcceleration;
+        if (isGrappling && !isGrounded) acc = grappleAcceleration;
+        // if (isEncombered) acc = encomberedAcceleration;
         Vector3 force = acc * input;
 
         // deceleration based on ground air and movement
@@ -189,6 +195,7 @@ public class sweatersController : MonoBehaviour
         if(!isGrounded || isSliding)
         {
             dec = input.magnitude > 0.1f ? airDeceleration : 0;
+            if (isGrappling) dec = grappleDeceleration;
         }
 
         Vector3 vel = new(velocity.x, 0, velocity.z);
@@ -247,6 +254,8 @@ public class sweatersController : MonoBehaviour
         if (isGrounded && !isSliding)
         {
             // decay max speed while on ground
+
+            if(v.magnitude < maxSpeed) maxSpeed = v.magnitude;
             maxSpeed -= maxSpeedDecay * deltaTime;
             if (maxSpeed < targetSpeed) maxSpeed = targetSpeed;
 
@@ -271,7 +280,7 @@ public class sweatersController : MonoBehaviour
         if (debugSpeedDisp) debugSpeedDisp.text = "speed:\n" + Mathf.Floor(v.magnitude * 100) / 100;
 
         // clamp to airSpeed
-        v = Vector3.ClampMagnitude(v, maxSpeed);
+        if(!isGrappling) v = Vector3.ClampMagnitude(v, maxSpeed);
         velocity = new(v.x, velocity.y, v.z);
 
         velocity += 0.5f * deltaTime * force; // add half before moving
