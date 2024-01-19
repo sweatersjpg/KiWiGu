@@ -41,11 +41,19 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _AO:
-        m_Texture: {fileID: 2800000, guid: 168a4ba9ae6419b4f90939e42af946b9, type: 3}
+        m_Texture: {fileID: 2800000, guid: 05ebf2590bd947947902dd9f4366f146, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Emission:
         m_Texture: {fileID: 2800000, guid: 37364f5150960274f82145c61ed955c3, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Height:
+        m_Texture: {fileID: 2800000, guid: e30779a9fe24d414c80d7812513887cd, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MainTexture:
+        m_Texture: {fileID: 2800000, guid: da6a3ef563047624aa7f507a88428c4a, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MaskTexture:
@@ -54,6 +62,10 @@ Material:
         m_Offset: {x: 0, y: 0}
     - _Metallic:
         m_Texture: {fileID: 2800000, guid: d02c233bb4b6b3e40a713a4e45a8a5dd, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _NormalMap:
+        m_Texture: {fileID: 2800000, guid: be19f77a3baff464cb79b8496036a4ee, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - unity_Lightmaps:
@@ -80,8 +92,14 @@ Material:
     - Vector1_b5cc7f6f25194a778cb438f45fbbce66: 25
     - Vector1_dcd729e4cd23406784678484c17def53: 1
     - Vector1_f6677799b193415b8be7686b658a6e85: 9
+    - _BumpNoiseScale: 20
+    - _PaintMetallic: 0
+    - _PaintNormalStrength: 0.1
+    - _PaintSmoothness: 0
     - _QueueControl: 0
     - _QueueOffset: 0
+    - _ShapeNoiseScale: 40
+    - _Smoothness: 0.7
     m_Colors:
     - Color_1bf9c5e6f5c34360a490da1c94e6a7c1: {r: 5.3403134, g: 5.3403134, b: 5.3403134, a: 0.54509807}
     - Color_24a50704e3864d6797516f661edd7e3e: {r: 1, g: 0, b: 0, a: 0}
@@ -90,6 +108,8 @@ Material:
     - Color_f80f35f483824d26a852f2ee81312a1a: {r: 0.3160377, g: 0.7127229, b: 1, a: 0}
     - Vector2_55edcb19ba1d459dbb3c027e66abbc1e: {r: 3, g: 3, b: 0, a: 0}
     - Vector2_e97cb9b7b5564bc9857e7669e2d0b82f: {r: 1, g: 1, b: 0, a: 0}
+    - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
+    - _MainTextureTiling: {r: 1, g: 1, b: 0, a: 0}
   m_BuildTextureStacks: []
 --- !u!114 &2702917353252831940
 MonoBehaviour:
