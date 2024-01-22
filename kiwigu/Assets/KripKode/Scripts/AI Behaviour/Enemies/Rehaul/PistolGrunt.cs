@@ -55,7 +55,6 @@ public class PistolGrunt : MonoBehaviour
     private bool loggedHidingObject;
     private GameObject loggedGameObject;
     private Vector3 hidingPos;
-    private bool restocking;
 
     [Space(10)]
     [Header("Enemy Panic Settings")]
@@ -114,9 +113,16 @@ public class PistolGrunt : MonoBehaviour
         RememberPlayer();
     }
 
+    public virtual void TakeGun()
+    {
+        isHoldingGun = false;
+        isShooting = false;
+        gotHit = true;
+    }
+
     private void StateManager()
     {
-        if (!restocking && agent.velocity.magnitude <= 0.1f)
+        if (agent.velocity.magnitude <= 0.1f)
         {
             animator.SetBool("walk", false);
             animator.SetBool("run", false);
@@ -466,13 +472,6 @@ public class PistolGrunt : MonoBehaviour
     IEnumerator ShootFloat()
     {
         yield return new WaitForSeconds(EnemyShoot());
-    }
-
-    public virtual void TakeGun()
-    {
-        isHoldingGun = false;
-        isShooting = false;
-        gotHit = true;
     }
 
     public virtual void TakeDamage(float bulletDamage)
