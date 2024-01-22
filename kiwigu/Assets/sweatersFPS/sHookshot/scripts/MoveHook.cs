@@ -463,7 +463,6 @@ public class MoveHook : MonoBehaviour
 
         player.isGrappling = true;
 
-        if (toPlayer.y > 0) return; // if above grapple, return
 
         //distToHook = Mathf.Min(toPlayer.magnitude, distToHook);
 
@@ -475,6 +474,9 @@ public class MoveHook : MonoBehaviour
         //speed += trackingAcceleration * deltaTime * 0.5f;
 
         distToHook = Mathf.Min(heading.magnitude + 1, distToHook);
+
+        // if (toPlayer.y > 1) return; // if above grapple, return
+
 
         //float distance = Mathf.Max(maxHookRange, playerDistance);
         float distance = Mathf.Max(distToHook, playerDistance);
@@ -519,10 +521,21 @@ public class MoveHook : MonoBehaviour
         else if (v.y < a)
         {
             v.y = a * (a / v.y);
-            v.Normalize();
         }
 
-        v *= player.velocity.magnitude + force;
+        Vector3 forward = player.playerCamera.transform.forward;
+        forward.y = 0;
+        forward.Normalize();
+
+        //v.x = forward.x;
+        //v.z = forward.z;
+
+        v.Normalize();
+
+        float product = Vector3.Dot(new Vector3(v.x, 0, v.z).normalized, forward);
+
+        v *= (player.velocity.magnitude + force) * product;
+
 
         player.maxSpeed = v.magnitude;
 
