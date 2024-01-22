@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 8149362754027920458}
   - component: {fileID: 6268075506020837504}
   - component: {fileID: 1437554529592875733}
+  - component: {fileID: 8148633271364469741}
   m_Layer: 0
   m_Name: DWallS
   m_TagString: Untagged
@@ -62,7 +63,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 5e9ca96aa8af1e84f9ee1f3d39bdec51, type: 2}
+  - {fileID: 2100000, guid: 0d17e95b4adcb6d42bbb7dbc217bbe59, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -97,3 +98,16 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 2, y: 6.013394, z: 0.5}
   m_Center: {x: -1, y: 3.006697, z: 0.25}
+--- !u!114 &8148633271364469741
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5619455524469557589}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4551def269543f94c87a2cc545c745c1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  extendsIslandOffset: 1
