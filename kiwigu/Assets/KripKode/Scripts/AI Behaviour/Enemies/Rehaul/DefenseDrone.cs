@@ -36,9 +36,13 @@ public class DefenseDrone : MonoBehaviour
 
     [Space(10)]
     [Header("Drone Defense Settings")]
+    [SerializeField] private GameObject grenadePrefab;
     [SerializeField] private Transform bulletExitPoint;
     [SerializeField] private float defendCooldown;
     [SerializeField] private string defendTag;
+    [SerializeField] private float rotationSpeed = 60f;
+    [SerializeField] private float spawnRadius = 5f;
+    [SerializeField] private int numGrenades = 12;
 
     [Space(10)]
     [Header("Drone Body Mesh")]
@@ -59,10 +63,8 @@ public class DefenseDrone : MonoBehaviour
     private bool isDead;
     public bool detectedEnemy;
     private Vector3 enemyPosition;
-    private Vector3 behindPos;
     private GameObject detectedPlayer;
     private bool isDefending;
-    private bool isShooting;
     private float lastVisibleTime;
     private bool rememberPlayer;
     private float timeSinceLastShot;
@@ -162,7 +164,7 @@ public class DefenseDrone : MonoBehaviour
             // Debug.Log("within range");
             if(timeSinceLastShot > defendCooldown)
             {
-                EnemyShoot();
+                StartCoroutine(SpawnGrenades());
                 timeSinceLastShot = 0;
                 isDefending = false;
                 detectedEnemy = false;
@@ -344,61 +346,30 @@ public class DefenseDrone : MonoBehaviour
         }
     }
 
-    private float EnemyShoot()
+    private IEnumerator SpawnGrenades()
     {
-        if (!isHoldingGun || !IsPlayerVisible())
-            return 0;
+        float angleIncrement = 360f / numGrenades;
 
-        HookTarget gun = transform.GetComponentInChildren<HookTarget>();
-        if (gun == null)
+        // Get the initial spawn direction based on spawner's rotation
+        Vector3 initialSpawnDirection = (detectedPlayer.transform.position - transform.position).normalized;
+
+        for (int i = 0; i < numGrenades; i++)
         {
-            isHoldingGun = false;
-            return 0;
+            SpawnGrenadeWithForce(initialSpawnDirection);
+            initialSpawnDirection = Quaternion.Euler(0, angleIncrement, 0) * initialSpawnDirection;
+
+            yield return new WaitForSeconds(1f / rotationSpeed);
         }
-        GunInfo info = gun.info;
-
-        float burst = info.burstSize;
-        if (info.fullAuto) burst = info.autoRate;
-
-        for (int j = 0; j < burst; j++)
-        {
-            sfxEmitterAvailable.SetParameter("Charge", 0.5f);
-            sfxEmitterAvailable.Play();
-
-            for (int i = 0; i < info.projectiles; i++) Invoke(nameof(SpawnBullet), j * 1 / info.autoRate);
-        }
-
-        return burst * 1 / info.autoRate;
     }
 
-    private void SpawnBullet()
+    private void SpawnGrenadeWithForce(Vector3 spawnDirection)
     {
-        HookTarget gun = transform.GetComponentInChildren<HookTarget>();
-        GunInfo info = gun.info;
+        Vector3 spawnPosition = bulletExitPoint.position + spawnDirection * spawnRadius;
 
-        GameObject bullet = Instantiate(info.bulletPrefab, bulletExitPoint.transform.position, bulletExitPoint.transform.rotation);
+        GameObject grenade = Instantiate(grenadePrefab, spawnPosition, Quaternion.identity);
 
-        Vector3 direction = bulletExitPoint.transform.forward;
-        direction += SpreadDirection(info.spread, 3);
-
-        bullet.transform.position = bulletExitPoint.transform.position;
-        bullet.transform.rotation = Quaternion.LookRotation(direction.normalized);
-
-        Bullet b = bullet.GetComponent<Bullet>();
-        b.speed = info.bulletSpeed;
-        b.gravity = info.bulletGravity;
-        b.ignoreMask = ~LayerMask.GetMask("GunHand", "HookTarget", "Enemy");
-        b.trackTarget = false;
-        b.fromEnemy = true;
-        b.bulletDamage = info.damage;
-        b.charge = 0.5f;
+        Rigidbody grenadeRb = grenade.GetComponent<Rigidbody>();
+        grenadeRb.AddForce(spawnDirection * 2, ForceMode.Impulse);
     }
 
-    private Vector3 SpreadDirection(float spread, int rolls)
-    {
-        Vector3 offset = Vector3.zero;
-        for (int i = 0; i < rolls; i++)
-            offset += Random.onUnitSphere * spread;
-        return offset / rolls;
-    }
 }

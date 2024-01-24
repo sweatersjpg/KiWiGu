@@ -10,7 +10,7 @@ public class HellfireEnemy : MonoBehaviour
 {
     [SerializeField] private StudioEventEmitter sfxEmitterAvailable;
 
-    public enum EnemyState { Wandering, Seek, Restock, Shoot };
+    public enum EnemyState { Wandering, Seek, Shoot };
     [SerializeField] private EnemyState enemyState = EnemyState.Wandering;
 
     [Header("Drone Basic Settings")]
@@ -20,6 +20,8 @@ public class HellfireEnemy : MonoBehaviour
     [SerializeField] private float shield;
     [SerializeField] private Animator animator;
     [SerializeField] private GameObject shieldObject;
+    [SerializeField] private GameObject BrokenShieldIndicator;
+    [SerializeField] private GameObject ragdoll;
     private bool lerpingShield = false;
     private Material shieldMaterial;
     private float shieldLerpStartTime;
@@ -55,21 +57,24 @@ public class HellfireEnemy : MonoBehaviour
     private GameObject detectedPlayer;
     private float lastVisibleTime;
     private bool rememberPlayer;
-    private bool restocking;
 
     [Space(10)]
     [Header("Enemy Attack Settings")]
     [SerializeField] Transform BulletExitPoint;
     [SerializeField] float shootCooldown;
-    [SerializeField] float GunInaccuracy;
     public bool isShooting;
     private GunInfo info;
     private float shootTimer;
     private bool animDone;
+    private float maxRotationTime = 0.05f; // smooothers
+    private Quaternion startRotation;
+    private float currentRotationTime;
+    private bool isRotating;
 
     private void Start()
     {
         ht = GetComponentInChildren<HookTarget>();
+
         if (ht)
         {
             isHoldingGun = true;
@@ -97,36 +102,34 @@ public class HellfireEnemy : MonoBehaviour
         StateManager();
         Wander();
         Seek();
-        Restock();
         Shoot();
         RememberPlayer();
     }
 
     private void StateManager()
     {
-        if (!restocking && agent.velocity.magnitude <= 0.1f)
+        if (agent.velocity.magnitude <= 0.1f)
         {
             animator.SetBool("walk", false);
             animator.SetBool("run", false);
         }
 
         if (isShooting)
-        {
             RotateGunAndBodyTowardsPlayer();
-        }
 
+        // If shooting, do nothing
         if (isShooting)
             return;
 
         if (!isHoldingGun)
-        {
-            enemyState = EnemyState.Restock;
-        }
-        else if (!IsPlayerVisible() && !rememberPlayer)
+            return;
+
+        // Set the enemy state based on conditions
+        if (!IsPlayerVisible() && !rememberPlayer)
         {
             enemyState = EnemyState.Wandering;
         }
-        else if (IsPlayerVisible() || rememberPlayer)
+        else
         {
             enemyState = EnemyState.Seek;
         }
@@ -179,45 +182,6 @@ public class HellfireEnemy : MonoBehaviour
         }
     }
 
-    private void Restock()
-    {
-        if (enemyState == EnemyState.Restock)
-        {
-            if (restocking)
-                return;
-
-            agent.speed = panicSpeed;
-
-            if (agent.velocity.magnitude >= 0.1f)
-            {
-                animator.SetBool("run", true);
-            }
-
-            GameObject[] restockStations = GameObject.FindGameObjectsWithTag("EnemyRestockStation");
-            GameObject nearestRestockStation = null;
-            float shortestDistance = Mathf.Infinity;
-
-            foreach (GameObject restockStation in restockStations)
-            {
-                float distanceToRestockStation = Vector3.Distance(transform.position, restockStation.transform.position);
-
-                if (distanceToRestockStation < shortestDistance)
-                {
-                    shortestDistance = distanceToRestockStation;
-                    nearestRestockStation = restockStation;
-                }
-            }
-            if (nearestRestockStation != null)
-            {
-                agent.SetDestination(nearestRestockStation.transform.position);
-            }
-
-            if (Vector3.Distance(transform.position, nearestRestockStation.transform.position) <= 1f)
-            {
-                RestockGun();
-            }
-        }
-    }
 
     private void Shoot()
     {
@@ -273,13 +237,27 @@ public class HellfireEnemy : MonoBehaviour
 
     private void RotateGunObjectExitPoint(Vector3 playerPosition)
     {
-        if (!isShooting) return;
-
-        Vector3 targetPosition = new Vector3(playerPosition.x + Random.Range(-GunInaccuracy, GunInaccuracy), playerPosition.y + 1f, playerPosition.z + Random.Range(-GunInaccuracy, GunInaccuracy));
+        Vector3 targetPosition = new Vector3(playerPosition.x, playerPosition.y + 1f, playerPosition.z);
         Vector3 direction = targetPosition - BulletExitPoint.transform.position;
+
         Quaternion targetRotation = Quaternion.LookRotation(direction);
 
-        BulletExitPoint.transform.rotation = targetRotation;
+        if (isRotating)
+        {
+            currentRotationTime += Time.deltaTime;
+            float t = Mathf.Clamp01(currentRotationTime / maxRotationTime);
+
+            BulletExitPoint.transform.rotation = Quaternion.Lerp(startRotation, targetRotation, t);
+
+            if (currentRotationTime >= maxRotationTime)
+            {
+                isRotating = false;
+            }
+        }
+
+        startRotation = BulletExitPoint.transform.rotation;
+        currentRotationTime = 0f;
+        isRotating = true;
     }
 
     private void RememberPlayer()
@@ -349,9 +327,15 @@ public class HellfireEnemy : MonoBehaviour
         return navHit.position;
     }
 
-    public void SwitchAnim()
+    // can't do animDone = !animDone because it breaks due to hide timerino :(
+    public void AnimTrue()
     {
-        animDone = !animDone;
+        animDone = true;
+    }
+
+    public void AnimFalse()
+    {
+        animDone = false;
     }
 
     public void ShootEvent()
@@ -368,38 +352,7 @@ public class HellfireEnemy : MonoBehaviour
     {
         isHoldingGun = false;
         isShooting = false;
-        enemyState = EnemyState.Restock;
-    }
-
-    public virtual void RestockGun()
-    {
-        if (!restocking)
-            StartCoroutine(DelayedRestock());
-    }
-
-    IEnumerator DelayedRestock()
-    {
-        restocking = true;
-
-        animator.SetBool("walk", false);
-        animator.SetBool("run", false);
-
-        yield return new WaitForSeconds(1);
-
-        animator.SetBool("run", true);
-
-        Vector3 newPos = RandomNavSphere(transform.position, wanderRadius, -1);
-        agent.SetDestination(newPos);
-
-        yield return new WaitForSeconds(2);
-
-        GameObject newHookTarget = Instantiate(hookTarget, hookTargetPosition.position, Quaternion.identity);
-        Transform parentTransform = hookTargetPosition;
-        newHookTarget.transform.parent = parentTransform; 
-
-        isHoldingGun = true;
-        restocking = false;
-        isShooting = false;
+        enemyState = EnemyState.Wandering;
     }
 
     public virtual void TakeDamage(float bulletDamage)
@@ -410,6 +363,10 @@ public class HellfireEnemy : MonoBehaviour
         if (currentShield < shield)
         {
             StartLerpShieldProgress();
+
+            float healthPercent = 1.0f - Mathf.Clamp01(currentShield / shield);
+            shieldMaterial.SetFloat("_HealthPercent", healthPercent);
+
             currentShield = Mathf.Min(currentShield + bulletDamage, shield);
         }
         else if (currentHealth < health)
@@ -462,29 +419,55 @@ public class HellfireEnemy : MonoBehaviour
     {
         if (currentShield >= shield)
         {
-            ht.blockSteal = false;
-            Destroy(shieldObject);
+            if (shieldObject)
+            {
+                Instantiate(BrokenShieldIndicator, shieldObject.transform.position, Quaternion.identity);
+                ht.blockSteal = false;
+                Destroy(shieldObject);
+            }
         }
 
         if (currentHealth >= health && !isDead)
         {
             isDead = true;
 
+            GameObject Ragdollerino = Instantiate(ragdoll, transform.position, transform.rotation);
+
             if (isHoldingGun)
             {
+                EnableHookTargetsRecursively(Ragdollerino.transform);
+
                 GetComponentInChildren<HookTarget>();
                 if (ht != null) ht.BeforeDestroy();
 
                 isHoldingGun = false;
                 isShooting = false;
             }
-
             agent.SetDestination(transform.position);
-            animator.SetInteger("DeadIndex", Random.Range(0, 3));
-            animator.SetTrigger("Dead");
-            Destroy(gameObject, 5);
+
+            //animator.SetInteger("DeadIndex", Random.Range(0, 3));
+            //animator.SetTrigger("Dead");
+
+            Destroy(Ragdollerino, 15f);
+            Destroy(gameObject);
         }
     }
+
+    private void EnableHookTargetsRecursively(Transform parent)
+    {
+        HookTarget hookTarget = parent.GetComponent<HookTarget>();
+
+        if (hookTarget != null)
+        {
+            hookTarget.gameObject.SetActive(true);
+        }
+
+        foreach (Transform child in parent)
+        {
+            EnableHookTargetsRecursively(child);
+        }
+    }
+
 
     private float EnemyShoot()
     {

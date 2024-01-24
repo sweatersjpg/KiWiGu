@@ -206,9 +206,9 @@ public class OffenseDrone : MonoBehaviour
                 Vector3 randomPoint = RandomNavSphere(detectedPlayer.transform.position, attackRange, -1);
                 agent.SetDestination(randomPoint);
                 yield return new WaitUntil(() => !agent.pathPending && agent.isOnNavMesh && agent.remainingDistance < 0.1f);
-                canFacePlayer = false;
+                //canFacePlayer = false;
                 yield return new WaitForSeconds(EnemyShoot());
-                canFacePlayer = true;
+                //canFacePlayer = true;
             }
             isShooting = false;
         }
@@ -222,9 +222,9 @@ public class OffenseDrone : MonoBehaviour
                 agent.SetDestination(randomPoint);
                 yield return new WaitUntil(() => !agent.pathPending && agent.isOnNavMesh && agent.remainingDistance < 0.1f);
             }
-            canFacePlayer = false;
+            //canFacePlayer = false;
             yield return new WaitForSeconds(EnemyShoot());
-            canFacePlayer = true;
+            //canFacePlayer = true;
             isShooting = false;
         }
 
@@ -241,7 +241,14 @@ public class OffenseDrone : MonoBehaviour
             Vector3 localDirection = transform.InverseTransformDirection(direction);
             Quaternion lookRotation = Quaternion.LookRotation(new Vector3(localDirection.x, localDirection.y, localDirection.z));
 
-            DroneBody.transform.localRotation = Quaternion.Slerp(DroneBody.transform.localRotation, lookRotation, Time.deltaTime * 20f); ;
+            //if(isShooting)
+            //{
+            //    DroneBody.transform.localRotation = Quaternion.Slerp(DroneBody.transform.localRotation, lookRotation, Time.deltaTime * 4f); ;
+            //}
+            //else
+            {
+                DroneBody.transform.localRotation = Quaternion.Slerp(DroneBody.transform.localRotation, lookRotation, Time.deltaTime * 20f); ;
+            }
         }
         else if (!isAttacking)
         {
@@ -295,7 +302,9 @@ public class OffenseDrone : MonoBehaviour
         Collider[] hitColliders = Physics.OverlapSphere(eyesPosition.position, seekRange);
         int layerMask = LayerMask.GetMask("Enemy");
         int layerMask2 = LayerMask.GetMask("HookTarget");
-        int combinedLayerMask = layerMask | layerMask2;
+        int layerMask3 = LayerMask.GetMask("EnergyWall");
+
+        int combinedLayerMask = layerMask | layerMask2 | layerMask3;
 
         foreach (Collider hitCollider in hitColliders)
         {

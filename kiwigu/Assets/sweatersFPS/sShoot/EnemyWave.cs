@@ -7,6 +7,9 @@ public class EnemyWave
 {
 
     public float startDelay;
+    public Transform SpawnPoints;
+
+    [Space]
     public Spawn[] enemySpawns;
 
     [System.Serializable]

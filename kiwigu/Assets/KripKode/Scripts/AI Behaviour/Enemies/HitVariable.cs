@@ -6,7 +6,7 @@ public class HitVariable : MonoBehaviour
 {
     public string HitReferenceScript;
 
-    public void SwitchAnim()
+    public void SwitchAnimTrue()
     {
         Type type = Type.GetType(HitReferenceScript);
 
@@ -16,7 +16,27 @@ public class HitVariable : MonoBehaviour
 
             if (hitComponent != null)
             {
-                MethodInfo method = type.GetMethod("SwitchAnim");
+                MethodInfo method = type.GetMethod("AnimTrue");
+
+                if (method != null)
+                {
+                    method.Invoke(hitComponent, null);
+                }
+            }
+        }
+    }
+
+    public void SwitchAnimFalse()
+    {
+        Type type = Type.GetType(HitReferenceScript);
+
+        if (type != null)
+        {
+            Component hitComponent = GetRootParent(gameObject.transform).GetComponent(type);
+
+            if (hitComponent != null)
+            {
+                MethodInfo method = type.GetMethod("AnimFalse");
 
                 if (method != null)
                 {

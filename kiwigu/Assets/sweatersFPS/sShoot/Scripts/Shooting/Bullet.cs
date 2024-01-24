@@ -1,12 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Burst.CompilerServices;
-using Unity.VisualScripting;
-using UnityEditor.UIElements;
+// using Unity.VisualScripting;
+// using UnityEditor.UIElements;
 using UnityEngine;
-using UnityEngine.AI;
-using UnityEngine.UI;
-using static UnityEditor.Experimental.GraphView.GraphView;
+// using UnityEngine.AI;
+// using UnityEngine.UI;
+// using static UnityEditor.Experimental.GraphView.GraphView;
 
 public class Bullet : MonoBehaviour
 {
@@ -159,7 +159,7 @@ public class Bullet : MonoBehaviour
         bulletMesh.transform.position = origin;
 
         bool hasHit = Physics.SphereCast(origin, radius, direction, out RaycastHit hit, direction.magnitude,
-            LayerMask.GetMask("Enemy", "PhysicsObject"));
+            LayerMask.GetMask("Enemy", "PhysicsObject", "Player"));
 
         if (fromEnemy) hasHit = false;
 

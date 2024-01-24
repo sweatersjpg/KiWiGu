@@ -11,7 +11,7 @@ public class PhysicsHit : MonoBehaviour
     public float maxForce;
 
     public Mesh altMesh;
-    Mesh startMesh;
+    //Mesh startMesh;
 
     Vector3 startPos;
 
@@ -23,7 +23,7 @@ public class PhysicsHit : MonoBehaviour
 
         startPos = transform.position;
 
-        startMesh = GetComponentInChildren<MeshFilter>().mesh;
+        //startMesh = GetComponentInChildren<MeshFilter>().mesh;
     }
 
     private void Update()
@@ -33,7 +33,7 @@ public class PhysicsHit : MonoBehaviour
             transform.position = startPos;
             rb.velocity = new();
             transform.rotation = Quaternion.identity;
-            GetComponent<MeshFilter>().mesh = startMesh;
+            //GetComponent<MeshFilter>().mesh = startMesh;
         }
     }
 

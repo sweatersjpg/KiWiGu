@@ -8,7 +8,7 @@ public class PistolGrunt : MonoBehaviour
 {
     [SerializeField] private StudioEventEmitter sfxEmitterAvailable;
 
-    public enum EnemyState { Wandering, Seek, Panic, Shoot };
+    public enum EnemyState { Wandering, Seek, Cover, Shoot };
     [SerializeField] private EnemyState enemyState = EnemyState.Wandering;
 
     [Header("Drone Basic Settings")]
@@ -18,6 +18,7 @@ public class PistolGrunt : MonoBehaviour
     [SerializeField] private float shield;
     [SerializeField] private Animator animator;
     [SerializeField] private GameObject shieldObject;
+    [SerializeField] private GameObject ragdoll;
     private bool lerpingShield = false;
     private Material shieldMaterial;
     private float shieldLerpStartTime;
@@ -58,6 +59,8 @@ public class PistolGrunt : MonoBehaviour
     [Space(10)]
     [Header("Enemy Panic Settings")]
     [SerializeField] private float hideTime;
+    [SerializeField] private GameObject hookTarget;
+    [SerializeField] private Transform hookTargetPosition;
     private bool isHiding;
     public float hideTimer;
     private GameObject lastSelectedCover;
@@ -66,13 +69,16 @@ public class PistolGrunt : MonoBehaviour
     [Header("Enemy Attack Settings")]
     [SerializeField] Transform BulletExitPoint;
     [SerializeField] float shootCooldown;
-    [SerializeField] float GunInaccuracy;
     public bool isShooting;
     GunInfo info;
     float shootTimer;
     bool animDone;
 
     private bool gotHit;
+    private float maxRotationTime = 0.035f; // smooothers
+    private Quaternion startRotation;
+    private float currentRotationTime;
+    private bool isRotating;
 
     private void Start()
     {
@@ -83,7 +89,7 @@ public class PistolGrunt : MonoBehaviour
         agent = GetComponent<NavMeshAgent>();
         initialPosition = transform.position;
 
-        if(shield > 0 && ht)
+        if (shield > 0 && ht)
         {
             ht.blockSteal = true;
         }
@@ -102,9 +108,16 @@ public class PistolGrunt : MonoBehaviour
         StateManager();
         Wander();
         Seek();
-        Panic();
+        Cover();
         Shoot();
         RememberPlayer();
+    }
+
+    public virtual void TakeGun()
+    {
+        isHoldingGun = false;
+        isShooting = false;
+        gotHit = true;
     }
 
     private void StateManager()
@@ -116,9 +129,7 @@ public class PistolGrunt : MonoBehaviour
         }
 
         if (isShooting)
-        {
             RotateGunAndBodyTowardsPlayer();
-        }
 
         if (isHiding)
         {
@@ -126,12 +137,12 @@ public class PistolGrunt : MonoBehaviour
 
             if (hideTimer >= hideTime)
             {
+                isShooting = false;
                 gotHit = false;
                 animator.SetBool("crouching", false);
-                isHiding = false;
                 hideTimer = 0;
+                isHiding = false;
             }
-
             return;
         }
 
@@ -139,9 +150,13 @@ public class PistolGrunt : MonoBehaviour
         if (isShooting && !gotHit)
             return;
 
-        if ((gotHit || !isHoldingGun) && currentShield >= shield)
+        if (gotHit && isHoldingGun && currentShield >= shield)
         {
-            enemyState = EnemyState.Panic;
+            enemyState = EnemyState.Cover;
+        }
+        else if (gotHit && !isHoldingGun && currentShield >= shield) // change this later to puncherino
+        {
+            enemyState = EnemyState.Cover;
         }
         else if (!IsPlayerVisible() && !rememberPlayer)
         {
@@ -200,9 +215,9 @@ public class PistolGrunt : MonoBehaviour
         }
     }
 
-    private void Panic()
+    private void Cover()
     {
-        if (enemyState == EnemyState.Panic)
+        if (enemyState == EnemyState.Cover)
         {
             if (isHiding)
                 return;
@@ -230,6 +245,7 @@ public class PistolGrunt : MonoBehaviour
                 loggedHidingObject = false;
                 animator.SetBool("crouching", true);
                 isHiding = true;
+                loggedGameObject = null;
             }
             else
             {
@@ -335,18 +351,39 @@ public class PistolGrunt : MonoBehaviour
 
         Quaternion targetRotation = Quaternion.LookRotation(objPos - agent.transform.position);
 
-        agent.transform.rotation = Quaternion.Slerp(agent.transform.rotation, targetRotation, Time.deltaTime * 10);
+        if (isShooting)
+        {
+            agent.transform.rotation = Quaternion.Slerp(agent.transform.rotation, targetRotation, Time.deltaTime * 4f);
+        }
+        else
+        {
+            agent.transform.rotation = Quaternion.Slerp(agent.transform.rotation, targetRotation, Time.deltaTime * 10);
+        }
     }
 
     private void RotateGunObjectExitPoint(Vector3 playerPosition)
     {
-        if (!isShooting) return;
-
-        Vector3 targetPosition = new Vector3(playerPosition.x + Random.Range(-GunInaccuracy, GunInaccuracy), playerPosition.y + 1f, playerPosition.z + Random.Range(-GunInaccuracy, GunInaccuracy));
+        Vector3 targetPosition = new Vector3(playerPosition.x, playerPosition.y + 1f, playerPosition.z);
         Vector3 direction = targetPosition - BulletExitPoint.transform.position;
+
         Quaternion targetRotation = Quaternion.LookRotation(direction);
 
-        BulletExitPoint.transform.rotation = targetRotation;
+        if (isRotating)
+        {
+            currentRotationTime += Time.deltaTime;
+            float t = Mathf.Clamp01(currentRotationTime / maxRotationTime);
+
+            BulletExitPoint.transform.rotation = Quaternion.Lerp(startRotation, targetRotation, t);
+
+            if (currentRotationTime >= maxRotationTime)
+            {
+                isRotating = false;
+            }
+        }
+
+        startRotation = BulletExitPoint.transform.rotation;
+        currentRotationTime = 0f;
+        isRotating = true;
     }
 
     private void RememberPlayer()
@@ -416,9 +453,15 @@ public class PistolGrunt : MonoBehaviour
         return navHit.position;
     }
 
-    public void SwitchAnim()
+    // can't do animDone = !animDone because it breaks due to hide timerino :(
+    public void AnimTrue() 
     {
-        animDone = !animDone;
+        animDone = true;
+    }
+
+    public void AnimFalse()
+    {
+        animDone = false;
     }
 
     public void ShootEvent()
@@ -429,13 +472,6 @@ public class PistolGrunt : MonoBehaviour
     IEnumerator ShootFloat()
     {
         yield return new WaitForSeconds(EnemyShoot());
-    }
-
-    public virtual void TakeGun()
-    {
-        isHoldingGun = false;
-        isShooting = false;
-        enemyState = EnemyState.Panic;
     }
 
     public virtual void TakeDamage(float bulletDamage)
@@ -507,19 +543,40 @@ public class PistolGrunt : MonoBehaviour
         {
             isDead = true;
 
+            GameObject Ragdollerino = Instantiate(ragdoll, transform.position, transform.rotation);
+
             if (isHoldingGun)
             {
+                EnableHookTargetsRecursively(Ragdollerino.transform);
+
                 GetComponentInChildren<HookTarget>();
                 if (ht != null) ht.BeforeDestroy();
 
                 isHoldingGun = false;
                 isShooting = false;
             }
-
             agent.SetDestination(transform.position);
-            animator.SetInteger("DeadIndex", Random.Range(0, 3));
-            animator.SetTrigger("Dead");
-            Destroy(gameObject, 5);
+
+            //animator.SetInteger("DeadIndex", Random.Range(0, 3));
+            //animator.SetTrigger("Dead");
+
+            Destroy(Ragdollerino, 15f);
+            Destroy(gameObject);
+        }
+    }
+
+    private void EnableHookTargetsRecursively(Transform parent)
+    {
+        HookTarget hookTarget = parent.GetComponent<HookTarget>();
+
+        if (hookTarget != null)
+        {
+            hookTarget.gameObject.SetActive(true);
+        }
+
+        foreach (Transform child in parent)
+        {
+            EnableHookTargetsRecursively(child);
         }
     }
 

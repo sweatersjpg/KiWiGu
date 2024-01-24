@@ -1,17 +1,20 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class WaveSystem : MonoBehaviour
 {
+    public Transform requiredCheckPoint;
+    public GameObject spawnFX;
 
-    [SerializeField] Transform[] spawnPoints;
+    public bool isEnding = false;
 
     [Space]
     [SerializeField] EnemyWave[] waves;
 
     [Space]
-    [SerializeField] int currentWave = 0;
+    [SerializeField] int currentWave = -1;
     int activeSpawners = 0;
 
     List<Transform> freeSpawnPoints;
@@ -23,22 +26,41 @@ public class WaveSystem : MonoBehaviour
 
         InvokeRepeating(nameof(ResetSpawnPoints), 1, 1f);
 
-        StartCoroutine(nameof(StartWave));
+        if (!requiredCheckPoint)
+        {
+            currentWave = 0;
+            StartCoroutine(nameof(StartWave));
+        }
+        else currentWave = -1;
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (!requiredCheckPoint) return;
         
+        if(CheckPointSystem.spawnPoint == requiredCheckPoint.position && currentWave < 0)
+        {
+            currentWave = 0;
+            StartCoroutine(nameof(StartWave));
+        }
+
+        if(CheckPointSystem.spawnPoint != requiredCheckPoint.position && currentWave >= 0)
+        {
+            StopAllCoroutines();
+            currentWave = -1;
+        }
     }
 
     void ResetSpawnPoints()
     {
+        if (currentWave < 0) return;
+        
         freeSpawnPoints = new List<Transform>();
 
-        for(int i = 0; i < spawnPoints.Length; i++)
+        for(int i = 0; i < waves[currentWave].SpawnPoints.childCount; i++)
         {
-            freeSpawnPoints.Add(spawnPoints[i]);
+            freeSpawnPoints.Add(waves[currentWave].SpawnPoints.GetChild(i));
         }
     }
 
@@ -69,6 +91,7 @@ public class WaveSystem : MonoBehaviour
         // execute next wave
         currentWave++;
         if (currentWave < waves.Length) StartCoroutine(nameof(StartWave));
+        else if(isEnding) SceneManager.LoadScene(1);
     }
 
     IEnumerator SpawnEnemies(int index)
@@ -92,7 +115,7 @@ public class WaveSystem : MonoBehaviour
 
                 yield return new WaitUntil(() => { return freeSpawnPoints.Count > 0; });
 
-                enemies.Add(SpawnEnemy(spawner.enemyPrefab, spawner.weaponType));
+                enemies.Add(StartEnemySpawn(spawner.enemyPrefab, spawner.weaponType));
             }
 
             yield return new WaitUntil(() => { return CountNull(enemies) == enemies.Count; });
@@ -104,13 +127,25 @@ public class WaveSystem : MonoBehaviour
         activeSpawners--;
     }
 
-    Transform SpawnEnemy(GameObject prefab, GunInfo gunType)
+    Transform StartEnemySpawn(GameObject prefab, GunInfo gunType)
     {
-        GameObject enemy = Instantiate(prefab, FetchRandomSpawnPoint().position, Quaternion.identity);
+        Vector3 spawn = FetchRandomSpawnPoint().position;
+
+        Instantiate(spawnFX, spawn, Quaternion.identity);
+
+        GameObject enemy = Instantiate(prefab, spawn, Quaternion.identity);
 
         if (gunType != null) enemy.GetComponentInChildren<HookTarget>().info = gunType;
 
+        // StartCoroutine(nameof(EnableEnemy), enemy);
+
         return enemy.transform;
+    }
+
+    IEnumerable EnableEnemy(GameObject enemy)
+    {
+        yield return new WaitForSeconds(0.2f);
+        enemy.SetActive(true);
     }
 
     Transform FetchRandomSpawnPoint()

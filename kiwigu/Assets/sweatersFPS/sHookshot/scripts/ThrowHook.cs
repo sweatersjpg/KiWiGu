@@ -59,7 +59,7 @@ public class ThrowHook : MonoBehaviour
 
                 if (Input.GetKeyDown(KeyCode.Space))
                 {
-                    mh.PullbackWithForce(30);   // originally hook.GetComponent<MoveHook>() instead of mh. changed this for the tooltip but change it back if something breaks
+                    mh.PullbackWithForce(15);   // originally hook.GetComponent<MoveHook>() instead of mh. changed this for the tooltip but change it back if something breaks
                 }
             }
         }
