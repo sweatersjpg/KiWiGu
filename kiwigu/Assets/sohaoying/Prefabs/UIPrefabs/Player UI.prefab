@@ -203,6 +203,31 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mat: {fileID: 2100000, guid: 1160cc8eafa91ac40b08ed23252bc920, type: 2}
+  healthBar: {fileID: 7501019227488844819}
+  vignetteIntensityCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   glitchStrength: 0
   noiseAmount: 0
   scanLinesStrength: 1
@@ -1822,6 +1847,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 8497208939105443935, guid: 7b5a167290d9e40488989a44d5eb6a95, type: 3}
   m_PrefabInstance: {fileID: 2158596121146924109}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &7501019227488844819 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8497208939105443934, guid: 7b5a167290d9e40488989a44d5eb6a95, type: 3}
+  m_PrefabInstance: {fileID: 2158596121146924109}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ade57d6ff4806ec45bd936df1cb5dc5c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &3222276504342853194
 PrefabInstance:
   m_ObjectHideFlags: 0

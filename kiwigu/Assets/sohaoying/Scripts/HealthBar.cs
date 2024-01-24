@@ -15,7 +15,7 @@ class HealthBar : MonoBehaviour
 
     [Range(0f, 1f)]
     [SerializeField] internal float TargetPercent = 1f; // call from any other class and the script will behave
-                                                        // e.g. HealthBar healthBar = GetComponent<HealthBar>();
+                                                        // e.g. [SerializeField] HealthBar healthBar;
                                                         // healthBar.TargetPercent = currentHealth / totalHealth;
                                                         // note: do Not call this every frame. only call this when the health changes
 
