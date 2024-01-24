@@ -173,6 +173,7 @@ public class sweatersController : MonoBehaviour
         isSliding = GetIsSliding();
         wasGrounded = isGrounded;
         GetIsGrounded();
+        if (isGrappling) isSliding = true;
 
         Vector3 forward = transform.TransformDirection(Vector3.forward);
         Vector3 right = transform.TransformDirection(Vector3.right);
