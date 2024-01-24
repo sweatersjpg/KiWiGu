@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UIElements.Experimental;
 
 public class MoveHook : MonoBehaviour
 {
@@ -30,6 +31,8 @@ public class MoveHook : MonoBehaviour
     [HideInInspector] public HookTarget hookTarget;
     public float playerDistance = 4;
     public float distToHook = 0;
+
+    [SerializeField] float pullForce;
 
     bool headingBack = false;
 
@@ -108,38 +111,9 @@ public class MoveHook : MonoBehaviour
             {
                 UpdateChain();
 
-                sweatersController player = sweatersController.instance;
-
-                Vector3 toPlayer = player.transform.position - transform.position;
-
-                //distToHook = Mathf.Min(toPlayer.magnitude, distToHook);
-
-                //float distance = Mathf.Max(distToHook, playerDistance);
-                //distance = Mathf.Min(distance, maxHookRange);
-
-                //speed += trackingAcceleration * deltaTime * 0.5f;
-                //maxHookRange -= Mathf.Min(speed * deltaTime, maxHookRange);
-                //speed += trackingAcceleration * deltaTime * 0.5f;
-
-                distToHook = Mathf.Min(heading.magnitude + 1, distToHook);
-
-                //float distance = Mathf.Max(maxHookRange, playerDistance);
-                float distance = Mathf.Max(distToHook, playerDistance);
-
-                // grapple hook effect
-                if (heading.magnitude > distance)
-                {
-                    Vector3 target = transform.position + heading.normalized * distance;
-                    target += (player.transform.position - home.transform.position);
-
-                    player.transform.position = target;
-                    // Vector3 force = deltaTime * (target - player.transform.position);
-
-                    Vector3 normal = -toPlayer.normalized;
-                    player.velocity -= Vector3.Project(player.velocity, normal);
-
-                    // player.velocity += force;
-                }
+                //if (hookTarget.tether) Grapple(heading);
+                //else 
+                    PullTowards(heading);
 
                 return;
             }
@@ -299,8 +273,8 @@ public class MoveHook : MonoBehaviour
                 ht.resistance -= deltaTime;
                 if (ht.resistance > 0)
                 {
-                    Pullback();
                     hookTarget = ht;
+                    Pullback(true);
 
                     Destroy(fx);
                     fx = Instantiate(perfectHookFXprefab, transform);
@@ -348,7 +322,7 @@ public class MoveHook : MonoBehaviour
             Destroy(target.transform.GetComponent<PhysicsHit>());
             Destroy(target.transform.GetComponent<Rigidbody>());
         }
-
+         
         Pullback();
     }
 
@@ -449,15 +423,31 @@ public class MoveHook : MonoBehaviour
         hookTarget = null;
     }
 
-    public void Pullback()
+    public void Pullback() => Pullback(false);
+
+    public void Pullback(bool withForce)
     {
         speed = 0;
         G = new();
 
+        if (!withForce) return;
+
+        sweatersController player = sweatersController.instance;
+
+        if (!player.isGrounded)
+        {
+            if(!hookTarget.tether) player.velocity.y = 0;
+            return;
+        }
+
+        Vector3 toPlayer = player.transform.position - transform.position;
+
+        player.velocity.y = 0;
+        player.velocity -= toPlayer.normalized * 8;
         // home.PullBack();
     }
 
-    public void PullbackWithForce(float force)
+    public void PullbackWithForce(float force, float vScale)
     {
         if (hookTarget)
         {
@@ -466,7 +456,7 @@ public class MoveHook : MonoBehaviour
             if (t < 0.4) // perfect hook
             {
                 hookTarget.resistance = 0;
-                if (force > 0) LaunchPlayer(force);
+                if (force > 0) LaunchPlayer(force, vScale);
 
                 Destroy(fx);
                 fx = Instantiate(perfectHookCircleFXprefab, transform);
@@ -478,6 +468,12 @@ public class MoveHook : MonoBehaviour
 
             fx.transform.parent = null;
 
+            sweatersController player = sweatersController.instance;
+
+            if (hookTarget.tether) player.maxSpeed = player.airSpeed * 0.75f;
+            else player.maxSpeed = player.airSpeed * 0.5f;
+            player.velocity = Vector3.ClampMagnitude(player.velocity, player.maxSpeed);
+
         }
         speed = 0;
         G = new();
@@ -485,13 +481,121 @@ public class MoveHook : MonoBehaviour
         home.PullBack();
     }
 
-    public void LaunchPlayer(float force)
+    void Grapple(Vector3 heading)
     {
         sweatersController player = sweatersController.instance;
 
-        Vector3 v = (player.transform.position - transform.position).normalized;
+        Vector3 toPlayer = player.transform.position - transform.position;
 
-        player.velocity.y = Mathf.Min(Mathf.Abs(v.y) + 0.5f, 1) * force;
-        player.maxSpeed += 5;
+        player.isGrappling = true;
+
+
+        //distToHook = Mathf.Min(toPlayer.magnitude, distToHook);
+
+        //float distance = Mathf.Max(distToHook, playerDistance);
+        //distance = Mathf.Min(distance, maxHookRange);
+
+        //speed += trackingAcceleration * deltaTime * 0.5f;
+        //maxHookRange -= Mathf.Min(speed * deltaTime, maxHookRange);
+        //speed += trackingAcceleration * deltaTime * 0.5f;
+
+        distToHook = Mathf.Min(heading.magnitude + 1, distToHook);
+
+        // if (toPlayer.y > 1) return; // if above grapple, return
+
+
+        //float distance = Mathf.Max(maxHookRange, playerDistance);
+        float distance = Mathf.Max(distToHook, playerDistance);
+
+        // grapple hook effect
+        if (heading.magnitude > distance)
+        {
+            Vector3 target = transform.position + heading.normalized * distance;
+            target += (player.transform.position - home.transform.position);
+
+            player.transform.position = target;
+            // Vector3 force = deltaTime * (target - player.transform.position);
+
+            Vector3 normal = -toPlayer.normalized;
+            player.velocity -= Vector3.Project(player.velocity, normal);
+
+            // player.velocity += force;
+        }
+    }
+
+    void PullTowards(Vector3 heading)
+    {
+        sweatersController player = sweatersController.instance;
+
+        // Vector3 toPlayer = player.transform.position - transform.position;
+
+        if (heading.magnitude < 0.5)
+        {
+            PullbackWithForce(0, 1);
+            return;
+        }
+
+        float t = hookTarget.maxResistance - hookTarget.resistance;
+
+        if (t < 0.4 && !hookTarget.tether) // perfect hook
+        {
+            return;
+        }
+
+        player.velocity = -heading.normalized * (player.velocity.magnitude + Time.deltaTime * pullForce);
+        
+        // player.velocity = Vector3.ClampMagnitude(player.velocity, player.maxSpeed);
+
+        // player.maxSpeed = player.velocity.magnitude;
+        // player.velocity += -heading.normalized * Time.deltaTime * pullForce;
+
+        player.isGrappling = true;
+
+        // player.velocity += -heading.normalized * Time.deltaTime * pullForce;
+    }
+
+    public void LaunchPlayer(float force, float vScale)
+    {
+        sweatersController player = sweatersController.instance;
+
+        //Vector3 v = (player.transform.position - transform.position).normalized;
+
+        //player.velocity.y = Mathf.Min(Mathf.Abs(v.y) + 0.5f, 1) * force;
+        //player.maxSpeed += 5;
+
+        Vector3 heading = home.transform.position - transform.position;
+
+        if (heading.y > 0) return; // if higher than grapple dont give boost
+
+        Vector3 normal = -(heading).normalized;
+
+        Vector3 v = (player.velocity - Vector3.Project(player.velocity, normal)).normalized;
+
+        float a = 0.5f;
+
+        // v.y = Mathf.Abs(v.y);
+        if (v.y < 0) v = normal;
+        else if (v.y < a)
+        {
+            v.y = a * (a / v.y);
+        }
+
+        Vector3 forward = player.playerCamera.transform.forward;
+        forward.y = 0;
+        forward.Normalize();
+
+        //v.x = forward.x;
+        //v.z = forward.z;
+
+        v.Normalize();
+
+        float product = Vector3.Dot(new Vector3(v.x, 0, v.z).normalized, forward);
+
+        v *= (player.velocity.magnitude * vScale + force) * product;
+
+        player.maxSpeed = v.magnitude;
+
+        player.velocity = v;
+
     }
 }

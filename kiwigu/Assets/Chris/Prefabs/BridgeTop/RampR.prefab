@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 2922589816001891095}
   - component: {fileID: 1111237618989236189}
   - component: {fileID: 6326177802382554844}
+  - component: {fileID: 5808881414426042231}
   m_Layer: 0
   m_Name: BridgeRampRimL
   m_TagString: Untagged
@@ -98,6 +99,19 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: -6319302382871151960, guid: 06295c22cd2b63840a6b49796d471cb5, type: 3}
+--- !u!114 &5808881414426042231
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1471292561657749000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4551def269543f94c87a2cc545c745c1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  extendsIslandOffset: 1
 --- !u!1 &4296749317982369925
 GameObject:
   m_ObjectHideFlags: 0
@@ -193,6 +207,7 @@ GameObject:
   - component: {fileID: 523848591057251346}
   - component: {fileID: 2351409851770247384}
   - component: {fileID: 7068577271304787513}
+  - component: {fileID: 7121063598532183872}
   m_Layer: 0
   m_Name: BridgeRampL
   m_TagString: Untagged
@@ -279,6 +294,19 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: 2304634988780531455, guid: 4d9601b8b499c724caf4d2726def3172, type: 3}
+--- !u!114 &7121063598532183872
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4296749318711359757}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4551def269543f94c87a2cc545c745c1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  extendsIslandOffset: 1
 --- !u!1 &8047053557025584020
 GameObject:
   m_ObjectHideFlags: 0
