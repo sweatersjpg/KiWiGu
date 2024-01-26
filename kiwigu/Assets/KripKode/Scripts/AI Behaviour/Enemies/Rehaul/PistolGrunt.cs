@@ -270,9 +270,23 @@ public class PistolGrunt : MonoBehaviour
 
     public void PunchEvent()
     {
-        if(detectedPlayer)
-            detectedPlayer.GetComponent<PlayerHealth>().DealDamage(25, Vector3.forward);
+        if (detectedPlayer)
+        {
+            Vector3 incomingDirection = (detectedPlayer.transform.position - transform.position).normalized;
+            Vector3 upwardDirection = Vector3.up;
+
+            Vector3 punchDirection = (incomingDirection + upwardDirection).normalized;
+
+            var treshold = 1;
+
+            if (Vector3.Distance(transform.position, detectedPlayer.transform.position) <= punchDistance + treshold)
+            {
+                detectedPlayer.GetComponent<PlayerHealth>().DealDamage(25, -incomingDirection);
+                sweatersController.instance.velocity += punchDirection * 15;
+            }
+        }
     }
+
 
     private void Shoot()
     {
@@ -422,7 +436,7 @@ public class PistolGrunt : MonoBehaviour
     }
 
     // can't do animDone = !animDone because it breaks due to hide timerino :(
-    public void AnimTrue() 
+    public void AnimTrue()
     {
         animDone = true;
     }
