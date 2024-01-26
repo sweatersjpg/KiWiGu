@@ -66,8 +66,10 @@ public class PistolGrunt : MonoBehaviour
     [Header("Enemy Attack Settings")]
     [SerializeField] Transform BulletExitPoint;
     [SerializeField] float shootCooldown;
-    public bool isShooting;
+    [SerializeField] private float punchSpeed;
+    [SerializeField] private float punchDistance;
     GunInfo info;
+    private bool isShooting;
     float shootTimer;
     bool animDone;
 
@@ -76,6 +78,9 @@ public class PistolGrunt : MonoBehaviour
     private Quaternion startRotation;
     private float currentRotationTime;
     private bool isRotating;
+
+    private float lastPunchTime;
+    private float punchCooldown = 1.0f;
 
     private void Start()
     {
@@ -139,7 +144,7 @@ public class PistolGrunt : MonoBehaviour
         {
             enemyState = EnemyState.Wandering;
         }
-        else if (IsPlayerVisible() || rememberPlayer)
+        else if ((IsPlayerVisible() || rememberPlayer) && isHoldingGun)
         {
             enemyState = EnemyState.Seek;
         }
@@ -219,7 +224,47 @@ public class PistolGrunt : MonoBehaviour
     {
         if (enemyState == EnemyState.Punch)
         {
-            Debug.Log("punchers removed for now");
+            agent.speed = punchSpeed;
+
+            if (agent.velocity.magnitude >= 0.1f)
+            {
+                animator.SetBool("run", true);
+            }
+
+            Vector3 playerPosition = detectedPlayer.transform.position;
+            Vector3 directionToPlayer = playerPosition - transform.position;
+
+            int layerMask = 1 << LayerMask.NameToLayer("Enemy");
+            layerMask = ~layerMask;
+
+            RaycastHit hit;
+            if (Physics.Raycast(eyesPosition.position, directionToPlayer, out hit, Mathf.Infinity, layerMask))
+            {
+                if (hit.collider.gameObject != detectedPlayer)
+                {
+                    Vector3 newDestination = FindNewDestinationAroundObstacle(playerPosition);
+                    agent.SetDestination(newDestination);
+                    return;
+                }
+            }
+
+            if (Time.time - lastPunchTime >= punchCooldown)
+            {
+                if (Vector3.Distance(transform.position, playerPosition) <= punchDistance)
+                {
+                    agent.SetDestination(transform.position);
+                    animator.SetTrigger("punch");
+                    gotHit = false;
+                    lastPunchTime = Time.time;
+
+                    Quaternion targetRotation = Quaternion.LookRotation(playerPosition - transform.position);
+                    transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 200);
+                }
+                else
+                {
+                    agent.SetDestination(playerPosition);
+                }
+            }
         }
     }
 
@@ -256,8 +301,6 @@ public class PistolGrunt : MonoBehaviour
 
     private void RotateGunAndBodyTowardsPlayer()
     {
-        if (!isShooting) return;
-
         if (agent.isOnNavMesh)
             RotateNavMeshAgentTowardsObj(detectedPlayer.transform.position);
 
@@ -266,8 +309,6 @@ public class PistolGrunt : MonoBehaviour
 
     private void RotateNavMeshAgentTowardsObj(Vector3 objPos)
     {
-        if (!isShooting) return;
-
         agent.SetDestination(agent.transform.position);
 
         Quaternion targetRotation = Quaternion.LookRotation(objPos - agent.transform.position);
