@@ -32,6 +32,8 @@ public class MoveHook : MonoBehaviour
     public float playerDistance = 4;
     public float distToHook = 0;
 
+    [SerializeField] float pullForce;
+
     bool headingBack = false;
 
     float speed;
@@ -109,7 +111,9 @@ public class MoveHook : MonoBehaviour
             {
                 UpdateChain();
 
-                Grapple(heading);
+                //if (hookTarget.tether) Grapple(heading);
+                //else 
+                    PullTowards(heading);
 
                 return;
             }
@@ -269,8 +273,8 @@ public class MoveHook : MonoBehaviour
                 ht.resistance -= deltaTime;
                 if (ht.resistance > 0)
                 {
-                    Pullback();
                     hookTarget = ht;
+                    Pullback(true);
 
                     Destroy(fx);
                     fx = Instantiate(perfectHookFXprefab, transform);
@@ -318,7 +322,7 @@ public class MoveHook : MonoBehaviour
             Destroy(target.transform.GetComponent<PhysicsHit>());
             Destroy(target.transform.GetComponent<Rigidbody>());
         }
-
+         
         Pullback();
     }
 
@@ -419,15 +423,31 @@ public class MoveHook : MonoBehaviour
         hookTarget = null;
     }
 
-    public void Pullback()
+    public void Pullback() => Pullback(false);
+
+    public void Pullback(bool withForce)
     {
         speed = 0;
         G = new();
 
+        if (!withForce) return;
+
+        sweatersController player = sweatersController.instance;
+
+        if (!player.isGrounded)
+        {
+            if(!hookTarget.tether) player.velocity.y = 0;
+            return;
+        }
+
+        Vector3 toPlayer = player.transform.position - transform.position;
+
+        player.velocity.y = 0;
+        player.velocity -= toPlayer.normalized * 8;
         // home.PullBack();
     }
 
-    public void PullbackWithForce(float force)
+    public void PullbackWithForce(float force, float vScale)
     {
         if (hookTarget)
         {
@@ -436,7 +456,7 @@ public class MoveHook : MonoBehaviour
             if (t < 0.4) // perfect hook
             {
                 hookTarget.resistance = 0;
-                if (force > 0) LaunchPlayer(force);
+                if (force > 0) LaunchPlayer(force, vScale);
 
                 Destroy(fx);
                 fx = Instantiate(perfectHookCircleFXprefab, transform);
@@ -447,6 +467,12 @@ public class MoveHook : MonoBehaviour
             }
 
             fx.transform.parent = null;
+
+            sweatersController player = sweatersController.instance;
+
+            if (hookTarget.tether) player.maxSpeed = player.airSpeed * 0.75f;
+            else player.maxSpeed = player.airSpeed * 0.5f;
+            player.velocity = Vector3.ClampMagnitude(player.velocity, player.maxSpeed);
 
         }
         speed = 0;
@@ -497,7 +523,38 @@ public class MoveHook : MonoBehaviour
         }
     }
 
-    public void LaunchPlayer(float force)
+    void PullTowards(Vector3 heading)
+    {
+        sweatersController player = sweatersController.instance;
+
+        // Vector3 toPlayer = player.transform.position - transform.position;
+
+        if (heading.magnitude < 0.5)
+        {
+            PullbackWithForce(0, 1);
+            return;
+        }
+
+        float t = hookTarget.maxResistance - hookTarget.resistance;
+
+        if (t < 0.4 && !hookTarget.tether) // perfect hook
+        {
+            return;
+        }
+
+        player.velocity = -heading.normalized * (player.velocity.magnitude + Time.deltaTime * pullForce);
+        
+        // player.velocity = Vector3.ClampMagnitude(player.velocity, player.maxSpeed);
+
+        // player.maxSpeed = player.velocity.magnitude;
+        // player.velocity += -heading.normalized * Time.deltaTime * pullForce;
+
+        player.isGrappling = true;
+
+        // player.velocity += -heading.normalized * Time.deltaTime * pullForce;
+    }
+
+    public void LaunchPlayer(float force, float vScale)
     {
         sweatersController player = sweatersController.instance;
 
@@ -534,8 +591,7 @@ public class MoveHook : MonoBehaviour
 
         float product = Vector3.Dot(new Vector3(v.x, 0, v.z).normalized, forward);
 
-        v *= (player.velocity.magnitude + force) * product;
-
+        v *= (player.velocity.magnitude * vScale + force) * product;
 
         player.maxSpeed = v.magnitude;
 

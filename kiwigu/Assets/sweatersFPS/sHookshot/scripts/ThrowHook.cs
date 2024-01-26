@@ -11,6 +11,9 @@ public class ThrowHook : MonoBehaviour
 
     public int mouseButton = 0;
 
+    [SerializeField] float pullForce = 15;
+    [SerializeField] float pullVelocityScale = 0.8f;
+
     bool hasHook = true;
 
     //Vector3 targetPosition;
@@ -59,7 +62,7 @@ public class ThrowHook : MonoBehaviour
 
                 if (Input.GetKeyDown(KeyCode.Space))
                 {
-                    mh.PullbackWithForce(15);   // originally hook.GetComponent<MoveHook>() instead of mh. changed this for the tooltip but change it back if something breaks
+                    mh.PullbackWithForce(pullForce, pullVelocityScale);   // originally hook.GetComponent<MoveHook>() instead of mh. changed this for the tooltip but change it back if something breaks
                 }
             }
         }
@@ -87,7 +90,7 @@ public class ThrowHook : MonoBehaviour
 
         if (Input.GetMouseButtonUp(mouseButton) || Input.GetKeyUp(mouseButton == 0 ? KeyCode.Q : KeyCode.E))
         {
-            if (!hasHook) hook.GetComponent<MoveHook>().PullbackWithForce(0);
+            if (!hasHook) hook.GetComponent<MoveHook>().PullbackWithForce(0, 1);
             else CancelInvoke(nameof(Throw));
             keyPressed = false;
         }

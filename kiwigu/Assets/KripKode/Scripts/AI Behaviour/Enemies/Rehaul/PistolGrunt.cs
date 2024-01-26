@@ -8,7 +8,7 @@ public class PistolGrunt : MonoBehaviour
 {
     [SerializeField] private StudioEventEmitter sfxEmitterAvailable;
 
-    public enum EnemyState { Wandering, Seek, Cover, Shoot };
+    public enum EnemyState { Wandering, Seek, Punch, Shoot };
     [SerializeField] private EnemyState enemyState = EnemyState.Wandering;
 
     [Header("Drone Basic Settings")]
@@ -61,24 +61,26 @@ public class PistolGrunt : MonoBehaviour
     [SerializeField] private float hideTime;
     [SerializeField] private GameObject hookTarget;
     [SerializeField] private Transform hookTargetPosition;
-    private bool isHiding;
-    public float hideTimer;
-    private GameObject lastSelectedCover;
 
     [Space(10)]
     [Header("Enemy Attack Settings")]
     [SerializeField] Transform BulletExitPoint;
     [SerializeField] float shootCooldown;
-    public bool isShooting;
+    [SerializeField] private float punchSpeed;
+    [SerializeField] private float punchDistance;
     GunInfo info;
+    private bool isShooting;
     float shootTimer;
     bool animDone;
 
     private bool gotHit;
-    private float maxRotationTime = 0.035f; // smooothers
+    private float maxRotationTime = 0.035f;
     private Quaternion startRotation;
     private float currentRotationTime;
     private bool isRotating;
+
+    private float lastPunchTime;
+    private float punchCooldown = 1.0f;
 
     private void Start()
     {
@@ -108,7 +110,7 @@ public class PistolGrunt : MonoBehaviour
         StateManager();
         Wander();
         Seek();
-        Cover();
+        Punch();
         Shoot();
         RememberPlayer();
     }
@@ -129,40 +131,20 @@ public class PistolGrunt : MonoBehaviour
         }
 
         if (isShooting)
+        {
             RotateGunAndBodyTowardsPlayer();
-
-        if (isHiding)
-        {
-            hideTimer += Time.deltaTime;
-
-            if (hideTimer >= hideTime)
-            {
-                isShooting = false;
-                gotHit = false;
-                animator.SetBool("crouching", false);
-                hideTimer = 0;
-                isHiding = false;
-            }
             return;
         }
 
-
-        if (isShooting && !gotHit)
-            return;
-
-        if (gotHit && isHoldingGun && currentShield >= shield)
+        if (gotHit && !isHoldingGun)
         {
-            enemyState = EnemyState.Cover;
-        }
-        else if (gotHit && !isHoldingGun && currentShield >= shield) // change this later to puncherino
-        {
-            enemyState = EnemyState.Cover;
+            enemyState = EnemyState.Punch;
         }
         else if (!IsPlayerVisible() && !rememberPlayer)
         {
             enemyState = EnemyState.Wandering;
         }
-        else if (IsPlayerVisible() || rememberPlayer)
+        else if ((IsPlayerVisible() || rememberPlayer) && isHoldingGun)
         {
             enemyState = EnemyState.Seek;
         }
@@ -201,7 +183,22 @@ public class PistolGrunt : MonoBehaviour
                 animator.SetBool("run", true);
             }
 
-            Vector3 adjustedDestination = detectedPlayer.transform.position - (detectedPlayer.transform.position - transform.position).normalized * keepDistance;
+            Vector3 playerPosition = detectedPlayer.transform.position;
+            Vector3 directionToPlayer = playerPosition - transform.position;
+
+            int layerMask = 1 << LayerMask.NameToLayer("Enemy");
+            layerMask = ~layerMask;
+
+            RaycastHit hit;
+            if (Physics.Raycast(eyesPosition.position, directionToPlayer, out hit, Mathf.Infinity, layerMask))
+            {
+                if (hit.collider.gameObject != detectedPlayer)
+                {
+                    Vector3 newDestination = FindNewDestinationAroundObstacle(playerPosition);
+                    agent.SetDestination(newDestination);
+                    return;
+                }
+            }
 
             if (IsPlayerWithinRange() && !isShooting)
             {
@@ -210,49 +207,86 @@ public class PistolGrunt : MonoBehaviour
             }
             else
             {
-                agent.SetDestination(adjustedDestination);
+                agent.SetDestination(playerPosition);
             }
         }
     }
 
-    private void Cover()
+    private Vector3 FindNewDestinationAroundObstacle(Vector3 targetPosition)
     {
-        if (enemyState == EnemyState.Cover)
-        {
-            if (isHiding)
-                return;
+        Vector3 randomDirection = Random.insideUnitSphere * 5f;
+        randomDirection.y = 0f;
+        Vector3 newDestination = targetPosition + randomDirection;
+        return newDestination;
+    }
 
-            agent.speed = panicSpeed;
+    private void Punch()
+    {
+        if (enemyState == EnemyState.Punch)
+        {
+            agent.speed = punchSpeed;
 
             if (agent.velocity.magnitude >= 0.1f)
             {
                 animator.SetBool("run", true);
             }
 
-            if (!loggedHidingObject)
+            Vector3 playerPosition = detectedPlayer.transform.position;
+            Vector3 directionToPlayer = playerPosition - transform.position;
+
+            int layerMask = 1 << LayerMask.NameToLayer("Enemy");
+            layerMask = ~layerMask;
+
+            RaycastHit hit;
+            if (Physics.Raycast(eyesPosition.position, directionToPlayer, out hit, Mathf.Infinity, layerMask))
             {
-                loggedGameObject = FindRandomCoverNearby();
-                loggedHidingObject = true;
+                if (hit.collider.gameObject != detectedPlayer)
+                {
+                    Vector3 newDestination = FindNewDestinationAroundObstacle(playerPosition);
+                    agent.SetDestination(newDestination);
+                    return;
+                }
             }
 
-            if (!loggedGameObject)
-                return;
-
-            float distance = Vector3.Distance(transform.position, loggedGameObject.transform.position);
-
-            if (distance <= 3f)
+            if (Time.time - lastPunchTime >= punchCooldown)
             {
-                loggedHidingObject = false;
-                animator.SetBool("crouching", true);
-                isHiding = true;
-                loggedGameObject = null;
-            }
-            else
-            {
-                MoveToOppositePoint(loggedGameObject.transform.position);
+                if (Vector3.Distance(transform.position, playerPosition) <= punchDistance)
+                {
+                    agent.SetDestination(transform.position);
+                    animator.SetTrigger("punch");
+                    gotHit = false;
+                    lastPunchTime = Time.time;
+
+                    Quaternion targetRotation = Quaternion.LookRotation(playerPosition - transform.position);
+                    transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 150);
+                }
+                else
+                {
+                    agent.SetDestination(playerPosition);
+                }
             }
         }
     }
+
+    public void PunchEvent()
+    {
+        if (detectedPlayer)
+        {
+            Vector3 incomingDirection = (detectedPlayer.transform.position - transform.position).normalized;
+            Vector3 upwardDirection = Vector3.up;
+
+            Vector3 punchDirection = (incomingDirection + upwardDirection).normalized;
+
+            var treshold = 1;
+
+            if (Vector3.Distance(transform.position, detectedPlayer.transform.position) <= punchDistance + treshold)
+            {
+                detectedPlayer.GetComponent<PlayerHealth>().DealDamage(25, -incomingDirection);
+                sweatersController.instance.velocity += punchDirection * 15;
+            }
+        }
+    }
+
 
     private void Shoot()
     {
@@ -285,58 +319,8 @@ public class PistolGrunt : MonoBehaviour
         isShooting = false;
     }
 
-    private GameObject FindRandomCoverNearby()
-    {
-        GameObject[] coverObjects = GameObject.FindGameObjectsWithTag("Cover");
-
-        List<GameObject> nearbyCovers = new List<GameObject>();
-        foreach (GameObject cover in coverObjects)
-        {
-            float distance = Vector3.Distance(transform.position, cover.transform.position);
-            if (distance <= 50f)
-            {
-                nearbyCovers.Add(cover);
-            }
-        }
-
-        if (nearbyCovers.Count > 0)
-        {
-            GameObject selectedCover = null;
-
-            do
-            {
-                selectedCover = nearbyCovers[Random.Range(0, nearbyCovers.Count)];
-            } while (selectedCover == lastSelectedCover);
-
-            lastSelectedCover = selectedCover;
-
-            return selectedCover;
-        }
-        else
-        {
-            return null;
-        }
-    }
-
-    private void MoveToOppositePoint(Vector3 targetPosition)
-    {
-        if (!detectedPlayer)
-            return;
-
-        Vector3 directionToPlayer = transform.position - detectedPlayer.transform.position;
-        Vector3 oppositePoint = targetPosition + directionToPlayer.normalized;
-
-        if (agent.isOnNavMesh)
-        {
-            agent.SetDestination(oppositePoint);
-            hidingPos = oppositePoint;
-        }
-    }
-
     private void RotateGunAndBodyTowardsPlayer()
     {
-        if (!isShooting) return;
-
         if (agent.isOnNavMesh)
             RotateNavMeshAgentTowardsObj(detectedPlayer.transform.position);
 
@@ -345,8 +329,6 @@ public class PistolGrunt : MonoBehaviour
 
     private void RotateNavMeshAgentTowardsObj(Vector3 objPos)
     {
-        if (!isShooting) return;
-
         agent.SetDestination(agent.transform.position);
 
         Quaternion targetRotation = Quaternion.LookRotation(objPos - agent.transform.position);
@@ -454,7 +436,7 @@ public class PistolGrunt : MonoBehaviour
     }
 
     // can't do animDone = !animDone because it breaks due to hide timerino :(
-    public void AnimTrue() 
+    public void AnimTrue()
     {
         animDone = true;
     }

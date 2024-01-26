@@ -78,4 +78,24 @@ public class HitVariable : MonoBehaviour
 
         return child;
     }
+
+    public void PunchEvent()
+    {
+        Type type = Type.GetType(HitReferenceScript);
+
+        if (type != null)
+        {
+            Component hitComponent = GetRootParent(gameObject.transform).GetComponent(type);
+
+            if (hitComponent != null)
+            {
+                MethodInfo method = type.GetMethod("PunchEvent");
+
+                if (method != null)
+                {
+                    method.Invoke(hitComponent, null);
+                }
+            }
+        }
+    }
 }
