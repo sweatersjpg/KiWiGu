@@ -258,7 +258,7 @@ public class PistolGrunt : MonoBehaviour
                     lastPunchTime = Time.time;
 
                     Quaternion targetRotation = Quaternion.LookRotation(playerPosition - transform.position);
-                    transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 200);
+                    transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 150);
                 }
                 else
                 {
@@ -266,6 +266,12 @@ public class PistolGrunt : MonoBehaviour
                 }
             }
         }
+    }
+
+    public void PunchEvent()
+    {
+        if(detectedPlayer)
+            detectedPlayer.GetComponent<PlayerHealth>().DealDamage(25, Vector3.forward);
     }
 
     private void Shoot()
