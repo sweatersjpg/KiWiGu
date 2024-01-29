@@ -52,24 +52,24 @@ public class ThrowHook : MonoBehaviour
 
     private void Update()
     {
-        if (!hasHook && !sweatersController.instance.wasGrounded)
-        {
-            PlayerUI.SetLeapTooltipActive(false);
+        //if (!hasHook && !sweatersController.instance.wasGrounded)
+        //{
+        //    PlayerUI.SetLeapTooltipActive(false);
 
-            if (mh.hookTarget != null && mh.hookTarget.tether)
-            {
-                PlayerUI.SetLeapTooltipActive(true);
+        //    if (mh.hookTarget != null && mh.hookTarget.tether)
+        //    {
+        //        // PlayerUI.SetLeapTooltipActive(true);
 
-                if (Input.GetKeyDown(KeyCode.Space))
-                {
-                    mh.PullbackWithForce(pullForce, pullVelocityScale);   // originally hook.GetComponent<MoveHook>() instead of mh. changed this for the tooltip but change it back if something breaks
-                }
-            }
-        }
-        else if (mh != null && mh.hookTarget != null && mh.hookTarget.tether && sweatersController.instance.wasGrounded)
-        {
-            PlayerUI.SetLeapTooltipActive(false);
-        }
+        //        //if (Input.GetKeyDown(KeyCode.Space))
+        //        //{
+        //        //    mh.PullbackWithForce(pullForce, pullVelocityScale);   // originally hook.GetComponent<MoveHook>() instead of mh. changed this for the tooltip but change it back if something breaks
+        //        //}
+        //    }
+        //}
+        //else if (mh != null && mh.hookTarget != null && mh.hookTarget.tether && sweatersController.instance.wasGrounded)
+        //{
+        //     // PlayerUI.SetLeapTooltipActive(false);
+        //}
     }
 
     // Update is called once per frame

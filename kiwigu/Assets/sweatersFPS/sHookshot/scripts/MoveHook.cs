@@ -111,9 +111,9 @@ public class MoveHook : MonoBehaviour
             {
                 UpdateChain();
 
-                //if (hookTarget.tether) Grapple(heading);
-                //else 
-                    PullTowards(heading);
+                //if (hookTarget.tether) PullTowards(heading);
+                //else Grapple(heading);
+                PullTowards(heading);
 
                 return;
             }
@@ -487,7 +487,7 @@ public class MoveHook : MonoBehaviour
 
         Vector3 toPlayer = player.transform.position - transform.position;
 
-        player.isGrappling = true;
+        // player.isGrappling = true;
 
 
         //distToHook = Mathf.Min(toPlayer.magnitude, distToHook);
