@@ -7,7 +7,7 @@ class HealthBar : MonoBehaviour
 {
 
     /*
-    health bar credit: @0xLOWERCASE <3 thank you for the help!! 
+    health bar credit: @null-machine <3 thank you for the help!! 
     
     to adjust masks and bar size
     set local x on LeftBar and RightBar to 0
@@ -21,8 +21,11 @@ class HealthBar : MonoBehaviour
                                                         // healthBar.TargetPercent = currentHealth / totalHealth;
                                                         // note: do Not call this every frame. only call this when the health changes
 
-    [SerializeField] internal bool Pulsing = false;
-    [SerializeField] float pulseRate = 3f;
+    [Range(0f, 1f)]
+    [SerializeField] float pulseThresholdPercent = 0.3f;   // percent of HP at which the bar collapses and starts pulsing
+
+    bool Pulsing = false;
+    [SerializeField] float pulseRate = 3.5f;
     [SerializeField] float minSize = 1f;
     [SerializeField] float maxSize = 1.02f;
     [SerializeField] float collapseDist = 40f; // for the "wings"
@@ -126,12 +129,19 @@ class HealthBar : MonoBehaviour
             m.SetFloat("_HPPercent", percent);
         }
 
-        if (Pulsing) return;
+        if (percent <= pulseThresholdPercent)
+        {
+            Pulsing = true;
+            return;
+        } else
+        {
+            Pulsing = false;
+        }
 
         Vector3 buffer = leftBar.anchoredPosition3D;
-        leftBar.anchoredPosition3D = new Vector3(dist * percent, buffer.y, buffer.z);
+        leftBar.anchoredPosition3D = new Vector3(dist * ((percent - pulseThresholdPercent) / (1f - pulseThresholdPercent)), buffer.y, buffer.z);
         buffer = rightBar.anchoredPosition3D;
-        rightBar.anchoredPosition3D = new Vector3(-dist * percent, buffer.y, buffer.z);
+        rightBar.anchoredPosition3D = new Vector3(-dist * ((percent - pulseThresholdPercent) / (1f - pulseThresholdPercent)), buffer.y, buffer.z);
     }
 
     void OnApplicationQuit()
