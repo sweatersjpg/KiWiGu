@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using System.Xml.Serialization;
 using UnityEngine;
 
 public class DirectionalAttack : MonoBehaviour
@@ -13,14 +15,14 @@ public class DirectionalAttack : MonoBehaviour
 
     [SerializeField] GameObject hitEffect;
 
-    List<Collider> alreadyHit;
+    List<GameObject> alreadyHit;
 
     float startTime;
 
     // Start is called before the first frame update
     void Start()
     {
-        alreadyHit = new List<Collider>();
+        alreadyHit = new List<GameObject>();
         startTime = Time.time;
     }
 
@@ -40,20 +42,26 @@ public class DirectionalAttack : MonoBehaviour
 
         foreach (Collider hit in hits)
         {
-            if (alreadyHit.Contains(hit)) return;
+            
 
             if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Enemy"))
             {
                 EnemyHitBox enemy = hit.transform.gameObject.GetComponentInParent<EnemyHitBox>();
                 if (enemy != null)
                 {
+
                     var scriptType = System.Type.GetType(enemy.ReferenceScript);
 
                     Transform rootParent = GetRootParent(enemy.transform);
 
                     if (rootParent != null)
                     {
+                        if (alreadyHit.Contains(rootParent.gameObject)) return;
+
                         var enemyComponent = rootParent.GetComponent(scriptType) as MonoBehaviour;
+
+                        alreadyHit.Add(rootParent.gameObject);
+                        Instantiate(hitEffect, hit.ClosestPoint(transform.position), Quaternion.identity);
 
                         if (enemyComponent != null)
                         {
@@ -65,14 +73,13 @@ public class DirectionalAttack : MonoBehaviour
                             }
                         }
                     }
-                    alreadyHit.Add(hit);
-
-                    Instantiate(hitEffect, hit.ClosestPoint(transform.position), Quaternion.identity);
+                    
                 }
             }
             else if (hit.attachedRigidbody != null)
             {
-                alreadyHit.Add(hit);
+                if (alreadyHit.Contains(hit.gameObject)) return;
+                alreadyHit.Add(hit.gameObject);
 
                 //hit.attachedRigidbody.AddExplosionForce(force, transform.position, radius);
                 hit.attachedRigidbody.AddForce(force * transform.forward, ForceMode.Impulse);
