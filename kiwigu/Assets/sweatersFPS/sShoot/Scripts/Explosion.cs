@@ -22,8 +22,11 @@ public class Explosion : MonoBehaviour
     {
         startTime = Time.time;
 
-        explosionFX.parent = null;
-        explosionFX.localScale = new(finalRadius / 2, finalRadius / 2, finalRadius / 2);
+        if(explosionFX)
+        {
+            explosionFX.parent = null;
+            explosionFX.localScale = new(finalRadius / 2, finalRadius / 2, finalRadius / 2);
+        }
 
         alreadyHit = new List<Collider>();
     }
