@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class MeleLeg : MonoBehaviour
 {
+    // I have to stop making everything public static but its so convinient :-)
+    public static MeleLeg instance;
+    
     Quaternion attackRotation;
     Vector3 attackPosition;
 
@@ -22,7 +25,18 @@ public class MeleLeg : MonoBehaviour
 
     public bool triggerDamage = false;
     bool canKick = true;
-    
+
+    [SerializeField] float maxRecoil = 45;
+    float recoil = 0;
+    [SerializeField] float recoilSpeed = 2;
+
+    public WeaponCameraFX camFX;
+
+    private void Awake()
+    {
+        instance = this;
+    }
+
     // Start is called before the first frame update
     void Start()
     {
@@ -41,8 +55,12 @@ public class MeleLeg : MonoBehaviour
         //if (attacking) AnimateToAttack();
         //else AnimateToRest();
 
-        if ((Input.GetKeyDown(KeyCode.V) || Input.GetMouseButtonDown(2)) && canKick) Kick();
+        if ((Input.GetKeyDown(KeyCode.V) || Input.GetMouseButtonDown(2)) && canKick && transform.parent.childCount == 2) Kick();
 
+        if (canKick) recoil = Mathf.Lerp(recoil, 0, Time.deltaTime * recoilSpeed);
+        else recoil = Mathf.Lerp(recoil, maxRecoil, Time.deltaTime * recoilSpeed);
+
+        if (recoil > 0) camFX.RequestRecoil(recoil);
     }
 
     public void DealDamage()
@@ -57,21 +75,26 @@ public class MeleLeg : MonoBehaviour
         Invoke(nameof(SetCanKick), 0.5f);
         
         anim.SetTrigger("WholeKick");
-        if (transform.parent.childCount == 2) DealDamage();
+        Invoke(nameof(DealDamage), 0.2f);
         // Invoke(nameof(DealDamage), 0.3f);
+    }
+
+    public void DelayKick(float delay)
+    {
+        Invoke(nameof(Kick), delay);
     }
 
     public void SetCanKick() => canKick = true;
 
-    public void Attack()
+    public void SetAttacking()
     {
-        anim.SetTrigger("Kick");
-
-        // Invoke(nameof(Rest), 0.5f);
+        anim.SetBool("IsKicking", true);
+        CancelInvoke(nameof(SetResting));
+        Invoke(nameof(SetResting), 0.5f);
     }
-    public void Rest()
+    public void SetResting()
     {
-        anim.SetTrigger("Rest");
+        anim.SetBool("IsKicking", false);
     }
 
 }

@@ -52,6 +52,8 @@ public class MoveHook : MonoBehaviour
 
     public MoveHook childHook;
 
+    bool hasKicked = false;
+
     void Start()
     {
         float startingSpeed = Mathf.Sqrt(2 * trackingAcceleration * hookRange / 2);
@@ -95,11 +97,10 @@ public class MoveHook : MonoBehaviour
 
             offsetFromOtherHook = parentHook.transform.position - transform.position;
             parentHook.childHook = this;
+            
         }
 
     }
-
-
 
     // Update is called once per frame
     void Update()
@@ -121,6 +122,8 @@ public class MoveHook : MonoBehaviour
             velocity = parentHook.velocity;
             speed = parentHook.speed;
 
+            // if (parentHook.hookTarget) MeleLeg.instance.SetAttacking();
+
             return;
             // if(speed > 0) return;
         }
@@ -129,7 +132,11 @@ public class MoveHook : MonoBehaviour
 
         Vector3 heading = home.transform.position - transform.position;
 
-
+        if (childHook && hookTarget && !hookTarget.tether && heading.magnitude < 6 && !hasKicked)
+        {
+            MeleLeg.instance.Kick();
+            hasKicked = true;
+        }
 
         //if(canCatch && heading.magnitude < catchDistance)
         //{
