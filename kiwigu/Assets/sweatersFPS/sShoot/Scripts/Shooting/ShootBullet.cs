@@ -72,14 +72,17 @@ public class ShootBullet : MonoBehaviour
         bool canShoot = (Time.time - shotTimer) > 1 / info.fireRate && anim.canShoot && anim.hasGun;
         anim.canShoot = canShoot;
 
+        string[] shootButtons = { "LeftShoot", "RightShoot" };
+        string shootButton = shootButtons[anim.mouseButton];
+
         bool doShoot = (info.canCharge) ?
-            Input.GetMouseButtonUp(anim.mouseButton) : Input.GetMouseButtonDown(anim.mouseButton);
+            Input.GetButtonUp(shootButton) : Input.GetButtonDown(shootButton);
         if (info.fullAuto) doShoot = Input.GetMouseButton(anim.mouseButton);
 
         if (info.canCharge)
         {
             // if (Input.GetMouseButtonDown(anim.mouseButton)) chargeTimerStart = time;
-            if (Input.GetMouseButton(anim.mouseButton)) chargeTimer += deltaTime / info.timeToMaxCharge;
+            if (Input.GetButton(shootButton)) chargeTimer += deltaTime / info.timeToMaxCharge;
 
             if (chargeTimer > 1) chargeTimer = 1;
             if (chargeTimer < 0) chargeTimer = 0;
@@ -96,7 +99,7 @@ public class ShootBullet : MonoBehaviour
             }
             else
             {
-                if (Input.GetMouseButtonDown(anim.mouseButton))
+                if (Input.GetButtonDown(shootButton))
                     sfxEmitterOut.Play();
             }
         }
