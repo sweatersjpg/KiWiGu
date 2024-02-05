@@ -209,13 +209,38 @@ public class Bullet : MonoBehaviour
         {
             var enemyComponent = rootParent.GetComponent(scriptType) as MonoBehaviour;
 
-            if (enemyComponent != null) 
+            if (enemyComponent != null)
             {
                 var takeDamageMethod = scriptType.GetMethod("TakeDamage");
 
                 if (takeDamageMethod != null)
                 {
                     takeDamageMethod.Invoke(enemyComponent, new object[] { bulletDamage * damageMultiplier });
+                }
+            }
+        }
+    }
+
+    private void BackpackDamage(EnemyHitBox enemy)
+    {
+        if (enemy == null)
+            return;
+
+        var scriptType = System.Type.GetType(enemy.ReferenceScript);
+
+        Transform rootParent = GetRootParent(enemy.transform);
+
+        if (rootParent != null && scriptType != null)
+        {
+            var enemyComponent = rootParent.GetComponent(scriptType) as MonoBehaviour;
+
+            if (enemyComponent != null)
+            {
+                var takeDamageMethod = scriptType.GetMethod("BackpackDamage");
+
+                if (takeDamageMethod != null)
+                {
+                    takeDamageMethod.Invoke(enemyComponent, new object[] { bulletDamage });
                 }
             }
         }
@@ -244,7 +269,7 @@ public class Bullet : MonoBehaviour
         {
             hit.transform.GetComponent<PlayerHealth>().DealDamage(bulletDamage, -direction);
         }
-        else if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Enemy"))
+        else if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Enemy") && !hit.transform.gameObject.CompareTag("Backpack"))
         {
             EnemyHitBox enemy = hit.transform.gameObject.GetComponent<EnemyHitBox>();
 
@@ -265,6 +290,16 @@ public class Bullet : MonoBehaviour
             hit.transform.gameObject.GetComponent<PhysicsHit>().Hit(hit.point, transform.forward * speed);
 
             SpawnHole(hit);
+        }
+        else if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Enemy") && hit.transform.gameObject.CompareTag("Backpack"))
+        {
+            EnemyHitBox enemy = hit.transform.gameObject.GetComponent<EnemyHitBox>();
+
+            if (enemy != null)
+            {
+                if (enemy.isBackpack)
+                    BackpackDamage(enemy);
+            }
         }
         else
         {
@@ -319,7 +354,7 @@ public class Bullet : MonoBehaviour
 
     bool SpawnSpecialHitFX(RaycastHit hit, Vector3 direction)
     {
-        for(int i = 0; i < HitFX.Length; i++)
+        for (int i = 0; i < HitFX.Length; i++)
         {
             if (HitFXLayers[i] != (HitFXLayers[i] | (1 << hit.transform.gameObject.layer))) continue;
 
