@@ -77,7 +77,7 @@ public class ShootBullet : MonoBehaviour
 
         bool doShoot = (info.canCharge) ?
             Input.GetButtonUp(shootButton) : Input.GetButtonDown(shootButton);
-        if (info.fullAuto) doShoot = Input.GetMouseButton(anim.mouseButton);
+        if (info.fullAuto) doShoot = Input.GetButton(shootButton);
 
         if (info.canCharge)
         {
