@@ -6,4 +6,5 @@ public class EnemyHitBox : MonoBehaviour
     public bool doubleDamage;
     public bool lessDamage;
     public bool leastDamage;
+    public bool isBackpack;
 }

@@ -11,14 +11,17 @@ public class PistolGrunt : MonoBehaviour
     public enum EnemyState { Wandering, Seek, Punch, Shoot };
     [SerializeField] private EnemyState enemyState = EnemyState.Wandering;
 
-    [Header("Drone Basic Settings")]
+    [Header("Grunt Basic Settings")]
     [Range(0, 100)]
     [SerializeField] private float health;
     [Range(0, 100)]
     [SerializeField] private float shield;
+    [Range(0, 100)]
+    [SerializeField] private float backPackHealth;
     [SerializeField] private Animator animator;
     [SerializeField] private GameObject shieldObject;
     [SerializeField] private GameObject ragdoll;
+    [SerializeField] private GameObject explosionPrefab;
     private bool lerpingShield = false;
     private Material shieldMaterial;
     private float shieldLerpStartTime;
@@ -28,6 +31,7 @@ public class PistolGrunt : MonoBehaviour
     private bool isHoldingGun;
     private float currentHealth;
     private float currentShield;
+    private float currentBackpackHealth;
     private bool isDead;
 
     [Space(10)]
@@ -64,6 +68,9 @@ public class PistolGrunt : MonoBehaviour
 
     [Space(10)]
     [Header("Enemy Attack Settings")]
+    [Range(0, 0.25f)]
+    [SerializeField] private float gunSpread;
+    [SerializeField] private bool isDefense;
     [SerializeField] Transform BulletExitPoint;
     [SerializeField] float shootCooldown;
     [SerializeField] private float punchSpeed;
@@ -99,6 +106,9 @@ public class PistolGrunt : MonoBehaviour
 
     private void Update()
     {
+        if (PauseSystem.paused)
+            return;
+        
         if (lerpingShield)
         {
             LerpShieldProgressUpdate();
@@ -253,6 +263,16 @@ public class PistolGrunt : MonoBehaviour
                 if (Vector3.Distance(transform.position, playerPosition) <= punchDistance)
                 {
                     agent.SetDestination(transform.position);
+
+                    if (isDefense)
+                    {
+                        Vector3 explosionPosition = detectedPlayer.transform.position + (detectedPlayer.transform.forward * 2) + (detectedPlayer.transform.up * 1);
+                        Instantiate(explosionPrefab, explosionPosition, Quaternion.identity);
+
+                        TakeDamage(1000000);
+                        return;
+                    }
+
                     animator.SetTrigger("punch");
                     gotHit = false;
                     lastPunchTime = Time.time;
@@ -448,12 +468,33 @@ public class PistolGrunt : MonoBehaviour
 
     public void ShootEvent()
     {
+        if (PauseSystem.paused)
+            return;
+
         EnemyShoot();
     }
 
     IEnumerator ShootFloat()
     {
         yield return new WaitForSeconds(EnemyShoot());
+    }
+
+    public void BackpackDamage(float bulletDamage)
+    {
+        if (isDead)
+            return;
+
+        if (currentBackpackHealth < backPackHealth)
+        {
+            // apply shader backpack hit maybe here idk lol
+            currentBackpackHealth = Mathf.Min(currentBackpackHealth + bulletDamage, backPackHealth);
+        }
+
+        if(currentBackpackHealth >= backPackHealth)
+        {
+            Instantiate(explosionPrefab, transform.position, Quaternion.identity);
+            TakeDamage(1000000);
+        }
     }
 
     public virtual void TakeDamage(float bulletDamage)
@@ -609,7 +650,7 @@ public class PistolGrunt : MonoBehaviour
         GameObject bullet = Instantiate(info.bulletPrefab, BulletExitPoint.transform.position, BulletExitPoint.transform.rotation);
 
         Vector3 direction = BulletExitPoint.transform.forward;
-        direction += SpreadDirection(info.spread, 3);
+        direction += SpreadDirection(gunSpread, 3);
 
         bullet.transform.position = BulletExitPoint.transform.position;
         bullet.transform.rotation = Quaternion.LookRotation(direction.normalized);
