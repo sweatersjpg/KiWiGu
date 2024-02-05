@@ -4,6 +4,7 @@ using System.IO;
 using UnityEngine;
 using UnityEngine.Events;
 using FMODUnity;
+using UnityEngine.InputSystem;
 
 public class ShootBullet : MonoBehaviour
 {
@@ -134,6 +135,24 @@ public class ShootBullet : MonoBehaviour
         // Debug.Log(charge);
 
         ShootEvent.Invoke();
+
+        DoRumble();
+    }
+
+    void DoRumble()
+    {
+        Gamepad.current.SetMotorSpeeds(Random.Range(0.2f, 0.8f), Random.Range(0.5f, 1f));
+        Invoke(nameof(StopRumble), 0.2f);
+    }
+
+    void StopRumble()
+    {
+        Gamepad.current.SetMotorSpeeds(0, 0);
+    }
+
+    private void OnDestroy()
+    {
+        StopRumble();
     }
 
     void SpawnBullet()
