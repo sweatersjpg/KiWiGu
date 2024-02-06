@@ -55,7 +55,7 @@ public class MeleLeg : MonoBehaviour
         //if (attacking) AnimateToAttack();
         //else AnimateToRest();
 
-        if ((Input.GetKeyDown(KeyCode.V) || Input.GetMouseButtonDown(2)) && canKick && transform.parent.childCount == 2) Kick();
+        if ((Input.GetButtonDown("Kick")) && canKick && transform.parent.childCount == 2) Kick();
 
         if (canKick) recoil = Mathf.Lerp(recoil, 0, Time.deltaTime * recoilSpeed);
         else recoil = Mathf.Lerp(recoil, maxRecoil, Time.deltaTime * recoilSpeed);
