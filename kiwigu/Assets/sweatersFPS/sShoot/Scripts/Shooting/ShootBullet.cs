@@ -141,12 +141,15 @@ public class ShootBullet : MonoBehaviour
 
     void DoRumble()
     {
+        if (Input.GetJoystickNames().Length == 0) return;
+        
         Gamepad.current.SetMotorSpeeds(Random.Range(0.2f, 0.8f), Random.Range(0.5f, 1f));
         Invoke(nameof(StopRumble), 0.2f);
     }
 
     void StopRumble()
     {
+        if (Input.GetJoystickNames().Length == 0) return;
         Gamepad.current.SetMotorSpeeds(0, 0);
     }
 

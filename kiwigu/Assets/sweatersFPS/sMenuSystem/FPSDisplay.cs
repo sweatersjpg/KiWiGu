@@ -26,7 +26,7 @@ public class FPSDisplay : MonoBehaviour
         if ((1 / Time.deltaTime) < 30 && !lowFPSSprite.activeSelf) lowFPSSprite.SetActive(true);
         if ((1 / Time.deltaTime) > 30 && lowFPSSprite.activeSelf) lowFPSSprite.SetActive(false);
 
-        if (Input.GetKeyDown(KeyCode.Semicolon))
+        if (Input.GetKeyDown(KeyCode.F))
         {
             text.gameObject.SetActive(!text.gameObject.activeSelf);
         }

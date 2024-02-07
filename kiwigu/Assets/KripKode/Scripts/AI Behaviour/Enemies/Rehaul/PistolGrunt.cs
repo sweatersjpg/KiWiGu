@@ -413,7 +413,7 @@ public class PistolGrunt : MonoBehaviour
 
     private bool IsPlayerVisible()
     {
-        Collider[] hitColliders = Physics.OverlapSphere(eyesPosition.position, seekRange);
+        Collider[] hitColliders = Physics.OverlapSphere(eyesPosition.position, seekRange, LayerMask.GetMask("Player"));
         int layerMask = LayerMask.GetMask("Enemy");
         int layerMask2 = LayerMask.GetMask("HookTarget");
         int combinedLayerMask = layerMask | layerMask2;
@@ -423,6 +423,8 @@ public class PistolGrunt : MonoBehaviour
             RaycastHit hit;
             if (Physics.Raycast(eyesPosition.position, hitCollider.transform.position - eyesPosition.position - new Vector3(0, -1, 0), out hit, seekRange, ~combinedLayerMask))
             {
+                Debug.DrawRay(eyesPosition.position, hitCollider.transform.position - eyesPosition.position - new Vector3(0, -1, 0));
+                
                 if (hit.collider.CompareTag("Player"))
                 {
                     detectedPlayer = hit.collider.gameObject;
