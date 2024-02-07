@@ -19,6 +19,7 @@ public class DialogManager : MonoBehaviour
     bool showInteractPrompt = false;
 
     Queue<string> sentences;
+    Queue<float> sentenceDurations;
 
     bool textComplete = true;
     string currentText;
@@ -34,24 +35,25 @@ public class DialogManager : MonoBehaviour
     void Start()
     {
         sentences = new Queue<string>();
+        sentenceDurations = new Queue<float>();
         dialogBox.SetActive(false);
     }
 
     // Update is called once per frame
     void LateUpdate()
     {
-        if (Input.anyKeyDown)
-        {
+        //if (Input.anyKeyDown)
+        //{
             if(textComplete) NextDialog();
-            else
+            /*else
             {
                 StopAllCoroutines();
                 textComplete = true;
                 dialog.text = currentText;
             }
-        }
+        }*/
 
-        moreIcon.SetActive(textComplete);
+        //moreIcon.SetActive(textComplete);
 
         active = dialogBox.activeSelf;
 
@@ -59,7 +61,7 @@ public class DialogManager : MonoBehaviour
         showInteractPrompt = false;
     }
 
-    IEnumerator DisplayText(string text)
+    IEnumerator DisplayText(string text, float textDuration)
     {
         currentText = text;
         dialog.text = "";
@@ -70,7 +72,7 @@ public class DialogManager : MonoBehaviour
             dialog.text += text[i];
             yield return new WaitForSecondsRealtime(1/textSpeed);
         }
-
+        yield return new WaitForSecondsRealtime(textDuration);
         textComplete = true;
     }
     
@@ -84,18 +86,21 @@ public class DialogManager : MonoBehaviour
         }
 
         string s = sentences.Dequeue();
+        float sd = sentenceDurations.Dequeue();
 
         // play dialog
 
-        StartCoroutine(nameof(DisplayText), s);
+        StartCoroutine(DisplayText(s, sd));
 
         // dialog.text = s;
     }
 
-    public void StartDialog(List<string> lines, bool startDialogAsap)
+    public void StartDialog(List<string> lines, List<float> durations, bool startDialogAsap)
     {
         sentences.Clear();
+        sentenceDurations.Clear();
         foreach(string s in lines) sentences.Enqueue(s);
+        foreach (float d in durations) sentenceDurations.Enqueue(d);
 
         // enable dialog box
         dialogBox.SetActive(true);

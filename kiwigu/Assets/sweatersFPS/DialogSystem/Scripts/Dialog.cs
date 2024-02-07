@@ -18,4 +18,6 @@ public class Dialog
     [TextArea(2,3)]
     public string[] sentences;
 
+    public float[] sentenceDurations;
+
 }

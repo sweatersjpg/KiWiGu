@@ -7,12 +7,13 @@ public class DialogTrigger : MonoBehaviour
 
     [SerializeField] Dialog dialog;
     [SerializeField] bool displayOnContact = false;
+    [SerializeField] bool destroyOnContact = false;
 
     [Space]
     // [SerializeField] GameObject[] enable;
     // [SerializeField] GameObject[] disable;
 
-    // bool playerInBounds;
+    bool playerInBounds;
 
     // SpriteRenderer sr;
 
@@ -34,7 +35,7 @@ public class DialogTrigger : MonoBehaviour
         //if (!playerInBounds) sr.color = new Color(1,1,1,0.2f);
         //else sr.color = new Color(1, 0, 0, 0.2f);
 
-        //if (DialogManager.instance.active) return;
+        if (DialogManager.instance.active) return;
 
         //if (triggeredDialog && !doneChanges)
         //{
@@ -49,35 +50,42 @@ public class DialogTrigger : MonoBehaviour
         //    TriggerDialog();
         //}
 
-        //if(playerInBounds && displayOnContact)
-        //{
-        //    TriggerDialog();
-        //    displayOnContact = false;
-        //}
+        if(playerInBounds && displayOnContact)
+        {
+            TriggerDialog();
+            displayOnContact = false;
+            if (destroyOnContact) Destroy(gameObject);
+
+        }
     }
 
     public void TriggerDialog()
     {
         List<string> sentences = new List<string>();
+        List<float> sentenceDurations = new List<float>();
 
-        switch(dialog.type)
+        switch (dialog.type)
         {
-            case Dialog.DialogType.Random:
-                sentences.Add(dialog.sentences[Random.Range(0, dialog.sentences.Length)]);
-                break;
-            case Dialog.DialogType.Repeat:
-                sentences.Add(dialog.sentences[dialogIndex++ % dialog.sentences.Length]);
-                break;
             case Dialog.DialogType.Sequence:
-                for(int i = dialogIndex; i < dialog.sentences.Length; i++)
+                for (int i = dialogIndex; i < dialog.sentences.Length; i++)
                 {
                     sentences.Add(dialog.sentences[i]);
+                    sentenceDurations.Add(dialog.sentenceDurations[i]);
                 }
                 dialogIndex = dialog.sentences.Length - 1;
                 break;
+            case Dialog.DialogType.Random:
+                int randomIndex = Random.Range(0, dialog.sentences.Length);
+                sentences.Add(dialog.sentences[randomIndex]);
+                sentenceDurations.Add(dialog.sentenceDurations[randomIndex]);
+                break;
+            case Dialog.DialogType.Repeat:
+                sentences.Add(dialog.sentences[dialogIndex++ % dialog.sentences.Length]);
+                sentenceDurations.Add(dialog.sentenceDurations[dialogIndex++ % dialog.sentenceDurations.Length]);
+                break;
         }
 
-        DialogManager.instance.StartDialog(sentences, displayOnContact);
+        DialogManager.instance.StartDialog(sentences, sentenceDurations, displayOnContact);
         triggeredDialog = true;
     }
 
@@ -87,13 +95,13 @@ public class DialogTrigger : MonoBehaviour
     //    for (int i = 0; i < disable.Length; i++) disable[i].SetActive(false);
     //}
 
-    //private void OnTriggerEnter2D(Collider2D collision)
-    //{
-    //    playerInBounds = true;
-    //}
+    private void OnTriggerEnter(Collider collision)
+    {
+        playerInBounds = true;
+    }
 
-    //private void OnTriggerExit2D(Collider2D collision)
-    //{
-    //    playerInBounds = false;
-    //}
+    private void OnTriggerExit(Collider collision)
+    {
+        playerInBounds = false;
+    }
 }
