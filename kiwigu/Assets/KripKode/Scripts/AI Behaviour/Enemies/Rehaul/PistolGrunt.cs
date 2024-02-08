@@ -68,6 +68,7 @@ public class PistolGrunt : MonoBehaviour
 
     [Space(10)]
     [Header("Enemy Attack Settings")]
+    [SerializeField] private GunInfo gunInfo;
     [Range(0, 0.25f)]
     [SerializeField] private float gunSpread;
     [SerializeField] private bool isDefense;
@@ -75,7 +76,6 @@ public class PistolGrunt : MonoBehaviour
     [SerializeField] float shootCooldown;
     [SerializeField] private float punchSpeed;
     [SerializeField] private float punchDistance;
-    GunInfo info;
     private bool isShooting;
     float shootTimer;
     bool animDone;
@@ -92,8 +92,12 @@ public class PistolGrunt : MonoBehaviour
     private void Start()
     {
         ht = GetComponentInChildren<HookTarget>();
+
         if (ht)
+        {
             isHoldingGun = true;
+            ht.info = gunInfo;
+        }
 
         agent = GetComponent<NavMeshAgent>();
         initialPosition = transform.position;
@@ -111,7 +115,7 @@ public class PistolGrunt : MonoBehaviour
         
         if (lerpingShield)
         {
-            LerpShieldProgressUpdate();
+            UpdateLerpShieldProgress();
         }
 
         if (isDead)
@@ -196,10 +200,11 @@ public class PistolGrunt : MonoBehaviour
             Vector3 playerPosition = detectedPlayer.transform.position;
             Vector3 directionToPlayer = playerPosition - transform.position;
 
-            int layerMask = 1 << LayerMask.NameToLayer("Enemy");
-            layerMask = ~layerMask;
+            int layerMask = 1 << LayerMask.NameToLayer("Player");
 
             RaycastHit hit;
+            //Debug.DrawLine(eyesPosition.position, playerPosition, Color.red);
+
             if (Physics.Raycast(eyesPosition.position, directionToPlayer, out hit, Mathf.Infinity, layerMask))
             {
                 if (hit.collider.gameObject != detectedPlayer)
@@ -244,10 +249,11 @@ public class PistolGrunt : MonoBehaviour
             Vector3 playerPosition = detectedPlayer.transform.position;
             Vector3 directionToPlayer = playerPosition - transform.position;
 
-            int layerMask = 1 << LayerMask.NameToLayer("Enemy");
-            layerMask = ~layerMask;
+            int layerMask = 1 << LayerMask.NameToLayer("Player");
 
             RaycastHit hit;
+            //Debug.DrawLine(eyesPosition.position, playerPosition, Color.red);
+            
             if (Physics.Raycast(eyesPosition.position, directionToPlayer, out hit, Mathf.Infinity, layerMask))
             {
                 if (hit.collider.gameObject != detectedPlayer)
@@ -351,17 +357,17 @@ public class PistolGrunt : MonoBehaviour
     {
         agent.SetDestination(agent.transform.position);
 
-        Quaternion targetRotation = Quaternion.LookRotation(objPos - agent.transform.position);
+        Vector3 direction = objPos - agent.transform.position;
+        if (direction.sqrMagnitude < Mathf.Epsilon)
+            return;
 
-        if (isShooting)
-        {
-            agent.transform.rotation = Quaternion.Slerp(agent.transform.rotation, targetRotation, Time.deltaTime * 4f);
-        }
-        else
-        {
-            agent.transform.rotation = Quaternion.Slerp(agent.transform.rotation, targetRotation, Time.deltaTime * 10);
-        }
+        Quaternion targetRotation = Quaternion.LookRotation(direction, Vector3.up);
+
+        float rotationSpeed = isShooting ? 4f : 10f;
+
+        agent.transform.rotation = Quaternion.Slerp(agent.transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
     }
+
 
     private void RotateGunObjectExitPoint(Vector3 playerPosition)
     {
@@ -421,6 +427,8 @@ public class PistolGrunt : MonoBehaviour
         foreach (Collider hitCollider in hitColliders)
         {
             RaycastHit hit;
+            //Debug.DrawLine(eyesPosition.position, hitCollider.transform.position, Color.red);
+            
             if (Physics.Raycast(eyesPosition.position, hitCollider.transform.position - eyesPosition.position - new Vector3(0, -1, 0), out hit, seekRange, ~combinedLayerMask))
             {
                 Debug.DrawRay(eyesPosition.position, hitCollider.transform.position - eyesPosition.position - new Vector3(0, -1, 0));
@@ -507,6 +515,10 @@ public class PistolGrunt : MonoBehaviour
         if (currentShield < shield)
         {
             StartLerpShieldProgress();
+
+            float healthPercent = 1.0f - Mathf.Clamp01(currentShield / shield);
+            shieldMaterial.SetFloat("_HealthPercent", healthPercent);
+
             currentShield = Mathf.Min(currentShield + bulletDamage, shield);
         }
         else if (currentHealth < health)
@@ -530,20 +542,16 @@ public class PistolGrunt : MonoBehaviour
         lerpingShield = true;
     }
 
-    private void LerpShieldProgressUpdate()
+    private void UpdateLerpShieldProgress()
     {
         float elapsedTime = Time.time - shieldLerpStartTime;
+        float progress = Mathf.Lerp(startShieldValue, targetShieldValue, elapsedTime / shieldLerpDuration);
 
-        if (elapsedTime < shieldLerpDuration)
+        shieldMaterial.SetFloat("_Progress", progress);
+
+        if (elapsedTime >= shieldLerpDuration)
         {
-            float progress = Mathf.Lerp(startShieldValue, targetShieldValue, elapsedTime / shieldLerpDuration);
-            shieldMaterial.SetFloat("_Progress", progress);
-        }
-        else
-        {
-            shieldMaterial.SetFloat("_Progress", targetShieldValue);
             lerpingShield = false;
-
             StartReverseLerp();
         }
     }
@@ -568,27 +576,25 @@ public class PistolGrunt : MonoBehaviour
         {
             isDead = true;
 
-            GameObject Ragdollerino = Instantiate(ragdoll, transform.position, transform.rotation);
+            GameObject ragdollInstance = Instantiate(ragdoll, transform.position, transform.rotation);
 
             if (isHoldingGun)
             {
-                EnableHookTargetsRecursively(Ragdollerino.transform);
-
-                GetComponentInChildren<HookTarget>();
-                if (ht != null) ht.BeforeDestroy();
+                EnableHookTargetsRecursively(ragdollInstance.transform);
+                HookTarget hookTarget = ragdollInstance.GetComponentInChildren<HookTarget>();
+                if (hookTarget != null)
+                    hookTarget.BeforeDestroy();
 
                 isHoldingGun = false;
                 isShooting = false;
             }
+
             agent.SetDestination(transform.position);
-
-            //animator.SetInteger("DeadIndex", Random.Range(0, 3));
-            //animator.SetTrigger("Dead");
-
-            Destroy(Ragdollerino, 15f);
+            Destroy(ragdollInstance, 15f);
             Destroy(gameObject);
         }
     }
+
 
     private void EnableHookTargetsRecursively(Transform parent)
     {
@@ -599,11 +605,14 @@ public class PistolGrunt : MonoBehaviour
             hookTarget.gameObject.SetActive(true);
         }
 
-        foreach (Transform child in parent)
+        int childCount = parent.childCount;
+        for (int i = 0; i < childCount; i++)
         {
+            Transform child = parent.GetChild(i);
             EnableHookTargetsRecursively(child);
         }
     }
+
 
     private float EnemyShoot()
     {
@@ -647,9 +656,9 @@ public class PistolGrunt : MonoBehaviour
         HookTarget gun = transform.GetComponentInChildren<HookTarget>();
 
         if (gun)
-            info = gun.info;
+            gunInfo = gun.info;
 
-        GameObject bullet = Instantiate(info.bulletPrefab, BulletExitPoint.transform.position, BulletExitPoint.transform.rotation);
+        GameObject bullet = Instantiate(gunInfo.bulletPrefab, BulletExitPoint.transform.position, BulletExitPoint.transform.rotation);
 
         Vector3 direction = BulletExitPoint.transform.forward;
         direction += SpreadDirection(gunSpread, 3);
@@ -658,12 +667,12 @@ public class PistolGrunt : MonoBehaviour
         bullet.transform.rotation = Quaternion.LookRotation(direction.normalized);
 
         Bullet b = bullet.GetComponent<Bullet>();
-        b.speed = info.bulletSpeed;
-        b.gravity = info.bulletGravity;
+        b.speed = gunInfo.bulletSpeed;
+        b.gravity = gunInfo.bulletGravity;
         b.ignoreMask = ~LayerMask.GetMask("GunHand", "HookTarget", "Enemy");
         b.trackTarget = false;
         b.fromEnemy = true;
-        b.bulletDamage = info.damage;
+        b.bulletDamage = gunInfo.damage;
         b.charge = 0.5f;
     }
 
@@ -673,5 +682,20 @@ public class PistolGrunt : MonoBehaviour
         for (int i = 0; i < rolls; i++)
             offset += Random.onUnitSphere * spread;
         return offset / rolls;
+    }
+
+    private void OnDrawGizmos()
+    {
+        // Draw each sphere with a different color
+        DrawColoredSphere(transform.position, seekRange, Color.red);
+        DrawColoredSphere(transform.position, shootDistance, Color.blue);
+        DrawColoredSphere(transform.position, keepDistance, Color.green);
+        DrawColoredSphere(transform.position, wanderRadius, Color.yellow);
+    }
+
+    private void DrawColoredSphere(Vector3 center, float radius, Color color)
+    {
+        Gizmos.color = color;
+        Gizmos.DrawWireSphere(center, radius);
     }
 }
