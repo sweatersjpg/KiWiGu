@@ -4,6 +4,7 @@ using System.IO;
 using UnityEngine;
 using UnityEngine.Events;
 using FMODUnity;
+using UnityEngine.InputSystem;
 
 public class ShootBullet : MonoBehaviour
 {
@@ -72,14 +73,17 @@ public class ShootBullet : MonoBehaviour
         bool canShoot = (Time.time - shotTimer) > 1 / info.fireRate && anim.canShoot && anim.hasGun;
         anim.canShoot = canShoot;
 
+        string[] shootButtons = { "LeftShoot", "RightShoot" };
+        string shootButton = shootButtons[anim.mouseButton];
+
         bool doShoot = (info.canCharge) ?
-            Input.GetMouseButtonUp(anim.mouseButton) : Input.GetMouseButtonDown(anim.mouseButton);
-        if (info.fullAuto) doShoot = Input.GetMouseButton(anim.mouseButton);
+            Input.GetButtonUp(shootButton) : Input.GetButtonDown(shootButton);
+        if (info.fullAuto) doShoot = Input.GetButton(shootButton);
 
         if (info.canCharge)
         {
             // if (Input.GetMouseButtonDown(anim.mouseButton)) chargeTimerStart = time;
-            if (Input.GetMouseButton(anim.mouseButton)) chargeTimer += deltaTime / info.timeToMaxCharge;
+            if (Input.GetButton(shootButton)) chargeTimer += deltaTime / info.timeToMaxCharge;
 
             if (chargeTimer > 1) chargeTimer = 1;
             if (chargeTimer < 0) chargeTimer = 0;
@@ -96,7 +100,7 @@ public class ShootBullet : MonoBehaviour
             }
             else
             {
-                if (Input.GetMouseButtonDown(anim.mouseButton))
+                if (Input.GetButtonDown(shootButton))
                     sfxEmitterOut.Play();
             }
         }
@@ -131,6 +135,27 @@ public class ShootBullet : MonoBehaviour
         // Debug.Log(charge);
 
         ShootEvent.Invoke();
+
+        DoRumble();
+    }
+
+    void DoRumble()
+    {
+        if (Input.GetJoystickNames().Length == 0) return;
+        
+        Gamepad.current.SetMotorSpeeds(Random.Range(0.2f, 0.8f), Random.Range(0.5f, 1f));
+        Invoke(nameof(StopRumble), 0.2f);
+    }
+
+    void StopRumble()
+    {
+        if (Input.GetJoystickNames().Length == 0) return;
+        Gamepad.current.SetMotorSpeeds(0, 0);
+    }
+
+    private void OnDestroy()
+    {
+        StopRumble();
     }
 
     void SpawnBullet()

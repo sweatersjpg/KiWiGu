@@ -12,6 +12,8 @@
             #pragma vertex vert
             #pragma fragment frag
 
+            #pragma multi_compile_fog
+
             #include "UnityCG.cginc"
 
 			sampler2D _MainTex;
@@ -33,6 +35,7 @@
                 float4 vertex : SV_POSITION;
                 float2 uv : TEXCOORD0;
                 float4 worldPos : TEXCOORD1;
+                UNITY_FOG_COORDS(2)
             };
 
             float mask(float3 position, float3 center, float radius, float hardness){
@@ -44,9 +47,10 @@
                 v2f o;
 				o.worldPos = mul(unity_ObjectToWorld, v.vertex);
                 o.uv = v.uv;
-				float4 uv = float4(0, 0, 0, 1);
+				float4 uv = float4(0, 0, 0, 1); 
                 uv.xy = float2(1, _ProjectionParams.x) * (v.uv.xy * float2( 2, 2) - float2(1, 1));
 				o.vertex = uv; 
+                UNITY_TRANSFER_FOG(o, o.vertex);
                 return o;
             }
 
@@ -58,6 +62,7 @@
                 float4 col = tex2D(_MainTex, i.uv);
                 float f = mask(i.worldPos, _PainterPosition, _Radius, _Hardness);
                 float edge = f * _Strength;
+                UNITY_APPLY_FOG(i.fogCoord, col);
                 return lerp(col, _PainterColor, edge);
             }
             ENDCG

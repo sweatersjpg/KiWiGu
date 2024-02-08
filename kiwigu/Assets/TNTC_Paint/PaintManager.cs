@@ -22,8 +22,8 @@ public class PaintManager : Singleton<PaintManager>{
 
     CommandBuffer command;
 
-    public override void Awake(){
-        base.Awake();
+    public override void OnEnable(){
+        base.OnEnable();
         
         paintMaterial = new Material(texturePaint);
         extendMaterial = new Material(extendIslands);

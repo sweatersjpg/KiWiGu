@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class Explosion : MonoBehaviour
@@ -13,7 +14,7 @@ public class Explosion : MonoBehaviour
 
     [SerializeField] Transform explosionFX;
 
-    List<Collider> alreadyHit;
+    List<GameObject> alreadyHit;
 
     float startTime;
 
@@ -22,10 +23,13 @@ public class Explosion : MonoBehaviour
     {
         startTime = Time.time;
 
-        explosionFX.parent = null;
-        explosionFX.localScale = new(finalRadius / 2, finalRadius / 2, finalRadius / 2);
+        if(explosionFX)
+        {
+            explosionFX.parent = null;
+            explosionFX.localScale = new(finalRadius / 2, finalRadius / 2, finalRadius / 2);
+        }
 
-        alreadyHit = new List<Collider>();
+        alreadyHit = new List<GameObject>();
     }
 
     // Update is called once per frame
@@ -47,7 +51,7 @@ public class Explosion : MonoBehaviour
 
         foreach (Collider hit in hits)
         {
-            if (alreadyHit.Contains(hit)) return;
+            if (alreadyHit.Contains(hit.gameObject)) return;
 
             if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Player"))
             {
@@ -56,20 +60,25 @@ public class Explosion : MonoBehaviour
 
                 sweatersController.instance.velocity -= direction.normalized * 20;
 
-                alreadyHit.Add(hit);
+                alreadyHit.Add(hit.gameObject);
             }
             else if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Enemy"))
             {
                 EnemyHitBox enemy = hit.transform.gameObject.GetComponentInParent<EnemyHitBox>();
                 if (enemy != null)
                 {
+
                     var scriptType = System.Type.GetType(enemy.ReferenceScript);
 
                     Transform rootParent = GetRootParent(enemy.transform);
 
                     if (rootParent != null)
                     {
+                        if (alreadyHit.Contains(rootParent.gameObject)) return;
+
                         var enemyComponent = rootParent.GetComponent(scriptType) as MonoBehaviour;
+
+                        alreadyHit.Add(rootParent.gameObject);
 
                         if (enemyComponent != null)
                         {
@@ -81,15 +90,15 @@ public class Explosion : MonoBehaviour
                             }
                         }
                     }
-                    alreadyHit.Add(hit);
+
                 }
             }
             else if (hit.attachedRigidbody != null)
             {
-                alreadyHit.Add(hit);
+                alreadyHit.Add(hit.gameObject);
 
                 //hit.attachedRigidbody.AddExplosionForce(force, transform.position, radius);
-                hit.attachedRigidbody.AddForce(force * (hit.transform.position - transform.position).normalized, ForceMode.Impulse);
+                hit.attachedRigidbody.AddForce(force * transform.forward, ForceMode.Impulse);
                 // print(hit.name);
             }
         }

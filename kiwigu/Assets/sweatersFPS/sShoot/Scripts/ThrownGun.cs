@@ -26,14 +26,23 @@ public class ThrownGun : MonoBehaviour
         //rb.velocity += sweatersController.instance.velocity;
 
         if(ammo.capacity == 0) ammo = new Ammunition(info.capacity);
+
+        Transform gunView = info.gunPrefab.transform.Find("GunView");
+
+        if (gunView)
+        {
+            GameObject gun = Instantiate(gunView.gameObject, transform);
+            gun.transform.localPosition = new();
+            gun.layer = gameObject.layer;
+        }
     }
 
     public void SetMesh(Mesh mesh, Material mat)
     {
-        MeshFilter mf = GetComponentInChildren<MeshFilter>();
+        // MeshFilter mf = GetComponentInChildren<MeshFilter>();
 
-        mf.mesh = mesh;
-        mf.transform.GetComponent<MeshRenderer>().sharedMaterial = mat;
+        //mf.mesh = mesh;
+        //mf.transform.GetComponent<MeshRenderer>().sharedMaterial = mat;
         
         // GetComponent<MeshCollider>().sharedMesh = mesh;
 

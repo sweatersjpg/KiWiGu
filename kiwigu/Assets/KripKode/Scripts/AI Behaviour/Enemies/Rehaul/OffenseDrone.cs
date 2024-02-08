@@ -299,7 +299,7 @@ public class OffenseDrone : MonoBehaviour
 
     private bool IsPlayerVisible()
     {
-        Collider[] hitColliders = Physics.OverlapSphere(eyesPosition.position, seekRange);
+        Collider[] hitColliders = Physics.OverlapSphere(eyesPosition.position, seekRange, LayerMask.GetMask("Player"));
         int layerMask = LayerMask.GetMask("Enemy");
         int layerMask2 = LayerMask.GetMask("HookTarget");
         int layerMask3 = LayerMask.GetMask("EnergyWall");

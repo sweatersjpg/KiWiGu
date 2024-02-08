@@ -431,6 +431,8 @@ public class PistolGrunt : MonoBehaviour
             
             if (Physics.Raycast(eyesPosition.position, hitCollider.transform.position - eyesPosition.position - new Vector3(0, -1, 0), out hit, seekRange, ~combinedLayerMask))
             {
+                Debug.DrawRay(eyesPosition.position, hitCollider.transform.position - eyesPosition.position - new Vector3(0, -1, 0));
+                
                 if (hit.collider.CompareTag("Player"))
                 {
                     detectedPlayer = hit.collider.gameObject;

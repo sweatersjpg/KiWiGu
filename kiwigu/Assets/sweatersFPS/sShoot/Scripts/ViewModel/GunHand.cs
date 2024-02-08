@@ -113,7 +113,10 @@ public class GunHand : MonoBehaviour
 
         if (!hasGun) return;
 
-        if (Input.GetKeyDown(mouseButton == 0 ? KeyCode.Q : KeyCode.E))
+        string[] throwButtons = { "LeftThrow", "RightThrow" };
+        string throwButton = throwButtons[mouseButton];
+
+        if (Input.GetButtonDown(throwButton))
         {
             // targetAngle = -45;
             // targetPosition = startPosition + new Vector3(0, 0.3f, -0.2f);
