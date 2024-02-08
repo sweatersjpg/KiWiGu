@@ -14,6 +14,7 @@ public class HookTarget : MonoBehaviour
     public float resistance = 2;
     [HideInInspector] public float maxResistance;
     public bool tether = false;
+    public bool swing = false;
     public bool blockSteal;
 
     private void Start()

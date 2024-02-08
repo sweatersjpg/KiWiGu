@@ -176,7 +176,21 @@ public class MoveHook : MonoBehaviour
 
                 //if (hookTarget.tether) PullTowards(heading);
                 //else Grapple(heading);
-                PullTowards(heading);
+                
+                if(!hookTarget.swing) PullTowards(heading, pullForce);
+                else
+                {
+                    if (distToHook > 4) distToHook = Mathf.Lerp(distToHook, 4, deltaTime * 2);
+
+                    //if (distToHook > 8)
+                    //{
+                    //    PullTowards(heading, pullForce / 4);
+                    //    distToHook = Mathf.Min(heading.magnitude + 1, distToHook);
+                    //}
+                    //else
+
+                    Grapple(heading);
+                }
 
                 return;
             }
@@ -565,7 +579,7 @@ public class MoveHook : MonoBehaviour
 
         Vector3 toPlayer = player.transform.position - transform.position;
 
-        // player.isGrappling = true;
+        player.isGrappling = true;
 
 
         //distToHook = Mathf.Min(toPlayer.magnitude, distToHook);
@@ -601,7 +615,7 @@ public class MoveHook : MonoBehaviour
         }
     }
 
-    void PullTowards(Vector3 heading)
+    void PullTowards(Vector3 heading, float pullForce)
     {
         if (!hookTarget.tether && childHook == null) return;
         
