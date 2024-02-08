@@ -254,11 +254,15 @@ public class MoveHook : MonoBehaviour
             GameObject target = hit.transform.gameObject;
             HookTarget ht = target.transform.GetComponentInChildren<HookTarget>();
 
-            if(ht.blockSteal)
+            if (ht.blockSteal)
             {
-                if(GetRootParent(target.transform).CompareTag("Enemy") && GetRootParent(target.transform).GetComponent<HellfireEnemy>())
+                if (GetRootParent(target.transform).CompareTag("Enemy"))
                 {
-                    GetRootParent(target.transform).GetComponent<HellfireEnemy>().TakeDamage(5);
+                    if (GetRootParent(target.transform).GetComponent<HellfireEnemy>())
+                        GetRootParent(target.transform).GetComponent<HellfireEnemy>().TakeDamage(5);
+
+                    if (GetRootParent(target.transform).GetComponent<PistolGrunt>())
+                        GetRootParent(target.transform).GetComponent<PistolGrunt>().TakeDamage(5);
                 }
                 return;
             }
@@ -322,7 +326,7 @@ public class MoveHook : MonoBehaviour
             Destroy(target.transform.GetComponent<PhysicsHit>());
             Destroy(target.transform.GetComponent<Rigidbody>());
         }
-         
+
         Pullback();
     }
 
@@ -436,7 +440,7 @@ public class MoveHook : MonoBehaviour
 
         if (!player.isGrounded)
         {
-            if(!hookTarget.tether) player.velocity.y = 0;
+            if (!hookTarget.tether) player.velocity.y = 0;
             return;
         }
 
@@ -543,7 +547,7 @@ public class MoveHook : MonoBehaviour
         }
 
         player.velocity = -heading.normalized * (player.velocity.magnitude + Time.deltaTime * pullForce);
-        
+
         // player.velocity = Vector3.ClampMagnitude(player.velocity, player.maxSpeed);
 
         // player.maxSpeed = player.velocity.magnitude;
