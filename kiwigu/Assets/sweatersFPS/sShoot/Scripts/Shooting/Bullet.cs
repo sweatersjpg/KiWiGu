@@ -196,7 +196,7 @@ public class Bullet : MonoBehaviour
     //    }
     //}
 
-    private void ApplyDamage(EnemyHitBox enemy, float damageMultiplier)
+    private void ApplyDamage(EnemyHitBox enemy, float damageMultiplier, bool isHeadshot)
     {
         if (enemy == null)
             return;
@@ -215,7 +215,10 @@ public class Bullet : MonoBehaviour
 
                 if (takeDamageMethod != null)
                 {
-                    takeDamageMethod.Invoke(enemyComponent, new object[] { bulletDamage * damageMultiplier });
+                    if(isHeadshot)
+                        takeDamageMethod.Invoke(enemyComponent, new object[] { bulletDamage * damageMultiplier, true });
+                    else
+                        takeDamageMethod.Invoke(enemyComponent, new object[] { bulletDamage * damageMultiplier, false });
                 }
             }
         }
@@ -276,13 +279,13 @@ public class Bullet : MonoBehaviour
             if (enemy != null)
             {
                 if (enemy.doubleDamage)
-                    ApplyDamage(enemy, 2f);
+                    ApplyDamage(enemy, 2f, true);
                 else if (enemy.lessDamage)
-                    ApplyDamage(enemy, 1.5f);
+                    ApplyDamage(enemy, 1.5f, false);
                 else if (enemy.leastDamage)
-                    ApplyDamage(enemy, 0.5f);
+                    ApplyDamage(enemy, 0.5f, false);
                 else
-                    ApplyDamage(enemy, 1f);
+                    ApplyDamage(enemy, 1f, false); ;
             }
         }
         else if (hit.transform.gameObject.CompareTag("RigidTarget"))

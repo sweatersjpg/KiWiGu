@@ -322,10 +322,10 @@ public class MoveHook : MonoBehaviour
                 if (GetRootParent(target.transform).CompareTag("Enemy"))
                 {
                     if (GetRootParent(target.transform).GetComponent<HellfireEnemy>())
-                        GetRootParent(target.transform).GetComponent<HellfireEnemy>().TakeDamage(5);
+                        GetRootParent(target.transform).GetComponent<HellfireEnemy>().TakeDamage(5, false);
 
                     if (GetRootParent(target.transform).GetComponent<PistolGrunt>())
-                        GetRootParent(target.transform).GetComponent<PistolGrunt>().TakeDamage(5);
+                        GetRootParent(target.transform).GetComponent<PistolGrunt>().TakeDamage(5, false);
                 }
                 return;
             }

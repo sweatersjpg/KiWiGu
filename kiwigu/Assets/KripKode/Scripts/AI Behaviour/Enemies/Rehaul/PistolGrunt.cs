@@ -20,9 +20,11 @@ public class PistolGrunt : MonoBehaviour
     [SerializeField] private float backPackHealth;
     [SerializeField] private Animator animator;
     [SerializeField] private GameObject shieldObject;
+    [SerializeField] private GameObject HeadshotIndicator;
     [SerializeField] private GameObject BrokenShieldIndicator;
     [SerializeField] private GameObject ragdoll;
     [SerializeField] private GameObject explosionPrefab;
+    [SerializeField] private Transform headPos;
     private bool lerpingShield = false;
     private Material shieldMaterial;
     private float shieldLerpStartTime;
@@ -275,7 +277,7 @@ public class PistolGrunt : MonoBehaviour
                         Vector3 explosionPosition = detectedPlayer.transform.position + (detectedPlayer.transform.forward * 2) + (detectedPlayer.transform.up * 1);
                         Instantiate(explosionPrefab, explosionPosition, Quaternion.identity);
 
-                        TakeDamage(1000000);
+                        TakeDamage(1000000, false);
                         return;
                     }
 
@@ -512,11 +514,11 @@ public class PistolGrunt : MonoBehaviour
         if(currentBackpackHealth >= backPackHealth)
         {
             Instantiate(explosionPrefab, transform.position, Quaternion.identity);
-            TakeDamage(1000000);
+            TakeDamage(1000000, false);
         }
     }
 
-    public virtual void TakeDamage(float bulletDamage)
+    public virtual void TakeDamage(float bulletDamage, bool isHeadshot)
     {
         if (isDead)
             return;
@@ -532,6 +534,9 @@ public class PistolGrunt : MonoBehaviour
         }
         else if (currentHealth < health)
         {
+            if (isHeadshot)
+                Instantiate(HeadshotIndicator, headPos.transform.position, Quaternion.identity);
+
             agent.SetDestination(transform.position);
             animator.SetInteger("HitIndex", Random.Range(0, 3));
             animator.SetTrigger("Hit");

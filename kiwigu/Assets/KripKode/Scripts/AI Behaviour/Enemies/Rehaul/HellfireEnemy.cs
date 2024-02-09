@@ -20,7 +20,10 @@ public class HellfireEnemy : MonoBehaviour
     [SerializeField] private float shield;
     [SerializeField] private Animator animator;
     [SerializeField] private GameObject shieldObject;
+    [SerializeField] private GameObject HeadshotIndicator;
+    [SerializeField] private GameObject BreakingShieldIndicator;
     [SerializeField] private GameObject BrokenShieldIndicator;
+    [SerializeField] private Transform headPos;
     [SerializeField] private GameObject ragdoll;
     private bool lerpingShield = false;
     private Material shieldMaterial;
@@ -385,7 +388,7 @@ public class HellfireEnemy : MonoBehaviour
         enemyState = EnemyState.Wandering;
     }
 
-    public virtual void TakeDamage(float bulletDamage)
+    public virtual void TakeDamage(float bulletDamage, bool isHeadshot)
     {
         if (isDead)
             return;
@@ -398,9 +401,14 @@ public class HellfireEnemy : MonoBehaviour
             shieldMaterial.SetFloat("_HealthPercent", healthPercent);
 
             currentShield = Mathf.Min(currentShield + bulletDamage, shield);
+
+            Instantiate(BreakingShieldIndicator, shieldObject.transform.position, Quaternion.identity);
         }
         else if (currentHealth < health)
         {
+            if(isHeadshot)
+                Instantiate(HeadshotIndicator, headPos.transform.position, Quaternion.identity);
+
             agent.SetDestination(transform.position);
             animator.SetInteger("HitIndex", Random.Range(0, 3));
             animator.SetTrigger("Hit");
