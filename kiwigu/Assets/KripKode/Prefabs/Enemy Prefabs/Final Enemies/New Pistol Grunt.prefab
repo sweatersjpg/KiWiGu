@@ -2637,7 +2637,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &7733474255463770884
 Transform:
   m_ObjectHideFlags: 0
@@ -2733,11 +2733,11 @@ MonoBehaviour:
   backPackHealth: 0
   animator: {fileID: 8318901543661553996}
   shieldObject: {fileID: 3191283853667756977}
+  BrokenShieldIndicator: {fileID: 5046152788282611147, guid: 79b3f31201dc23a4589d3a4ce1699922, type: 3}
   ragdoll: {fileID: 6396152858014963360, guid: 06344ae09ddae6b44b5a2dfc5c3e4eca, type: 3}
   explosionPrefab: {fileID: 1886320638105856866, guid: 868415f162da742468824c5743d47bae, type: 3}
   wanderSpeed: 3
   seekSpeed: 4
-  panicSpeed: 5
   keepDistance: 10
   shootDistance: 20
   wanderWaitTime: 5
@@ -2745,11 +2745,8 @@ MonoBehaviour:
   rememberWaitTime: 15
   eyesPosition: {fileID: 7733474256063608267}
   seekRange: 25
-  hideTime: 2
-  hookTarget: {fileID: 7882388365707268293, guid: 0b73ac51743c40b49bc75746f2830236, type: 3}
-  hookTargetPosition: {fileID: 8334691538599384242}
   gunInfo: {fileID: 11400000, guid: 67e1ee40f3b2f4c4381001dca3be3fba, type: 2}
-  gunSpread: 0.15
+  gunSpread: 0.125
   isDefense: 0
   BulletExitPoint: {fileID: 7733474255781963841}
   shootCooldown: 0.5

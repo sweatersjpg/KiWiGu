@@ -20,6 +20,7 @@ public class PistolGrunt : MonoBehaviour
     [SerializeField] private float backPackHealth;
     [SerializeField] private Animator animator;
     [SerializeField] private GameObject shieldObject;
+    [SerializeField] private GameObject BrokenShieldIndicator;
     [SerializeField] private GameObject ragdoll;
     [SerializeField] private GameObject explosionPrefab;
     private bool lerpingShield = false;
@@ -38,7 +39,6 @@ public class PistolGrunt : MonoBehaviour
     [Header("Enemy Movement Settings")]
     [SerializeField] private float wanderSpeed;
     [SerializeField] private float seekSpeed;
-    [SerializeField] private float panicSpeed;
     [SerializeField] private float keepDistance;
     [SerializeField] private float shootDistance;
     [SerializeField] private float wanderWaitTime;
@@ -59,12 +59,6 @@ public class PistolGrunt : MonoBehaviour
     private bool loggedHidingObject;
     private GameObject loggedGameObject;
     private Vector3 hidingPos;
-
-    [Space(10)]
-    [Header("Enemy Panic Settings")]
-    [SerializeField] private float hideTime;
-    [SerializeField] private GameObject hookTarget;
-    [SerializeField] private Transform hookTargetPosition;
 
     [Space(10)]
     [Header("Enemy Attack Settings")]
@@ -172,7 +166,7 @@ public class PistolGrunt : MonoBehaviour
         if (enemyState == EnemyState.Wandering)
         {
             agent.speed = wanderSpeed;
-            animator.speed = 0.9f;
+            animator.speed = wanderSpeed * 0.4f;
 
             if (agent.velocity.magnitude >= 0.1f)
             {
@@ -195,7 +189,7 @@ public class PistolGrunt : MonoBehaviour
         if (enemyState == EnemyState.Seek)
         {
             agent.speed = seekSpeed;
-            animator.speed = 1.0f;
+            animator.speed = seekSpeed * 0.25f;
 
             if (agent.velocity.magnitude >= 0.1f)
             {
@@ -245,7 +239,7 @@ public class PistolGrunt : MonoBehaviour
         if (enemyState == EnemyState.Punch)
         {
             agent.speed = punchSpeed;
-            animator.speed = 1.2f;
+            animator.speed = punchSpeed * 0.15f;
 
             if (agent.velocity.magnitude >= 0.1f)
             {
@@ -583,8 +577,12 @@ public class PistolGrunt : MonoBehaviour
     {
         if (currentShield >= shield)
         {
-            ht.blockSteal = false;
-            Destroy(shieldObject);
+            if (shieldObject)
+            {
+                Instantiate(BrokenShieldIndicator, shieldObject.transform.position, Quaternion.identity);
+                ht.blockSteal = false;
+                Destroy(shieldObject);
+            }
         }
 
         if (currentHealth >= health && !isDead)
