@@ -618,14 +618,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2023724511631830052}
-  m_LocalRotation: {x: -0.10634491, y: 0.06414891, z: -0.12769887, w: 0.9840064}
-  m_LocalPosition: {x: 0.012, y: 0.192, z: -0.116}
+  m_LocalRotation: {x: -0.49330518, y: 0.3856207, z: 0.1595558, w: 0.76320946}
+  m_LocalPosition: {x: -0.01899993, y: 0.019999791, z: -0.05000005}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 126668866121513562}
   m_RootOrder: 3
-  m_LocalEulerAnglesHint: {x: -11.122, y: 8.995, z: -15.666}
+  m_LocalEulerAnglesHint: {x: -61.169, y: 63.404, z: -16.494}
 --- !u!1 &2041005751995218253
 GameObject:
   m_ObjectHideFlags: 0
@@ -2527,15 +2527,15 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7690985156376062675}
-  m_LocalRotation: {x: -0.10634491, y: 0.06414891, z: -0.12769887, w: 0.9840064}
-  m_LocalPosition: {x: 0.012, y: 0.192, z: -0.116}
+  m_LocalRotation: {x: -0.49330518, y: 0.3856207, z: 0.1595558, w: 0.76320946}
+  m_LocalPosition: {x: -0.01899993, y: 0.019999791, z: -0.05000005}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4108321633476011121}
   m_Father: {fileID: 126668866121513562}
   m_RootOrder: 2
-  m_LocalEulerAnglesHint: {x: -11.122, y: 8.995, z: -15.666}
+  m_LocalEulerAnglesHint: {x: -61.169, y: 63.404, z: -16.494}
 --- !u!33 &7921469495003916469
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -2611,7 +2611,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4d2ce53ee64d23b4ab2b38a8ce74f259, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  info: {fileID: 11400000, guid: 67e1ee40f3b2f4c4381001dca3be3fba, type: 2}
+  info: {fileID: 0}
   gunView: {fileID: 4108321633476011121}
   throwGunPrefab: {fileID: 6087863177417318745, guid: 775df9a2e9013c54ab64a1c26875866b, type: 3}
   hasView: 1
@@ -2637,7 +2637,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &7733474255463770884
 Transform:
   m_ObjectHideFlags: 0
@@ -2753,7 +2753,7 @@ MonoBehaviour:
   isDefense: 0
   BulletExitPoint: {fileID: 7733474255781963841}
   shootCooldown: 0.5
-  punchSpeed: 5
+  punchSpeed: 8
   punchDistance: 1.25
 --- !u!1 &7733474255781963840
 GameObject:

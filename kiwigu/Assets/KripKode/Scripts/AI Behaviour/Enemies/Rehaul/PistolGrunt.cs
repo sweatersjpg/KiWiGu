@@ -89,7 +89,7 @@ public class PistolGrunt : MonoBehaviour
     private float lastPunchTime;
     private float punchCooldown = 1.0f;
 
-    private void Start()
+    private void Awake()
     {
         ht = GetComponentInChildren<HookTarget>();
 
@@ -98,7 +98,10 @@ public class PistolGrunt : MonoBehaviour
             isHoldingGun = true;
             ht.info = gunInfo;
         }
+    }
 
+    private void Start()
+    {
         agent = GetComponent<NavMeshAgent>();
         initialPosition = transform.position;
 
@@ -169,6 +172,7 @@ public class PistolGrunt : MonoBehaviour
         if (enemyState == EnemyState.Wandering)
         {
             agent.speed = wanderSpeed;
+            animator.speed = 0.9f;
 
             if (agent.velocity.magnitude >= 0.1f)
             {
@@ -191,6 +195,7 @@ public class PistolGrunt : MonoBehaviour
         if (enemyState == EnemyState.Seek)
         {
             agent.speed = seekSpeed;
+            animator.speed = 1.0f;
 
             if (agent.velocity.magnitude >= 0.1f)
             {
@@ -240,6 +245,7 @@ public class PistolGrunt : MonoBehaviour
         if (enemyState == EnemyState.Punch)
         {
             agent.speed = punchSpeed;
+            animator.speed = 1.2f;
 
             if (agent.velocity.magnitude >= 0.1f)
             {
@@ -335,8 +341,17 @@ public class PistolGrunt : MonoBehaviour
 
         while (animDone)
         {
+            if (currentHealth <= 10)
+                animator.speed = 4.0f;
+            else if (currentHealth <= 25)
+                animator.speed = 3.0f;
+            else if (currentHealth <= 50)
+                animator.speed = 2.0f;
+
             yield return null;
         }
+
+        animator.speed = 1.0f;
 
         animator.ResetTrigger("shoot");
 
