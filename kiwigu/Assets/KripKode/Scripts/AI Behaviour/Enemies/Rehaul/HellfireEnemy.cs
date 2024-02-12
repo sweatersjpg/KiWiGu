@@ -175,13 +175,16 @@ public class HellfireEnemy : MonoBehaviour
     {
         if (enemyState == EnemyState.Seek)
         {
-            agent.speed = seekSpeed;
+            if (holdingShield)
+                agent.speed = seekSpeed;
+            else
+                agent.speed = seekSpeed * 1.35f;
 
             Vector3 adjustedDestination = detectedPlayer.transform.position - (detectedPlayer.transform.position - transform.position).normalized * keepDistance;
 
             if (IsPlayerWithinRange() && !isShooting)
             {
-                if(holdingShield)
+                if (holdingShield)
                 {
                     if (agent.velocity.magnitude >= 0.1f)
                     {
@@ -195,13 +198,13 @@ public class HellfireEnemy : MonoBehaviour
                 {
                     if (agent.velocity.magnitude >= 0.1f)
                     {
-                        animator.speed = 1.2f;
+                        animator.speed = 1.55f;
                         animator.SetBool("run", true);
                         animator.SetBool("walk", false);
                     }
-                }    
+                }
 
-                if(isHoldingGun)
+                if (isHoldingGun)
                     agent.SetDestination(adjustedDestination);
                 else
                     agent.SetDestination(detectedPlayer.transform.position);
@@ -213,7 +216,7 @@ public class HellfireEnemy : MonoBehaviour
                     enemyState = EnemyState.Shoot;
                     agent.SetDestination(transform.position);
                 }
-                else if(distanceToPlayer <= 5 && !isHoldingGun)
+                else if (distanceToPlayer <= wanderRadius && !isHoldingGun)
                 {
                     enemyState = EnemyState.Leap;
                 }
@@ -479,6 +482,8 @@ public class HellfireEnemy : MonoBehaviour
             animator.SetInteger("HitIndex", Random.Range(0, 3));
             animator.SetTrigger("Hit");
             currentHealth = Mathf.Min(currentHealth + bulletDamage, health);
+
+            AnimFalse();
         }
 
         CheckStats();
