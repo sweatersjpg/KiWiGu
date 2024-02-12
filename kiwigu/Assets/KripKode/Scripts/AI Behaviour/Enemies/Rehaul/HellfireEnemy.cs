@@ -1,8 +1,5 @@
 using FMODUnity;
 using System.Collections;
-using System.Collections.Generic;
-using TMPro;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -10,7 +7,7 @@ public class HellfireEnemy : MonoBehaviour
 {
     [SerializeField] private StudioEventEmitter sfxEmitterAvailable;
 
-    public enum EnemyState { Wandering, Seek, Shoot };
+    public enum EnemyState { Wandering, Seek, Shoot, Leap };
     [SerializeField] private EnemyState enemyState = EnemyState.Wandering;
 
     [Header("Drone Basic Settings")]
@@ -60,6 +57,7 @@ public class HellfireEnemy : MonoBehaviour
     private GameObject detectedPlayer;
     private float lastVisibleTime;
     private bool rememberPlayer;
+    private bool holdingShield = true;
 
     [Space(10)]
     [Header("Enemy Attack Settings")]
@@ -72,10 +70,12 @@ public class HellfireEnemy : MonoBehaviour
     private GunInfo info;
     private float shootTimer;
     private bool animDone;
-    private float maxRotationTime = 0.05f; // smooothers
+    private float maxRotationTime = 0.05f;
     private Quaternion startRotation;
     private float currentRotationTime;
     private bool isRotating;
+    private bool isLeaping;
+    private bool canLeap = true;
 
     private void Awake()
     {
@@ -120,6 +120,7 @@ public class HellfireEnemy : MonoBehaviour
         Wander();
         Seek();
         Shoot();
+        Leap();
         RememberPlayer();
     }
 
@@ -134,14 +135,9 @@ public class HellfireEnemy : MonoBehaviour
         if (isShooting)
             RotateGunAndBodyTowardsPlayer();
 
-        // If shooting, do nothing
         if (isShooting)
             return;
 
-        if (!isHoldingGun)
-            return;
-
-        // Set the enemy state based on conditions
         if (!IsPlayerVisible() && !rememberPlayer)
         {
             enemyState = EnemyState.Wandering;
@@ -185,21 +181,41 @@ public class HellfireEnemy : MonoBehaviour
 
             if (IsPlayerWithinRange() && !isShooting)
             {
-                if (agent.velocity.magnitude >= 0.1f)
+                if(holdingShield)
                 {
-                    animator.speed = 1.0f;
+                    if (agent.velocity.magnitude >= 0.1f)
+                    {
+                        animator.speed = 1.0f;
 
-                    animator.SetBool("walk", true);
-                    animator.SetBool("run", false);
+                        animator.SetBool("walk", true);
+                        animator.SetBool("run", false);
+                    }
                 }
+                else
+                {
+                    if (agent.velocity.magnitude >= 0.1f)
+                    {
+                        animator.speed = 1.2f;
+                        animator.SetBool("run", true);
+                        animator.SetBool("walk", false);
+                    }
+                }    
 
-                agent.SetDestination(adjustedDestination);
+                if(isHoldingGun)
+                    agent.SetDestination(adjustedDestination);
+                else
+                    agent.SetDestination(detectedPlayer.transform.position);
 
                 float distanceToPlayer = Vector3.Distance(transform.position, detectedPlayer.transform.position);
-                if (distanceToPlayer <= keepDistance && distanceToPlayer >= keepDistance - 2.5f)
+
+                if (distanceToPlayer <= keepDistance + 2 && isHoldingGun)
                 {
-                enemyState = EnemyState.Shoot;
+                    enemyState = EnemyState.Shoot;
                     agent.SetDestination(transform.position);
+                }
+                else if(distanceToPlayer <= 5 && !isHoldingGun)
+                {
+                    enemyState = EnemyState.Leap;
                 }
             }
             else
@@ -227,6 +243,36 @@ public class HellfireEnemy : MonoBehaviour
         }
     }
 
+    private void Leap()
+    {
+        if (enemyState == EnemyState.Leap)
+        {
+            if (isLeaping)
+                return;
+
+            StartCoroutine(LeapCoroutine());
+        }
+    }
+
+    public void SplatoodEvent()
+    {
+        Collider[] hitColliders = Physics.OverlapSphere(transform.position, 5, LayerMask.GetMask("Player"));
+
+        foreach (Collider hitCollider in hitColliders)
+        {
+            if (hitCollider.CompareTag("Player"))
+            {
+                Vector3 incomingDirection = (detectedPlayer.transform.position - transform.position).normalized;
+                Vector3 upwardDirection = Vector3.up;
+
+                Vector3 punchDirection = (incomingDirection + upwardDirection).normalized;
+
+                hitCollider.GetComponent<PlayerHealth>().DealDamage(35, -incomingDirection.normalized * 10);
+                sweatersController.instance.velocity += punchDirection * 25;
+            }
+        }
+    }
+
     IEnumerator ShootRoutine()
     {
         isShooting = true;
@@ -245,6 +291,26 @@ public class HellfireEnemy : MonoBehaviour
         yield return new WaitForSeconds(shootCooldown);
 
         isShooting = false;
+    }
+
+    IEnumerator LeapCoroutine()
+    {
+        isLeaping = true;
+
+        animator.SetTrigger("leap");
+
+        yield return null; // wait a framerino
+
+        while (animDone)
+        {
+            yield return null;
+        }
+
+        animator.ResetTrigger("leap");
+
+        yield return new WaitForSeconds(3);
+
+        isLeaping = false;
     }
 
     private void RotateGunAndBodyTowardsPlayer()
@@ -406,7 +472,7 @@ public class HellfireEnemy : MonoBehaviour
         }
         else if (currentHealth < health)
         {
-            if(isHeadshot)
+            if (isHeadshot)
                 Instantiate(HeadshotIndicator, headPos.transform.position, Quaternion.identity);
 
             agent.SetDestination(transform.position);
@@ -461,6 +527,7 @@ public class HellfireEnemy : MonoBehaviour
             {
                 Instantiate(BrokenShieldIndicator, shieldObject.transform.position, Quaternion.identity);
                 ht.blockSteal = false;
+                holdingShield = false;
                 Destroy(shieldObject);
             }
         }
