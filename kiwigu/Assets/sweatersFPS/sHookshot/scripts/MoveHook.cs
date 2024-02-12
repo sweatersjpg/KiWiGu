@@ -268,7 +268,7 @@ public class MoveHook : MonoBehaviour
                     {
                         if (rootParent.gameObject.CompareTag("Drone"))
                         {
-                            CallMethodSafely(enemyComponent, "TakeDamage", new object[] { 9999 });
+                            CallMethodSafely(enemyComponent, "TakeDamage", new object[] { 9999, false });
                         }
                         else if (rootParent.gameObject.CompareTag("Enemy"))
                         {

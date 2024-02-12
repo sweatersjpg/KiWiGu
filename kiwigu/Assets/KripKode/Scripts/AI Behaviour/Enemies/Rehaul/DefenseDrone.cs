@@ -308,7 +308,7 @@ public class DefenseDrone : MonoBehaviour
         }
     }
 
-    public virtual void TakeDamage(float bulletDamage)
+    public virtual void TakeDamage(float bulletDamage, bool isHeadShot)
     {
         if (isDead)
             return;
