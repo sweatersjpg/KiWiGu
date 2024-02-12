@@ -20,7 +20,10 @@ public class HellfireEnemy : MonoBehaviour
     [SerializeField] private float shield;
     [SerializeField] private Animator animator;
     [SerializeField] private GameObject shieldObject;
+    [SerializeField] private GameObject HeadshotIndicator;
+    [SerializeField] private GameObject BreakingShieldIndicator;
     [SerializeField] private GameObject BrokenShieldIndicator;
+    [SerializeField] private Transform headPos;
     [SerializeField] private GameObject ragdoll;
     private bool lerpingShield = false;
     private Material shieldMaterial;
@@ -39,7 +42,7 @@ public class HellfireEnemy : MonoBehaviour
     [SerializeField] private float seekSpeed;
     [SerializeField] private float panicSpeed;
     [SerializeField] private float keepDistance;
-    [SerializeField] private float shootDistance;
+    [SerializeField] private float marchDistance;
     [SerializeField] private float wanderWaitTime;
     [SerializeField] private float wanderRadius;
     [SerializeField] private float rememberWaitTime;
@@ -60,8 +63,11 @@ public class HellfireEnemy : MonoBehaviour
 
     [Space(10)]
     [Header("Enemy Attack Settings")]
+    [SerializeField] private GunInfo gunInfo;
     [SerializeField] Transform BulletExitPoint;
     [SerializeField] float shootCooldown;
+    [Range(0, 0.25f)]
+    [SerializeField] private float gunSpread;
     public bool isShooting;
     private GunInfo info;
     private float shootTimer;
@@ -70,6 +76,17 @@ public class HellfireEnemy : MonoBehaviour
     private Quaternion startRotation;
     private float currentRotationTime;
     private bool isRotating;
+
+    private void Awake()
+    {
+        ht = GetComponentInChildren<HookTarget>();
+
+        if (ht)
+        {
+            isHoldingGun = true;
+            ht.info = gunInfo;
+        }
+    }
 
     private void Start()
     {
@@ -140,6 +157,7 @@ public class HellfireEnemy : MonoBehaviour
         if (enemyState == EnemyState.Wandering)
         {
             agent.speed = wanderSpeed;
+            animator.speed = 1.0f;
 
             if (agent.velocity.magnitude >= 0.1f)
             {
@@ -163,25 +181,40 @@ public class HellfireEnemy : MonoBehaviour
         {
             agent.speed = seekSpeed;
 
-            if (agent.velocity.magnitude >= 0.1f)
-            {
-                animator.SetBool("run", true);
-            }
-
             Vector3 adjustedDestination = detectedPlayer.transform.position - (detectedPlayer.transform.position - transform.position).normalized * keepDistance;
 
             if (IsPlayerWithinRange() && !isShooting)
             {
-                agent.SetDestination(transform.position);
+                if (agent.velocity.magnitude >= 0.1f)
+                {
+                    animator.speed = 1.0f;
+
+                    animator.SetBool("walk", true);
+                    animator.SetBool("run", false);
+                }
+
+                agent.SetDestination(adjustedDestination);
+
+                float distanceToPlayer = Vector3.Distance(transform.position, detectedPlayer.transform.position);
+                if (distanceToPlayer <= keepDistance && distanceToPlayer >= keepDistance - 2.5f)
+                {
                 enemyState = EnemyState.Shoot;
+                    agent.SetDestination(transform.position);
+                }
             }
             else
             {
+                if (agent.velocity.magnitude >= 0.1f)
+                {
+                    animator.speed = 1.2f;
+                    animator.SetBool("run", true);
+                    animator.SetBool("walk", false);
+                }
+
                 agent.SetDestination(adjustedDestination);
             }
         }
     }
-
 
     private void Shoot()
     {
@@ -310,7 +343,7 @@ public class HellfireEnemy : MonoBehaviour
         float distanceTolerance = 0.5f;
         float distanceToDestination = Vector3.Distance(transform.position, detectedPlayer.transform.position);
 
-        if (distanceToDestination < (shootDistance + distanceTolerance) && IsPlayerVisible())
+        if (distanceToDestination < (marchDistance + distanceTolerance) && IsPlayerVisible())
             return true;
         else
             return false;
@@ -355,7 +388,7 @@ public class HellfireEnemy : MonoBehaviour
         enemyState = EnemyState.Wandering;
     }
 
-    public virtual void TakeDamage(float bulletDamage)
+    public virtual void TakeDamage(float bulletDamage, bool isHeadshot)
     {
         if (isDead)
             return;
@@ -368,9 +401,14 @@ public class HellfireEnemy : MonoBehaviour
             shieldMaterial.SetFloat("_HealthPercent", healthPercent);
 
             currentShield = Mathf.Min(currentShield + bulletDamage, shield);
+
+            Instantiate(BreakingShieldIndicator, shieldObject.transform.position, Quaternion.identity);
         }
         else if (currentHealth < health)
         {
+            if(isHeadshot)
+                Instantiate(HeadshotIndicator, headPos.transform.position, Quaternion.identity);
+
             agent.SetDestination(transform.position);
             animator.SetInteger("HitIndex", Random.Range(0, 3));
             animator.SetTrigger("Hit");
@@ -516,7 +554,7 @@ public class HellfireEnemy : MonoBehaviour
         GameObject bullet = Instantiate(info.bulletPrefab, BulletExitPoint.transform.position, BulletExitPoint.transform.rotation);
 
         Vector3 direction = BulletExitPoint.transform.forward;
-        direction += SpreadDirection(info.spread, 3);
+        direction += SpreadDirection(gunSpread, 3);
 
         bullet.transform.position = BulletExitPoint.transform.position;
         bullet.transform.rotation = Quaternion.LookRotation(direction.normalized);
@@ -537,5 +575,20 @@ public class HellfireEnemy : MonoBehaviour
         for (int i = 0; i < rolls; i++)
             offset += Random.onUnitSphere * spread;
         return offset / rolls;
+    }
+
+    private void OnDrawGizmos()
+    {
+        // Draw each sphere with a different color
+        DrawColoredSphere(transform.position, seekRange, Color.red);
+        DrawColoredSphere(transform.position, marchDistance, Color.blue);
+        DrawColoredSphere(transform.position, keepDistance, Color.green);
+        DrawColoredSphere(transform.position, wanderRadius, Color.yellow);
+    }
+
+    private void DrawColoredSphere(Vector3 center, float radius, Color color)
+    {
+        Gizmos.color = color;
+        Gizmos.DrawWireSphere(center, radius);
     }
 }

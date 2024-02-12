@@ -196,7 +196,7 @@ public class Bullet : MonoBehaviour
     //    }
     //}
 
-    private void ApplyDamage(EnemyHitBox enemy, float damageMultiplier)
+    private void ApplyDamage(EnemyHitBox enemy, float damageMultiplier, bool isHeadshot)
     {
         if (enemy == null)
             return;
@@ -215,7 +215,10 @@ public class Bullet : MonoBehaviour
 
                 if (takeDamageMethod != null)
                 {
-                    takeDamageMethod.Invoke(enemyComponent, new object[] { bulletDamage * damageMultiplier });
+                    if(isHeadshot)
+                        takeDamageMethod.Invoke(enemyComponent, new object[] { bulletDamage * damageMultiplier, true });
+                    else
+                        takeDamageMethod.Invoke(enemyComponent, new object[] { bulletDamage * damageMultiplier, false });
                 }
             }
         }
@@ -276,13 +279,13 @@ public class Bullet : MonoBehaviour
             if (enemy != null)
             {
                 if (enemy.doubleDamage)
-                    ApplyDamage(enemy, 2f);
+                    ApplyDamage(enemy, 2f, true);
                 else if (enemy.lessDamage)
-                    ApplyDamage(enemy, 1.5f);
+                    ApplyDamage(enemy, 1.5f, false);
                 else if (enemy.leastDamage)
-                    ApplyDamage(enemy, 0.5f);
+                    ApplyDamage(enemy, 0.5f, false);
                 else
-                    ApplyDamage(enemy, 1f);
+                    ApplyDamage(enemy, 1f, false); ;
             }
         }
         else if (hit.transform.gameObject.CompareTag("RigidTarget"))
@@ -310,15 +313,27 @@ public class Bullet : MonoBehaviour
 
         if (sparksPrefab != null || HitFX.Length > 0)
         {
-            if (!SpawnSpecialHitFX(hit, direction)) SpawnHitFX(hit, direction, sparksPrefab);
+            if (HitFX.Length > 0 && !SpawnSpecialHitFX(hit, direction))
+            {
+                if (sparksPrefab != null)
+                {
+                    SpawnHitFX(hit, direction, sparksPrefab);
+                }
+            }
         }
 
         bulletMesh.transform.position = hit.point;
 
-        foreach (GameObject s in spawnOnHit)
+        if (spawnOnHit.Length > 0)
         {
-            GameObject o = Instantiate(s);
-            o.transform.position = hit.point;
+            foreach (GameObject s in spawnOnHit)
+            {
+                if (s != null)
+                {
+                    GameObject o = Instantiate(s);
+                    o.transform.position = hit.point;
+                }
+            }
         }
 
         //Destroy(gameObject);
@@ -354,8 +369,18 @@ public class Bullet : MonoBehaviour
 
     bool SpawnSpecialHitFX(RaycastHit hit, Vector3 direction)
     {
+        if (HitFX == null || HitFXLayers == null || HitFX.Length != HitFXLayers.Length)
+        {
+            return false;
+        }
+
         for (int i = 0; i < HitFX.Length; i++)
         {
+            if (i >= HitFXLayers.Length)
+            {
+                return false;
+            }
+
             if (HitFXLayers[i] != (HitFXLayers[i] | (1 << hit.transform.gameObject.layer))) continue;
 
             SpawnHitFX(hit, direction, HitFX[i]);

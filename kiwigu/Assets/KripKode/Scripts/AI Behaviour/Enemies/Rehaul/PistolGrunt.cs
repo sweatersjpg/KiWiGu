@@ -20,8 +20,11 @@ public class PistolGrunt : MonoBehaviour
     [SerializeField] private float backPackHealth;
     [SerializeField] private Animator animator;
     [SerializeField] private GameObject shieldObject;
+    [SerializeField] private GameObject HeadshotIndicator;
+    [SerializeField] private GameObject BrokenShieldIndicator;
     [SerializeField] private GameObject ragdoll;
     [SerializeField] private GameObject explosionPrefab;
+    [SerializeField] private Transform headPos;
     private bool lerpingShield = false;
     private Material shieldMaterial;
     private float shieldLerpStartTime;
@@ -38,7 +41,6 @@ public class PistolGrunt : MonoBehaviour
     [Header("Enemy Movement Settings")]
     [SerializeField] private float wanderSpeed;
     [SerializeField] private float seekSpeed;
-    [SerializeField] private float panicSpeed;
     [SerializeField] private float keepDistance;
     [SerializeField] private float shootDistance;
     [SerializeField] private float wanderWaitTime;
@@ -59,12 +61,6 @@ public class PistolGrunt : MonoBehaviour
     private bool loggedHidingObject;
     private GameObject loggedGameObject;
     private Vector3 hidingPos;
-
-    [Space(10)]
-    [Header("Enemy Panic Settings")]
-    [SerializeField] private float hideTime;
-    [SerializeField] private GameObject hookTarget;
-    [SerializeField] private Transform hookTargetPosition;
 
     [Space(10)]
     [Header("Enemy Attack Settings")]
@@ -89,7 +85,7 @@ public class PistolGrunt : MonoBehaviour
     private float lastPunchTime;
     private float punchCooldown = 1.0f;
 
-    private void Start()
+    private void Awake()
     {
         ht = GetComponentInChildren<HookTarget>();
 
@@ -98,7 +94,10 @@ public class PistolGrunt : MonoBehaviour
             isHoldingGun = true;
             ht.info = gunInfo;
         }
+    }
 
+    private void Start()
+    {
         agent = GetComponent<NavMeshAgent>();
         initialPosition = transform.position;
 
@@ -169,6 +168,7 @@ public class PistolGrunt : MonoBehaviour
         if (enemyState == EnemyState.Wandering)
         {
             agent.speed = wanderSpeed;
+            animator.speed = wanderSpeed * 0.4f;
 
             if (agent.velocity.magnitude >= 0.1f)
             {
@@ -191,6 +191,7 @@ public class PistolGrunt : MonoBehaviour
         if (enemyState == EnemyState.Seek)
         {
             agent.speed = seekSpeed;
+            animator.speed = seekSpeed * 0.25f;
 
             if (agent.velocity.magnitude >= 0.1f)
             {
@@ -240,6 +241,7 @@ public class PistolGrunt : MonoBehaviour
         if (enemyState == EnemyState.Punch)
         {
             agent.speed = punchSpeed;
+            animator.speed = punchSpeed * 0.15f;
 
             if (agent.velocity.magnitude >= 0.1f)
             {
@@ -275,7 +277,7 @@ public class PistolGrunt : MonoBehaviour
                         Vector3 explosionPosition = detectedPlayer.transform.position + (detectedPlayer.transform.forward * 2) + (detectedPlayer.transform.up * 1);
                         Instantiate(explosionPrefab, explosionPosition, Quaternion.identity);
 
-                        TakeDamage(1000000);
+                        TakeDamage(1000000, false);
                         return;
                     }
 
@@ -335,8 +337,17 @@ public class PistolGrunt : MonoBehaviour
 
         while (animDone)
         {
+            if (currentHealth <= 10)
+                animator.speed = 4.0f;
+            else if (currentHealth <= 25)
+                animator.speed = 3.0f;
+            else if (currentHealth <= 50)
+                animator.speed = 2.0f;
+
             yield return null;
         }
+
+        animator.speed = 1.0f;
 
         animator.ResetTrigger("shoot");
 
@@ -503,11 +514,11 @@ public class PistolGrunt : MonoBehaviour
         if(currentBackpackHealth >= backPackHealth)
         {
             Instantiate(explosionPrefab, transform.position, Quaternion.identity);
-            TakeDamage(1000000);
+            TakeDamage(1000000, false);
         }
     }
 
-    public virtual void TakeDamage(float bulletDamage)
+    public virtual void TakeDamage(float bulletDamage, bool isHeadshot)
     {
         if (isDead)
             return;
@@ -523,6 +534,9 @@ public class PistolGrunt : MonoBehaviour
         }
         else if (currentHealth < health)
         {
+            if (isHeadshot)
+                Instantiate(HeadshotIndicator, headPos.transform.position, Quaternion.identity);
+
             agent.SetDestination(transform.position);
             animator.SetInteger("HitIndex", Random.Range(0, 3));
             animator.SetTrigger("Hit");
@@ -568,8 +582,12 @@ public class PistolGrunt : MonoBehaviour
     {
         if (currentShield >= shield)
         {
-            ht.blockSteal = false;
-            Destroy(shieldObject);
+            if (shieldObject)
+            {
+                Instantiate(BrokenShieldIndicator, shieldObject.transform.position, Quaternion.identity);
+                ht.blockSteal = false;
+                Destroy(shieldObject);
+            }
         }
 
         if (currentHealth >= health && !isDead)
