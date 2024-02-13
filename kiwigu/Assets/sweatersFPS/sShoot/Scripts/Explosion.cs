@@ -86,7 +86,7 @@ public class Explosion : MonoBehaviour
 
                             if (takeDamageMethod != null)
                             {
-                                takeDamageMethod.Invoke(enemyComponent, new object[] { damageDealt });
+                                takeDamageMethod.Invoke(enemyComponent, new object[] { damageDealt, false });
                             }
                         }
                     }
