@@ -97,6 +97,7 @@ MonoBehaviour:
   lessDamage: 1
   leastDamage: 0
   isBackpack: 0
+  isShield: 0
 --- !u!1 &623083329208340268
 GameObject:
   m_ObjectHideFlags: 0
@@ -237,15 +238,18 @@ MonoBehaviour:
   sfxEmitterAvailable: {fileID: 623083329237111584}
   enemyState: 0
   health: 200
-  shield: 100
+  shield: 75
   animator: {fileID: 9193658932448868494}
   shieldObject: {fileID: 8311139981755375787}
+  shieldObjectMetal: {fileID: 8311139981328996834}
   HeadshotIndicator: {fileID: 5046152788282611147, guid: 9cc898ae52c4b91479552c28f559e810, type: 3}
   BreakingShieldIndicator: {fileID: 5046152788282611147, guid: c3b38a421b6968a4f8cbaed1f569351e, type: 3}
   BrokenShieldIndicator: {fileID: 5046152788282611147, guid: 79b3f31201dc23a4589d3a4ce1699922, type: 3}
   headPos: {fileID: 2499834575786832054}
   ragdoll: {fileID: 8931406875862246907, guid: 2b4aa26ac3195e447a973e86b3fcf5c5, type: 3}
   splatoodFX: {fileID: 8636026588871352116, guid: 6287253d56b82ce4abca9ff08bced1a5, type: 3}
+  currentHealth: 0
+  currentShield: 0
   wanderSpeed: 3
   seekSpeed: 7
   enragedSpeed: 10
@@ -571,6 +575,7 @@ MonoBehaviour:
   lessDamage: 0
   leastDamage: 0
   isBackpack: 0
+  isShield: 0
 --- !u!135 &1445726240055248568
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -1029,6 +1034,7 @@ MonoBehaviour:
   lessDamage: 0
   leastDamage: 1
   isBackpack: 0
+  isShield: 0
 --- !u!1 &3661497316407122017
 GameObject:
   m_ObjectHideFlags: 0
@@ -1256,6 +1262,7 @@ MonoBehaviour:
   lessDamage: 0
   leastDamage: 0
   isBackpack: 0
+  isShield: 0
 --- !u!1 &4538759488794037856
 GameObject:
   m_ObjectHideFlags: 0
@@ -1619,6 +1626,7 @@ MonoBehaviour:
   lessDamage: 1
   leastDamage: 0
   isBackpack: 0
+  isShield: 0
 --- !u!1 &5095152521756196589
 GameObject:
   m_ObjectHideFlags: 0
@@ -2108,6 +2116,7 @@ MonoBehaviour:
   lessDamage: 0
   leastDamage: 1
   isBackpack: 0
+  isShield: 0
 --- !u!1 &6421351486425313324
 GameObject:
   m_ObjectHideFlags: 0
@@ -2395,6 +2404,7 @@ MonoBehaviour:
   lessDamage: 0
   leastDamage: 0
   isBackpack: 0
+  isShield: 0
 --- !u!1 &7678152439241918385
 GameObject:
   m_ObjectHideFlags: 0
@@ -2768,9 +2778,9 @@ GameObject:
   - component: {fileID: 8311139981328996833}
   - component: {fileID: 8311139981328996839}
   - component: {fileID: 8311139981328996832}
-  m_Layer: 9
+  m_Layer: 18
   m_Name: ShieldMetal
-  m_TagString: Untagged
+  m_TagString: Shield
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2883,9 +2893,11 @@ GameObject:
   - component: {fileID: 8311139981755375786}
   - component: {fileID: 8311139981755375784}
   - component: {fileID: 8311139981755375785}
-  m_Layer: 9
+  - component: {fileID: 1947012973}
+  - component: {fileID: 1947012974}
+  m_Layer: 18
   m_Name: Normal Shield
-  m_TagString: Untagged
+  m_TagString: Shield
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2957,6 +2969,37 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!65 &1947012973
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8311139981755375787}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1, z: 0.75}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &1947012974
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8311139981755375787}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cc87e33995c012d4582004dbe16cb6ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ReferenceScript: HellfireEnemy
+  doubleDamage: 0
+  lessDamage: 0
+  leastDamage: 0
+  isBackpack: 0
+  isShield: 1
 --- !u!1 &8320273687817407271
 GameObject:
   m_ObjectHideFlags: 0
