@@ -135,7 +135,7 @@ public class PauseSystem : MonoBehaviour
 
     public void UpdateFOV(float value)
     {
-        FOV = Mathf.Lerp(pauseSystem.FOVmin, pauseSystem.FOVmax, value);
+        FOV = Mathf.Lerp(pauseSystem.FOVmin+0.1f, pauseSystem.FOVmax, value);
         pauseSystem.mainCamera.fieldOfView = FOV;
     }
 

@@ -15,15 +15,21 @@ public class DirectionalAttack : MonoBehaviour
 
     [SerializeField] GameObject hitEffect;
 
+    public List<GameObject> ignoreList;
+
     List<GameObject> alreadyHit;
 
     float startTime;
+
+    Vector3 startPos;
 
     // Start is called before the first frame update
     void Start()
     {
         alreadyHit = new List<GameObject>();
         startTime = Time.time;
+
+        startPos = transform.position;
     }
 
     // Update is called once per frame
@@ -31,18 +37,26 @@ public class DirectionalAttack : MonoBehaviour
     {
         CheckRadius(radius);
 
-        transform.position = Vector3.Lerp(transform.parent.position, target.position, (Time.time - startTime) / duration);
+        Vector3 pos = startPos;
+        if (transform.parent) pos = transform.parent.position;
 
-        if (Time.time - startTime > duration) Destroy(gameObject);
+        transform.position = Vector3.Lerp(pos, target.position, (Time.time - startTime) / duration);
+
+        if (Time.time - startTime > duration)
+        {
+            if (!transform.parent) Destroy(target.gameObject);
+            Destroy(gameObject);
+        }
+
     }
 
     void CheckRadius(float radius)
     {
-        Collider[] hits = Physics.OverlapSphere(transform.position, radius);
+        Collider[] hits = Physics.OverlapSphere(transform.position, radius, LayerMask.GetMask("Enemy", "PhysicsObject"));
 
         foreach (Collider hit in hits)
         {
-            
+            if (ignoreList.Contains(hit.gameObject)) continue;
 
             if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Enemy"))
             {
