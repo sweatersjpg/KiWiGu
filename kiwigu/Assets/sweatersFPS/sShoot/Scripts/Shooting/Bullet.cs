@@ -308,7 +308,7 @@ public class Bullet : MonoBehaviour
                 else if (enemy.lessDamage)
                     ApplyDamage(enemy, 1.5f, false);
                 else if (enemy.leastDamage)
-                    ApplyDamage(enemy, 0.5f, false);
+                    ApplyDamage(enemy, 0.75f, false);
                 else
                     ApplyDamage(enemy, 1f, false); ;
             }
