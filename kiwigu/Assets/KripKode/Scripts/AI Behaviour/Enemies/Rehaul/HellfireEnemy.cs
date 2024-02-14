@@ -10,8 +10,8 @@ public class HellfireEnemy : MonoBehaviour
     public enum EnemyState { Wandering, Seek, Shoot, Leap };
     [SerializeField] private EnemyState enemyState = EnemyState.Wandering;
 
-    [Header("Drone Basic Settings")]
-    [Range(0, 100)]
+    [Header("Hellfire Basic Settings")]
+    [Range(0, 500)]
     [SerializeField] private float health;
     [Range(0, 100)]
     [SerializeField] private float shield;
@@ -482,9 +482,13 @@ public class HellfireEnemy : MonoBehaviour
             if (isHeadshot)
                 Instantiate(HeadshotIndicator, headPos.transform.position, Quaternion.identity);
 
-            agent.SetDestination(transform.position);
-            animator.SetInteger("HitIndex", Random.Range(0, 3));
-            animator.SetTrigger("Hit");
+            if (isHoldingGun)
+            {
+                agent.SetDestination(transform.position);
+                animator.SetInteger("HitIndex", Random.Range(0, 3));
+                animator.SetTrigger("Hit");
+            }
+
             currentHealth = Mathf.Min(currentHealth + bulletDamage, health);
 
             AnimFalse();
