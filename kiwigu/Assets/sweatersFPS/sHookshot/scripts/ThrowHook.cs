@@ -50,8 +50,8 @@ public class ThrowHook : MonoBehaviour
         else mouseButton = 0;
     }
 
-    private void Update()
-    {
+    //private void Update()
+    //{
         //if (!hasHook && !sweatersController.instance.wasGrounded)
         //{
         //    PlayerUI.SetLeapTooltipActive(false);
@@ -70,11 +70,13 @@ public class ThrowHook : MonoBehaviour
         //{
         //     // PlayerUI.SetLeapTooltipActive(false);
         //}
-    }
+    //}
 
     // Update is called once per frame
     void LateUpdate()
     {
+        if (PauseSystem.paused) return;
+        
         // ObstacleAvoidance();
         string[] shootButtons = { "LeftShoot", "RightShoot" };
         string shootButton = shootButtons[mouseButton];

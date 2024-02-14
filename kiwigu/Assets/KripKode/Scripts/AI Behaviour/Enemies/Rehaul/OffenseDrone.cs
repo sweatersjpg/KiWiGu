@@ -82,6 +82,9 @@ public class OffenseDrone : MonoBehaviour
 
     private void Update()
     {
+        // add to update functions to pause them        
+        if (PauseSystem.paused) return;
+        
         if (isDead)
         {
             StopAllCoroutines();

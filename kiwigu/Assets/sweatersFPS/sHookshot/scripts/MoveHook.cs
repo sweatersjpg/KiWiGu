@@ -331,7 +331,7 @@ public class MoveHook : MonoBehaviour
             GameObject target = hit.transform.gameObject;
             HookTarget ht = target.transform.GetComponentInChildren<HookTarget>();
 
-            if (ht.blockSteal)
+            if (ht && ht.blockSteal)
             {
                 if (GetRootParent(target.transform).CompareTag("Enemy"))
                 {
@@ -344,7 +344,7 @@ public class MoveHook : MonoBehaviour
                 return;
             }
 
-            if (ht == null)
+            if (!ht)
             {
                 caughtGun = target.transform.GetComponent<ThrownGun>().info;
                 caughtGunAmmo = target.transform.GetComponent<ThrownGun>().ammo; // transfer ammo info
