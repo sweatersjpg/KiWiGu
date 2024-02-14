@@ -17,6 +17,7 @@ public class HellfireEnemy : MonoBehaviour
     [SerializeField] private float shield;
     [SerializeField] private Animator animator;
     [SerializeField] private GameObject shieldObject;
+    [SerializeField] private GameObject shieldObjectMetal;
     [SerializeField] private GameObject HeadshotIndicator;
     [SerializeField] private GameObject BreakingShieldIndicator;
     [SerializeField] private GameObject BrokenShieldIndicator;
@@ -537,10 +538,12 @@ public class HellfireEnemy : MonoBehaviour
         if (isDead)
             return;
 
-        Debug.Log("running");
         if (currentShield < shield)
         {
             currentShield = Mathf.Min(currentShield + bulletDamage, shield);
+
+            shieldObjectMetal.GetComponent<MeshRenderer>().materials[0].SetFloat("_DamagePercent", currentShield / shield);
+
             StartLerpShieldProgress();
         }
 
