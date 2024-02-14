@@ -38,7 +38,9 @@ public class HellfireEnemy : MonoBehaviour
     [Header("Enemy Movement Settings")]
     [SerializeField] private float wanderSpeed;
     [SerializeField] private float seekSpeed;
-    [SerializeField] private float panicSpeed;
+    [SerializeField] private float enragedSpeed;
+    [SerializeField] private float marchSpeed;
+    [SerializeField] private float marchIntervals;
     [SerializeField] private float keepDistance;
     [SerializeField] private float marchDistance;
     [SerializeField] private float wanderWaitTime;
@@ -48,6 +50,8 @@ public class HellfireEnemy : MonoBehaviour
     private NavMeshAgent agent;
     private float wanderTimer;
     private Vector3 initialPosition;
+    private float marchIntervalTimer;
+    private bool intervaling;
 
     [Space(10)]
     [Header("Enemy Seeking Settings")]
@@ -176,30 +180,39 @@ public class HellfireEnemy : MonoBehaviour
     {
         if (enemyState == EnemyState.Seek)
         {
-            if (holdingShield)
-                agent.speed = seekSpeed;
-            else
-                agent.speed = seekSpeed * 1.35f;
-
             Vector3 adjustedDestination = detectedPlayer.transform.position - (detectedPlayer.transform.position - transform.position).normalized * keepDistance;
 
             if (IsPlayerWithinRange() && !isShooting)
             {
-                if (holdingShield)
+                if (holdingShield && isHoldingGun)
                 {
                     if (agent.velocity.magnitude >= 0.1f)
                     {
-                        animator.speed = 1.0f;
+                        agent.speed = marchSpeed;
+                        animator.speed = 0.9f;
 
                         animator.SetBool("walk", true);
                         animator.SetBool("run", false);
                     }
                 }
-                else
+                else if (!holdingShield && isHoldingGun)
                 {
                     if (agent.velocity.magnitude >= 0.1f)
                     {
-                        animator.speed = 1.55f;
+                        agent.speed = seekSpeed;
+                        animator.speed = 1.2f;
+
+                        animator.SetBool("run", true);
+                        animator.SetBool("walk", false);
+                    }
+                }
+                else if (!holdingShield && !isHoldingGun)
+                {
+                    if (agent.velocity.magnitude >= 0.1f)
+                    {
+                        agent.speed = enragedSpeed;
+
+                        animator.speed = 2.0f;
                         animator.SetBool("run", true);
                         animator.SetBool("walk", false);
                     }
@@ -211,6 +224,39 @@ public class HellfireEnemy : MonoBehaviour
                     agent.SetDestination(detectedPlayer.transform.position);
 
                 float distanceToPlayer = Vector3.Distance(transform.position, detectedPlayer.transform.position);
+
+                if(holdingShield && isHoldingGun)
+                {
+                    if (!intervaling)
+                        marchIntervalTimer += Time.deltaTime;
+
+                    if (marchIntervalTimer >= marchIntervals)
+                    {
+                        intervaling = true;
+                    }
+
+                    if (intervaling)
+                    {
+                        enemyState = EnemyState.Shoot;
+                        agent.SetDestination(transform.position);
+                    }
+                }
+                else if(!holdingShield && isHoldingGun)
+                {
+                    if (!intervaling)
+                        marchIntervalTimer += Time.deltaTime;
+
+                    if (marchIntervalTimer >= marchIntervals * 1.25f)
+                    {
+                        intervaling = true;
+                    }
+
+                    if (intervaling)
+                    {
+                        enemyState = EnemyState.Shoot;
+                        agent.SetDestination(transform.position);
+                    }
+                }
 
                 if (distanceToPlayer <= keepDistance + 2 && isHoldingGun)
                 {
@@ -224,6 +270,11 @@ public class HellfireEnemy : MonoBehaviour
             }
             else
             {
+                if (holdingShield)
+                    agent.speed = seekSpeed;
+                else
+                    agent.speed = seekSpeed * 1.5f;
+
                 if (agent.velocity.magnitude >= 0.1f)
                 {
                     animator.speed = 1.2f;
@@ -315,7 +366,7 @@ public class HellfireEnemy : MonoBehaviour
 
         animator.ResetTrigger("leap");
 
-        yield return new WaitForSeconds(3);
+        yield return new WaitForSeconds(2);
 
         isLeaping = false;
     }
@@ -442,6 +493,8 @@ public class HellfireEnemy : MonoBehaviour
     public void AnimFalse()
     {
         animDone = false;
+        intervaling = false;
+        marchIntervalTimer = 0;
     }
 
     public void ShootEvent()
@@ -563,9 +616,6 @@ public class HellfireEnemy : MonoBehaviour
             }
             agent.SetDestination(transform.position);
 
-            //animator.SetInteger("DeadIndex", Random.Range(0, 3));
-            //animator.SetTrigger("Dead");
-
             Destroy(Ragdollerino, 15f);
             Destroy(gameObject);
         }
@@ -659,7 +709,6 @@ public class HellfireEnemy : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        // Draw each sphere with a different color
         DrawColoredSphere(transform.position, seekRange, Color.red);
         DrawColoredSphere(transform.position, marchDistance, Color.blue);
         DrawColoredSphere(transform.position, keepDistance, Color.green);
