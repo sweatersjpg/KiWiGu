@@ -22,6 +22,7 @@ public class HellfireEnemy : MonoBehaviour
     [SerializeField] private GameObject BrokenShieldIndicator;
     [SerializeField] private Transform headPos;
     [SerializeField] private GameObject ragdoll;
+    [SerializeField] GameObject splatoodFX;
     private bool lerpingShield = false;
     private Material shieldMaterial;
     private float shieldLerpStartTime;
@@ -274,6 +275,9 @@ public class HellfireEnemy : MonoBehaviour
                 sweatersController.instance.velocity += punchDirection * 25;
             }
         }
+
+        GameObject dfx = Instantiate(splatoodFX, transform.position, Quaternion.identity);
+        Destroy(dfx, 2);
     }
 
     IEnumerator ShootRoutine()
