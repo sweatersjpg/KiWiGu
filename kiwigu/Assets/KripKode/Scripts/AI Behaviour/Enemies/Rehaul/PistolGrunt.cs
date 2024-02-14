@@ -33,7 +33,7 @@ public class PistolGrunt : MonoBehaviour
     private bool isHoldingGun;
     private float currentHealth;
     private float currentShield;
-    private float currentBackpackHealth;
+    public float currentBackpackHealth;
     private bool isDead;
 
     [Space(10)]

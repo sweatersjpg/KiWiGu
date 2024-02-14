@@ -30,8 +30,8 @@ public class HellfireEnemy : MonoBehaviour
     private float startShieldValue;
     private float targetShieldValue;
     private bool isHoldingGun;
-    private float currentHealth;
-    private float currentShield;
+    public float currentHealth;
+    public float currentShield;
     private bool isDead;
 
     [Space(10)]
@@ -184,40 +184,6 @@ public class HellfireEnemy : MonoBehaviour
 
             if (IsPlayerWithinRange() && !isShooting)
             {
-                if (holdingShield && isHoldingGun)
-                {
-                    if (agent.velocity.magnitude >= 0.1f)
-                    {
-                        agent.speed = marchSpeed;
-                        animator.speed = 0.9f;
-
-                        animator.SetBool("walk", true);
-                        animator.SetBool("run", false);
-                    }
-                }
-                else if (!holdingShield && isHoldingGun)
-                {
-                    if (agent.velocity.magnitude >= 0.1f)
-                    {
-                        agent.speed = seekSpeed;
-                        animator.speed = 1.2f;
-
-                        animator.SetBool("run", true);
-                        animator.SetBool("walk", false);
-                    }
-                }
-                else if (!holdingShield && !isHoldingGun)
-                {
-                    if (agent.velocity.magnitude >= 0.1f)
-                    {
-                        agent.speed = enragedSpeed;
-
-                        animator.speed = 2.0f;
-                        animator.SetBool("run", true);
-                        animator.SetBool("walk", false);
-                    }
-                }
-
                 if (isHoldingGun)
                     agent.SetDestination(adjustedDestination);
                 else
@@ -225,8 +191,17 @@ public class HellfireEnemy : MonoBehaviour
 
                 float distanceToPlayer = Vector3.Distance(transform.position, detectedPlayer.transform.position);
 
-                if(holdingShield && isHoldingGun)
+                if (holdingShield && isHoldingGun)
                 {
+                    animator.speed = 0.9f;
+                    agent.speed = marchSpeed;
+
+                    if (agent.velocity.magnitude >= 0.1f)
+                    {
+                        animator.SetBool("walk", true);
+                        animator.SetBool("run", false);
+                    }
+
                     if (!intervaling)
                         marchIntervalTimer += Time.deltaTime;
 
@@ -241,8 +216,17 @@ public class HellfireEnemy : MonoBehaviour
                         agent.SetDestination(transform.position);
                     }
                 }
-                else if(!holdingShield && isHoldingGun)
+                else if (!holdingShield && isHoldingGun)
                 {
+                    animator.speed = 1.2f;
+                    agent.speed = seekSpeed;
+
+                    if (agent.velocity.magnitude >= 0.1f)
+                    {
+                        animator.SetBool("walk", false);
+                        animator.SetBool("run", true);
+                    }
+
                     if (!intervaling)
                         marchIntervalTimer += Time.deltaTime;
 
@@ -255,6 +239,17 @@ public class HellfireEnemy : MonoBehaviour
                     {
                         enemyState = EnemyState.Shoot;
                         agent.SetDestination(transform.position);
+                    }
+                }
+                else if (!holdingShield && !isHoldingGun)
+                {
+                    animator.speed = 2.0f;
+                    agent.speed = enragedSpeed;
+
+                    if (agent.velocity.magnitude >= 0.1f)
+                    {
+                        animator.SetBool("walk", false);
+                        animator.SetBool("run", true);
                     }
                 }
 
@@ -270,16 +265,13 @@ public class HellfireEnemy : MonoBehaviour
             }
             else
             {
-                if (holdingShield)
-                    agent.speed = seekSpeed;
-                else
-                    agent.speed = seekSpeed * 1.5f;
+                animator.speed = 1.2f;
+                agent.speed = seekSpeed;
 
                 if (agent.velocity.magnitude >= 0.1f)
                 {
-                    animator.speed = 1.2f;
-                    animator.SetBool("run", true);
-                    animator.SetBool("walk", false);
+                    animator.SetBool("walk", true);
+                    animator.SetBool("run", false);
                 }
 
                 agent.SetDestination(adjustedDestination);
@@ -445,7 +437,9 @@ public class HellfireEnemy : MonoBehaviour
         Collider[] hitColliders = Physics.OverlapSphere(eyesPosition.position, seekRange, LayerMask.GetMask("Player"));
         int layerMask = LayerMask.GetMask("Enemy");
         int layerMask2 = LayerMask.GetMask("HookTarget");
-        int combinedLayerMask = layerMask | layerMask2;
+        int layerMask3 = LayerMask.GetMask("Shield");
+
+        int combinedLayerMask = layerMask | layerMask2 | layerMask3;
 
         foreach (Collider hitCollider in hitColliders)
         {
@@ -519,32 +513,35 @@ public class HellfireEnemy : MonoBehaviour
         if (isDead)
             return;
 
-        if (currentShield < shield)
-        {
-            StartLerpShieldProgress();
-
-            float healthPercent = 1.0f - Mathf.Clamp01(currentShield / shield);
-            shieldMaterial.SetFloat("_HealthPercent", healthPercent);
-
-            currentShield = Mathf.Min(currentShield + bulletDamage, shield);
-
-            Instantiate(BreakingShieldIndicator, shieldObject.transform.position, Quaternion.identity);
-        }
-        else if (currentHealth < health)
+        if (currentHealth < health)
         {
             if (isHeadshot)
                 Instantiate(HeadshotIndicator, headPos.transform.position, Quaternion.identity);
 
-            if (isHoldingGun)
+            if (isHoldingGun && !shieldObject)
             {
                 agent.SetDestination(transform.position);
                 animator.SetInteger("HitIndex", Random.Range(0, 3));
                 animator.SetTrigger("Hit");
+                AnimFalse();
             }
 
             currentHealth = Mathf.Min(currentHealth + bulletDamage, health);
+        }
 
-            AnimFalse();
+        CheckStats();
+    }
+
+    public void ShieldDamage(float bulletDamage)
+    {
+        if (isDead)
+            return;
+
+        Debug.Log("running");
+        if (currentShield < shield)
+        {
+            currentShield = Mathf.Min(currentShield + bulletDamage, shield);
+            StartLerpShieldProgress();
         }
 
         CheckStats();
