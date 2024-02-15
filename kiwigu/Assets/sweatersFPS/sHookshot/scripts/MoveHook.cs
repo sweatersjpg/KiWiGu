@@ -86,7 +86,7 @@ public class MoveHook : MonoBehaviour
         if (otherHook != null)
         {
             gameObject.name = "HookShotFollow";
-            Debug.Log("I am " + gameObject.name + " and I found " + otherHook.name);
+            // Debug.Log("I am " + gameObject.name + " and I found " + otherHook.name);
             parentHook = otherHook.transform.GetComponent<MoveHook>();
 
             if (parentHook.headingBack)

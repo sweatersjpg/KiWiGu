@@ -60,7 +60,7 @@ public class ThrownGun : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        Debug.Log(ammo.count / ammo.capacity + " " + ammo.count + " " + ammo.capacity);
+        // Debug.Log(ammo.count / ammo.capacity + " " + ammo.count + " " + ammo.capacity);
 
         //if (ammo.count / ammo.capacity < 0.2f)
         //{
