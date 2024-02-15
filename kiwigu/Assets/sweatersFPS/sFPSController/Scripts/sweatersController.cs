@@ -155,16 +155,36 @@ public class sweatersController : MonoBehaviour
 
         DoMovement();
 
-        isGrappling = false;
-
         UpdateHeight();
 
-        if(Input.GetKeyDown(KeyCode.O))
+        isGrappling = false;
+
+        if (Input.GetKeyDown(KeyCode.O))
         {
             charController.enabled = false;
             transform.position = spawnPoint;
             charController.enabled = true;
         }
+    }
+
+    public void ResetPlayer()
+    {
+        if (!CheckPointSystem.spawnPoint.Equals(new Vector3()))
+        {
+            charController.enabled = false;
+
+            transform.position = CheckPointSystem.spawnPoint;
+
+            charController.enabled = true;
+
+            rotationX = CheckPointSystem.spawnDirection.x;
+            playerHead.transform.localRotation = Quaternion.Euler(CheckPointSystem.spawnDirection.x, 0, 0);
+            transform.rotation = Quaternion.Euler(0, CheckPointSystem.spawnDirection.y, 0);
+        }
+
+        spawnPoint = transform.position;
+
+        velocity = new Vector3();
     }
 
     // Update is called once per frame
@@ -307,6 +327,7 @@ public class sweatersController : MonoBehaviour
     void UpdateHeight()
     {
         targetHeight = Input.GetKey(KeyCode.LeftControl) ? crouchHeight : standingHeight;
+        if (isGrappling) targetHeight = 1;
 
         Debug.DrawRay(transform.position + new Vector3(0, charController.height), Vector3.up * (2f - charController.height));
         if (Physics.Raycast(transform.position + new Vector3(0, charController.height), Vector3.up, 2f - charController.height))
@@ -315,7 +336,8 @@ public class sweatersController : MonoBehaviour
             targetHeight = crouchHeight;
         }
 
-        charController.height -= (charController.height - targetHeight) / 8 * deltaTime * 50;
+        // charController.height -= (charController.height - targetHeight) / 8 * deltaTime * 50;
+        charController.height = Mathf.Lerp(charController.height, targetHeight, deltaTime * 10);
 
         charController.center = new Vector3(0, charController.height / 2, 0);
         playerHead.transform.localPosition = new Vector3(0, charController.height - 0.5f, 0);
