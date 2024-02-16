@@ -271,8 +271,8 @@ public class HellfireEnemy : MonoBehaviour
 
                 if (agent.velocity.magnitude >= 0.1f)
                 {
-                    animator.SetBool("walk", true);
-                    animator.SetBool("run", false);
+                    animator.SetBool("walk", false);
+                    animator.SetBool("run", true);
                 }
 
                 agent.SetDestination(adjustedDestination);
