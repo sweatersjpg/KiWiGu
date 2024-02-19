@@ -7,9 +7,6 @@ public class HellfireEnemy : MonoBehaviour
     public enum EnemyState { Wandering, Seek, Shoot, Leap };
     [SerializeField] private EnemyState enemyState = EnemyState.Wandering;
 
-    [Header("Audio Settings")]
-    [SerializeField] AudioClip headshotSFX;
-
     [Header("Hellfire Basic Settings")]
     [Range(0, 500)]
     [SerializeField] private float health;
@@ -521,7 +518,7 @@ public class HellfireEnemy : MonoBehaviour
         {
             if (isHeadshot)
             {
-                GlobalAudioManager.instance.PlaySound(headPos, headshotSFX, 1, Random.Range(0.9f,1.1f), 15);
+                GlobalAudioManager.instance.PlayHeadshotSFX(headPos);
                 Instantiate(HeadshotIndicator, headPos.transform.position, Quaternion.identity);
             }
 

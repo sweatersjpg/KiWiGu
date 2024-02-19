@@ -4,7 +4,10 @@ using UnityEngine;
 public class GlobalAudioManager : MonoBehaviour
 {
     public static GlobalAudioManager instance;
-    AudioSource backgroundAudio;
+
+    // Sounds
+    public AudioClip headshotSFX;
+    public AudioClip shootHellfireSFX;
 
     private void Awake()
     {
@@ -12,13 +15,11 @@ public class GlobalAudioManager : MonoBehaviour
         {
             instance = this;
         }
-
-        backgroundAudio = GetComponent<AudioSource>();
     }
 
-    public void PlaySound(Transform location, AudioClip clip, float volume, float pitch, float range)
+    private void PlaySound(Transform location, AudioClip clip, float volume, float pitch, float range, string reference)
     {
-        GameObject soundObject = new GameObject("sound");
+        GameObject soundObject = new GameObject(reference);
         soundObject.transform.position = location.position;
         soundObject.transform.parent = transform;
 
@@ -34,8 +35,8 @@ public class GlobalAudioManager : MonoBehaviour
         Destroy(soundObject, clip.length);
     }
 
-    public void TransitionAudio()
+    public void PlayHeadshotSFX(Transform location)
     {
-
+        PlaySound(location, headshotSFX, 1, 1, 15, "headshotSFX");
     }
 }
