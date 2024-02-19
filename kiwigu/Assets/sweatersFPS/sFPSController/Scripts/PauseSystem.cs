@@ -28,9 +28,7 @@ public class PauseSystem : MonoBehaviour
     public static float sfxVol = 0.1f;
     public static float masterVol = 0.1f;
 
-    FMOD.Studio.Bus musicBus;
-    FMOD.Studio.Bus masterBus;
-    FMOD.Studio.Bus sfxBus;
+    // add here audio mixer variables
 
     private void Awake()
     {
@@ -46,21 +44,14 @@ public class PauseSystem : MonoBehaviour
     {
         mainCamera = sweatersController.instance.playerCamera;
 
-        masterBus = FMODUnity.RuntimeManager.GetBus("bus:/");
-        masterBus.setVolume(masterVol);
-
-        musicBus = FMODUnity.RuntimeManager.GetBus("bus:/Music");
-        musicBus.setVolume(musicVol);
-
-        sfxBus = FMODUnity.RuntimeManager.GetBus("bus:/SFX");
-        sfxBus.setVolume(sfxVol);
+        // add mixers
     }
 
     // Update is called once per frame
     void Update()
     {
         //if (isMainMenu) return;
-        if(Input.GetKeyUp(KeyCode.Escape) || Input.GetKeyUp(KeyCode.P) || Input.GetKeyUp(KeyCode.I)) TogglePaused();
+        if (Input.GetKeyUp(KeyCode.Escape) || Input.GetKeyUp(KeyCode.P) || Input.GetKeyUp(KeyCode.I)) TogglePaused();
     }
 
     public void QuitGame()
@@ -76,7 +67,7 @@ public class PauseSystem : MonoBehaviour
 
     public void ReloadScene()
     {
-        if(paused) TogglePaused();
+        if (paused) TogglePaused();
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
@@ -112,19 +103,19 @@ public class PauseSystem : MonoBehaviour
     public void UpdateSfxVolume(float value)
     {
         sfxVol = value;
-        sfxBus.setVolume(sfxVol);
+        // set mixer volume
     }
 
     public void UpdateMusicVolume(float value)
     {
         musicVol = value;
-        musicBus.setVolume(musicVol);
+        // set mixer volume
     }
 
     public void UpdateMasterVolume(float value)
     {
         masterVol = value;
-        masterBus.setVolume(masterVol);
+        // set mixer volume
     }
 
     public void UpdateSensitivity(float value)
@@ -135,7 +126,7 @@ public class PauseSystem : MonoBehaviour
 
     public void UpdateFOV(float value)
     {
-        FOV = Mathf.Lerp(pauseSystem.FOVmin+0.1f, pauseSystem.FOVmax, value);
+        FOV = Mathf.Lerp(pauseSystem.FOVmin + 0.1f, pauseSystem.FOVmax, value);
         pauseSystem.mainCamera.fieldOfView = FOV;
     }
 

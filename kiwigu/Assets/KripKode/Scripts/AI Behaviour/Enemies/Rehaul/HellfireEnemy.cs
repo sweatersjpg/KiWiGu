@@ -1,14 +1,14 @@
-using FMODUnity;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
 
 public class HellfireEnemy : MonoBehaviour
 {
-    [SerializeField] private StudioEventEmitter sfxEmitterAvailable;
-
     public enum EnemyState { Wandering, Seek, Shoot, Leap };
     [SerializeField] private EnemyState enemyState = EnemyState.Wandering;
+
+    [Header("Audio Settings")]
+    [SerializeField] AudioClip headshotSFX;
 
     [Header("Hellfire Basic Settings")]
     [Range(0, 500)]
@@ -520,7 +520,10 @@ public class HellfireEnemy : MonoBehaviour
         if (currentHealth < health)
         {
             if (isHeadshot)
+            {
+                GlobalAudioManager.instance.PlaySound(headPos, headshotSFX);
                 Instantiate(HeadshotIndicator, headPos.transform.position, Quaternion.identity);
+            }
 
             if (isHoldingGun && !shieldObject)
             {
@@ -659,9 +662,6 @@ public class HellfireEnemy : MonoBehaviour
 
         for (int j = 0; j < burst; j++)
         {
-            sfxEmitterAvailable.SetParameter("Charge", 0.5f);
-            sfxEmitterAvailable.Play();
-
             for (int i = 0; i < info.projectiles; i++) Invoke(nameof(SpawnBullet), j * 1 / info.autoRate);
         }
 

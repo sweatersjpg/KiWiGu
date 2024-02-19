@@ -1,4 +1,3 @@
-using FMODUnity;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
@@ -6,7 +5,6 @@ using UnityEngine.AI;
 public class OffenseDrone : MonoBehaviour
 {
     public enum DroneState { Wandering, Seeking, Attacking };
-    [SerializeField] private StudioEventEmitter sfxEmitterAvailable;
 
     [Header("Drone Basic Settings")]
     [Range(0, 100)]
@@ -404,9 +402,6 @@ public class OffenseDrone : MonoBehaviour
 
         for (int j = 0; j < burst; j++)
         {
-            sfxEmitterAvailable.SetParameter("Charge", 0.5f);
-            sfxEmitterAvailable.Play();
-
             for (int i = 0; i < info.projectiles; i++) Invoke(nameof(SpawnBullet), j * 1 / info.autoRate);
         }
 

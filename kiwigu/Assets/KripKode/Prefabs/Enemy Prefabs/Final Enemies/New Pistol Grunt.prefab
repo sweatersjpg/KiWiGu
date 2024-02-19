@@ -2637,7 +2637,6 @@ GameObject:
   m_Component:
   - component: {fileID: 7733474255463770884}
   - component: {fileID: 7733474255463770882}
-  - component: {fileID: 4131887290952760941}
   - component: {fileID: 7733474255463770881}
   m_Layer: 9
   m_Name: New Pistol Grunt
@@ -2687,41 +2686,6 @@ NavMeshAgent:
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
---- !u!114 &4131887290952760941
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7733474255463770887}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9a6610d2e704f1648819acc8d7460285, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  CollisionTag: 
-  EventReference:
-    Guid:
-      Data1: -807209716
-      Data2: 1198973856
-      Data3: 1820108474
-      Data4: -1617302324
-    Path: event:/SFX_Shoot
-  Event: 
-  PlayEvent: 0
-  StopEvent: 0
-  AllowFadeout: 1
-  TriggerOnce: 0
-  Preload: 0
-  AllowNonRigidbodyDoppler: 0
-  Params:
-  - Name: Weapon
-    Value: 2
-  - Name: Charge
-    Value: 0
-  OverrideAttenuation: 0
-  OverrideMinDistance: 1
-  OverrideMaxDistance: 20
 --- !u!114 &7733474255463770881
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2734,7 +2698,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9a854d611b365e647ad495224e28f607, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sfxEmitterAvailable: {fileID: 4131887290952760941}
   enemyState: 0
   health: 100
   shield: 0

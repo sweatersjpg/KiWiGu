@@ -3,14 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using UnityEngine.Events;
-using FMODUnity;
 using UnityEngine.InputSystem;
 
 public class ShootBullet : MonoBehaviour
 {
-    [SerializeField] StudioEventEmitter sfxEmitterAvailable;
-    [SerializeField] StudioEventEmitter sfxEmitterOut;
-
     public GunHand anim;
     public ParticleSystem flash;
 
@@ -101,7 +97,7 @@ public class ShootBullet : MonoBehaviour
             else
             {
                 if (Input.GetButtonDown(shootButton))
-                    sfxEmitterOut.Play();
+                    Debug.Log("play audio sound here code 1");
             }
         }
 
@@ -123,9 +119,6 @@ public class ShootBullet : MonoBehaviour
     void Shoot()
     {
         ammo.count -= 1;
-
-        sfxEmitterAvailable.SetParameter("Charge", charge);
-        sfxEmitterAvailable.Play();
 
         for (int i = 0; i < info.projectiles; i++) SpawnBullet();
         anim.AnimateShoot();

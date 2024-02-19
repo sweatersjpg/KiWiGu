@@ -201,6 +201,7 @@ MonoBehaviour:
   resistance: 0.5
   maxResistance: 0
   tether: 0
+  swing: 0
   blockSteal: 0
 --- !u!1 &1872604609380911941
 GameObject:
@@ -526,8 +527,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ReferenceScript: PistolGrunt
   doubleDamage: 0
-  lessDamage: 1
+  chestDamage: 0
   leastDamage: 0
+  isBackpack: 0
+  isShield: 0
 --- !u!1 &1872604609626143289
 GameObject:
   m_ObjectHideFlags: 0
@@ -685,8 +688,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ReferenceScript: PistolGrunt
   doubleDamage: 0
-  lessDamage: 1
+  chestDamage: 0
   leastDamage: 0
+  isBackpack: 0
+  isShield: 0
 --- !u!1 &1872604609664557329
 GameObject:
   m_ObjectHideFlags: 0
@@ -905,8 +910,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ReferenceScript: PistolGrunt
   doubleDamage: 0
-  lessDamage: 1
+  chestDamage: 0
   leastDamage: 0
+  isBackpack: 0
+  isShield: 0
 --- !u!1 &1872604609893284938
 GameObject:
   m_ObjectHideFlags: 0
@@ -1166,8 +1173,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ReferenceScript: PistolGrunt
   doubleDamage: 0
-  lessDamage: 1
+  chestDamage: 0
   leastDamage: 0
+  isBackpack: 0
+  isShield: 0
 --- !u!1 &1872604610254767888
 GameObject:
   m_ObjectHideFlags: 0
@@ -1534,7 +1543,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1872604610390654943}
   - component: {fileID: 1872604610390654937}
-  - component: {fileID: 5474525283126913718}
   - component: {fileID: 1872604610390654942}
   m_Layer: 9
   m_Name: Interceptor Enemy
@@ -1584,41 +1592,6 @@ NavMeshAgent:
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
---- !u!114 &5474525283126913718
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1872604610390654940}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9a6610d2e704f1648819acc8d7460285, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  CollisionTag: 
-  EventReference:
-    Guid:
-      Data1: -807209716
-      Data2: 1198973856
-      Data3: 1820108474
-      Data4: -1617302324
-    Path: event:/SFX_Shoot
-  Event: 
-  PlayEvent: 0
-  StopEvent: 0
-  AllowFadeout: 1
-  TriggerOnce: 0
-  Preload: 0
-  AllowNonRigidbodyDoppler: 0
-  Params:
-  - Name: Weapon
-    Value: 2
-  - Name: Charge
-    Value: 0
-  OverrideAttenuation: 0
-  OverrideMinDistance: 1
-  OverrideMaxDistance: 20
 --- !u!114 &1872604610390654942
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1631,16 +1604,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9a854d611b365e647ad495224e28f607, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sfxEmitterAvailable: {fileID: 5474525283126913718}
   enemyState: 0
   health: 100
   shield: 0
+  backPackHealth: 0
   animator: {fileID: 1872604609535924761}
   shieldObject: {fileID: 3895924817343087549}
+  HeadshotIndicator: {fileID: 0}
+  BrokenShieldIndicator: {fileID: 0}
   ragdoll: {fileID: 1872604610390654940, guid: 4657b7bc7183fbb4eb5ede5f60849d93, type: 3}
+  explosionPrefab: {fileID: 0}
+  headPos: {fileID: 0}
+  currentBackpackHealth: 0
   wanderSpeed: 3
   seekSpeed: 4
-  panicSpeed: 5
   keepDistance: 10
   shootDistance: 35
   wanderWaitTime: 5
@@ -1648,13 +1625,13 @@ MonoBehaviour:
   rememberWaitTime: 10
   eyesPosition: {fileID: 1872604609664557328}
   seekRange: 25
-  hideTime: 4
-  hookTarget: {fileID: 7882388365707268293, guid: a650ec5d6a8b94148a0364d7abe599a0, type: 3}
-  hookTargetPosition: {fileID: 890320858539439730}
-  hideTimer: 0
+  gunInfo: {fileID: 0}
+  gunSpread: 0
+  isDefense: 0
   BulletExitPoint: {fileID: 1872604609535491226}
   shootCooldown: 1
-  isShooting: 0
+  punchSpeed: 0
+  punchDistance: 0
 --- !u!1 &1872604610443137048
 GameObject:
   m_ObjectHideFlags: 0
@@ -1877,8 +1854,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ReferenceScript: PistolGrunt
   doubleDamage: 0
-  lessDamage: 1
+  chestDamage: 0
   leastDamage: 0
+  isBackpack: 0
+  isShield: 0
 --- !u!1 &1872604610784888317
 GameObject:
   m_ObjectHideFlags: 0
@@ -2036,8 +2015,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ReferenceScript: PistolGrunt
   doubleDamage: 0
-  lessDamage: 0
+  chestDamage: 0
   leastDamage: 1
+  isBackpack: 0
+  isShield: 0
 --- !u!1 &1872604610889713489
 GameObject:
   m_ObjectHideFlags: 0
@@ -2132,8 +2113,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ReferenceScript: PistolGrunt
   doubleDamage: 0
-  lessDamage: 1
+  chestDamage: 0
   leastDamage: 0
+  isBackpack: 0
+  isShield: 0
 --- !u!1 &1872604610905277089
 GameObject:
   m_ObjectHideFlags: 0
@@ -2227,8 +2210,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ReferenceScript: PistolGrunt
   doubleDamage: 0
-  lessDamage: 1
+  chestDamage: 0
   leastDamage: 0
+  isBackpack: 0
+  isShield: 0
 --- !u!1 &1872604610968614102
 GameObject:
   m_ObjectHideFlags: 0
@@ -2390,8 +2375,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ReferenceScript: PistolGrunt
   doubleDamage: 0
-  lessDamage: 0
+  chestDamage: 0
   leastDamage: 0
+  isBackpack: 0
+  isShield: 0
 --- !u!1 &1872604611056495554
 GameObject:
   m_ObjectHideFlags: 0
@@ -2454,8 +2441,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ReferenceScript: PistolGrunt
   doubleDamage: 0
-  lessDamage: 0
+  chestDamage: 0
   leastDamage: 0
+  isBackpack: 0
+  isShield: 0
 --- !u!1 &1872604611060610208
 GameObject:
   m_ObjectHideFlags: 0
@@ -2617,8 +2606,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ReferenceScript: PistolGrunt
   doubleDamage: 0
-  lessDamage: 0
+  chestDamage: 0
   leastDamage: 1
+  isBackpack: 0
+  isShield: 0
 --- !u!1 &1872604611277262792
 GameObject:
   m_ObjectHideFlags: 0
@@ -2681,8 +2672,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ReferenceScript: PistolGrunt
   doubleDamage: 0
-  lessDamage: 1
+  chestDamage: 0
   leastDamage: 0
+  isBackpack: 0
+  isShield: 0
 --- !u!1 &1872604611281343587
 GameObject:
   m_ObjectHideFlags: 0
@@ -2807,8 +2800,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ReferenceScript: PistolGrunt
   doubleDamage: 1
-  lessDamage: 0
+  chestDamage: 0
   leastDamage: 0
+  isBackpack: 0
+  isShield: 0
 --- !u!1 &1872604611410910473
 GameObject:
   m_ObjectHideFlags: 0

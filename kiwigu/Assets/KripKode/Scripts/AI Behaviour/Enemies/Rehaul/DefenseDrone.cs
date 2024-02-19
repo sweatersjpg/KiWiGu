@@ -1,4 +1,3 @@
-using FMODUnity;
 using System.Collections;
 using System.Linq;
 using TMPro;
@@ -8,7 +7,6 @@ using UnityEngine.AI;
 public class DefenseDrone : MonoBehaviour
 {
     public enum DroneState { Wandering, Defending };
-    [SerializeField] private StudioEventEmitter sfxEmitterAvailable;
 
     [Header("Drone Basic Settings")]
     [Range(0, 100)]
