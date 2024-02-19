@@ -4,7 +4,7 @@ using UnityEngine;
 public class GlobalAudioManager : MonoBehaviour
 {
     public static GlobalAudioManager instance;
-    AudioSource audioSource;
+    AudioSource backgroundAudio;
 
     private void Awake()
     {
@@ -13,12 +13,25 @@ public class GlobalAudioManager : MonoBehaviour
             instance = this;
         }
 
-        audioSource = GetComponent<AudioSource>();
+        backgroundAudio = GetComponent<AudioSource>();
     }
 
-    public void PlaySound(Transform location, AudioClip clip, float volume = 1f)
+    public void PlaySound(Transform location, AudioClip clip, float volume, float pitch, float range)
     {
-        AudioSource.PlayClipAtPoint(clip, location.position, volume);
+        GameObject soundObject = new GameObject("sound");
+        soundObject.transform.position = location.position;
+        soundObject.transform.parent = transform;
+
+        AudioSource audioSource = soundObject.AddComponent<AudioSource>();
+        audioSource.spatialBlend = 1;
+        audioSource.clip = clip;
+        audioSource.volume = volume;
+        audioSource.pitch = pitch;
+        audioSource.maxDistance = range;
+
+        audioSource.Play();
+
+        Destroy(soundObject, clip.length);
     }
 
     public void TransitionAudio()
