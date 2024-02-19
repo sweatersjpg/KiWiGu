@@ -28,8 +28,6 @@ public class PauseSystem : MonoBehaviour
     public static float sfxVol = 0.1f;
     public static float masterVol = 0.1f;
 
-    // add here audio mixer variables
-
     private void Awake()
     {
         if (pauseSystem == null)
@@ -103,19 +101,21 @@ public class PauseSystem : MonoBehaviour
     public void UpdateSfxVolume(float value)
     {
         sfxVol = value;
-        // set mixer volume
+        GlobalAudioManager.instance.globalMixer.FindMatchingGroups("SFX")[0].audioMixer.SetFloat("volume", Mathf.Lerp(-80, 0, value));
     }
 
     public void UpdateMusicVolume(float value)
     {
         musicVol = value;
         // set mixer volume
+        GlobalAudioManager.instance.globalMixer.FindMatchingGroups("Music")[0].audioMixer.SetFloat("volume", Mathf.Lerp(-80, 0, value));
     }
 
     public void UpdateMasterVolume(float value)
     {
         masterVol = value;
         // set mixer volume
+        GlobalAudioManager.instance.globalMixer.FindMatchingGroups("Master")[0].audioMixer.SetFloat("volume", Mathf.Lerp(-80, 0, value));
     }
 
     public void UpdateSensitivity(float value)

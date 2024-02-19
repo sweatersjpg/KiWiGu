@@ -1,9 +1,10 @@
 using UnityEngine;
+using UnityEngine.Audio;
 
-[RequireComponent(typeof(AudioSource))]
 public class GlobalAudioManager : MonoBehaviour
 {
     public static GlobalAudioManager instance;
+    public AudioMixer globalMixer;
 
     // Sounds
     public AudioClip headshotSFX;
@@ -24,6 +25,7 @@ public class GlobalAudioManager : MonoBehaviour
         soundObject.transform.parent = transform;
 
         AudioSource audioSource = soundObject.AddComponent<AudioSource>();
+        audioSource.outputAudioMixerGroup = globalMixer.FindMatchingGroups("SFX")[0];
         audioSource.spatialBlend = 1;
         audioSource.clip = clip;
         audioSource.volume = volume;
