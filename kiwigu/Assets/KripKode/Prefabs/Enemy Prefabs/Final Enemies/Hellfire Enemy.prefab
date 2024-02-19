@@ -94,8 +94,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ReferenceScript: HellfireEnemy
   doubleDamage: 0
-  lessDamage: 1
-  leastDamage: 0
+  chestDamage: 0
+  leastDamage: 1
   isBackpack: 0
   isShield: 0
 --- !u!1 &623083329208340268
@@ -572,7 +572,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ReferenceScript: HellfireEnemy
   doubleDamage: 1
-  lessDamage: 0
+  chestDamage: 0
   leastDamage: 0
   isBackpack: 0
   isShield: 0
@@ -1031,7 +1031,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ReferenceScript: HellfireEnemy
   doubleDamage: 0
-  lessDamage: 0
+  chestDamage: 0
   leastDamage: 1
   isBackpack: 0
   isShield: 0
@@ -1259,7 +1259,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ReferenceScript: HellfireEnemy
   doubleDamage: 0
-  lessDamage: 0
+  chestDamage: 1
   leastDamage: 0
   isBackpack: 0
   isShield: 0
@@ -1623,8 +1623,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ReferenceScript: HellfireEnemy
   doubleDamage: 0
-  lessDamage: 1
-  leastDamage: 0
+  chestDamage: 0
+  leastDamage: 1
   isBackpack: 0
   isShield: 0
 --- !u!1 &5095152521756196589
@@ -2113,7 +2113,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ReferenceScript: HellfireEnemy
   doubleDamage: 0
-  lessDamage: 0
+  chestDamage: 0
   leastDamage: 1
   isBackpack: 0
   isShield: 0
@@ -2401,7 +2401,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ReferenceScript: HellfireEnemy
   doubleDamage: 0
-  lessDamage: 0
+  chestDamage: 1
   leastDamage: 0
   isBackpack: 0
   isShield: 0
@@ -2980,8 +2980,8 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 0.75}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Size: {x: 1, y: 1, z: 0.2}
+  m_Center: {x: 0, y: 0, z: 0.1}
 --- !u!114 &1947012974
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2996,7 +2996,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ReferenceScript: HellfireEnemy
   doubleDamage: 0
-  lessDamage: 0
+  chestDamage: 0
   leastDamage: 0
   isBackpack: 0
   isShield: 1
