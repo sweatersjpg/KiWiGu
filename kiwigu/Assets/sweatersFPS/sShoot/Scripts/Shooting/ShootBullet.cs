@@ -4,6 +4,7 @@ using System.IO;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
+using static MiniMenuSystem;
 
 public class ShootBullet : MonoBehaviour
 {
@@ -97,7 +98,7 @@ public class ShootBullet : MonoBehaviour
             else
             {
                 if (Input.GetButtonDown(shootButton))
-                    Debug.Log("play audio sound here code 1");
+                    GlobalAudioManager.instance.PlayGunEmpty(transform);
             }
         }
 
@@ -118,6 +119,8 @@ public class ShootBullet : MonoBehaviour
 
     void Shoot()
     {
+        GlobalAudioManager.instance.PlayGunFire(transform, info);
+
         ammo.count -= 1;
 
         for (int i = 0; i < info.projectiles; i++) SpawnBullet();

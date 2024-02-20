@@ -5,6 +5,9 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "New GunInfo", menuName = "GunInfo")]
 public class GunInfo : ScriptableObject
 {
+    [Header("Gun Type")]
+    public string gunName = "";
+
     [Header("Aiming")]
     public bool canAim = true;
     public bool hasToAim = false;
