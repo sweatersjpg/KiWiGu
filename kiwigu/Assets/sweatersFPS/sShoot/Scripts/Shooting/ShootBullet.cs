@@ -3,14 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using UnityEngine.Events;
-using FMODUnity;
 using UnityEngine.InputSystem;
+using static MiniMenuSystem;
 
 public class ShootBullet : MonoBehaviour
 {
-    [SerializeField] StudioEventEmitter sfxEmitterAvailable;
-    [SerializeField] StudioEventEmitter sfxEmitterOut;
-
     public GunHand anim;
     public ParticleSystem flash;
 
@@ -101,7 +98,7 @@ public class ShootBullet : MonoBehaviour
             else
             {
                 if (Input.GetButtonDown(shootButton))
-                    sfxEmitterOut.Play();
+                    GlobalAudioManager.instance.PlayGunEmpty(transform);
             }
         }
 
@@ -122,10 +119,9 @@ public class ShootBullet : MonoBehaviour
 
     void Shoot()
     {
-        ammo.count -= 1;
+        GlobalAudioManager.instance.PlayGunFire(transform, info);
 
-        sfxEmitterAvailable.SetParameter("Charge", charge);
-        sfxEmitterAvailable.Play();
+        ammo.count -= 1;
 
         for (int i = 0; i < info.projectiles; i++) SpawnBullet();
         anim.AnimateShoot();
