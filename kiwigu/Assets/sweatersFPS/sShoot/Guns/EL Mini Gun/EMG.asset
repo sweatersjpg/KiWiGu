@@ -1,0 +1,93 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 23c1375cd985d95488add3e7772559e4, type: 3}
+  m_Name: EMG
+  m_EditorClassIdentifier: 
+  canAim: 0
+  hasToAim: 0
+  aimDelay: 0.3
+  aimTime: 0.3
+  scopeFOV: 30
+  capacity: 80
+  recharge: 0
+  rechargeRate: 5
+  canCharge: 0
+  timeToMaxCharge: 1
+  chargeCurve:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  fullAuto: 1
+  projectiles: 1
+  burstSize: 1
+  autoRate: 10
+  fireRate: 10
+  damage: 5
+  spread: 0.05
+  recoil: 5
+  spreadVariation:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0.0011558533
+      value: 0.24816895
+      inSlope: 0.75270104
+      outSlope: 0.75270104
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0.75270104
+      outSlope: 0.75270104
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  cameraRecoil:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  recoilPerShot: 0.05
+  recoilReturnTime: 0.4
+  bulletSpeed: 370
+  bulletGravity: -9.8
+  bulletPrefab: {fileID: 745279074493107227, guid: f3885aa6f16644bbda9672673046fdfb, type: 3}
+  gunPrefab: {fileID: 8481551846423878803, guid: 5e46f78ad3354a146ae71df90d159043, type: 3}
+  guUI: {fileID: 5772235512929116551, guid: 5b04e1a91bd3d91488e2fb16e0be7b90, type: 3}
