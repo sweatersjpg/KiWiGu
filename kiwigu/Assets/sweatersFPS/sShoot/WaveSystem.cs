@@ -18,11 +18,15 @@ public class WaveSystem : MonoBehaviour
     int activeSpawners = 0;
 
     List<Transform> freeSpawnPoints;
+
+    List<GameObject> enemyMasterList;
     
     // Start is called before the first frame update
     void Start()
     {
         ResetSpawnPoints();
+
+        enemyMasterList = new List<GameObject>();
 
         InvokeRepeating(nameof(ResetSpawnPoints), 1, 1f);
 
@@ -47,9 +51,31 @@ public class WaveSystem : MonoBehaviour
 
         if(CheckPointSystem.spawnPoint != requiredCheckPoint.position && currentWave >= 0)
         {
-            StopAllCoroutines();
-            currentWave = -1;
+            //StopAllCoroutines();
+            //currentWave = -1;
+            ResetWaves();
         }
+    }
+
+    public void ResetWaves()
+    {
+        StopAllCoroutines();
+        ResetSpawnPoints();
+
+        currentWave = -1;
+
+        for(int i = enemyMasterList.Count-1; i >= 0; i--)
+        {
+            
+            
+            if (enemyMasterList[i])
+            {
+                
+                Destroy(enemyMasterList[i]);
+            }
+        }
+
+        enemyMasterList = new List<GameObject>();
     }
 
     void ResetSpawnPoints()
@@ -79,7 +105,7 @@ public class WaveSystem : MonoBehaviour
             spawners[i] = StartCoroutine(nameof(SpawnEnemies), i);
         }
 
-        Debug.Log(activeSpawners);
+        // Debug.Log(activeSpawners);
 
         yield return new WaitUntil(() => { return activeSpawners == 0; });
 
@@ -138,6 +164,7 @@ public class WaveSystem : MonoBehaviour
         if (gunType != null) enemy.GetComponentInChildren<HookTarget>().info = gunType;
 
         // StartCoroutine(nameof(EnableEnemy), enemy);
+        enemyMasterList.Add(enemy);
 
         return enemy.transform;
     }

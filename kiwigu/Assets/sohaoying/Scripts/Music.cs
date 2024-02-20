@@ -1,5 +1,4 @@
 using UnityEngine;
-using FMODUnity;
 
 public class Music : MonoBehaviour
 {
@@ -8,7 +7,6 @@ public class Music : MonoBehaviour
 
     [Range(0, 1)] internal int Violence; // change uwu
     [SerializeField] float transitionTime = 1.2f;
-    [SerializeField] StudioEventEmitter musicEmitter;
 
     float displayPercent;
     float startPercent;
@@ -37,7 +35,5 @@ public class Music : MonoBehaviour
 
         float deltaPercent = Violence - startPercent;
         displayPercent = startPercent + deltaPercent * progress;
-
-        musicEmitter.SetParameter("Violence", displayPercent);
     }
 }

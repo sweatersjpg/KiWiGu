@@ -98,4 +98,25 @@ public class HitVariable : MonoBehaviour
             }
         }
     }
+
+    public void SplatoodEvent()
+    {
+        Type type = Type.GetType(HitReferenceScript);
+
+        if (type != null)
+        {
+            Component hitComponent = GetRootParent(gameObject.transform).GetComponent(type);
+
+            if (hitComponent != null)
+            {
+                MethodInfo method = type.GetMethod("SplatoodEvent");
+
+                if (method != null)
+                {
+                    method.Invoke(hitComponent, null);
+                }
+            }
+        }
+    }
+
 }

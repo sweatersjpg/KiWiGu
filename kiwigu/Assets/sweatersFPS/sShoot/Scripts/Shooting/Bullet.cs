@@ -106,16 +106,18 @@ public class Bullet : MonoBehaviour
         if (trackTarget && time > 0.2f)
         {
             Collider[] hits = Physics.OverlapSphere(bulletMesh.transform.position, trackingRadius,
-                LayerMask.GetMask("Enemy", "PhysicsObject"));
+                LayerMask.GetMask("Shield", "Enemy", "PhysicsObject"));
 
-            //if (hits.Length > 0)
-            //{
-            //    target = hits[0].transform;
-            //}
             Transform closest = null;
 
             foreach (Collider c in hits)
             {
+                if (c.gameObject.layer == LayerMask.NameToLayer("Shield"))
+                {
+                    target = c.transform;
+                    break;
+                }
+
                 if (closest == null
                     || Vector3.Distance(c.transform.position, ogTargetPosition) > Vector3.Distance(closest.position, ogTargetPosition))
                 {
@@ -123,8 +125,10 @@ public class Bullet : MonoBehaviour
                 }
             }
 
-            if (closest != null) target = closest;
-            else target = ogTarget;
+            if (target == null && closest != null)
+            {
+                target = closest;
+            }
         }
 
         if (target != null && !dead)
@@ -159,7 +163,7 @@ public class Bullet : MonoBehaviour
         bulletMesh.transform.position = origin;
 
         bool hasHit = Physics.SphereCast(origin, radius, direction, out RaycastHit hit, direction.magnitude,
-            LayerMask.GetMask("Enemy", "PhysicsObject", "Player"));
+            LayerMask.GetMask("Shield", "Enemy", "PhysicsObject", "Player"));
 
         if (fromEnemy) hasHit = false;
 
@@ -196,7 +200,7 @@ public class Bullet : MonoBehaviour
     //    }
     //}
 
-    private void ApplyDamage(EnemyHitBox enemy, float damageMultiplier)
+    private void ApplyDamage(EnemyHitBox enemy, float damageMultiplier, bool isHeadshot)
     {
         if (enemy == null)
             return;
@@ -209,13 +213,66 @@ public class Bullet : MonoBehaviour
         {
             var enemyComponent = rootParent.GetComponent(scriptType) as MonoBehaviour;
 
-            if (enemyComponent != null) 
+            if (enemyComponent != null)
             {
                 var takeDamageMethod = scriptType.GetMethod("TakeDamage");
 
                 if (takeDamageMethod != null)
                 {
-                    takeDamageMethod.Invoke(enemyComponent, new object[] { bulletDamage * damageMultiplier });
+                    if (isHeadshot)
+                        takeDamageMethod.Invoke(enemyComponent, new object[] { bulletDamage * damageMultiplier, true });
+                    else
+                        takeDamageMethod.Invoke(enemyComponent, new object[] { bulletDamage * damageMultiplier, false });
+                }
+            }
+        }
+    }
+
+    private void BackpackDamage(EnemyHitBox enemy)
+    {
+        if (enemy == null)
+            return;
+
+        var scriptType = System.Type.GetType(enemy.ReferenceScript);
+
+        Transform rootParent = GetRootParent(enemy.transform);
+
+        if (rootParent != null && scriptType != null)
+        {
+            var enemyComponent = rootParent.GetComponent(scriptType) as MonoBehaviour;
+
+            if (enemyComponent != null)
+            {
+                var takeDamageMethod = scriptType.GetMethod("BackpackDamage");
+
+                if (takeDamageMethod != null)
+                {
+                    takeDamageMethod.Invoke(enemyComponent, new object[] { bulletDamage });
+                }
+            }
+        }
+    }
+
+    private void ShieldDamage(EnemyHitBox enemy)
+    {
+        if (enemy == null)
+            return;
+
+        var scriptType = System.Type.GetType(enemy.ReferenceScript);
+
+        Transform rootParent = GetRootParent(enemy.transform);
+
+        if (rootParent != null && scriptType != null)
+        {
+            var enemyComponent = rootParent.GetComponent(scriptType) as MonoBehaviour;
+
+            if (enemyComponent != null)
+            {
+                var takeDamageMethod = scriptType.GetMethod("ShieldDamage");
+
+                if (takeDamageMethod != null)
+                {
+                    takeDamageMethod.Invoke(enemyComponent, new object[] { bulletDamage });
                 }
             }
         }
@@ -244,20 +301,20 @@ public class Bullet : MonoBehaviour
         {
             hit.transform.GetComponent<PlayerHealth>().DealDamage(bulletDamage, -direction);
         }
-        else if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Enemy"))
+        else if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Enemy") && !hit.transform.gameObject.CompareTag("Backpack"))
         {
             EnemyHitBox enemy = hit.transform.gameObject.GetComponent<EnemyHitBox>();
 
             if (enemy != null)
             {
                 if (enemy.doubleDamage)
-                    ApplyDamage(enemy, 2f);
-                else if (enemy.lessDamage)
-                    ApplyDamage(enemy, 1.5f);
+                    ApplyDamage(enemy, 2f, true);
+                else if (enemy.chestDamage)
+                    ApplyDamage(enemy, 1.5f, false);
                 else if (enemy.leastDamage)
-                    ApplyDamage(enemy, 0.5f);
+                    ApplyDamage(enemy, 0.75f, false);
                 else
-                    ApplyDamage(enemy, 1f);
+                    ApplyDamage(enemy, 1f, false); ;
             }
         }
         else if (hit.transform.gameObject.CompareTag("RigidTarget"))
@@ -265,6 +322,26 @@ public class Bullet : MonoBehaviour
             hit.transform.gameObject.GetComponent<PhysicsHit>().Hit(hit.point, transform.forward * speed);
 
             SpawnHole(hit);
+        }
+        else if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Backpack") && hit.transform.gameObject.CompareTag("Backpack"))
+        {
+            EnemyHitBox enemy = hit.transform.gameObject.GetComponent<EnemyHitBox>();
+
+            if (enemy != null)
+            {
+                if (enemy.isBackpack)
+                    BackpackDamage(enemy);
+            }
+        }
+        else if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Shield") && hit.transform.gameObject.CompareTag("Shield"))
+        {
+            EnemyHitBox enemy = hit.transform.gameObject.GetComponent<EnemyHitBox>();
+
+            if (enemy != null)
+            {
+                if (enemy.isShield)
+                    ShieldDamage(enemy);
+            }
         }
         else
         {
@@ -275,15 +352,27 @@ public class Bullet : MonoBehaviour
 
         if (sparksPrefab != null || HitFX.Length > 0)
         {
-            if (!SpawnSpecialHitFX(hit, direction)) SpawnHitFX(hit, direction, sparksPrefab);
+            if (HitFX.Length > 0 && !SpawnSpecialHitFX(hit, direction))
+            {
+                if (sparksPrefab != null)
+                {
+                    SpawnHitFX(hit, direction, sparksPrefab);
+                }
+            }
         }
 
         bulletMesh.transform.position = hit.point;
 
-        foreach (GameObject s in spawnOnHit)
+        if (spawnOnHit.Length > 0)
         {
-            GameObject o = Instantiate(s);
-            o.transform.position = hit.point;
+            foreach (GameObject s in spawnOnHit)
+            {
+                if (s != null)
+                {
+                    GameObject o = Instantiate(s);
+                    o.transform.position = hit.point;
+                }
+            }
         }
 
         //Destroy(gameObject);
@@ -319,8 +408,18 @@ public class Bullet : MonoBehaviour
 
     bool SpawnSpecialHitFX(RaycastHit hit, Vector3 direction)
     {
-        for(int i = 0; i < HitFX.Length; i++)
+        if (HitFX == null || HitFXLayers == null || HitFX.Length != HitFXLayers.Length)
         {
+            return false;
+        }
+
+        for (int i = 0; i < HitFX.Length; i++)
+        {
+            if (i >= HitFXLayers.Length)
+            {
+                return false;
+            }
+
             if (HitFXLayers[i] != (HitFXLayers[i] | (1 << hit.transform.gameObject.layer))) continue;
 
             SpawnHitFX(hit, direction, HitFX[i]);

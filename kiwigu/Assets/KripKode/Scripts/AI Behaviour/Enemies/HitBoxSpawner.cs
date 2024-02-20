@@ -3,8 +3,9 @@ using UnityEngine;
 
 public class HitBoxSpawner : MonoBehaviour
 {
-    [SerializeField]
-    private GameObject prefabToSpawn;
+    [SerializeField] private GunInfo gunInfo;
+    [SerializeField] GameObject ht;
+
 
     private bool hasSpawned = false;
 
@@ -25,7 +26,8 @@ public class HitBoxSpawner : MonoBehaviour
     {
         if (!hasSpawned)
         {
-            GameObject spawnedPrefab = Instantiate(prefabToSpawn, transform.position, transform.rotation);
+            GameObject spawnedPrefab = Instantiate(ht, transform.position, transform.rotation);
+            spawnedPrefab.GetComponent<HookTarget>().info = gunInfo;
             spawnedPrefab.transform.parent = transform;
 
             hasSpawned = true;

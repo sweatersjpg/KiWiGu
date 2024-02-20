@@ -7,6 +7,7 @@ public class CheckPointSystem : MonoBehaviour
     public bool startingSpawn = false;
 
     public static Vector3 spawnPoint;
+    public static Vector3 spawnDirection;
 
     // Start is called before the first frame update
     void Awake()
@@ -27,6 +28,7 @@ public class CheckPointSystem : MonoBehaviour
             Debug.Log("Spawnpoint Set");
 
             spawnPoint = transform.position;
+            spawnDirection = transform.localEulerAngles;
         }
     }
 }

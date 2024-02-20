@@ -14,6 +14,7 @@ public class HookTarget : MonoBehaviour
     public float resistance = 2;
     [HideInInspector] public float maxResistance;
     public bool tether = false;
+    public bool swing = false;
     public bool blockSteal;
 
     private void Start()
@@ -21,8 +22,17 @@ public class HookTarget : MonoBehaviour
         // Mesh mesh = info.gunPrefab.GetComponentInChildren<MeshFilter>().sharedMesh;
         if (hasView)
         {
-            gunView.GetComponent<MeshFilter>().mesh = info.gunPrefab.GetComponentInChildren<MeshFilter>().sharedMesh;
-            gunView.GetComponent<MeshRenderer>().sharedMaterial = info.gunPrefab.GetComponentInChildren<MeshRenderer>().sharedMaterial;
+            Transform gunView = info.gunPrefab.transform.Find("GunView");
+
+            if (gunView)
+            {
+                GameObject gun = Instantiate(gunView.gameObject, transform);
+                gun.transform.localPosition = new();
+                gun.layer = gameObject.layer;
+            }
+
+            //gunView.GetComponent<MeshFilter>().mesh = info.gunPrefab.GetComponentInChildren<MeshFilter>().sharedMesh;
+            //gunView.GetComponent<MeshRenderer>().sharedMaterial = info.gunPrefab.GetComponentInChildren<MeshRenderer>().sharedMaterial;
         }
 
         maxResistance = resistance;
@@ -33,7 +43,7 @@ public class HookTarget : MonoBehaviour
         ThrownGun gun = Instantiate(throwGunPrefab, transform).GetComponent<ThrownGun>();
         gun.transform.parent = null;
 
-        gun.SetMesh(gunView.GetComponent<MeshFilter>().mesh, info.gunPrefab.GetComponentInChildren<MeshRenderer>().sharedMaterial);
+        //gun.SetMesh(gunView.GetComponent<MeshFilter>().mesh, info.gunPrefab.GetComponentInChildren<MeshRenderer>().sharedMaterial);
         gun.info = info;
         gun.throwForce = 1;
         

@@ -50,8 +50,8 @@ public class ThrowHook : MonoBehaviour
         else mouseButton = 0;
     }
 
-    private void Update()
-    {
+    //private void Update()
+    //{
         //if (!hasHook && !sweatersController.instance.wasGrounded)
         //{
         //    PlayerUI.SetLeapTooltipActive(false);
@@ -70,14 +70,21 @@ public class ThrowHook : MonoBehaviour
         //{
         //     // PlayerUI.SetLeapTooltipActive(false);
         //}
-    }
+    //}
 
     // Update is called once per frame
     void LateUpdate()
     {
+        if (PauseSystem.paused) return;
+        
         // ObstacleAvoidance();
+        string[] shootButtons = { "LeftShoot", "RightShoot" };
+        string shootButton = shootButtons[mouseButton];
 
-        if (Input.GetMouseButton(mouseButton) || Input.GetKey(mouseButton == 0 ? KeyCode.Q : KeyCode.E))
+        string[] throwButtons = { "LeftThrow", "RightThrow" };
+        string throwButton = throwButtons[mouseButton];
+
+        if (Input.GetButton(shootButton) || Input.GetButton(throwButton))
         {
             if (hasHook && !keyPressed)
             {
@@ -88,7 +95,7 @@ public class ThrowHook : MonoBehaviour
             // else hook.GetComponent<MoveHook>().PullbackWithForce(0);
         }
 
-        if (Input.GetMouseButtonUp(mouseButton) || Input.GetKeyUp(mouseButton == 0 ? KeyCode.Q : KeyCode.E))
+        if (Input.GetButtonUp(shootButton) || Input.GetButtonUp(throwButton))
         {
             if (!hasHook) hook.GetComponent<MoveHook>().PullbackWithForce(0, 1);
             else CancelInvoke(nameof(Throw));

@@ -1,0 +1,119 @@
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Xml.Serialization;
+using UnityEngine;
+
+public class DirectionalAttack : MonoBehaviour
+{
+    public Transform target;
+
+    [SerializeField] float force = 10;
+    [SerializeField] float radius = 2;
+    [SerializeField] float duration;
+    [SerializeField] float damageDealt = 20;
+
+    [SerializeField] GameObject hitEffect;
+
+    public List<GameObject> ignoreList;
+
+    List<GameObject> alreadyHit;
+
+    float startTime;
+
+    Vector3 startPos;
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        alreadyHit = new List<GameObject>();
+        startTime = Time.time;
+
+        startPos = transform.position;
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        CheckRadius(radius);
+
+        Vector3 pos = startPos;
+        if (transform.parent) pos = transform.parent.position;
+
+        transform.position = Vector3.Lerp(pos, target.position, (Time.time - startTime) / duration);
+
+        if (Time.time - startTime > duration)
+        {
+            if (!transform.parent) Destroy(target.gameObject);
+            Destroy(gameObject);
+        }
+
+    }
+
+    void CheckRadius(float radius)
+    {
+        Collider[] hits = Physics.OverlapSphere(transform.position, radius, LayerMask.GetMask("Enemy", "PhysicsObject"));
+
+        foreach (Collider hit in hits)
+        {
+            if (ignoreList.Contains(hit.gameObject)) continue;
+
+            if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Enemy"))
+            {
+                EnemyHitBox enemy = hit.transform.gameObject.GetComponentInParent<EnemyHitBox>();
+                if (enemy != null)
+                {
+
+                    var scriptType = System.Type.GetType(enemy.ReferenceScript);
+
+                    Transform rootParent = GetRootParent(enemy.transform);
+
+                    if (rootParent != null)
+                    {
+                        if (alreadyHit.Contains(rootParent.gameObject)) return;
+
+                        var enemyComponent = rootParent.GetComponent(scriptType) as MonoBehaviour;
+
+                        alreadyHit.Add(rootParent.gameObject);
+                        Instantiate(hitEffect, hit.ClosestPoint(transform.position), Quaternion.identity);
+
+                        if (enemyComponent != null)
+                        {
+                            var takeDamageMethod = scriptType.GetMethod("TakeDamage");
+
+                            if (takeDamageMethod != null)
+                            {
+                                takeDamageMethod.Invoke(enemyComponent, new object[] { damageDealt, false });
+                            }
+                        }
+                    }
+                    
+                }
+            }
+            else if (hit.attachedRigidbody != null)
+            {
+                if (alreadyHit.Contains(hit.gameObject)) return;
+                alreadyHit.Add(hit.gameObject);
+
+                //hit.attachedRigidbody.AddExplosionForce(force, transform.position, radius);
+                hit.attachedRigidbody.AddForce(force * transform.forward, ForceMode.Impulse);
+                // print(hit.name);
+            }
+
+            
+        }
+    }
+
+    private Transform GetRootParent(Transform child)
+    {
+        Transform parent = child.parent;
+
+        while (parent != null)
+        {
+            child = parent;
+            parent = child.parent;
+        }
+
+        return child;
+    }
+}

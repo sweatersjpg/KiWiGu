@@ -1,4 +1,3 @@
-using FMODUnity;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
@@ -6,7 +5,6 @@ using UnityEngine.AI;
 public class OffenseDrone : MonoBehaviour
 {
     public enum DroneState { Wandering, Seeking, Attacking };
-    [SerializeField] private StudioEventEmitter sfxEmitterAvailable;
 
     [Header("Drone Basic Settings")]
     [Range(0, 100)]
@@ -82,6 +80,9 @@ public class OffenseDrone : MonoBehaviour
 
     private void Update()
     {
+        // add to update functions to pause them        
+        if (PauseSystem.paused) return;
+        
         if (isDead)
         {
             StopAllCoroutines();
@@ -299,7 +300,7 @@ public class OffenseDrone : MonoBehaviour
 
     private bool IsPlayerVisible()
     {
-        Collider[] hitColliders = Physics.OverlapSphere(eyesPosition.position, seekRange);
+        Collider[] hitColliders = Physics.OverlapSphere(eyesPosition.position, seekRange, LayerMask.GetMask("Player"));
         int layerMask = LayerMask.GetMask("Enemy");
         int layerMask2 = LayerMask.GetMask("HookTarget");
         int layerMask3 = LayerMask.GetMask("EnergyWall");
@@ -345,7 +346,7 @@ public class OffenseDrone : MonoBehaviour
         }
     }
 
-    public virtual void TakeDamage(float bulletDamage)
+    public virtual void TakeDamage(float bulletDamage, bool isHeadShot)
     {
         if (isDead)
             return;
@@ -401,9 +402,6 @@ public class OffenseDrone : MonoBehaviour
 
         for (int j = 0; j < burst; j++)
         {
-            sfxEmitterAvailable.SetParameter("Charge", 0.5f);
-            sfxEmitterAvailable.Play();
-
             for (int i = 0; i < info.projectiles; i++) Invoke(nameof(SpawnBullet), j * 1 / info.autoRate);
         }
 

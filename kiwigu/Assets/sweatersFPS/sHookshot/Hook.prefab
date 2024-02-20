@@ -226,7 +226,7 @@ GameObject:
   - component: {fileID: 8229721578388367286}
   m_Layer: 12
   m_Name: Hook
-  m_TagString: Untagged
+  m_TagString: Hook
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -277,6 +277,8 @@ MonoBehaviour:
   pullForce: 100
   velocity: {x: 0, y: 0, z: 0}
   chainSegmentSize: 0.5
+  parentHook: {fileID: 0}
+  childHook: {fileID: 0}
 --- !u!1001 &3499523344758293110
 PrefabInstance:
   m_ObjectHideFlags: 0

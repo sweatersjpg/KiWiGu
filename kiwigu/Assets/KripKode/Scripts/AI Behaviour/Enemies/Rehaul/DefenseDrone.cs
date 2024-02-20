@@ -1,4 +1,3 @@
-using FMODUnity;
 using System.Collections;
 using System.Linq;
 using TMPro;
@@ -8,7 +7,6 @@ using UnityEngine.AI;
 public class DefenseDrone : MonoBehaviour
 {
     public enum DroneState { Wandering, Defending };
-    [SerializeField] private StudioEventEmitter sfxEmitterAvailable;
 
     [Header("Drone Basic Settings")]
     [Range(0, 100)]
@@ -87,6 +85,9 @@ public class DefenseDrone : MonoBehaviour
 
     private void Update()
     {
+        // add to update functions to pause them        
+        if (PauseSystem.paused) return;
+
         if (isDead)
         {
             StopAllCoroutines();
@@ -217,7 +218,7 @@ public class DefenseDrone : MonoBehaviour
 
     private bool IsPlayerVisible()
     {
-        Collider[] hitColliders = Physics.OverlapSphere(eyesPosition.position, seekRange);
+        Collider[] hitColliders = Physics.OverlapSphere(eyesPosition.position, seekRange, LayerMask.GetMask("Player"));
         int layerMask = LayerMask.GetMask("Enemy");
         int layerMask2 = LayerMask.GetMask("HookTarget");
         int combinedLayerMask = layerMask | layerMask2;
@@ -308,7 +309,7 @@ public class DefenseDrone : MonoBehaviour
         }
     }
 
-    public virtual void TakeDamage(float bulletDamage)
+    public virtual void TakeDamage(float bulletDamage, bool isHeadShot)
     {
         if (isDead)
             return;
