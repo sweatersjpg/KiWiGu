@@ -312,13 +312,18 @@ public class HellfireEnemy : MonoBehaviour
         {
             if (hitCollider.CompareTag("Player"))
             {
-                Vector3 incomingDirection = (detectedPlayer.transform.position - transform.position).normalized;
-                Vector3 upwardDirection = Vector3.up;
+                if (Mathf.Abs(sweatersController.instance.velocity.y) < 1)
+                {
+                    Vector3 incomingDirection = (detectedPlayer.transform.position - transform.position).normalized;
+                    Vector3 upwardDirection = Vector3.up;
 
-                Vector3 punchDirection = (incomingDirection + upwardDirection).normalized;
+                    Vector3 punchDirection = (incomingDirection + upwardDirection).normalized;
 
-                hitCollider.GetComponent<PlayerHealth>().DealDamage(35, -incomingDirection.normalized * 10);
-                sweatersController.instance.velocity += punchDirection * 25;
+                    hitCollider.GetComponent<PlayerHealth>().DealDamage(35, -incomingDirection.normalized * 10);
+                    sweatersController.instance.velocity += punchDirection * 25;
+
+                    agent.SetDestination(transform.position);
+                }
             }
         }
 
