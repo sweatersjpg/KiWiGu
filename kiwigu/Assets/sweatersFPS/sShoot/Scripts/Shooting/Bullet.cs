@@ -106,16 +106,18 @@ public class Bullet : MonoBehaviour
         if (trackTarget && time > 0.2f)
         {
             Collider[] hits = Physics.OverlapSphere(bulletMesh.transform.position, trackingRadius,
-                LayerMask.GetMask("Enemy", "PhysicsObject", "Shield"));
+                LayerMask.GetMask("Shield", "Enemy", "PhysicsObject"));
 
-            //if (hits.Length > 0)
-            //{
-            //    target = hits[0].transform;
-            //}
             Transform closest = null;
 
             foreach (Collider c in hits)
             {
+                if (c.gameObject.layer == LayerMask.NameToLayer("Shield"))
+                {
+                    target = c.transform;
+                    break;
+                }
+
                 if (closest == null
                     || Vector3.Distance(c.transform.position, ogTargetPosition) > Vector3.Distance(closest.position, ogTargetPosition))
                 {
@@ -123,8 +125,10 @@ public class Bullet : MonoBehaviour
                 }
             }
 
-            if (closest != null) target = closest;
-            else target = ogTarget;
+            if (target == null && closest != null)
+            {
+                target = closest;
+            }
         }
 
         if (target != null && !dead)
@@ -159,7 +163,7 @@ public class Bullet : MonoBehaviour
         bulletMesh.transform.position = origin;
 
         bool hasHit = Physics.SphereCast(origin, radius, direction, out RaycastHit hit, direction.magnitude,
-            LayerMask.GetMask("Enemy", "PhysicsObject", "Player"));
+            LayerMask.GetMask("Shield", "Enemy", "PhysicsObject", "Player"));
 
         if (fromEnemy) hasHit = false;
 
@@ -305,7 +309,7 @@ public class Bullet : MonoBehaviour
             {
                 if (enemy.doubleDamage)
                     ApplyDamage(enemy, 2f, true);
-                else if (enemy.lessDamage)
+                else if (enemy.chestDamage)
                     ApplyDamage(enemy, 1.5f, false);
                 else if (enemy.leastDamage)
                     ApplyDamage(enemy, 0.75f, false);
