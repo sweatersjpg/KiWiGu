@@ -17,8 +17,6 @@ public class DialogTrigger : MonoBehaviour
 
     // SpriteRenderer sr;
 
-    int dialogIndex = 0;
-
     bool triggeredDialog = false;
     // bool doneChanges = false;
 
@@ -35,7 +33,7 @@ public class DialogTrigger : MonoBehaviour
         //if (!playerInBounds) sr.color = new Color(1,1,1,0.2f);
         //else sr.color = new Color(1, 0, 0, 0.2f);
 
-        if (DialogManager.instance.active) return;
+        //if (DialogManager.instance.active) return;
 
         //if (triggeredDialog && !doneChanges)
         //{
@@ -52,42 +50,14 @@ public class DialogTrigger : MonoBehaviour
 
         if(playerInBounds && displayOnContact)
         {
-            TriggerDialog();
+            DialogManager.instance.TriggerDialog(dialog, displayOnContact);
             displayOnContact = false;
             if (destroyOnContact) Destroy(gameObject);
 
         }
     }
 
-    public void TriggerDialog()
-    {
-        List<string> sentences = new List<string>();
-        List<float> sentenceDurations = new List<float>();
 
-        switch (dialog.type)
-        {
-            case Dialog.DialogType.Sequence:
-                for (int i = dialogIndex; i < dialog.sentences.Length; i++)
-                {
-                    sentences.Add(dialog.sentences[i]);
-                    sentenceDurations.Add(dialog.sentenceDurations[i]);
-                }
-                dialogIndex = dialog.sentences.Length - 1;
-                break;
-            case Dialog.DialogType.Random:
-                int randomIndex = Random.Range(0, dialog.sentences.Length);
-                sentences.Add(dialog.sentences[randomIndex]);
-                sentenceDurations.Add(dialog.sentenceDurations[randomIndex]);
-                break;
-            case Dialog.DialogType.Repeat:
-                sentences.Add(dialog.sentences[dialogIndex++ % dialog.sentences.Length]);
-                sentenceDurations.Add(dialog.sentenceDurations[dialogIndex++ % dialog.sentenceDurations.Length]);
-                break;
-        }
-
-        DialogManager.instance.StartDialog(sentences, sentenceDurations, displayOnContact);
-        triggeredDialog = true;
-    }
 
     //void UpdateChanges()
     //{

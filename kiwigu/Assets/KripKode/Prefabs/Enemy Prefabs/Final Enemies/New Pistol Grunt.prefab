@@ -286,9 +286,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ReferenceScript: PistolGrunt
   doubleDamage: 0
-  lessDamage: 1
-  leastDamage: 0
+  chestDamage: 0
+  leastDamage: 1
   isBackpack: 0
+  isShield: 0
 --- !u!1 &1291543203171911544
 GameObject:
   m_ObjectHideFlags: 0
@@ -465,9 +466,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ReferenceScript: PistolGrunt
   doubleDamage: 1
-  lessDamage: 0
+  chestDamage: 0
   leastDamage: 0
   isBackpack: 0
+  isShield: 0
 --- !u!1 &1723004329419614736
 GameObject:
   m_ObjectHideFlags: 0
@@ -1270,9 +1272,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ReferenceScript: PistolGrunt
   doubleDamage: 0
-  lessDamage: 0
+  chestDamage: 0
   leastDamage: 1
   isBackpack: 0
+  isShield: 0
 --- !u!1 &4192060774660624505
 GameObject:
   m_ObjectHideFlags: 0
@@ -1337,9 +1340,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ReferenceScript: PistolGrunt
   doubleDamage: 0
-  lessDamage: 0
+  chestDamage: 1
   leastDamage: 0
   isBackpack: 0
+  isShield: 0
 --- !u!1 &4270407991571548454
 GameObject:
   m_ObjectHideFlags: 0
@@ -1532,9 +1536,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ReferenceScript: PistolGrunt
   doubleDamage: 0
-  lessDamage: 1
-  leastDamage: 0
+  chestDamage: 0
+  leastDamage: 1
   isBackpack: 0
+  isShield: 0
 --- !u!1 &4836706628093615068
 GameObject:
   m_ObjectHideFlags: 0
@@ -2176,9 +2181,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ReferenceScript: PistolGrunt
   doubleDamage: 0
-  lessDamage: 0
+  chestDamage: 0
   leastDamage: 1
   isBackpack: 0
+  isShield: 0
 --- !u!1 &6823575196627999574
 GameObject:
   m_ObjectHideFlags: 0
@@ -2337,9 +2343,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ReferenceScript: PistolGrunt
   doubleDamage: 0
-  lessDamage: 0
+  chestDamage: 1
   leastDamage: 0
   isBackpack: 0
+  isShield: 0
 --- !u!1 &7149580366289952303
 GameObject:
   m_ObjectHideFlags: 0
@@ -2739,6 +2746,7 @@ MonoBehaviour:
   ragdoll: {fileID: 6396152858014963360, guid: 06344ae09ddae6b44b5a2dfc5c3e4eca, type: 3}
   explosionPrefab: {fileID: 1886320638105856866, guid: 868415f162da742468824c5743d47bae, type: 3}
   headPos: {fileID: 2674643501309778892}
+  currentBackpackHealth: 0
   wanderSpeed: 3
   seekSpeed: 4
   keepDistance: 10

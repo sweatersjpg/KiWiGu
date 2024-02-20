@@ -309,7 +309,7 @@ public class Bullet : MonoBehaviour
             {
                 if (enemy.doubleDamage)
                     ApplyDamage(enemy, 2f, true);
-                else if (enemy.lessDamage)
+                else if (enemy.chestDamage)
                     ApplyDamage(enemy, 1.5f, false);
                 else if (enemy.leastDamage)
                     ApplyDamage(enemy, 0.75f, false);
