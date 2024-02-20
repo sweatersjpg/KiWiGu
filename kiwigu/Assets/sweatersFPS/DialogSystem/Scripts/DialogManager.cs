@@ -12,7 +12,7 @@ public class DialogManager : MonoBehaviour
     [SerializeField] float textSpeed = 20;
 
     [SerializeField] GameObject dialogBox;
-    [SerializeField] TextMeshProUGUI dialog;
+    [SerializeField] TextMeshProUGUI dialogTextMesh;
     [SerializeField] GameObject moreIcon;
     // [SerializeField] GameObject interactPrompt;
 
@@ -49,7 +49,7 @@ public class DialogManager : MonoBehaviour
             {
                 StopAllCoroutines();
                 textComplete = true;
-                dialog.text = currentText;
+                dialogTextMesh.text = currentText;
             }
         }*/
 
@@ -64,12 +64,12 @@ public class DialogManager : MonoBehaviour
     IEnumerator DisplayText(string text, float textDuration)
     {
         currentText = text;
-        dialog.text = "";
+        dialogTextMesh.text = "";
         textComplete = false;
 
         for(int i = 0; i < text.Length; i++)
         {
-            dialog.text += text[i];
+            dialogTextMesh.text += text[i];
             yield return new WaitForSecondsRealtime(1/textSpeed);
         }
         yield return new WaitForSecondsRealtime(textDuration);
@@ -92,7 +92,7 @@ public class DialogManager : MonoBehaviour
 
         StartCoroutine(DisplayText(s, sd));
 
-        // dialog.text = s;
+        // dialogTextMesh.text = s;
     }
 
     public void StartDialog(List<string> lines, List<float> durations, bool startDialogAsap)
@@ -105,7 +105,38 @@ public class DialogManager : MonoBehaviour
         // enable dialog box
         dialogBox.SetActive(true);
 
-        if (startDialogAsap) NextDialog(); 
+        //if (startDialogAsap) NextDialog(); // SOHA REENABLE LATER
+    }
+
+    public void TriggerDialog(Dialog dialog, bool displayOnContact)
+    {
+        List<string> lines = new List<string>();
+        List<float> lineDurations = new List<float>();
+        int dialogIndex = 0;
+
+        switch (dialog.type)
+        {
+            case Dialog.DialogType.Sequence:
+                for (int i = dialogIndex; i < dialog.sentences.Length; i++)
+                {
+                    lines.Add(dialog.sentences[i]);
+                    lineDurations.Add(dialog.sentenceDurations[i]);
+                    print(i);
+                }
+                dialogIndex = dialog.sentences.Length - 1;
+                break;
+            case Dialog.DialogType.Random:
+                int randomIndex = Random.Range(0, dialog.sentences.Length);
+                lines.Add(dialog.sentences[randomIndex]);
+                lineDurations.Add(dialog.sentenceDurations[randomIndex]);
+                break;
+            case Dialog.DialogType.Repeat:
+                lines.Add(dialog.sentences[dialogIndex++ % dialog.sentences.Length]);
+                lineDurations.Add(dialog.sentenceDurations[dialogIndex++ % dialog.sentenceDurations.Length]);
+                break;
+        }
+
+        StartDialog(lines, lineDurations, displayOnContact);
     }
 
     public void ShowInteractPrompt()
