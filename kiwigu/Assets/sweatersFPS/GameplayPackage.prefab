@@ -427,6 +427,7 @@ Transform:
   - {fileID: 393130948}
   - {fileID: 4930257637800593743}
   - {fileID: 5677246802650135713}
+  - {fileID: 4197923795481162008}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -555,6 +556,57 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerDummy: {fileID: 6396152858014963360, guid: 686f1763fa1e84f409d8489f32969eca, type: 3}
+--- !u!1 &8959058129033378071
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4197923795481162008}
+  - component: {fileID: 1504295475298309065}
+  m_Layer: 0
+  m_Name: Global Audio Manager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4197923795481162008
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8959058129033378071}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 35.345547, y: -0.31403708, z: -10.1278}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4732230233586584706}
+  m_RootOrder: 8
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1504295475298309065
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8959058129033378071}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5e0b6e715f86a8c4db478afdcafe4a7f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  globalMixer: {fileID: 24100000, guid: b866e23533bde0b4aadf5ef05de545bc, type: 2}
+  headshotSFX: {fileID: 8300000, guid: a3de75697f125b74c9ab6babddd4ce65, type: 3}
+  emptyMagSFX: {fileID: 8300000, guid: f9b2840b561555c4eb81b6c9f16ea50a, type: 3}
+  shootingSounds:
+  - {fileID: 8300000, guid: 8085cc0792478fe438ed58a5076a8ecf, type: 3}
+  - {fileID: 8300000, guid: 4274643b2f2a1494f9f8adde9a2c021f, type: 3}
+  - {fileID: 8300000, guid: 0ea112def10fbe448a15de049705c3e4, type: 3}
 --- !u!1001 &4191280456951493911
 PrefabInstance:
   m_ObjectHideFlags: 0

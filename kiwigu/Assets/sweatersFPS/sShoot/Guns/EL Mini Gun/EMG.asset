@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 23c1375cd985d95488add3e7772559e4, type: 3}
   m_Name: EMG
   m_EditorClassIdentifier: 
+  gunName: EMG
   canAim: 0
   hasToAim: 0
   aimDelay: 0.3
@@ -20,19 +21,37 @@ MonoBehaviour:
   capacity: 80
   recharge: 0
   rechargeRate: 5
-  canCharge: 0
-  timeToMaxCharge: 1
+  canCharge: 1
+  timeToMaxCharge: 4
   chargeCurve:
     serializedVersion: 2
-    m_Curve: []
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0.29925537
+      inSlope: 0.7007446
+      outSlope: 0.7007446
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0.7007446
+      outSlope: 0.7007446
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
   fullAuto: 1
   projectiles: 1
   burstSize: 1
-  autoRate: 10
-  fireRate: 10
+  autoRate: 20
+  fireRate: 20
   damage: 5
   spread: 0.05
   recoil: 5
