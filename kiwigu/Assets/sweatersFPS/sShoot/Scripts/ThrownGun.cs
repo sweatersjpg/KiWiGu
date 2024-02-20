@@ -36,6 +36,12 @@ public class ThrownGun : MonoBehaviour
             GameObject gun = Instantiate(gunView.gameObject, transform);
             gun.transform.localPosition = new();
             gun.layer = gameObject.layer;
+
+            for(int i = 0; i < gun.transform.childCount; i++)
+            {
+                gun.transform.GetChild(i).gameObject.layer = gameObject.layer;
+            }
+
             gun.transform.localScale *= 1.2f;
         }
 

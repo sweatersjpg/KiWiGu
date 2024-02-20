@@ -152,7 +152,7 @@ public class GunHand : MonoBehaviour
 
         Transform gunView = transform.Find("GunView");
 
-        gun.SetMesh(gunView.GetComponent<MeshFilter>().mesh, info.gunPrefab.GetComponentInChildren<MeshRenderer>().sharedMaterial);
+        // gun.SetMesh(gunView.GetComponent<MeshFilter>().mesh, info.gunPrefab.GetComponentInChildren<MeshRenderer>().sharedMaterial);
         gun.info = info;
 
         gunView.gameObject.SetActive(false);
