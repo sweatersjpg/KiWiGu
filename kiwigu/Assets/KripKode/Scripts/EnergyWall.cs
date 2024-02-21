@@ -11,6 +11,8 @@ public class EnergyWall : MonoBehaviour
     private bool isScalingUp = false;
     private bool isDoneTime;
 
+    [SerializeField] float health = 100;
+
     private void Start()
     {
         InitializePositionAndScale();
@@ -54,6 +56,11 @@ public class EnergyWall : MonoBehaviour
         {
             Destroy(gameObject);
         }
+    }
+
+    public void TakeDamage(Vector3 point, Vector3 direction, float damage)
+    {
+
     }
 
     private IEnumerator ScaleUpAndDestroy()

@@ -12,6 +12,7 @@ public class Bullet : MonoBehaviour
 {
     [Header("Damage")]
     public float bulletDamage = 5;
+    public float shieldMultiplier = 1;
 
     [Header("Metrics")]
     public float speed = 370;
@@ -272,7 +273,7 @@ public class Bullet : MonoBehaviour
 
                 if (takeDamageMethod != null)
                 {
-                    takeDamageMethod.Invoke(enemyComponent, new object[] { bulletDamage });
+                    takeDamageMethod.Invoke(enemyComponent, new object[] { bulletDamage * shieldMultiplier });
                 }
             }
         }
@@ -295,7 +296,15 @@ public class Bullet : MonoBehaviour
     {
         if (hit.transform.gameObject.layer == LayerMask.NameToLayer("EnergyWall"))
         {
-            if (Vector3.Dot(hit.transform.right, direction) > 0) return;
+            // if behind shield, pass through otherwise deal damage
+            if (Vector3.Dot(hit.transform.right, direction) > 0)
+            {                
+                return;
+            } else
+            {
+                EnergyWall wall = hit.transform.GetComponentInParent<EnergyWall>();
+                if (wall) wall.TakeDamage(hit.point, direction, bulletDamage * shieldMultiplier);
+            }
         }
         else if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Player"))
         {
