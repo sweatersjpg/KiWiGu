@@ -69,6 +69,8 @@ public class HellfireEnemy : MonoBehaviour
     [SerializeField] float shootCooldown;
     [Range(0, 0.25f)]
     [SerializeField] private float gunSpread;
+    [Range(1, 10)]
+    [SerializeField] private float splatoodRadius;
     public bool isShooting;
     private GunInfo info;
     private float shootTimer;
@@ -304,19 +306,24 @@ public class HellfireEnemy : MonoBehaviour
 
     public void SplatoodEvent()
     {
-        Collider[] hitColliders = Physics.OverlapSphere(transform.position, 5, LayerMask.GetMask("Player"));
+        Collider[] hitColliders = Physics.OverlapSphere(transform.position, splatoodRadius, LayerMask.GetMask("Player"));
 
         foreach (Collider hitCollider in hitColliders)
         {
             if (hitCollider.CompareTag("Player"))
             {
-                Vector3 incomingDirection = (detectedPlayer.transform.position - transform.position).normalized;
-                Vector3 upwardDirection = Vector3.up;
+                if (Mathf.Abs(sweatersController.instance.velocity.y) < 1)
+                {
+                    Vector3 incomingDirection = (detectedPlayer.transform.position - transform.position).normalized;
+                    Vector3 upwardDirection = Vector3.up;
 
-                Vector3 punchDirection = (incomingDirection + upwardDirection).normalized;
+                    Vector3 punchDirection = (incomingDirection + upwardDirection).normalized;
 
-                hitCollider.GetComponent<PlayerHealth>().DealDamage(35, -incomingDirection.normalized * 10);
-                sweatersController.instance.velocity += punchDirection * 25;
+                    hitCollider.GetComponent<PlayerHealth>().DealDamage(35, -incomingDirection.normalized * 10);
+                    sweatersController.instance.velocity += punchDirection * 25;
+
+                    agent.SetDestination(transform.position);
+                }
             }
         }
 
@@ -713,6 +720,7 @@ public class HellfireEnemy : MonoBehaviour
         DrawColoredSphere(transform.position, marchDistance, Color.blue);
         DrawColoredSphere(transform.position, keepDistance, Color.green);
         DrawColoredSphere(transform.position, wanderRadius, Color.yellow);
+        DrawColoredSphere(transform.position, splatoodRadius, Color.magenta);
     }
 
     private void DrawColoredSphere(Vector3 center, float radius, Color color)
