@@ -11,6 +11,9 @@ public class WaveSystem : MonoBehaviour
     public bool isEnding = false;
 
     [Space]
+    [SerializeField] GameObject[] toEnable;
+
+    [Space]
     [SerializeField] EnemyWave[] waves;
 
     [Space]
@@ -55,6 +58,8 @@ public class WaveSystem : MonoBehaviour
             //currentWave = -1;
             ResetWaves();
         }
+
+        if (currentWave >= waves.Length) Destroy(gameObject);
     }
 
     public void ResetWaves()
@@ -81,7 +86,7 @@ public class WaveSystem : MonoBehaviour
     void ResetSpawnPoints()
     {
         if (currentWave < 0) return;
-        
+
         freeSpawnPoints = new List<Transform>();
 
         for(int i = 0; i < waves[currentWave].SpawnPoints.childCount; i++)
@@ -118,6 +123,10 @@ public class WaveSystem : MonoBehaviour
         currentWave++;
         if (currentWave < waves.Length) StartCoroutine(nameof(StartWave));
         else if(isEnding) SceneManager.LoadScene(1);
+        else
+        {
+            for (int i = 0; i < toEnable.Length; i++) toEnable[i].SetActive(true);
+        }
     }
 
     IEnumerator SpawnEnemies(int index)
