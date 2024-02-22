@@ -1000,7 +1000,7 @@ GameObject:
   - component: {fileID: 1170859599499444870}
   - component: {fileID: 5830493363237550701}
   m_Layer: 5
-  m_Name: WeaponIcon (2)
+  m_Name: WeaponIcon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1023,8 +1023,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 176.89996, y: 135}
-  m_SizeDelta: {x: 320.6, y: 181.5}
+  m_AnchoredPosition: {x: 171.5, y: 178}
+  m_SizeDelta: {x: 320.6, y: 117.7}
   m_Pivot: {x: 0, y: 0}
 --- !u!222 &1170859599499444870
 CanvasRenderer:
@@ -1047,7 +1047,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.6981132, g: 0.6981132, b: 0.6981132, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -1935,7 +1935,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 109, y: 181}
+  m_AnchoredPosition: {x: 110, y: 181}
   m_SizeDelta: {x: 64, y: 64}
   m_Pivot: {x: 0, y: 0}
 --- !u!222 &5235295110670767763
@@ -4168,6 +4168,7 @@ MonoBehaviour:
   playerHand: {fileID: 0}
   emptyColor: {r: 1, g: 1, b: 1, a: 0.13333334}
   halfColor: {r: 1, g: 1, b: 1, a: 0.3764706}
+  weaponColor: {r: 0.75, g: 0.75, b: 0.75, a: 1}
   sprites:
   - {fileID: 21300000, guid: 0d1bea80e96b26d4da7c0ff681485c58, type: 3}
   - {fileID: 21300000, guid: 5cea93d02f352334d9ac8fd938106fd7, type: 3}
@@ -4744,7 +4745,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 352, y: 88.20001}
+  m_AnchoredPosition: {x: 207, y: 105}
   m_SizeDelta: {x: 359.9, y: 61}
   m_Pivot: {x: 0, y: 0}
 --- !u!222 &7803291569499953190
@@ -4775,7 +4776,7 @@ MonoBehaviour:
   m_ChildAlignment: 0
   m_StartCorner: 0
   m_StartAxis: 0
-  m_CellSize: {x: 7, y: 21}
+  m_CellSize: {x: 7, y: 22}
   m_Spacing: {x: 2, y: 3}
   m_Constraint: 0
   m_ConstraintCount: 2
