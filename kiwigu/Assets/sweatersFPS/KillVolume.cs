@@ -9,7 +9,8 @@ public class KillVolume : MonoBehaviour
     {
         if (collision.gameObject.layer == LayerMask.NameToLayer("Player"))
         {
-            SceneManager.LoadScene(0);
+            // SceneManager.LoadScene(0);
+            ResetScene.instance.PlayerDeath(true);
         }
     }
 }
