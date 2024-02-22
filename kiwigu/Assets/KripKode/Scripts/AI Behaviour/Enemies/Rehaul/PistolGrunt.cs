@@ -429,7 +429,12 @@ public class PistolGrunt : MonoBehaviour
         Collider[] hitColliders = Physics.OverlapSphere(eyesPosition.position, seekRange, LayerMask.GetMask("Player"));
         int layerMask = LayerMask.GetMask("Enemy");
         int layerMask2 = LayerMask.GetMask("HookTarget");
-        int combinedLayerMask = layerMask | layerMask2;
+        int layerMask3 = LayerMask.GetMask("Shield");
+        int layerMask4 = LayerMask.GetMask("GunHand");
+        int layerMask5 = LayerMask.GetMask("EnergyWall");
+
+        int combinedLayerMask = layerMask | layerMask2 | layerMask3 | layerMask4 | layerMask5;
+
 
         foreach (Collider hitCollider in hitColliders)
         {
