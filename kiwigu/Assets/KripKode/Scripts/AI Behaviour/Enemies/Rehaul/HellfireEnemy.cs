@@ -306,7 +306,9 @@ public class HellfireEnemy : MonoBehaviour
 
     public void SplatoodEvent()
     {
-        Collider[] hitColliders = Physics.OverlapSphere(transform.position, splatoodRadius, LayerMask.GetMask("Player"));
+        var splatoodPos = transform.position + transform.forward * 2;
+
+        Collider[] hitColliders = Physics.OverlapSphere(splatoodPos, splatoodRadius, LayerMask.GetMask("Player"));
 
         foreach (Collider hitCollider in hitColliders)
         {
@@ -327,7 +329,7 @@ public class HellfireEnemy : MonoBehaviour
             }
         }
 
-        GameObject dfx = Instantiate(splatoodFX, transform.position, Quaternion.identity);
+        GameObject dfx = Instantiate(splatoodFX, splatoodPos, Quaternion.identity);
         Destroy(dfx, 2);
     }
 
@@ -446,8 +448,11 @@ public class HellfireEnemy : MonoBehaviour
         int layerMask = LayerMask.GetMask("Enemy");
         int layerMask2 = LayerMask.GetMask("HookTarget");
         int layerMask3 = LayerMask.GetMask("Shield");
+        int layerMask4 = LayerMask.GetMask("GunHand");
+        int layerMask5 = LayerMask.GetMask("EnergyWall");
 
-        int combinedLayerMask = layerMask | layerMask2 | layerMask3;
+        int combinedLayerMask = layerMask | layerMask2 | layerMask3 | layerMask4 | layerMask5;
+
 
         foreach (Collider hitCollider in hitColliders)
         {
