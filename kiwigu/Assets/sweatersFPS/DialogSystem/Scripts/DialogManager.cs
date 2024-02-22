@@ -121,7 +121,7 @@ public class DialogManager : MonoBehaviour
                 {
                     lines.Add(dialog.sentences[i]);
                     lineDurations.Add(dialog.sentenceDurations[i]);
-                    print(i);
+                    // print(i);
                 }
                 dialogIndex = dialog.sentences.Length - 1;
                 break;

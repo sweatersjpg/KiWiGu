@@ -9,6 +9,8 @@ public class EnemyWave
     public float startDelay;
     public Transform SpawnPoints;
 
+    public bool ignoreWaveForTesting = false;
+
     [Space]
     public Spawn[] enemySpawns;
 

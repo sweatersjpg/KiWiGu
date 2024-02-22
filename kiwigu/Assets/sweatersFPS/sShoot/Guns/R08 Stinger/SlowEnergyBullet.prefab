@@ -51,6 +51,7 @@ MonoBehaviour:
   gravity: -9.8
   acceleration: 100
   radius: 0.2
+  voidRadius: 0
   trackTarget: 1
   trackingRadius: 2
   trackingSpeed: 2
@@ -60,9 +61,12 @@ MonoBehaviour:
   sparksPrefab: {fileID: 7558042070311089840, guid: 4a757825a5bafce41a9ebb47f13d0190, type: 3}
   HitFX:
   - {fileID: 2318708098515741408, guid: 4dc8c3ca8349f344cbdf02822fdf9b6f, type: 3}
+  - {fileID: 5046152788282611147, guid: c3b38a421b6968a4f8cbaed1f569351e, type: 3}
   HitFXLayers:
   - serializedVersion: 2
     m_Bits: 512
+  - serializedVersion: 2
+    m_Bits: 262144
   spawnOnHit: []
   dead: 0
   charge: 0
@@ -82,7 +86,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4570687430845626531}
-  m_Layer: 0
+  m_Layer: 19
   m_Name: BulletView
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -117,7 +121,8 @@ GameObject:
   - component: {fileID: 8559321434234720297}
   - component: {fileID: 7467014129371925541}
   - component: {fileID: 6555608536286008213}
-  m_Layer: 0
+  - component: {fileID: 6847405432756162049}
+  m_Layer: 19
   m_Name: View
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -189,6 +194,19 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!135 &6847405432756162049
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7185538354066154837}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.5
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &7581185420959427346
 GameObject:
   m_ObjectHideFlags: 0
@@ -199,7 +217,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7691052602728220666}
   - component: {fileID: 7190494673262220360}
-  m_Layer: 0
+  m_Layer: 19
   m_Name: Trail
   m_TagString: Untagged
   m_Icon: {fileID: 0}
