@@ -201,7 +201,6 @@ public class Bullet : MonoBehaviour
 
         if (hasHit)
         {
-            Debug.Log("Hit another bullet!!");
             Destroy(hit.transform.parent.parent.gameObject);
         }
     }
