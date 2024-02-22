@@ -31,7 +31,7 @@ public class RotateBarrel : MonoBehaviour
 
         vel = Mathf.Lerp(vel, 0, Time.deltaTime * decay);
 
-        if (Input.GetButton(shootButton))
+        if (Input.GetButton(shootButton) && !sb.anim.outOfAmmo)
         {
             float fireRate = info.fireRate * sb.charge;
 

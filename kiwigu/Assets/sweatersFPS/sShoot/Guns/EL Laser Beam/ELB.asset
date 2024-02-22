@@ -50,9 +50,9 @@ MonoBehaviour:
   fullAuto: 1
   projectiles: 1
   burstSize: 1
-  autoRate: 10
-  fireRate: 10
-  damage: 5
+  autoRate: 20
+  fireRate: 20
+  damage: 1
   spread: 0
   recoil: 0
   spreadVariation:
@@ -84,10 +84,10 @@ MonoBehaviour:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 0
+      value: 1
       inSlope: 0
       outSlope: 0
-      tangentMode: 0
+      tangentMode: 34
       weightedMode: 0
       inWeight: 0
       outWeight: 0
@@ -96,7 +96,7 @@ MonoBehaviour:
       value: 1
       inSlope: 0
       outSlope: 0
-      tangentMode: 0
+      tangentMode: 34
       weightedMode: 0
       inWeight: 0
       outWeight: 0
@@ -104,8 +104,8 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   recoilPerShot: 0
-  recoilReturnTime: 0.4
-  bulletSpeed: 1000
+  recoilReturnTime: 0
+  bulletSpeed: 600
   bulletGravity: 0
   bulletPrefab: {fileID: 745279074493107227, guid: bb62b1cee4c662944aab42596bac15cc, type: 3}
   gunPrefab: {fileID: 8481551846423878803, guid: cddc2906858acf7498cab75506b53eb6, type: 3}

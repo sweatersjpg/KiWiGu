@@ -86,7 +86,7 @@ public class ShootBullet : MonoBehaviour
         {
             // if (Input.GetMouseButtonDown(anim.mouseButton)) chargeTimerStart = time;
             if (Input.GetButton(shootButton)) chargeTimer += deltaTime / info.timeToMaxCharge;
-            if (Input.GetButtonUp(shootButton)) chargeTimer = 0;
+            if (info.fullAuto && Input.GetButtonUp(shootButton)) chargeTimer = 0;
 
             if (chargeTimer > 1) chargeTimer = 1;
             if (chargeTimer < 0) chargeTimer = 0;
@@ -134,7 +134,7 @@ public class ShootBullet : MonoBehaviour
         anim.AnimateShoot();
         if (flash != null) flash.Play();
 
-        // if(!info.fullAuto) chargeTimer = 0;
+        if(!info.fullAuto) chargeTimer = 0;
         // Debug.Log(charge);
 
         ShootEvent.Invoke();

@@ -192,7 +192,8 @@ public class GunHand : MonoBehaviour
 
         // view.localPosition += new Vector3(0, 0, -0.1f);
 
-        anim.Play("shoot");
+        if (info.recoil > 0) anim.Play("shoot");
+        else anim.Play("shootNoRecoil");
         
     }
 
