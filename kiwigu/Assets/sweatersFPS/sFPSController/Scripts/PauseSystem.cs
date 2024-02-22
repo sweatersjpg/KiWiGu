@@ -93,7 +93,15 @@ public class PauseSystem : MonoBehaviour
 
     // toggle
 
-    public void SetFullscreen(bool value) => Screen.fullScreen = value;
+    public void SetFullscreen(bool value)
+    {
+        Resolution res = Screen.resolutions[Screen.resolutions.Length - 1];
+        if(!value) res = Screen.resolutions[Screen.resolutions.Length - 2];
+
+        Screen.SetResolution(res.width, res.height, value);
+
+        // Screen.fullScreen = value;
+    }
 
     // sliders
 
