@@ -21,6 +21,7 @@ public class Bullet : MonoBehaviour
 
     [Space]
     public float radius = 0.2f;
+    public float voidRadius = 0f;
 
     [Header("Tracking")]
     public bool trackTarget = false;
@@ -88,6 +89,9 @@ public class Bullet : MonoBehaviour
 
             Destroy(gameObject);
         }
+
+        // supposedly removes from ignoreMask
+        ignoreMask &= ~(1 << LayerMask.GetMask("BulletView"));
     }
 
     // Update is called once per frame
@@ -181,6 +185,24 @@ public class Bullet : MonoBehaviour
             {
                 DoHit(hitTwo, direction);
             }
+        }
+
+        VoidBullets(origin, direction);
+    }
+
+    void VoidBullets(Vector3 origin, Vector3 direction)
+    {
+        if (voidRadius <= 0) return;
+        
+        bool hasHit = Physics.SphereCast(origin, voidRadius, direction, out RaycastHit hit, direction.magnitude,
+            LayerMask.GetMask("BulletView"));
+
+        if (fromEnemy) hasHit = false;
+
+        if (hasHit)
+        {
+            Debug.Log("Hit another bullet!!");
+            Destroy(hit.transform.parent.parent.gameObject);
         }
     }
 

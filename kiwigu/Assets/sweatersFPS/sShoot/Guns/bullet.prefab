@@ -46,10 +46,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bulletDamage: 5
-  speed: 370
+  shieldMultiplier: 1
+  speed: 200
   gravity: -9.8
   acceleration: 0
   radius: 0.2
+  voidRadius: 0
   trackTarget: 0
   trackingRadius: 1
   trackingSpeed: 2
@@ -82,7 +84,7 @@ GameObject:
   m_Component:
   - component: {fileID: 664673082767958331}
   - component: {fileID: 4991548952390572358}
-  m_Layer: 0
+  m_Layer: 19
   m_Name: Trail
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -214,7 +216,8 @@ GameObject:
   - component: {fileID: 4662296118259974247}
   - component: {fileID: 8120061394395973828}
   - component: {fileID: 3014091831816489832}
-  m_Layer: 0
+  - component: {fileID: 4616806728627334587}
+  m_Layer: 19
   m_Name: View
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -286,6 +289,19 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!135 &4616806728627334587
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2911793666949764326}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.5
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &6694657939304330507
 GameObject:
   m_ObjectHideFlags: 0
@@ -295,7 +311,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1390808229394718486}
-  m_Layer: 0
+  m_Layer: 19
   m_Name: BulletView
   m_TagString: Untagged
   m_Icon: {fileID: 0}

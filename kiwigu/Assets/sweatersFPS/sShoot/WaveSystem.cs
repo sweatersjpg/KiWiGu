@@ -98,25 +98,28 @@ public class WaveSystem : MonoBehaviour
     IEnumerator StartWave()
     {
         Debug.Log("Starting Wave " + currentWave);
-        
-        yield return new WaitForSeconds(waves[currentWave].startDelay);
 
-        activeSpawners = waves[currentWave].enemySpawns.Length;
-
-        Coroutine[] spawners = new Coroutine[waves[currentWave].enemySpawns.Length];
-
-        for (int i = 0; i < waves[currentWave].enemySpawns.Length; i++)
+        if (!waves[currentWave].ignoreWaveForTesting)
         {
-            spawners[i] = StartCoroutine(nameof(SpawnEnemies), i);
-        }
+            yield return new WaitForSeconds(waves[currentWave].startDelay);
 
-        // Debug.Log(activeSpawners);
+            activeSpawners = waves[currentWave].enemySpawns.Length;
 
-        yield return new WaitUntil(() => { return activeSpawners == 0; });
+            Coroutine[] spawners = new Coroutine[waves[currentWave].enemySpawns.Length];
 
-        for(int i = 0; i < spawners.Length; i++)
-        {
-            StopCoroutine(spawners[i]);
+            for (int i = 0; i < waves[currentWave].enemySpawns.Length; i++)
+            {
+                spawners[i] = StartCoroutine(nameof(SpawnEnemies), i);
+            }
+
+            // Debug.Log(activeSpawners);
+
+            yield return new WaitUntil(() => { return activeSpawners == 0; });
+
+            for (int i = 0; i < spawners.Length; i++)
+            {
+                StopCoroutine(spawners[i]);
+            }
         }
 
         // execute next wave

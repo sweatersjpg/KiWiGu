@@ -49,6 +49,23 @@ public class Explosion : MonoBehaviour
     {
         Collider[] hits = Physics.OverlapSphere(transform.position, radius);
 
+        // prioritize shields
+        foreach (Collider hit in hits)
+        {
+            if (alreadyHit.Contains(hit.gameObject)) return;
+
+            if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Shield") && hit.transform.gameObject.CompareTag("Shield"))
+            {
+                EnemyHitBox enemy = hit.transform.gameObject.GetComponent<EnemyHitBox>();
+
+                if (enemy != null)
+                {
+                    if (enemy.isShield)
+                        ShieldDamage(enemy);
+                }
+            }
+        }
+
         foreach (Collider hit in hits)
         {
             if (alreadyHit.Contains(hit.gameObject)) return;
@@ -62,35 +79,30 @@ public class Explosion : MonoBehaviour
 
                 alreadyHit.Add(hit.gameObject);
             }
-            else if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Enemy"))
+            else if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Enemy") && !hit.transform.gameObject.CompareTag("Backpack"))
             {
-                EnemyHitBox enemy = hit.transform.gameObject.GetComponentInParent<EnemyHitBox>();
+                EnemyHitBox enemy = hit.transform.gameObject.GetComponent<EnemyHitBox>();
+
                 if (enemy != null)
                 {
+                    if (enemy.doubleDamage)
+                        ApplyDamage(enemy, 2f, true);
+                    else if (enemy.chestDamage)
+                        ApplyDamage(enemy, 1.5f, false);
+                    else if (enemy.leastDamage)
+                        ApplyDamage(enemy, 0.75f, false);
+                    else
+                        ApplyDamage(enemy, 1f, false); ;
+                }
+            }
+            else if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Backpack") && hit.transform.gameObject.CompareTag("Backpack"))
+            {
+                EnemyHitBox enemy = hit.transform.gameObject.GetComponent<EnemyHitBox>();
 
-                    var scriptType = System.Type.GetType(enemy.ReferenceScript);
-
-                    Transform rootParent = GetRootParent(enemy.transform);
-
-                    if (rootParent != null)
-                    {
-                        if (alreadyHit.Contains(rootParent.gameObject)) return;
-
-                        var enemyComponent = rootParent.GetComponent(scriptType) as MonoBehaviour;
-
-                        alreadyHit.Add(rootParent.gameObject);
-
-                        if (enemyComponent != null)
-                        {
-                            var takeDamageMethod = scriptType.GetMethod("TakeDamage");
-
-                            if (takeDamageMethod != null)
-                            {
-                                takeDamageMethod.Invoke(enemyComponent, new object[] { damageDealt, false });
-                            }
-                        }
-                    }
-
+                if (enemy != null)
+                {
+                    if (enemy.isBackpack)
+                        BackpackDamage(enemy);
                 }
             }
             else if (hit.attachedRigidbody != null)
@@ -101,6 +113,47 @@ public class Explosion : MonoBehaviour
                 hit.attachedRigidbody.AddForce(force * transform.forward, ForceMode.Impulse);
                 // print(hit.name);
             }
+
+            //else if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Enemy"))
+            //{
+            //    EnemyHitBox enemy = hit.transform.gameObject.GetComponentInParent<EnemyHitBox>();
+            //    if (enemy != null)
+            //    {
+
+            //        var scriptType = System.Type.GetType(enemy.ReferenceScript);
+
+            //        Transform rootParent = GetRootParent(enemy.transform);
+
+            //        if (rootParent != null)
+            //        {
+            //            if (alreadyHit.Contains(rootParent.gameObject)) return;
+
+            //            var enemyComponent = rootParent.GetComponent(scriptType) as MonoBehaviour;
+
+            //            alreadyHit.Add(rootParent.gameObject);
+
+            //            if (enemyComponent != null)
+            //            {
+            //                var takeDamageMethod = scriptType.GetMethod("TakeDamage");
+
+            //                if (takeDamageMethod != null)
+            //                {
+            //                    takeDamageMethod.Invoke(enemyComponent, new object[] { damageDealt, false });
+            //                }
+            //            }
+            //        }
+
+            //    }
+            //}
+            //else if (hit.attachedRigidbody != null)
+            //{
+            //    alreadyHit.Add(hit.gameObject);
+
+            //    //hit.attachedRigidbody.AddExplosionForce(force, transform.position, radius);
+            //    hit.attachedRigidbody.AddForce(force * transform.forward, ForceMode.Impulse);
+            //    // print(hit.name);
+            //}
+
         }
     }
 
@@ -116,4 +169,92 @@ public class Explosion : MonoBehaviour
 
         return child;
     }
+
+    private void ApplyDamage(EnemyHitBox enemy, float damageMultiplier, bool isHeadshot)
+    {
+        if (enemy == null)
+            return;
+
+        var scriptType = System.Type.GetType(enemy.ReferenceScript);
+
+        Transform rootParent = GetRootParent(enemy.transform);
+
+        if (rootParent != null && scriptType != null)
+        {
+            if (alreadyHit.Contains(rootParent.gameObject)) return;
+            alreadyHit.Add(rootParent.gameObject);
+
+            var enemyComponent = rootParent.GetComponent(scriptType) as MonoBehaviour;
+
+            if (enemyComponent != null)
+            {
+                var takeDamageMethod = scriptType.GetMethod("TakeDamage");
+
+                if (takeDamageMethod != null)
+                {
+                    if (isHeadshot)
+                        takeDamageMethod.Invoke(enemyComponent, new object[] { damageDealt * damageMultiplier, true });
+                    else
+                        takeDamageMethod.Invoke(enemyComponent, new object[] { damageDealt * damageMultiplier, false });
+                }
+            }
+        }
+    }
+
+    private void BackpackDamage(EnemyHitBox enemy)
+    {
+        if (enemy == null)
+            return;
+
+        var scriptType = System.Type.GetType(enemy.ReferenceScript);
+
+        Transform rootParent = GetRootParent(enemy.transform);
+
+        if (rootParent != null && scriptType != null)
+        {
+            if (alreadyHit.Contains(rootParent.gameObject)) return;
+            alreadyHit.Add(rootParent.gameObject);
+
+            var enemyComponent = rootParent.GetComponent(scriptType) as MonoBehaviour;
+
+            if (enemyComponent != null)
+            {
+                var takeDamageMethod = scriptType.GetMethod("BackpackDamage");
+
+                if (takeDamageMethod != null)
+                {
+                    takeDamageMethod.Invoke(enemyComponent, new object[] { damageDealt });
+                }
+            }
+        }
+    }
+
+    private void ShieldDamage(EnemyHitBox enemy)
+    {
+        if (enemy == null)
+            return;
+
+        var scriptType = System.Type.GetType(enemy.ReferenceScript);
+
+        Transform rootParent = GetRootParent(enemy.transform);
+
+        if (rootParent != null && scriptType != null)
+        {
+            if (alreadyHit.Contains(rootParent.gameObject)) return;
+            alreadyHit.Add(rootParent.gameObject);
+
+            var enemyComponent = rootParent.GetComponent(scriptType) as MonoBehaviour;
+
+            if (enemyComponent != null)
+            {
+                var takeDamageMethod = scriptType.GetMethod("ShieldDamage");
+
+                if (takeDamageMethod != null)
+                {
+                    takeDamageMethod.Invoke(enemyComponent, new object[] { damageDealt });
+                }
+            }
+        }
+    }
+
 }
