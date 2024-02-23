@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
+using static UnityEngine.Rendering.DebugUI;
 
 public class Mechemy : MonoBehaviour
 {
@@ -11,6 +12,11 @@ public class Mechemy : MonoBehaviour
     [Range(0, 500)]
     [SerializeField] private float health;
     [SerializeField] private Animator animator;
+    [SerializeField] private Transform headPos;
+    [SerializeField] private GameObject HeadshotIndicator;
+    [SerializeField] private GameObject ExplosionX;
+    private bool isDead;
+    private float currentHealth;
 
     [Space(10)]
     [Header("Enemy Detection Settings")]
@@ -71,6 +77,9 @@ public class Mechemy : MonoBehaviour
 
     private void Update()
     {
+        if (isDead)
+            return;
+
         StateManager();
 
         Wander();
@@ -164,6 +173,39 @@ public class Mechemy : MonoBehaviour
 
             if (distanceToPlayer <= wanderRadius && !isCrushing)
                 StartCoroutine(LeapCoroutine());
+        }
+    }
+
+    public virtual void TakeDamage(float bulletDamage, bool isHeadshot)
+    {
+        if (isDead)
+            return;
+
+        if (currentHealth < health)
+        {
+            if (isHeadshot)
+            {
+                GlobalAudioManager.instance.PlayHeadshotSFX(headPos);
+                Instantiate(HeadshotIndicator, headPos.transform.position, Quaternion.identity);
+            }
+
+            currentHealth = Mathf.Min(currentHealth + bulletDamage, health);
+        }
+
+        CheckStats();
+    }
+
+    public void CheckStats()
+    {
+        if (currentHealth >= health && !isDead)
+        {
+            isDead = true;
+
+            Instantiate(ExplosionX, headPos.transform.position, transform.rotation);
+
+            agent.SetDestination(transform.position);
+
+            Destroy(gameObject);
         }
     }
 
