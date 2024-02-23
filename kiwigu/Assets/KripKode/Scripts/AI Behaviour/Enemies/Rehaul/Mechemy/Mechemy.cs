@@ -49,6 +49,12 @@ public class Mechemy : MonoBehaviour
 
     private NavMeshAgent agent;
 
+    // Crush
+    private bool isCrushing;
+    private bool canCrush = true;
+    private float splatoodRadius = 5;
+    public GameObject splatoodFX;
+
     private void Awake()
     {
         holdingLeftGun = leftGun != null;
@@ -69,6 +75,7 @@ public class Mechemy : MonoBehaviour
 
         Wander();
         ShootState();
+        Crush();
     }
 
     private void StateManager()
@@ -135,6 +142,66 @@ public class Mechemy : MonoBehaviour
                 wanderTimer = 0f;
             }
         }
+    }
+
+    private void Crush()
+    {
+        if (enemyState == EnemyState.Crush)
+        {
+            if (isCrushing)
+                return;
+
+            StartCoroutine(LeapCoroutine());
+        }
+    }
+
+    IEnumerator LeapCoroutine()
+    {
+        isCrushing = true;
+
+        animator.SetTrigger("crush");
+
+        yield return null;
+
+        while (animDone)
+        {
+            yield return null;
+        }
+
+        animator.ResetTrigger("crush");
+
+        yield return new WaitForSeconds(3);
+
+        isCrushing = false;
+    }
+
+    public void SplatoodEvent()
+    {
+        var splatoodPos = transform.position + transform.forward * 2;
+
+        Collider[] hitColliders = Physics.OverlapSphere(splatoodPos, splatoodRadius, LayerMask.GetMask("Player"));
+
+        foreach (Collider hitCollider in hitColliders)
+        {
+            if (hitCollider.CompareTag("Player"))
+            {
+                if (Mathf.Abs(sweatersController.instance.velocity.y) < 1)
+                {
+                    Vector3 incomingDirection = (detectedPlayer.transform.position - transform.position).normalized;
+                    Vector3 upwardDirection = Vector3.up;
+
+                    Vector3 punchDirection = (incomingDirection + upwardDirection).normalized;
+
+                    hitCollider.GetComponent<PlayerHealth>().DealDamage(35, -incomingDirection.normalized * 10);
+                    sweatersController.instance.velocity += punchDirection * 15;
+
+                    agent.SetDestination(transform.position);
+                }
+            }
+        }
+
+        GameObject dfx = Instantiate(splatoodFX, splatoodPos, Quaternion.identity);
+        Destroy(dfx, 2);
     }
 
     private void ShootState()
