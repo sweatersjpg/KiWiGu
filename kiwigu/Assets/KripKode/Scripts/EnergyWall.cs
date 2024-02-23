@@ -34,6 +34,9 @@ public class EnergyWall : MonoBehaviour
     private void Update()
     {
         UpdateScaling();
+
+        float dmg = Mathf.Lerp(front.material.GetFloat("_DamagePercent"), 1 - (health / maxHealth), Time.deltaTime * 5);
+        front.material.SetFloat("_DamagePercent", dmg);
     }
 
     private void InitializePositionAndScale()
@@ -73,8 +76,7 @@ public class EnergyWall : MonoBehaviour
     public void TakeDamage(Vector3 point, Vector3 direction, float damage)
     {
         // front.material.SetColor("_Color", Color.Lerp(endColor, startColor, health / maxHealth));
-        float dmg = Mathf.Lerp(front.material.GetFloat("_DamagePercent"), 1 - (health / maxHealth), Time.deltaTime * 5);
-        front.material.SetFloat("_DamagePercent", dmg);
+        
         health -= damage;
 
         if(health <= 0)
