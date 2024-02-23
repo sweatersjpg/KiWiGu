@@ -141,8 +141,6 @@ public class Mechemy : MonoBehaviour
     {
         if (enemyState == EnemyState.Shoot)
         {
-            Debug.Log("Shooting");
-
             animator.speed = 1.0f;
 
             RotateNavMeshAgentTowardsObj(detectedPlayer.transform.position);

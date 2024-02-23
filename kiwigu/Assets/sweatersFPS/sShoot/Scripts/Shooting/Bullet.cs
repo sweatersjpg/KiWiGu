@@ -381,6 +381,12 @@ public class Bullet : MonoBehaviour
                     ShieldDamage(enemy);
             }
         }
+        else if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Shield") && hit.transform.gameObject.CompareTag("Armor"))
+        {
+            ArmorPiece armor = hit.transform.gameObject.GetComponent<ArmorPiece>();
+
+            armor.Hit(bulletDamage);
+        }
         else
         {
             // Debug.Log(hit.transform.name);
