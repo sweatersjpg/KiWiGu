@@ -151,17 +151,27 @@ public class WaveSystem : MonoBehaviour
                 // wait for a free spawner
                 yield return new WaitForSeconds(spawner.spawnDelay);
 
-                yield return new WaitUntil(() => { return freeSpawnPoints.Count > 0; });
-
                 Transform customSpawn = null;
 
-                if(spawner.customSpawnPoints.Length > 0)
+                if (spawner.customSpawnPoints.Length > 0)
                 {
                     customSpawn = spawner.customSpawnPoints[Random.Range(0, spawner.customSpawnPoints.Length)];
+
+                    yield return new WaitUntil(() => { return freeSpawnPoints.Contains(customSpawn); });
+                }
+                else
+                {
+                    do
+                    {
+                        yield return new WaitUntil(() => { return freeSpawnPoints.Count >= 1; });
+
+                        customSpawn = FetchRandomSpawnPoint();
+                    } while (!customSpawn);
                     
                     yield return new WaitUntil(() => { return freeSpawnPoints.Contains(customSpawn); });
                 }
 
+                // Debug.Log("Spawning " + spawner.enemyPrefab.name + " with " + freeSpawnPoints.Count + " spawn points left");
                 enemies.Add(StartEnemySpawn(spawner.enemyPrefab, spawner.weaponType, customSpawn));
             }
 
@@ -176,12 +186,12 @@ public class WaveSystem : MonoBehaviour
 
     Transform StartEnemySpawn(GameObject prefab, GunInfo gunType, Transform customSpawn)
     {
-        Vector3 spawn = FetchRandomSpawnPoint().position;
+        Vector3 spawn;
         if (customSpawn)
         {
             freeSpawnPoints.Remove(customSpawn);
             spawn = customSpawn.position;
-        }
+        } else spawn = FetchRandomSpawnPoint().position;
         // if (customSpawns.Length > 0) spawn = customSpawns[Random.Range(0, customSpawns.Length)].position;
 
         Instantiate(spawnFX, spawn, Quaternion.identity);
@@ -204,7 +214,12 @@ public class WaveSystem : MonoBehaviour
 
     Transform FetchRandomSpawnPoint()
     {
+        if (freeSpawnPoints.Count == 0) return null;
+
         int i = Random.Range(0, freeSpawnPoints.Count);
+
+        // Debug.Log(i + " " + freeSpawnPoints.Count);
+
         Transform sp = freeSpawnPoints[i];
         freeSpawnPoints.Remove(sp);
 

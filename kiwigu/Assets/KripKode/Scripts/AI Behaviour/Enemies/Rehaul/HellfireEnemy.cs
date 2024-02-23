@@ -314,17 +314,21 @@ public class HellfireEnemy : MonoBehaviour
         {
             if (hitCollider.CompareTag("Player"))
             {
+                Debug.Log("Splatooded the player");
                 if (Mathf.Abs(sweatersController.instance.velocity.y) < 1)
                 {
+                    Debug.Log("Splatooded the player 2");
+
                     Vector3 incomingDirection = (detectedPlayer.transform.position - transform.position).normalized;
                     Vector3 upwardDirection = Vector3.up;
 
                     Vector3 punchDirection = (incomingDirection + upwardDirection).normalized;
 
                     hitCollider.GetComponent<PlayerHealth>().DealDamage(35, -incomingDirection.normalized * 10);
-                    sweatersController.instance.velocity += punchDirection * 25;
+                    sweatersController.instance.velocity += punchDirection * 15;
 
                     agent.SetDestination(transform.position);
+                    Debug.Log("Splatooded the player 3");
                 }
             }
         }
@@ -509,11 +513,6 @@ public class HellfireEnemy : MonoBehaviour
         EnemyShoot();
     }
 
-    IEnumerator ShootFloat()
-    {
-        yield return new WaitForSeconds(EnemyShoot());
-    }
-
     public virtual void TakeGun()
     {
         isHoldingGun = false;
@@ -681,6 +680,7 @@ public class HellfireEnemy : MonoBehaviour
     {
         if (!animDone)
             return;
+
 
         if (!isHoldingGun)
         {
