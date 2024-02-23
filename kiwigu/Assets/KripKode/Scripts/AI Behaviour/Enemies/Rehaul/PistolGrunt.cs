@@ -534,9 +534,7 @@ public class PistolGrunt : MonoBehaviour
             currentShield = Mathf.Min(currentShield + bulletDamage, shield);
         }
         else if (currentHealth < health)
-        {
-            Debug.Log("Pistol Grunt Got Hit With [" + bulletDamage + "] damage");
-            
+        {            
             if (isHeadshot)
                 Instantiate(HeadshotIndicator, headPos.transform.position, Quaternion.identity);
 
