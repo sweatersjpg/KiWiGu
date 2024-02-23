@@ -317,7 +317,7 @@ public class HellfireEnemy : MonoBehaviour
         {
             if (hitCollider.CompareTag("Player"))
             {
-                if (Mathf.Abs(sweatersController.instance.velocity.y) < 1)
+                if (sweatersController.instance.isGrounded)
                 {
                     Vector3 incomingDirection = (detectedPlayer.transform.position - transform.position).normalized;
                     Vector3 upwardDirection = Vector3.up;

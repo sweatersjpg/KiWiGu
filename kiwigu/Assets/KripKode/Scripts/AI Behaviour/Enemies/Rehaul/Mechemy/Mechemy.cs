@@ -23,6 +23,7 @@ public class Mechemy : MonoBehaviour
     [SerializeField] private float wanderSpeed;
     [SerializeField] private float wanderWaitTime;
     [SerializeField] private float wanderRadius;
+    [SerializeField] private float seekSpeed;
     private Vector3 initialPosition;
     private float wanderTimer;
 
@@ -99,7 +100,7 @@ public class Mechemy : MonoBehaviour
         if (agent.velocity.magnitude <= 0.1f)
         {
             animator.SetBool("walk", false);
-            //animator.SetBool("run", false);
+            animator.SetBool("run", false);
         }
 
         if (!IsPlayerWithinRange())
@@ -148,9 +149,18 @@ public class Mechemy : MonoBehaviour
     {
         if (enemyState == EnemyState.Crush)
         {
+            animator.speed = 1.2f;
+            agent.speed = seekSpeed;
+
+            if (agent.velocity.magnitude >= 0.1f)
+            {
+                animator.SetBool("walk", false);
+                animator.SetBool("run", true);
+            }
             if (isCrushing)
                 return;
 
+            agent.SetDestination(detectedPlayer.transform.position);
             StartCoroutine(LeapCoroutine());
         }
     }
@@ -185,7 +195,7 @@ public class Mechemy : MonoBehaviour
         {
             if (hitCollider.CompareTag("Player"))
             {
-                if (Mathf.Abs(sweatersController.instance.velocity.y) < 1)
+                if (sweatersController.instance.isGrounded)
                 {
                     Vector3 incomingDirection = (detectedPlayer.transform.position - transform.position).normalized;
                     Vector3 upwardDirection = Vector3.up;
