@@ -153,7 +153,16 @@ public class WaveSystem : MonoBehaviour
 
                 yield return new WaitUntil(() => { return freeSpawnPoints.Count > 0; });
 
-                enemies.Add(StartEnemySpawn(spawner.enemyPrefab, spawner.weaponType));
+                Transform customSpawn = null;
+
+                if(spawner.customSpawnPoints.Length > 0)
+                {
+                    customSpawn = spawner.customSpawnPoints[Random.Range(0, spawner.customSpawnPoints.Length)];
+                    
+                    yield return new WaitUntil(() => { return freeSpawnPoints.Contains(customSpawn); });
+                }
+
+                enemies.Add(StartEnemySpawn(spawner.enemyPrefab, spawner.weaponType, customSpawn));
             }
 
             yield return new WaitUntil(() => { return CountNull(enemies) == enemies.Count; });
@@ -165,9 +174,15 @@ public class WaveSystem : MonoBehaviour
         activeSpawners--;
     }
 
-    Transform StartEnemySpawn(GameObject prefab, GunInfo gunType)
+    Transform StartEnemySpawn(GameObject prefab, GunInfo gunType, Transform customSpawn)
     {
         Vector3 spawn = FetchRandomSpawnPoint().position;
+        if (customSpawn)
+        {
+            freeSpawnPoints.Remove(customSpawn);
+            spawn = customSpawn.position;
+        }
+        // if (customSpawns.Length > 0) spawn = customSpawns[Random.Range(0, customSpawns.Length)].position;
 
         Instantiate(spawnFX, spawn, Quaternion.identity);
 
