@@ -295,7 +295,7 @@ public class Mechemy : MonoBehaviour
 
     private float EnemyShoot()
     {
-        if (!holdingLeftGun || !holdingRightGun || !IsPlayerVisible())
+        if ((shootAlternate && !holdingRightGun) || (!shootAlternate && !holdingLeftGun) || !IsPlayerVisible())
             return 0;
 
         HookTarget gun = transform.GetComponentInChildren<HookTarget>();
@@ -322,7 +322,7 @@ public class Mechemy : MonoBehaviour
         if (!animDone)
             return;
 
-        if (!holdingRightGun || !holdingLeftGun)
+        if ((shootAlternate && !holdingRightGun) || (!shootAlternate && !holdingLeftGun))
         {
             isShooting = false;
             return;
@@ -349,18 +349,13 @@ public class Mechemy : MonoBehaviour
         GameObject bullet = Instantiate(info.bulletPrefab, BulletExitPoint.transform.position, BulletExitPoint.transform.rotation);
 
         Vector3 direction = BulletExitPoint.transform.forward;
-        direction += SpreadDirection(0.1f, 3);
+        direction += SpreadDirection(gun.info.spread, 3);
 
         bullet.transform.position = BulletExitPoint.transform.position;
         bullet.transform.rotation = Quaternion.LookRotation(direction.normalized);
 
         Bullet b = bullet.GetComponent<Bullet>();
-
-        if(shootAlternate)
-            b.speed = 50;
-        else
-            b.speed = info.bulletSpeed;
-
+        b.speed = info.bulletSpeed;
         b.gravity = info.bulletGravity;
         b.ignoreMask = ~LayerMask.GetMask("GunHand", "HookTarget", "Enemy");
         b.trackTarget = false;
