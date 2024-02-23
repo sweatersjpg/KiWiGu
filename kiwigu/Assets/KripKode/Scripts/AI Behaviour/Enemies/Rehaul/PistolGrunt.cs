@@ -534,7 +534,7 @@ public class PistolGrunt : MonoBehaviour
             currentShield = Mathf.Min(currentShield + bulletDamage, shield);
         }
         else if (currentHealth < health)
-        {
+        {            
             if (isHeadshot)
                 Instantiate(HeadshotIndicator, headPos.transform.position, Quaternion.identity);
 
