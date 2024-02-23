@@ -125,7 +125,7 @@ public class WaveSystem : MonoBehaviour
         // execute next wave
         currentWave++;
         if (currentWave < waves.Length) StartCoroutine(nameof(StartWave));
-        else if(isEnding) SceneManager.LoadScene(1);
+        else if(isEnding) SceneManager.LoadScene(2);
         else
         {
             for (int i = 0; i < toEnable.Length; i++) toEnable[i].SetActive(true);
