@@ -267,7 +267,7 @@ public class Mechemy : MonoBehaviour
 
     private bool IsPlayerWithinRange()
     {
-        if(detectedPlayer == null)
+        if (detectedPlayer == null)
             return false;
 
         float distanceTolerance = 0.5f;
@@ -332,7 +332,7 @@ public class Mechemy : MonoBehaviour
 
         if (gun)
         {
-            if(shootAlternate)
+            if (shootAlternate)
             {
                 info = rightGun.info;
                 BulletExitPoint = rightGunExitPoint;
