@@ -52,7 +52,6 @@ public class Mechemy : MonoBehaviour
 
     // Crush
     private bool isCrushing;
-    private bool canCrush = true;
     private float splatoodRadius = 5;
     public GameObject splatoodFX;
 
@@ -85,14 +84,12 @@ public class Mechemy : MonoBehaviour
 
         if (leftGun == null && !checkedLeftGun)
         {
-            Debug.Log("Stole Left Gun");
             holdingLeftGun = false;
             checkedLeftGun = true;
         }
 
         if (rightGun == null && !checkedRightGun)
         {
-            Debug.Log("Stole Right Gun");
             holdingRightGun = false;
             checkedRightGun = true;
         }
@@ -149,7 +146,10 @@ public class Mechemy : MonoBehaviour
     {
         if (enemyState == EnemyState.Crush)
         {
-            animator.speed = 1.2f;
+            if (isCrushing)
+                return;
+
+            animator.speed = 1.35f;
             agent.speed = seekSpeed;
 
             if (agent.velocity.magnitude >= 0.1f)
@@ -157,11 +157,13 @@ public class Mechemy : MonoBehaviour
                 animator.SetBool("walk", false);
                 animator.SetBool("run", true);
             }
-            if (isCrushing)
-                return;
 
             agent.SetDestination(detectedPlayer.transform.position);
-            StartCoroutine(LeapCoroutine());
+
+            float distanceToPlayer = Vector3.Distance(transform.position, detectedPlayer.transform.position);
+
+            if (distanceToPlayer <= wanderRadius && !isCrushing)
+                StartCoroutine(LeapCoroutine());
         }
     }
 
@@ -180,7 +182,7 @@ public class Mechemy : MonoBehaviour
 
         animator.ResetTrigger("crush");
 
-        yield return new WaitForSeconds(3);
+        yield return new WaitForSeconds(2);
 
         isCrushing = false;
     }
@@ -394,7 +396,7 @@ public class Mechemy : MonoBehaviour
 
     private void SpawnBullet()
     {
-        if (!animDone)
+        if (!animDone || !BulletExitPoint)
             return;
 
         if ((shootAlternate && !holdingRightGun) || (!shootAlternate && !holdingLeftGun))
@@ -420,7 +422,7 @@ public class Mechemy : MonoBehaviour
                 BulletExitPoint = leftGunExitPoint;
             }
         }
-
+        
         GameObject bullet = Instantiate(info.bulletPrefab, BulletExitPoint.transform.position, BulletExitPoint.transform.rotation);
 
         Vector3 direction = BulletExitPoint.transform.forward;

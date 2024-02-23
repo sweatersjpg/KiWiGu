@@ -80,7 +80,6 @@ public class HellfireEnemy : MonoBehaviour
     private float currentRotationTime;
     private bool isRotating;
     private bool isLeaping;
-    private bool canLeap = true;
 
     private void Awake()
     {
