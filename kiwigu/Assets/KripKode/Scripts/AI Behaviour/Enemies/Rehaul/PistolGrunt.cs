@@ -306,7 +306,7 @@ public class PistolGrunt : MonoBehaviour
             if (Vector3.Distance(transform.position, detectedPlayer.transform.position) <= punchDistance + treshold)
             {
                 detectedPlayer.GetComponent<PlayerHealth>().DealDamage(25, -incomingDirection);
-                sweatersController.instance.velocity += punchDirection * 15;
+                sweatersController.instance.velocity += punchDirection * 5;
             }
         }
     }
