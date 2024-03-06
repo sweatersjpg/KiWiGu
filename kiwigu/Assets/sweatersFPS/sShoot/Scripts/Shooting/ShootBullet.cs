@@ -163,6 +163,8 @@ public class ShootBullet : MonoBehaviour
 
     void SpawnBullet()
     {
+        if (!info.bulletPrefab) return;
+
         GameObject bullet = Instantiate(info.bulletPrefab);
 
         Vector3 direction = transform.forward;
