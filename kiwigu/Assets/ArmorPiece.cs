@@ -20,7 +20,7 @@ public class ArmorPiece : MonoBehaviour
         armorHealth -= damage;
         if (armorHealth <= 0)
         {
-            if(hookBreakable)
+            if (hookBreakable)
             {
                 if (isLeft)
                 {

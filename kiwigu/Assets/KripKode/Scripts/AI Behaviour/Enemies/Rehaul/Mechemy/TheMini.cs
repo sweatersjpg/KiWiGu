@@ -2,7 +2,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class Mechemy : MonoBehaviour
+public class TheMini : MonoBehaviour
 {
     public enum EnemyState { Wandering, Shoot, Crush };
     [SerializeField] private EnemyState enemyState = EnemyState.Wandering;
@@ -21,7 +21,6 @@ public class Mechemy : MonoBehaviour
     [Header("Enemy Detection Settings")]
     [SerializeField] private Transform eyesPosition;
     [SerializeField] private float detectionRange;
-    [SerializeField] private float findCoverRange;
     private GameObject detectedPlayer;
 
     [Space(10)]
