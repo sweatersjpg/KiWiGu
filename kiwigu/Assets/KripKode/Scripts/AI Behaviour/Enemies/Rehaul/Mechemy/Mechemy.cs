@@ -36,10 +36,10 @@ public class Mechemy : MonoBehaviour
     [Space(10)]
     [Header("Enemy Attack Settings")]
     [SerializeField] float shootCooldown;
-    [SerializeField] HookTarget leftGun;
-    [SerializeField] HookTarget rightGun;
     [SerializeField] private Transform leftGunExitPoint;
     [SerializeField] private Transform rightGunExitPoint;
+    public HookTarget leftGun;
+    public HookTarget rightGun;
     Transform BulletExitPoint;
     public bool shootAlternate;
     private bool isShooting;
