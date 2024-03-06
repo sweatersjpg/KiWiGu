@@ -91,7 +91,10 @@ public class Bullet : MonoBehaviour
         }
 
         // supposedly removes from ignoreMask
-        ignoreMask &= ~(1 << LayerMask.GetMask("BulletView"));
+        // ignoreMask &= ~(1 << LayerMask.GetMask("BulletView"));
+        // does not work lol
+
+
     }
 
     // Update is called once per frame
@@ -317,8 +320,11 @@ public class Bullet : MonoBehaviour
     {
         if (hit.transform.gameObject.layer == LayerMask.NameToLayer("EnergyWall"))
         {
+            MiniGunTurret shield = hit.transform.GetComponentInParent<MiniGunTurret>();
+            if (shield) shield.TakeDamage(hit.point, direction, bulletDamage * shieldMultiplier);
+
             // if behind shield, pass through otherwise deal damage
-            if (Vector3.Dot(hit.transform.right, direction) > 0)
+            else if (Vector3.Dot(hit.transform.right, direction) > 0)
             {                
                 return;
             } else
@@ -326,6 +332,8 @@ public class Bullet : MonoBehaviour
                 EnergyWall wall = hit.transform.GetComponentInParent<EnergyWall>();
                 if (wall) wall.TakeDamage(hit.point, direction, bulletDamage * shieldMultiplier);
             }
+
+            
         }
         else if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Player"))
         {

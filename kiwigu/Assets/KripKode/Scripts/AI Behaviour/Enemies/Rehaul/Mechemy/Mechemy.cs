@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
+using static UnityEngine.Rendering.DebugUI;
 
 public class Mechemy : MonoBehaviour
 {
@@ -11,6 +12,11 @@ public class Mechemy : MonoBehaviour
     [Range(0, 500)]
     [SerializeField] private float health;
     [SerializeField] private Animator animator;
+    [SerializeField] private Transform headPos;
+    [SerializeField] private GameObject HeadshotIndicator;
+    [SerializeField] private GameObject ExplosionX;
+    private bool isDead;
+    private float currentHealth;
 
     [Space(10)]
     [Header("Enemy Detection Settings")]
@@ -23,6 +29,7 @@ public class Mechemy : MonoBehaviour
     [SerializeField] private float wanderSpeed;
     [SerializeField] private float wanderWaitTime;
     [SerializeField] private float wanderRadius;
+    [SerializeField] private float seekSpeed;
     private Vector3 initialPosition;
     private float wanderTimer;
 
@@ -49,6 +56,11 @@ public class Mechemy : MonoBehaviour
 
     private NavMeshAgent agent;
 
+    // Crush
+    private bool isCrushing;
+    private float splatoodRadius = 5;
+    public GameObject splatoodFX;
+
     private void Awake()
     {
         holdingLeftGun = leftGun != null;
@@ -65,10 +77,14 @@ public class Mechemy : MonoBehaviour
 
     private void Update()
     {
+        if (isDead)
+            return;
+
         StateManager();
 
         Wander();
         ShootState();
+        Crush();
     }
 
     private void StateManager()
@@ -77,14 +93,12 @@ public class Mechemy : MonoBehaviour
 
         if (leftGun == null && !checkedLeftGun)
         {
-            Debug.Log("Stole Left Gun");
             holdingLeftGun = false;
             checkedLeftGun = true;
         }
 
         if (rightGun == null && !checkedRightGun)
         {
-            Debug.Log("Stole Right Gun");
             holdingRightGun = false;
             checkedRightGun = true;
         }
@@ -92,7 +106,7 @@ public class Mechemy : MonoBehaviour
         if (agent.velocity.magnitude <= 0.1f)
         {
             animator.SetBool("walk", false);
-            //animator.SetBool("run", false);
+            animator.SetBool("run", false);
         }
 
         if (!IsPlayerWithinRange())
@@ -135,6 +149,113 @@ public class Mechemy : MonoBehaviour
                 wanderTimer = 0f;
             }
         }
+    }
+
+    private void Crush()
+    {
+        if (enemyState == EnemyState.Crush)
+        {
+            if (isCrushing)
+                return;
+
+            animator.speed = 1.35f;
+            agent.speed = seekSpeed;
+
+            if (agent.velocity.magnitude >= 0.1f)
+            {
+                animator.SetBool("walk", false);
+                animator.SetBool("run", true);
+            }
+
+            agent.SetDestination(detectedPlayer.transform.position);
+
+            float distanceToPlayer = Vector3.Distance(transform.position, detectedPlayer.transform.position);
+
+            if (distanceToPlayer <= wanderRadius && !isCrushing)
+                StartCoroutine(LeapCoroutine());
+        }
+    }
+
+    public virtual void TakeDamage(float bulletDamage, bool isHeadshot)
+    {
+        if (isDead)
+            return;
+
+        if (currentHealth < health)
+        {
+            if (isHeadshot)
+            {
+                GlobalAudioManager.instance.PlayHeadshotSFX(headPos);
+                Instantiate(HeadshotIndicator, headPos.transform.position, Quaternion.identity);
+            }
+
+            currentHealth = Mathf.Min(currentHealth + bulletDamage, health);
+        }
+
+        CheckStats();
+    }
+
+    public void CheckStats()
+    {
+        if (currentHealth >= health && !isDead)
+        {
+            isDead = true;
+
+            Instantiate(ExplosionX, headPos.transform.position, transform.rotation);
+
+            agent.SetDestination(transform.position);
+
+            Destroy(gameObject);
+        }
+    }
+
+    IEnumerator LeapCoroutine()
+    {
+        isCrushing = true;
+
+        animator.SetTrigger("crush");
+
+        yield return null;
+
+        while (animDone)
+        {
+            yield return null;
+        }
+
+        animator.ResetTrigger("crush");
+
+        yield return new WaitForSeconds(2);
+
+        isCrushing = false;
+    }
+
+    public void SplatoodEvent()
+    {
+        var splatoodPos = transform.position + transform.forward * 2;
+
+        Collider[] hitColliders = Physics.OverlapSphere(splatoodPos, splatoodRadius, LayerMask.GetMask("Player"));
+
+        foreach (Collider hitCollider in hitColliders)
+        {
+            if (hitCollider.CompareTag("Player"))
+            {
+                if (sweatersController.instance.isGrounded)
+                {
+                    Vector3 incomingDirection = (detectedPlayer.transform.position - transform.position).normalized;
+                    Vector3 upwardDirection = Vector3.up;
+
+                    Vector3 punchDirection = (incomingDirection + upwardDirection).normalized;
+
+                    hitCollider.GetComponent<PlayerHealth>().DealDamage(35, -incomingDirection.normalized * 10);
+                    sweatersController.instance.velocity += punchDirection * 15;
+
+                    agent.SetDestination(transform.position);
+                }
+            }
+        }
+
+        GameObject dfx = Instantiate(splatoodFX, splatoodPos, Quaternion.identity);
+        Destroy(dfx, 2);
     }
 
     private void ShootState()
@@ -267,7 +388,7 @@ public class Mechemy : MonoBehaviour
 
     private bool IsPlayerWithinRange()
     {
-        if(detectedPlayer == null)
+        if (detectedPlayer == null)
             return false;
 
         float distanceTolerance = 0.5f;
@@ -317,7 +438,7 @@ public class Mechemy : MonoBehaviour
 
     private void SpawnBullet()
     {
-        if (!animDone)
+        if (!animDone || !BulletExitPoint)
             return;
 
         if ((shootAlternate && !holdingRightGun) || (!shootAlternate && !holdingLeftGun))
@@ -332,7 +453,7 @@ public class Mechemy : MonoBehaviour
 
         if (gun)
         {
-            if(shootAlternate)
+            if (shootAlternate)
             {
                 info = rightGun.info;
                 BulletExitPoint = rightGunExitPoint;
@@ -343,7 +464,7 @@ public class Mechemy : MonoBehaviour
                 BulletExitPoint = leftGunExitPoint;
             }
         }
-
+        
         GameObject bullet = Instantiate(info.bulletPrefab, BulletExitPoint.transform.position, BulletExitPoint.transform.rotation);
 
         Vector3 direction = BulletExitPoint.transform.forward;

@@ -80,7 +80,6 @@ public class HellfireEnemy : MonoBehaviour
     private float currentRotationTime;
     private bool isRotating;
     private bool isLeaping;
-    private bool canLeap = true;
 
     private void Awake()
     {
@@ -183,6 +182,9 @@ public class HellfireEnemy : MonoBehaviour
     {
         if (enemyState == EnemyState.Seek)
         {
+            if (isLeaping)
+                return;
+
             Vector3 adjustedDestination = detectedPlayer.transform.position - (detectedPlayer.transform.position - transform.position).normalized * keepDistance;
 
             if (IsPlayerWithinRange() && !isShooting)
@@ -314,11 +316,8 @@ public class HellfireEnemy : MonoBehaviour
         {
             if (hitCollider.CompareTag("Player"))
             {
-                Debug.Log("Splatooded the player");
-                if (Mathf.Abs(sweatersController.instance.velocity.y) < 1)
+                if (sweatersController.instance.isGrounded)
                 {
-                    Debug.Log("Splatooded the player 2");
-
                     Vector3 incomingDirection = (detectedPlayer.transform.position - transform.position).normalized;
                     Vector3 upwardDirection = Vector3.up;
 
@@ -328,7 +327,6 @@ public class HellfireEnemy : MonoBehaviour
                     sweatersController.instance.velocity += punchDirection * 15;
 
                     agent.SetDestination(transform.position);
-                    Debug.Log("Splatooded the player 3");
                 }
             }
         }
