@@ -16,6 +16,8 @@ public class Explosion : MonoBehaviour
 
     List<GameObject> alreadyHit;
 
+    [SerializeField] bool scaleExplosion = true;
+
     float startTime;
 
     // Start is called before the first frame update
@@ -26,7 +28,7 @@ public class Explosion : MonoBehaviour
         if(explosionFX)
         {
             explosionFX.parent = null;
-            explosionFX.localScale = new(finalRadius / 2, finalRadius / 2, finalRadius / 2);
+            if(scaleExplosion) explosionFX.localScale = new(finalRadius / 2, finalRadius / 2, finalRadius / 2);
         }
 
         alreadyHit = new List<GameObject>();
@@ -126,8 +128,9 @@ public class Explosion : MonoBehaviour
             {
                 alreadyHit.Add(hit.gameObject);
 
+                Vector3 direction = (transform.position - hit.transform.position);
                 //hit.attachedRigidbody.AddExplosionForce(force, transform.position, radius);
-                hit.attachedRigidbody.AddForce(force * transform.forward, ForceMode.Impulse);
+                hit.attachedRigidbody.AddForce(-force * direction.normalized, ForceMode.Impulse);
                 // print(hit.name);
             }
 

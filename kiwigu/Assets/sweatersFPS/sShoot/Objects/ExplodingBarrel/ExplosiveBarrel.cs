@@ -8,6 +8,8 @@ public class ExplosiveBarrel : MonoBehaviour
 {
     public float health;
     public GameObject explosionPrefab;
+    public GameObject blackHoleFX;
+    public GameObject view;
 
     HookTarget ht;
 
@@ -28,8 +30,8 @@ public class ExplosiveBarrel : MonoBehaviour
 
     public void TakeDamage(object[] args)
     {
-        Vector3 point = (Vector3)args[0];
-        Vector3 direction = (Vector3)args[1];
+        if (health <= 0) return;
+        
         float damage = (float)args[2];
 
         // front.material.SetColor("_Color", Color.Lerp(endColor, startColor, health / maxHealth));
@@ -38,8 +40,27 @@ public class ExplosiveBarrel : MonoBehaviour
 
         if (health <= 0)
         {
-            Instantiate(explosionPrefab, point, Quaternion.LookRotation(Vector3.up, -direction));
-            Destroy(gameObject);
+            Invoke(nameof(StartExplosion), Random.Range(0, 0.2f));
         }
+    }
+
+    void StartExplosion()
+    {
+        blackHoleFX.SetActive(true);
+        Invoke(nameof(Explode), Random.Range(0.2f, 0.4f));
+
+        view.tag = "RigidTarget";
+        gameObject.tag = "RigidTarget";
+        gameObject.AddComponent<BoxCollider>();
+        gameObject.AddComponent<Rigidbody>();
+        PhysicsHit hit = gameObject.AddComponent<PhysicsHit>();
+        hit.keepUp = true;
+        hit.maxForce = 10;
+    }
+
+    void Explode()
+    {
+        Instantiate(explosionPrefab, transform.position, Quaternion.identity);
+        Destroy(gameObject);
     }
 }
