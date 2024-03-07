@@ -70,7 +70,24 @@ public class Explosion : MonoBehaviour
         {
             if (alreadyHit.Contains(hit.gameObject)) return;
 
-            if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Player"))
+            if (hit.transform.CompareTag("TakeDamage"))
+            {
+                Vector3 direction = (transform.position - hit.transform.position);
+                hit.transform.gameObject.SendMessageUpwards("TakeDamage",
+                    new object[] { hit.ClosestPoint(transform.position), direction, damageDealt });
+
+                alreadyHit.Add(hit.gameObject);
+            }
+            else if (hit.transform.gameObject.layer == LayerMask.NameToLayer("EnergyWall"))
+            {
+                // if behind shield, pass through otherwise deal damage
+                Vector3 direction = (transform.position - hit.transform.position);
+                hit.transform.gameObject.SendMessageUpwards("TakeDamage",
+                        new object[] { hit.ClosestPoint(transform.position), direction, damageDealt });
+
+                alreadyHit.Add(hit.gameObject);
+            }
+            else if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Player"))
             {
                 Vector3 direction = (transform.position - hit.transform.position);
                 hit.transform.GetComponent<PlayerHealth>().DealDamage(damageDealt, direction.normalized);
@@ -113,46 +130,6 @@ public class Explosion : MonoBehaviour
                 hit.attachedRigidbody.AddForce(force * transform.forward, ForceMode.Impulse);
                 // print(hit.name);
             }
-
-            //else if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Enemy"))
-            //{
-            //    EnemyHitBox enemy = hit.transform.gameObject.GetComponentInParent<EnemyHitBox>();
-            //    if (enemy != null)
-            //    {
-
-            //        var scriptType = System.Type.GetType(enemy.ReferenceScript);
-
-            //        Transform rootParent = GetRootParent(enemy.transform);
-
-            //        if (rootParent != null)
-            //        {
-            //            if (alreadyHit.Contains(rootParent.gameObject)) return;
-
-            //            var enemyComponent = rootParent.GetComponent(scriptType) as MonoBehaviour;
-
-            //            alreadyHit.Add(rootParent.gameObject);
-
-            //            if (enemyComponent != null)
-            //            {
-            //                var takeDamageMethod = scriptType.GetMethod("TakeDamage");
-
-            //                if (takeDamageMethod != null)
-            //                {
-            //                    takeDamageMethod.Invoke(enemyComponent, new object[] { damageDealt, false });
-            //                }
-            //            }
-            //        }
-
-            //    }
-            //}
-            //else if (hit.attachedRigidbody != null)
-            //{
-            //    alreadyHit.Add(hit.gameObject);
-
-            //    //hit.attachedRigidbody.AddExplosionForce(force, transform.position, radius);
-            //    hit.attachedRigidbody.AddForce(force * transform.forward, ForceMode.Impulse);
-            //    // print(hit.name);
-            //}
 
         }
     }

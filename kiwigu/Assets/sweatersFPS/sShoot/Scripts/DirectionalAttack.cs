@@ -54,8 +54,8 @@ public class DirectionalAttack : MonoBehaviour
 
     void CheckRadius(float radius)
     {
-        Collider[] hits = Physics.OverlapSphere(transform.position, radius, LayerMask.GetMask("Enemy", "PhysicsObject", "Shield"));
-
+        Collider[] hits = Physics.OverlapSphere(transform.position, radius, 
+            LayerMask.GetMask("Enemy", "PhysicsObject", "Shield", "EnergyWall"));
 
         // prioritize shields
         foreach (Collider hit in hits)
@@ -80,7 +80,24 @@ public class DirectionalAttack : MonoBehaviour
             if (ignoreList.Contains(hit.gameObject)) continue;
             currentHit = hit;
 
-            if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Enemy") && !hit.transform.gameObject.CompareTag("Backpack"))
+            if (hit.transform.CompareTag("TakeDamage"))
+            {
+                Vector3 direction = (transform.position - hit.transform.position);
+                hit.transform.gameObject.SendMessageUpwards("TakeDamage",
+                    new object[] { hit.ClosestPoint(transform.position), direction, damageDealt });
+
+                alreadyHit.Add(hit.gameObject);
+            }
+            else if (hit.transform.gameObject.layer == LayerMask.NameToLayer("EnergyWall"))
+            {
+                // if behind shield, pass through otherwise deal damage
+                Vector3 direction = (transform.position - hit.transform.position);
+                hit.transform.gameObject.SendMessageUpwards("TakeDamage",
+                        new object[] { hit.ClosestPoint(transform.position), direction, damageDealt });
+
+                alreadyHit.Add(hit.gameObject);
+            }
+            else if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Enemy") && !hit.transform.gameObject.CompareTag("Backpack")) 
             {
                 EnemyHitBox enemy = hit.transform.gameObject.GetComponent<EnemyHitBox>();
 
