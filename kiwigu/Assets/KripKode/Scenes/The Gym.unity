@@ -123,6 +123,17 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 23800000, guid: 0593258ef8a3ac747b52d62431c28bc4, type: 2}
+--- !u!114 &29591727 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4553230268822790759, guid: 69b9de218a3344d449f70778b0b1c815, type: 3}
+  m_PrefabInstance: {fileID: 4553230268794236867}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aded6c0a60a3f1b4a922824ad88b5fd2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &38923782
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4779,6 +4790,22 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1431764460398797175, guid: 69b9de218a3344d449f70778b0b1c815, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2504527636687875139, guid: 69b9de218a3344d449f70778b0b1c815, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3010971854000840399, guid: 69b9de218a3344d449f70778b0b1c815, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3742837772134797366, guid: 69b9de218a3344d449f70778b0b1c815, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4553230268822790752, guid: 69b9de218a3344d449f70778b0b1c815, type: 3}
       propertyPath: m_RootOrder
       value: 16
@@ -4827,6 +4854,38 @@ PrefabInstance:
       propertyPath: m_Name
       value: Crusher Mech
       objectReference: {fileID: 0}
+    - target: {fileID: 4706324255909775488, guid: 69b9de218a3344d449f70778b0b1c815, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5306367466846410244, guid: 69b9de218a3344d449f70778b0b1c815, type: 3}
+      propertyPath: isLeft
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5306367466846410244, guid: 69b9de218a3344d449f70778b0b1c815, type: 3}
+      propertyPath: hookBreakable
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5306367466846410244, guid: 69b9de218a3344d449f70778b0b1c815, type: 3}
+      propertyPath: refScriptMech
+      value: 
+      objectReference: {fileID: 29591727}
+    - target: {fileID: 8056010929256321181, guid: 69b9de218a3344d449f70778b0b1c815, type: 3}
+      propertyPath: isLeft
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8056010929256321181, guid: 69b9de218a3344d449f70778b0b1c815, type: 3}
+      propertyPath: isRight
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8056010929256321181, guid: 69b9de218a3344d449f70778b0b1c815, type: 3}
+      propertyPath: hookBreakable
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8056010929256321181, guid: 69b9de218a3344d449f70778b0b1c815, type: 3}
+      propertyPath: refScriptMech
+      value: 
+      objectReference: {fileID: 29591727}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 69b9de218a3344d449f70778b0b1c815, type: 3}
 --- !u!1001 &4928068082111608235
