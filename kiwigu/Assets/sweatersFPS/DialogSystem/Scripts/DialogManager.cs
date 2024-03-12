@@ -197,7 +197,7 @@ public class DialogManager : MonoBehaviour
     it's currently overlapping and you'll probably have to stop it later. do this when the voice lines are in
      
      * Priority Brainstorming?? set this later
-     * apostle: 21
+     * apostle: 19
      * danny: 11
      * hook blocked: 9
      * 
