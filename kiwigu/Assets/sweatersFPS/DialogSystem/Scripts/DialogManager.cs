@@ -103,7 +103,6 @@ public class DialogManager : MonoBehaviour
         // dialogTextMesh.text = s;
     }
 
-    // CHANGE LATER TO START THIS WITH DIALOG AND AUDIOSOURCE TO PLAY FROM, IF ANY)
     public void StartDialog(List<string> dialogLines, List<float> durations, bool startDialogAsap)
     {
         if (startDialogAsap) {
@@ -122,6 +121,7 @@ public class DialogManager : MonoBehaviour
         }
     }
 
+    // CHANGE LATER TO START THIS WITH DIALOG AND AUDIOSOURCE TO PLAY FROM, IF ANY)
     public void TriggerDialog(Dialog dialog, bool startDialogAsap)
     {
         List<string> lines = new List<string>();
