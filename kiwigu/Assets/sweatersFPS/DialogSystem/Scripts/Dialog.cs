@@ -13,6 +13,7 @@ public class Dialog : ScriptableObject
     }
 
     public bool singleVoiceLine = false;
+    public int priority;
 
     public DialogType type;
 
