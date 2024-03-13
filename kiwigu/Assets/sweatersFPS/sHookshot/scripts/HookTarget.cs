@@ -43,7 +43,7 @@ public class HookTarget : MonoBehaviour
         maxResistance = resistance;
     }
 
-    public void BeforeDestroy()
+    public bool BeforeDestroy()
     {
         ThrownGun gun = Instantiate(throwGunPrefab, transform).GetComponent<ThrownGun>();
         gun.transform.parent = null;
@@ -59,9 +59,12 @@ public class HookTarget : MonoBehaviour
             hook.transform.parent = null;
 
             hook.TakeThrownGun(gun.gameObject);
+
+            return false;
         } else
         {
             Destroy(gun.gameObject);
+            return true;
         }
     }
 }
