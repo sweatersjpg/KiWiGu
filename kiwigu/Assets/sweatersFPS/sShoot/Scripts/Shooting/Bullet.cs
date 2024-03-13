@@ -318,22 +318,20 @@ public class Bullet : MonoBehaviour
 
     void DoHit(RaycastHit hit, Vector3 direction)
     {
-        if (hit.transform.gameObject.layer == LayerMask.NameToLayer("EnergyWall"))
+        if(hit.transform.CompareTag("TakeDamage"))
         {
-            MiniGunTurret shield = hit.transform.GetComponentInParent<MiniGunTurret>();
-            if (shield) shield.TakeDamage(hit.point, direction, bulletDamage * shieldMultiplier);
-
+            hit.transform.gameObject.SendMessageUpwards("TakeDamage", 
+                new object[] { hit.point, direction, bulletDamage * shieldMultiplier });
+        }
+        else if (hit.transform.gameObject.layer == LayerMask.NameToLayer("EnergyWall"))
+        {
             // if behind shield, pass through otherwise deal damage
-            else if (Vector3.Dot(hit.transform.right, direction) > 0)
-            {                
-                return;
-            } else
+            if (Vector3.Dot(hit.transform.right, direction) > 0)  return;
+            else
             {
-                EnergyWall wall = hit.transform.GetComponentInParent<EnergyWall>();
-                if (wall) wall.TakeDamage(hit.point, direction, bulletDamage * shieldMultiplier);
+                hit.transform.gameObject.SendMessageUpwards("TakeDamage",
+                    new object[] { hit.point, direction, bulletDamage * shieldMultiplier });
             }
-
-            
         }
         else if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Player"))
         {

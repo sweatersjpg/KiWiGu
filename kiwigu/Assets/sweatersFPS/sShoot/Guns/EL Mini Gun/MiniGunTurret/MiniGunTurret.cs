@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 using UnityEngine;
-using static UnityEditor.Recorder.OutputPath;
 
 public class MiniGunTurret : MonoBehaviour
 {
@@ -60,8 +59,12 @@ public class MiniGunTurret : MonoBehaviour
         }
     }
 
-    public void TakeDamage(Vector3 point, Vector3 direction, float damage)
+    public void TakeDamage(object[] args)
     {
+        Vector3 point = (Vector3)args[0];
+        Vector3 direction = (Vector3)args[1];
+        float damage = (float)args[2];
+
         // front.material.SetColor("_Color", Color.Lerp(endColor, startColor, health / maxHealth));
 
         health -= damage;

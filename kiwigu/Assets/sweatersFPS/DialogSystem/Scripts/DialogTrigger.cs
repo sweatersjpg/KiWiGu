@@ -8,6 +8,7 @@ public class DialogTrigger : MonoBehaviour
     [SerializeField] Dialog dialog;
     [SerializeField] bool displayOnContact = false;
     [SerializeField] bool destroyOnContact = false;
+    [SerializeField] bool startDialogAsap = false;
 
     [Space]
     // [SerializeField] GameObject[] enable;
@@ -50,7 +51,7 @@ public class DialogTrigger : MonoBehaviour
 
         if(playerInBounds && displayOnContact)
         {
-            DialogManager.instance.TriggerDialog(dialog, displayOnContact);
+            DialogManager.instance.TriggerDialog(dialog, startDialogAsap);
             displayOnContact = false;
             if (destroyOnContact) Destroy(gameObject);
 

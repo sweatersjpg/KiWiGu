@@ -24,6 +24,8 @@ public class DialogManager : MonoBehaviour
     bool textComplete = true;
     string currentText;
 
+    IEnumerator textDisplayCo;
+
     private void Awake()
     {
         if (instance != null) Destroy(instance.gameObject);
@@ -70,9 +72,9 @@ public class DialogManager : MonoBehaviour
         for(int i = 0; i < text.Length; i++)
         {
             dialogTextMesh.text += text[i];
-            yield return new WaitForSecondsRealtime(1/textSpeed);
+            yield return new WaitForSeconds(1/textSpeed);
         }
-        yield return new WaitForSecondsRealtime(textDuration);
+        yield return new WaitForSeconds(textDuration);
         textComplete = true;
     }
     
@@ -88,27 +90,39 @@ public class DialogManager : MonoBehaviour
         string s = sentences.Dequeue();
         float sd = sentenceDurations.Dequeue();
 
-        // play dialog
+        // remove dialog queue if interrupting
+        if (textDisplayCo != null)
+        {
+            StopCoroutine(textDisplayCo);
+        }
 
-        StartCoroutine(DisplayText(s, sd));
+        // play dialog
+        textDisplayCo = DisplayText(s, sd);
+        StartCoroutine(textDisplayCo);
 
         // dialogTextMesh.text = s;
     }
 
-    public void StartDialog(List<string> lines, List<float> durations, bool startDialogAsap)
+    // CHANGE LATER TO START THIS WITH DIALOG AND AUDIOSOURCE TO PLAY FROM, IF ANY)
+    public void StartDialog(List<string> dialogLines, List<float> durations, bool startDialogAsap)
     {
-        sentences.Clear();
-        sentenceDurations.Clear();
-        foreach(string s in lines) sentences.Enqueue(s);
+        if (startDialogAsap) {
+            sentences.Clear();
+            sentenceDurations.Clear();
+        }
+        foreach(string s in dialogLines) sentences.Enqueue(s);
         foreach (float d in durations) sentenceDurations.Enqueue(d);
 
         // enable dialog box
         dialogBox.SetActive(true);
 
-        //if (startDialogAsap) NextDialog(); // SOHA REENABLE LATER
+        if (startDialogAsap)
+        {
+            NextDialog();
+        }
     }
 
-    public void TriggerDialog(Dialog dialog, bool displayOnContact)
+    public void TriggerDialog(Dialog dialog, bool startDialogAsap)
     {
         List<string> lines = new List<string>();
         List<float> lineDurations = new List<float>();
@@ -117,30 +131,30 @@ public class DialogManager : MonoBehaviour
         switch (dialog.type)
         {
             case Dialog.DialogType.Sequence:
-                for (int i = dialogIndex; i < dialog.sentences.Length; i++)
+                for (int i = dialogIndex; i < dialog.displayText.Length; i++)
                 {
-                    lines.Add(dialog.sentences[i]);
-                    lineDurations.Add(dialog.sentenceDurations[i]);
-                    // print(i);
+                    lines.Add(dialog.displayText[i]);
+                    lineDurations.Add(dialog.lineDurations[i]);
                 }
-                dialogIndex = dialog.sentences.Length - 1;
+                dialogIndex = dialog.displayText.Length - 1;
                 break;
             case Dialog.DialogType.Random:
-                int randomIndex = Random.Range(0, dialog.sentences.Length);
-                lines.Add(dialog.sentences[randomIndex]);
-                lineDurations.Add(dialog.sentenceDurations[randomIndex]);
+                int randomIndex = Random.Range(0, dialog.displayText.Length);
+                print(dialog.displayText.Length);
+                lines.Add(dialog.displayText[randomIndex]);
+                lineDurations.Add(dialog.lineDurations[randomIndex]);
                 break;
             case Dialog.DialogType.Repeat:
-                lines.Add(dialog.sentences[dialogIndex++ % dialog.sentences.Length]);
-                lineDurations.Add(dialog.sentenceDurations[dialogIndex++ % dialog.sentenceDurations.Length]);
+                lines.Add(dialog.displayText[dialogIndex++ % dialog.displayText.Length]);
+                lineDurations.Add(dialog.lineDurations[dialogIndex++ % dialog.lineDurations.Count]);
                 break;
         }
 
-        StartDialog(lines, lineDurations, displayOnContact);
+        StartDialog(lines, lineDurations, startDialogAsap);
     }
 
-    public void ShowInteractPrompt()
+    /*public void ShowInteractPrompt()
     {
         showInteractPrompt = true;
-    }
+    }*/
 }

@@ -61,11 +61,20 @@ public class OffenseDrone : MonoBehaviour
     private Vector3 droneFloatPosition;
     private bool isMovingUp;
 
+    GunInfo info;
+
     private void Start()
     {
         HookTarget ht = GetComponentInChildren<HookTarget>();
         if (ht)
+        {
             isHoldingGun = true;
+
+            info = ht.info;
+
+            BulletShooter bs = transform.GetComponentInChildren<BulletShooter>();
+            if (bs) bs.info = info;
+        }
 
         agent = GetComponent<NavMeshAgent>();
         initialDroneBodyPositionY = agent.height;
@@ -207,9 +216,11 @@ public class OffenseDrone : MonoBehaviour
                 Vector3 randomPoint = RandomNavSphere(detectedPlayer.transform.position, attackRange, -1);
                 agent.SetDestination(randomPoint);
                 yield return new WaitUntil(() => !agent.pathPending && agent.isOnNavMesh && agent.remainingDistance < 0.1f);
-                //canFacePlayer = false;
-                yield return new WaitForSeconds(EnemyShoot());
-                //canFacePlayer = true;
+                canFacePlayer = false;
+                float shootTime = EnemyShoot();
+                Shoot(shootTime);
+                yield return new WaitForSeconds(shootTime);
+                canFacePlayer = true;
             }
             isShooting = false;
         }
@@ -223,9 +234,11 @@ public class OffenseDrone : MonoBehaviour
                 agent.SetDestination(randomPoint);
                 yield return new WaitUntil(() => !agent.pathPending && agent.isOnNavMesh && agent.remainingDistance < 0.1f);
             }
-            //canFacePlayer = false;
-            yield return new WaitForSeconds(EnemyShoot());
-            //canFacePlayer = true;
+            canFacePlayer = false;
+            float shootTime = EnemyShoot();
+            Shoot(shootTime);
+            yield return new WaitForSeconds(shootTime);
+            canFacePlayer = true;
             isShooting = false;
         }
 
@@ -236,17 +249,17 @@ public class OffenseDrone : MonoBehaviour
     }
     private void FacePlayer()
     {
-        if (canFacePlayer && detectedPlayer != null && rememberPlayer)
+        if (/*canFacePlayer &&*/ detectedPlayer != null && rememberPlayer)
         {
             Vector3 direction = detectedPlayer.transform.position - transform.position;
             Vector3 localDirection = transform.InverseTransformDirection(direction);
             Quaternion lookRotation = Quaternion.LookRotation(new Vector3(localDirection.x, localDirection.y, localDirection.z));
 
-            //if(isShooting)
-            //{
-            //    DroneBody.transform.localRotation = Quaternion.Slerp(DroneBody.transform.localRotation, lookRotation, Time.deltaTime * 4f); ;
-            //}
-            //else
+            if (isShooting || (!canFacePlayer))
+            {
+                DroneBody.transform.localRotation = Quaternion.Slerp(DroneBody.transform.localRotation, lookRotation, Time.deltaTime * 4f); ;
+            }
+            else
             {
                 DroneBody.transform.localRotation = Quaternion.Slerp(DroneBody.transform.localRotation, lookRotation, Time.deltaTime * 20f); ;
             }
@@ -397,47 +410,56 @@ public class OffenseDrone : MonoBehaviour
             isHoldingGun = false;
             return 0;
         }
-        GunInfo info = gun.info;
+        //GunInfo info = gun.info;
 
         float burst = info.burstSize;
         if (info.fullAuto) burst = info.autoRate;
 
-        for (int j = 0; j < burst; j++)
-        {
-            for (int i = 0; i < info.projectiles; i++) Invoke(nameof(SpawnBullet), j * 1 / info.autoRate);
-        }
+
+        //for (int j = 0; j < burst; j++)
+        //{
+        //    for (int i = 0; i < info.projectiles; i++) Invoke(nameof(SpawnBullet), j * 1 / info.autoRate);
+        //}
 
         return burst * 1 / info.autoRate;
     }
 
-    private void SpawnBullet()
+    void Shoot(float t)
     {
-        HookTarget gun = transform.GetComponentInChildren<HookTarget>();
-        GunInfo info = gun.info;
-
-        GameObject bullet = Instantiate(info.bulletPrefab, BulletExitPoint.transform.position, BulletExitPoint.transform.rotation);
-
-        Vector3 direction = BulletExitPoint.transform.forward;
-        direction += SpreadDirection(info.spread, 3);
-
-        bullet.transform.position = BulletExitPoint.transform.position;
-        bullet.transform.rotation = Quaternion.LookRotation(direction.normalized);
-
-        Bullet b = bullet.GetComponent<Bullet>();
-        b.speed = info.bulletSpeed;
-        b.gravity = info.bulletGravity;
-        b.ignoreMask = ~LayerMask.GetMask("GunHand", "HookTarget", "Enemy");
-        b.trackTarget = false;
-        b.fromEnemy = true;
-        b.bulletDamage = info.damage;
-        b.charge = 0.5f;
+        if (t == 0) return;
+        
+        BulletShooter bs = transform.GetComponentInChildren<BulletShooter>();
+        if (bs) bs.SetShootTime(t);
     }
 
-    private Vector3 SpreadDirection(float spread, int rolls)
-    {
-        Vector3 offset = Vector3.zero;
-        for (int i = 0; i < rolls; i++)
-            offset += Random.onUnitSphere * spread;
-        return offset / rolls;
-    }
+    //private void SpawnBullet()
+    //{
+    //    HookTarget gun = transform.GetComponentInChildren<HookTarget>();
+    //    GunInfo info = gun.info;
+
+    //    GameObject bullet = Instantiate(info.bulletPrefab, BulletExitPoint.transform.position, BulletExitPoint.transform.rotation);
+
+    //    Vector3 direction = BulletExitPoint.transform.forward;
+    //    direction += SpreadDirection(info.spread, 3);
+
+    //    bullet.transform.position = BulletExitPoint.transform.position;
+    //    bullet.transform.rotation = Quaternion.LookRotation(direction.normalized);
+
+    //    Bullet b = bullet.GetComponent<Bullet>();
+    //    b.speed = info.bulletSpeed;
+    //    b.gravity = info.bulletGravity;
+    //    b.ignoreMask = ~LayerMask.GetMask("GunHand", "HookTarget", "Enemy");
+    //    b.trackTarget = false;
+    //    b.fromEnemy = true;
+    //    b.bulletDamage = info.damage;
+    //    b.charge = 0.5f;
+    //}
+
+    //private Vector3 SpreadDirection(float spread, int rolls)
+    //{
+    //    Vector3 offset = Vector3.zero;
+    //    for (int i = 0; i < rolls; i++)
+    //        offset += Random.onUnitSphere * spread;
+    //    return offset / rolls;
+    //}
 }
