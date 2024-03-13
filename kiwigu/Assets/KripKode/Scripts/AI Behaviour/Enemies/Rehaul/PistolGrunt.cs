@@ -600,9 +600,8 @@ public class PistolGrunt : MonoBehaviour
             if (isHoldingGun)
             {
                 EnableHookTargetsRecursively(ragdollInstance.transform);
-                HookTarget hookTarget = ragdollInstance.GetComponentInChildren<HookTarget>();
-                if (hookTarget != null)
-                    hookTarget.BeforeDestroy();
+                HookTarget ht = GetComponentInChildren<HookTarget>();
+                if (ht != null) ht.BeforeDestroy();
 
                 isHoldingGun = false;
                 isShooting = false;
