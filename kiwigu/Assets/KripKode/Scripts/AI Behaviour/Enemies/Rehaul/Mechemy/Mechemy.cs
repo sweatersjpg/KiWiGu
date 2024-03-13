@@ -14,6 +14,7 @@ public class Mechemy : MonoBehaviour
     [SerializeField] private Transform headPos;
     [SerializeField] private GameObject HeadshotIndicator;
     [SerializeField] private GameObject ExplosionX;
+    [SerializeField] private GameObject FireWarningSFX;
     private bool isDead;
     private float currentHealth;
 
@@ -48,6 +49,7 @@ public class Mechemy : MonoBehaviour
     private float maxRotationTime = 0.05f;
     private Quaternion startRotation;
     private float currentRotationTime;
+    private bool triggeredSeekCover;
 
     private bool checkedLeftGun;
     private bool checkedRightGun;
@@ -264,11 +266,50 @@ public class Mechemy : MonoBehaviour
         {
             animator.speed = 1.0f;
 
-            RotateNavMeshAgentTowardsObj(detectedPlayer.transform.position);
+            if (!isShooting && Vector3.Distance(transform.position, detectedPlayer.transform.position) <= findCoverRange)
+            {
+                GameObject[] coverPoints = GameObject.FindGameObjectsWithTag("Cover");
+                GameObject nearestCover = null;
+                float nearestDistance = Mathf.Infinity;
 
-            if (isShooting)
-                return;
-            StartCoroutine(ShootRoutine());
+                foreach (GameObject cover in coverPoints)
+                {
+                    float distance = Vector3.Distance(transform.position, cover.transform.position);
+                    if (distance < nearestDistance)
+                    {
+                        nearestDistance = distance;
+                        nearestCover = cover;
+                    }
+                }
+
+                animator.speed = 1.35f;
+                agent.speed = seekSpeed;
+
+                if (agent.velocity.magnitude >= 0.1f)
+                {
+                    animator.SetBool("walk", false);
+                    animator.SetBool("run", true);
+                }
+
+                agent.SetDestination(nearestCover.transform.position);
+
+                if (Vector3.Distance(transform.position, nearestCover.transform.position) <= 3f)
+                {
+                    RotateNavMeshAgentTowardsObj(detectedPlayer.transform.position);
+
+                    if (isShooting)
+                        return;
+                    StartCoroutine(ShootRoutine());
+                }
+            }
+            else
+            {
+                RotateNavMeshAgentTowardsObj(detectedPlayer.transform.position);
+
+                if (isShooting)
+                    return;
+                StartCoroutine(ShootRoutine());
+            }
         }
     }
 
@@ -294,6 +335,9 @@ public class Mechemy : MonoBehaviour
 
     public void AnimTrue()
     {
+        GameObject go = Instantiate(FireWarningSFX, headPos.transform.position, Quaternion.identity);
+        Destroy(go, 2);
+
         if (holdingLeftGun && holdingRightGun)
         {
             shootAlternate = !shootAlternate;
@@ -491,11 +535,11 @@ public class Mechemy : MonoBehaviour
         return offset / rolls;
     }
 
-
     private void OnDrawGizmos()
     {
         DrawColoredSphere(transform.position, detectionRange, Color.red);
         DrawColoredSphere(transform.position, wanderRadius, Color.yellow);
+        DrawColoredSphere(transform.position, findCoverRange, Color.blue);
     }
 
     private void DrawColoredSphere(Vector3 center, float radius, Color color)
