@@ -17,7 +17,7 @@ public class WallGrenade : MonoBehaviour
 
     private void UpdateRotation()
     {
-        if (rb != null)
+        if (rb != null && rb.velocity != Vector3.zero)
         {
             transform.rotation = Quaternion.LookRotation(rb.velocity);
         }
