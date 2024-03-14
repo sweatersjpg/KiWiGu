@@ -22,7 +22,8 @@ public class Mechemy : MonoBehaviour
     [Header("Enemy Detection Settings")]
     [SerializeField] private Transform eyesPosition;
     [SerializeField] private float detectionRange;
-    [SerializeField] private float findCoverRange;
+    [SerializeField] private float triggerPlayerCoverRange;
+    [SerializeField] private float coverRange;
     private GameObject detectedPlayer;
 
     [Space(10)]
@@ -160,7 +161,7 @@ public class Mechemy : MonoBehaviour
             if (isCrushing)
                 return;
 
-            animator.speed = 1.35f;
+            animator.speed = Mathf.Clamp(agent.speed / 2.5f, 0.5f, 1.0f);
             agent.speed = seekSpeed;
 
             if (agent.velocity.magnitude >= 0.1f)
@@ -215,6 +216,8 @@ public class Mechemy : MonoBehaviour
     {
         isCrushing = true;
 
+        animator.speed = 1.35f;
+
         animator.SetTrigger("crush");
 
         yield return null;
@@ -266,8 +269,17 @@ public class Mechemy : MonoBehaviour
         {
             animator.speed = 1.0f;
 
-            if (!isShooting && Vector3.Distance(transform.position, detectedPlayer.transform.position) <= findCoverRange)
+            if (!isShooting && Vector3.Distance(transform.position, detectedPlayer.transform.position) <= triggerPlayerCoverRange)
             {
+                animator.speed = Mathf.Clamp(agent.speed / 2.5f, 0.5f, 1.0f);
+                agent.speed = seekSpeed;
+
+                if (agent.velocity.magnitude >= 0.1f)
+                {
+                    animator.SetBool("walk", false);
+                    animator.SetBool("run", true);
+                }
+
                 GameObject[] coverPoints = GameObject.FindGameObjectsWithTag("Cover");
                 GameObject nearestCover = null;
                 float nearestDistance = Mathf.Infinity;
@@ -282,18 +294,12 @@ public class Mechemy : MonoBehaviour
                     }
                 }
 
-                animator.speed = 1.35f;
-                agent.speed = seekSpeed;
-
-                if (agent.velocity.magnitude >= 0.1f)
+                if (nearestDistance <= coverRange)
                 {
-                    animator.SetBool("walk", false);
-                    animator.SetBool("run", true);
+                    agent.SetDestination(nearestCover.transform.position);
                 }
 
-                agent.SetDestination(nearestCover.transform.position);
-
-                if (Vector3.Distance(transform.position, nearestCover.transform.position) <= 3f)
+                if (Vector3.Distance(transform.position, nearestCover.transform.position) <= 3f || nearestDistance > coverRange)
                 {
                     RotateNavMeshAgentTowardsObj(detectedPlayer.transform.position);
 
@@ -469,6 +475,20 @@ public class Mechemy : MonoBehaviour
         }
         GunInfo info = gun.info;
 
+        if (gun)
+        {
+            if (shootAlternate)
+            {
+                info = rightGun.info;
+                BulletExitPoint = rightGunExitPoint;
+            }
+            else
+            {
+                info = leftGun.info;
+                BulletExitPoint = leftGunExitPoint;
+            }
+        }
+
         float burst = info.burstSize;
         if (info.fullAuto) burst = info.autoRate;
 
@@ -508,7 +528,7 @@ public class Mechemy : MonoBehaviour
                 BulletExitPoint = leftGunExitPoint;
             }
         }
-        
+
         GameObject bullet = Instantiate(info.bulletPrefab, BulletExitPoint.transform.position, BulletExitPoint.transform.rotation);
 
         Vector3 direction = BulletExitPoint.transform.forward;
@@ -539,7 +559,8 @@ public class Mechemy : MonoBehaviour
     {
         DrawColoredSphere(transform.position, detectionRange, Color.red);
         DrawColoredSphere(transform.position, wanderRadius, Color.yellow);
-        DrawColoredSphere(transform.position, findCoverRange, Color.blue);
+        DrawColoredSphere(transform.position, triggerPlayerCoverRange, Color.blue);
+        DrawColoredSphere(transform.position, coverRange, Color.green);
     }
 
     private void DrawColoredSphere(Vector3 center, float radius, Color color)
