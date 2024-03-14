@@ -558,11 +558,14 @@ public class HellfireEnemy : MonoBehaviour
             currentShield = Mathf.Min(currentShield + bulletDamage, shield);
 
             shieldObjectMetal.GetComponent<MeshRenderer>().materials[0].SetFloat("_DamagePercent", currentShield / shield);
-
-            StartLerpShieldProgress();
         }
 
         CheckStats();
+    }
+
+    public void HookBlock()
+    {
+        StartLerpShieldProgress();
     }
 
     private void StartLerpShieldProgress()

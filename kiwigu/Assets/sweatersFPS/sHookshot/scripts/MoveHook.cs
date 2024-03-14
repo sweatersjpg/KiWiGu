@@ -426,6 +426,11 @@ public class MoveHook : MonoBehaviour
 
     void ResolveCollision(RaycastHit hit)
     {
+        if(hit.transform.gameObject.CompareTag("Shield") && GetRootParent(hit.transform).GetComponent<HellfireEnemy>())
+        {
+            Transform parent = GetRootParent(hit.transform);
+            parent.GetComponent<HellfireEnemy>().HookBlock();
+        }
 
         if (hit.transform.gameObject.CompareTag("RigidTarget"))
         {
