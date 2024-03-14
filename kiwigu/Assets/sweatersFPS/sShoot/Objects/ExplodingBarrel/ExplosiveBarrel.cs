@@ -60,6 +60,13 @@ public class ExplosiveBarrel : MonoBehaviour
 
     void Explode()
     {
+        MoveHook mh = GetComponentInChildren<MoveHook>();
+        if (mh)
+        {
+            mh.transform.parent = null;
+            mh.PullbackWithForce(0, 1);
+        }
+
         Instantiate(explosionPrefab, transform.position, Quaternion.identity);
         Destroy(gameObject);
     }
