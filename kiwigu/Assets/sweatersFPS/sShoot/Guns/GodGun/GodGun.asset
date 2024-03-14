@@ -33,10 +33,10 @@ MonoBehaviour:
   projectiles: 1
   burstSize: 1
   autoRate: 1
-  fireRate: 3
+  fireRate: 10
   damage: 10000
-  spread: 0.001
-  recoil: 15
+  spread: 0
+  recoil: 0
   spreadVariation:
     serializedVersion: 2
     m_Curve:
@@ -87,8 +87,8 @@ MonoBehaviour:
     m_RotationOrder: 4
   recoilPerShot: 0.5
   recoilReturnTime: 0.5
-  bulletSpeed: 370
-  bulletGravity: -9.8
+  bulletSpeed: 1000
+  bulletGravity: 0
   bulletPrefab: {fileID: 745279074493107227, guid: f3885aa6f16644bbda9672673046fdfb, type: 3}
   gunPrefab: {fileID: 9025670313450575901, guid: d0d635c464925394a99d17e56cf257e7, type: 3}
   guUI: {fileID: 5248327546399112026, guid: 7d37ccf0bde279348bd07462c47b6f78, type: 3}
