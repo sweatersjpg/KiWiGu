@@ -13,10 +13,9 @@ public class Dialog : ScriptableObject
     }
 
     public bool singleVoiceLine = false;
+    public int priority;
 
     public DialogType type;
-
-    public float defaultLineDuration = 6f;
 
     public int[] characterIDs;
     public static string[] characters = { "DANNY", "THE CHOSEN", "GRUNT", "MECHENEMY", "APOSTLE"};
@@ -25,6 +24,8 @@ public class Dialog : ScriptableObject
     public string[] lines;
 
     public List<float> lineDurations;
+    static float noVoiceMinimumPauseDuration = 1.5f;
+    static float noVoicePauseDurationPerLetter = 0.05f;
 
     public AudioClip[] audioClips;
 
@@ -40,32 +41,32 @@ public class Dialog : ScriptableObject
             lineDurations = new List<float>();
         }
 
-        for (int j = 0; j < lines.Length; j++)
+        for (int i = 0; i < lines.Length; i++)
         {
-            if ((j < characterIDs.Length) && (characterIDs[j] != 1))    // if character ID not THE CHOSEN, add character name to beginning of text
+            if ((i < characterIDs.Length) && (characterIDs[i] != 1))    // if character ID not THE CHOSEN, add character name to beginning of text
             {
-                displayText[j] = characters[characterIDs[j]] + ": " + lines[j];
+                displayText[i] = characters[characterIDs[i]] + ": " + lines[i];
 
                 if (singleVoiceLine)
                 {
-                    if (j < audioClips.Length && audioClips[j] != null)
+                    if (i < audioClips.Length && audioClips[i] != null)
                     {
-                        lineDurations.Add(audioClips[j].length);
+                        lineDurations.Add(audioClips[i].length);
                     }
                     else    // if no voice for this line, set to default duration
                     {
-                        lineDurations.Add(defaultLineDuration);
+                        lineDurations.Add(noVoiceMinimumPauseDuration + lines[i].Length * noVoicePauseDurationPerLetter);
                     }
                 }
             }
             else    // if THE CHOSEN, format differently
             {
-                // displayText[j] = "";
-                displayText[j] = "(" + lines[j] + ")";
+                // displayText[i] = "";
+                displayText[i] = "(" + lines[i] + ")";
 
                 if (singleVoiceLine)
                 {
-                    lineDurations.Add(defaultLineDuration);
+                    lineDurations.Add(noVoiceMinimumPauseDuration + lines[i].Length * noVoicePauseDurationPerLetter);
                 }
             }
         }

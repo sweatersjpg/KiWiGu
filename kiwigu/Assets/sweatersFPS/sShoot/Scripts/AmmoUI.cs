@@ -32,7 +32,7 @@ public class AmmoUI : MonoBehaviour
 
         display.TargetPercent = gun.ammo.count / gun.ammo.capacity;
 
-        if(display.TargetPercent == 0)
+        if(display.DisplayPercent == 0)
         {
             energyBarImage.color = noWeaponColor;
             foreach (Image i in otherImages) i.color = noWeaponColor;
