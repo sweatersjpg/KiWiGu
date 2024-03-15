@@ -1,9 +1,6 @@
 using System.Collections;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
-using static MiniMenuSystem;
-using UnityEngine.UIElements;
 
 public class Mechemy : MonoBehaviour
 {
