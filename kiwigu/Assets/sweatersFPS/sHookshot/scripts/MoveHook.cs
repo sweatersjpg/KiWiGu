@@ -131,7 +131,7 @@ public class MoveHook : MonoBehaviour
 
         Vector3 heading = home.transform.position - transform.position;
 
-        if (childHook && hookTarget && !hookTarget.tether && heading.magnitude < 6 && !hasKicked)
+        if (childHook && hookTarget && (!hookTarget.tether || Mathf.Round(hookTarget.resistance) == 69) && heading.magnitude < 6 && !hasKicked)
         {
             MeleLeg.instance.Kick();
             hasKicked = true;
@@ -408,6 +408,8 @@ public class MoveHook : MonoBehaviour
 
     void TakeHookTarget()
     {
+        if (!hookTarget.info) return;
+        
         GameObject target = hookTarget.gameObject;
 
         caughtGun = hookTarget.info;

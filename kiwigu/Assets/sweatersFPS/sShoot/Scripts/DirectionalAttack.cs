@@ -55,7 +55,7 @@ public class DirectionalAttack : MonoBehaviour
     void CheckRadius(float radius)
     {
         Collider[] hits = Physics.OverlapSphere(transform.position, radius, 
-            LayerMask.GetMask("Enemy", "PhysicsObject", "Shield", "EnergyWall"));
+            LayerMask.GetMask("Enemy", "PhysicsObject", "Shield", "EnergyWall", "Default"));
 
         // prioritize shields
         foreach (Collider hit in hits)
@@ -82,7 +82,7 @@ public class DirectionalAttack : MonoBehaviour
 
             if (hit.transform.CompareTag("TakeDamage"))
             {
-                Vector3 direction = (transform.position - hit.transform.position);
+                Vector3 direction = transform.forward;
                 hit.transform.gameObject.SendMessageUpwards("TakeDamage",
                     new object[] { hit.ClosestPoint(transform.position), direction, damageDealt });
 
