@@ -6,6 +6,8 @@ public class BulletShooter : MonoBehaviour
 {
     public GunInfo info;
     public ParticleSystem flash;
+    public ParticleSystem shells;
+
     float deltaTime;
     float time;
 
@@ -114,6 +116,7 @@ public class BulletShooter : MonoBehaviour
         for (int i = 0; i < info.projectiles; i++) SpawnBullet();
         // anim.AnimateShoot();
         if (flash != null) flash.Play();
+        if (shells != null) shells.Emit(1);
 
         // Debug.Log(charge);
     }

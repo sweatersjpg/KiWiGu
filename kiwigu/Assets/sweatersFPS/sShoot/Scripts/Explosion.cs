@@ -92,8 +92,9 @@ public class Explosion : MonoBehaviour
             else if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Player"))
             {
                 Vector3 direction = (transform.position - hit.transform.position);
-                hit.transform.GetComponent<PlayerHealth>().DealDamage(damageDealt, direction.normalized);
+                hit.transform.GetComponent<PlayerHealth>().DealDamage(damageDealt / 2, direction.normalized);
 
+                if (sweatersController.instance.velocity.y < 0) sweatersController.instance.velocity.y *= -0.5f;
                 sweatersController.instance.velocity -= direction.normalized * 20;
 
                 alreadyHit.Add(hit.gameObject);

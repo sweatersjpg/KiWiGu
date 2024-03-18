@@ -10,6 +10,7 @@ public class ShootBullet : MonoBehaviour
 {
     public GunHand anim;
     public ParticleSystem flash;
+    public ParticleSystem shell;
 
     float spreadSpeed = 5;
     float spreadTimeStart = 0;
@@ -133,6 +134,7 @@ public class ShootBullet : MonoBehaviour
         for (int i = 0; i < info.projectiles; i++) SpawnBullet();
         anim.AnimateShoot();
         if (flash != null) flash.Play();
+        if (shell != null) shell.Emit(1);
 
         if(!info.fullAuto) chargeTimer = 0;
         // Debug.Log(charge);
