@@ -22,7 +22,8 @@ public class Mechemy : MonoBehaviour
     [Header("Enemy Detection Settings")]
     [SerializeField] private Transform eyesPosition;
     [SerializeField] private float detectionRange;
-    [SerializeField] private float findCoverRange;
+    [SerializeField] private float triggerPlayerCoverRange;
+    [SerializeField] private float coverRange;
     private GameObject detectedPlayer;
 
     [Space(10)]
@@ -49,7 +50,8 @@ public class Mechemy : MonoBehaviour
     private float maxRotationTime = 0.05f;
     private Quaternion startRotation;
     private float currentRotationTime;
-    private bool triggeredSeekCover;
+    private bool angleCalculated;
+    private float angle;
 
     private bool checkedLeftGun;
     private bool checkedRightGun;
@@ -57,6 +59,7 @@ public class Mechemy : MonoBehaviour
     private bool holdingRightGun;
 
     private NavMeshAgent agent;
+    GunInfo infoHT;
 
     // Crush
     private bool isCrushing;
@@ -160,7 +163,7 @@ public class Mechemy : MonoBehaviour
             if (isCrushing)
                 return;
 
-            animator.speed = 1.35f;
+            animator.speed = Mathf.Clamp(agent.speed / 2.5f, 0.5f, 1.0f);
             agent.speed = seekSpeed;
 
             if (agent.velocity.magnitude >= 0.1f)
@@ -215,6 +218,8 @@ public class Mechemy : MonoBehaviour
     {
         isCrushing = true;
 
+        animator.speed = 1.35f;
+
         animator.SetTrigger("crush");
 
         yield return null;
@@ -266,8 +271,17 @@ public class Mechemy : MonoBehaviour
         {
             animator.speed = 1.0f;
 
-            if (!isShooting && Vector3.Distance(transform.position, detectedPlayer.transform.position) <= findCoverRange)
+            if (!isShooting && Vector3.Distance(transform.position, detectedPlayer.transform.position) <= triggerPlayerCoverRange)
             {
+                animator.speed = Mathf.Clamp(agent.speed / 2.5f, 0.5f, 1.0f);
+                agent.speed = seekSpeed;
+
+                if (agent.velocity.magnitude >= 0.1f)
+                {
+                    animator.SetBool("walk", false);
+                    animator.SetBool("run", true);
+                }
+
                 GameObject[] coverPoints = GameObject.FindGameObjectsWithTag("Cover");
                 GameObject nearestCover = null;
                 float nearestDistance = Mathf.Infinity;
@@ -282,18 +296,12 @@ public class Mechemy : MonoBehaviour
                     }
                 }
 
-                animator.speed = 1.35f;
-                agent.speed = seekSpeed;
-
-                if (agent.velocity.magnitude >= 0.1f)
+                if (nearestDistance <= coverRange)
                 {
-                    animator.SetBool("walk", false);
-                    animator.SetBool("run", true);
+                    agent.SetDestination(nearestCover.transform.position);
                 }
 
-                agent.SetDestination(nearestCover.transform.position);
-
-                if (Vector3.Distance(transform.position, nearestCover.transform.position) <= 3f)
+                if (Vector3.Distance(transform.position, nearestCover.transform.position) <= 3f || nearestDistance > coverRange)
                 {
                     RotateNavMeshAgentTowardsObj(detectedPlayer.transform.position);
 
@@ -340,7 +348,7 @@ public class Mechemy : MonoBehaviour
 
         if (holdingLeftGun && holdingRightGun)
         {
-            shootAlternate = !shootAlternate;
+            shootAlternate = Random.Range(0, 2) == 0;
         }
         else if (holdingLeftGun)
         {
@@ -371,7 +379,7 @@ public class Mechemy : MonoBehaviour
         Quaternion targetRotation = Quaternion.LookRotation(objPos - agent.transform.position);
 
         agent.transform.rotation = Quaternion.Slerp(agent.transform.rotation, targetRotation, Time.deltaTime * 10);
-
+        
         RotateGunObjectExitPoint(detectedPlayer.transform.position);
     }
 
@@ -390,17 +398,37 @@ public class Mechemy : MonoBehaviour
             currentRotationTime += Time.deltaTime;
             float t = Mathf.Clamp01(currentRotationTime / maxRotationTime);
 
-            BulletExitPoint.transform.rotation = Quaternion.Lerp(startRotation, targetRotation, t);
+            if (infoHT && infoHT.gunName == "EGL")
+            {
+                if (!angleCalculated)
+                {
+                    float distance = direction.magnitude;
+                    float time = distance / infoHT.bulletSpeed;
+                    float gravity = infoHT.bulletGravity;
+                    angle = Mathf.Atan((time * time * gravity) / (2 * distance)) * Mathf.Rad2Deg;
+                    angleCalculated = true;
+                    angleCalculated = true;
+                }
 
+                BulletExitPoint.transform.rotation = Quaternion.Lerp(startRotation, targetRotation, t);
+                BulletExitPoint.transform.Rotate(Vector3.right, angle);
+            }
+            else
+            {
+                BulletExitPoint.transform.rotation = Quaternion.Lerp(startRotation, targetRotation, t);
+            }
             if (currentRotationTime >= maxRotationTime)
             {
                 isRotating = false;
             }
         }
-
-        startRotation = BulletExitPoint.transform.rotation;
-        currentRotationTime = 0f;
-        isRotating = true;
+        else
+        {
+            startRotation = BulletExitPoint.transform.rotation;
+            currentRotationTime = 0f;
+            isRotating = true;
+            angleCalculated = false;
+        }
     }
 
     private bool IsPlayerVisible()
@@ -411,7 +439,6 @@ public class Mechemy : MonoBehaviour
         int layerMask3 = LayerMask.GetMask("Shield");
         int layerMask4 = LayerMask.GetMask("GunHand");
         int layerMask5 = LayerMask.GetMask("EnergyWall");
-
         int combinedLayerMask = layerMask | layerMask2 | layerMask3 | layerMask4 | layerMask5;
 
 
@@ -467,79 +494,44 @@ public class Mechemy : MonoBehaviour
             isShooting = false;
             return 0;
         }
-        GunInfo info = gun.info;
 
-        float burst = info.burstSize;
-        if (info.fullAuto) burst = info.autoRate;
-
-        for (int j = 0; j < burst; j++)
-        {
-            for (int i = 0; i < info.projectiles; i++) Invoke(nameof(SpawnBullet), j * 1 / info.autoRate);
-        }
-
-        return burst * 1 / info.autoRate;
-    }
-
-    private void SpawnBullet()
-    {
-        if (!animDone || !BulletExitPoint)
-            return;
-
-        if ((shootAlternate && !holdingRightGun) || (!shootAlternate && !holdingLeftGun))
-        {
-            isShooting = false;
-            return;
-        }
-
-        HookTarget gun = transform.GetComponentInChildren<HookTarget>();
-
-        GunInfo info = null;
+        infoHT = gun.info;
 
         if (gun)
         {
             if (shootAlternate)
             {
-                info = rightGun.info;
+                infoHT = rightGun.info;
                 BulletExitPoint = rightGunExitPoint;
             }
             else
             {
-                info = leftGun.info;
+                infoHT = leftGun.info;
                 BulletExitPoint = leftGunExitPoint;
             }
         }
-        
-        GameObject bullet = Instantiate(info.bulletPrefab, BulletExitPoint.transform.position, BulletExitPoint.transform.rotation);
 
-        Vector3 direction = BulletExitPoint.transform.forward;
-        direction += SpreadDirection(gun.info.spread, 3);
+        float burst = infoHT.burstSize;
+        if (infoHT.fullAuto) burst = infoHT.autoRate;
 
-        bullet.transform.position = BulletExitPoint.transform.position;
-        bullet.transform.rotation = Quaternion.LookRotation(direction.normalized);
+        BulletShooter bs = BulletExitPoint.GetComponentInChildren<BulletShooter>();
 
-        Bullet b = bullet.GetComponent<Bullet>();
-        b.speed = info.bulletSpeed;
-        b.gravity = info.bulletGravity;
-        b.ignoreMask = ~LayerMask.GetMask("GunHand", "HookTarget", "Enemy");
-        b.trackTarget = false;
-        b.fromEnemy = true;
-        b.bulletDamage = info.damage;
-        b.charge = 0.5f;
-    }
+        if (bs) bs.info = infoHT;
 
-    private Vector3 SpreadDirection(float spread, int rolls)
-    {
-        Vector3 offset = Vector3.zero;
-        for (int i = 0; i < rolls; i++)
-            offset += Random.onUnitSphere * spread;
-        return offset / rolls;
+        if (bs)
+        {
+            bs.SetShootTime(1.15f);
+        }
+
+        return burst * 1 / infoHT.autoRate;
     }
 
     private void OnDrawGizmos()
     {
         DrawColoredSphere(transform.position, detectionRange, Color.red);
         DrawColoredSphere(transform.position, wanderRadius, Color.yellow);
-        DrawColoredSphere(transform.position, findCoverRange, Color.blue);
+        DrawColoredSphere(transform.position, triggerPlayerCoverRange, Color.blue);
+        DrawColoredSphere(transform.position, coverRange, Color.green);
     }
 
     private void DrawColoredSphere(Vector3 center, float radius, Color color)
