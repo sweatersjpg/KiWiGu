@@ -66,7 +66,7 @@ public class ScreenSystem : MonoBehaviour
     {
         deltaTime = Time.unscaledDeltaTime;
 
-        if (PauseSystem.paused && Input.GetKeyDown(KeyCode.Tab)) Resume(2);
+        if (PauseSystem.paused && Input.GetKeyDown(KeyCode.Tab)) Resume(1);
 
         // open pause menu
         if (!PauseSystem.paused && (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.P))) Resume(0);

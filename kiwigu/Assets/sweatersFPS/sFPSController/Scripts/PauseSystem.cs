@@ -35,12 +35,14 @@ public class PauseSystem : MonoBehaviour
             pauseSystem = this;
             //DontDestroyOnLoad(gameObject);
         }
+        // pauseSystem = this;
     }
 
     // Start is called before the first frame update
     void Start()
     {
-        mainCamera = sweatersController.instance.playerCamera;
+        // mainCamera = sweatersController.instance.playerCamera;
+        mainCamera = Camera.main;
 
         LoadSettings();
         // add mixers
@@ -134,6 +136,16 @@ public class PauseSystem : MonoBehaviour
         // Screen.fullScreen = value;
     }
 
+    public void SetResolution(float value)
+    {
+        if (value == 1) value = 0.999f;
+        
+        Resolution[] resolutions = Screen.resolutions;
+        Resolution res = resolutions[(int)(value * resolutions.Length)];
+
+        Screen.SetResolution(res.width, res.height, Screen.fullScreen);
+    }
+
     // sliders
 
     //public void UpdateVolume(float value) => pauseSystem.masterMixer.SetFloat("volume", 10*Mathf.Log10(value));
@@ -166,7 +178,7 @@ public class PauseSystem : MonoBehaviour
     public void UpdateSensitivity(float value)
     {
         mouseSensitivity = Mathf.Lerp(pauseSystem.mouseSensitivityMin, pauseSystem.mouseSensitivityMax, value);
-        sweatersController.instance.lookSpeed = mouseSensitivity;
+        if(sweatersController.instance) sweatersController.instance.lookSpeed = mouseSensitivity;
 
         SaveSetting(nameof(mouseSensitivity));
     }

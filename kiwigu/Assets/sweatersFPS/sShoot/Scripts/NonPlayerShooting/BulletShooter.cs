@@ -138,6 +138,7 @@ public class BulletShooter : MonoBehaviour
         b.charge = charge;
         b.ignoreMask = ~LayerMask.GetMask("GunHand", "HookTarget", "BulletView");
         b.bulletDamage = info.damage;
+        b.fromEnemy = true;
 
         recoil += info.recoilPerShot;
         if (recoil > 1) recoil = 1;

@@ -195,7 +195,7 @@ public class InventoryDotExe : ScreenProgram
             // get gameObjects in 'items' layer
             // create required # of containers
             // populate containers w/ items
-
+            if (!sweatersController.instance) return;
             Vector3 pos = sweatersController.instance.transform.position;
 
             Collider[] colliders = Physics.OverlapSphere(pos, 4, LayerMask.GetMask("Items"));

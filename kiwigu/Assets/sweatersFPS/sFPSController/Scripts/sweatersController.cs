@@ -141,6 +141,8 @@ public class sweatersController : MonoBehaviour
 
         minJumpGravity = jumpSpeed * jumpSpeed / (2 * minJumpHeight);
 
+        lookSpeed = PauseSystem.mouseSensitivity;
+
         //playerCamera = Camera.main;
     }
 
