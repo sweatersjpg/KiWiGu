@@ -5,6 +5,10 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "New GunInfo", menuName = "GunInfo")]
 public class GunInfo : ScriptableObject
 {
+    [Header("Audio")]
+    public AudioClip shootSound;
+    public AudioClip emptyMagSFX;
+
     [Header("Gun Type")]
     public string gunName = "";
 
