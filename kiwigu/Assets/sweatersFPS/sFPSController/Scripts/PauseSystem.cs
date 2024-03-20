@@ -21,8 +21,8 @@ public class PauseSystem : MonoBehaviour
 
     [Range(2, 6)]
     public static float mouseSensitivity = 4;
-    public float mouseSensitivityMin = 2;
-    public float mouseSensitivityMax = 6;
+    public float mouseSensitivityMin = 1;
+    public float mouseSensitivityMax = 7;
 
     public static float musicVol = 0.1f;
     public static float sfxVol = 0.1f;
@@ -42,6 +42,7 @@ public class PauseSystem : MonoBehaviour
     {
         mainCamera = sweatersController.instance.playerCamera;
 
+        LoadSettings();
         // add mixers
     }
 
@@ -78,7 +79,7 @@ public class PauseSystem : MonoBehaviour
     {
         Cursor.lockState = !paused ? CursorLockMode.None : CursorLockMode.Locked;
         Cursor.visible = !paused;
-        //Time.timeScale = !paused ? 0 : 1;
+        Time.timeScale = !paused ? 0 : 1;
 
         paused = !paused;
     }
@@ -87,6 +88,36 @@ public class PauseSystem : MonoBehaviour
     {
         //settingsPanel.SetActive(false);
         //pausePanel.SetActive(state);
+    }
+
+    void SaveSetting(string setting)
+    {
+        float value = (float) GetType().GetField(setting).GetValue(this);
+        PlayerPrefs.SetFloat(setting, value);
+    }
+
+    void SaveSettings()
+    {
+        SaveSetting(nameof(FOV));
+        SaveSetting(nameof(mouseSensitivity));
+        SaveSetting(nameof(masterVol));
+        SaveSetting(nameof(musicVol));
+        SaveSetting(nameof(sfxVol));
+    }
+
+    void LoadSetting(string setting)
+    {
+        float value = PlayerPrefs.GetFloat(setting, (float)GetType().GetField(setting).GetValue(this));
+        GetType().GetField(setting).SetValue(this, value);
+    }
+
+    void LoadSettings()
+    {
+        LoadSetting(nameof(FOV));
+        LoadSetting(nameof(mouseSensitivity));
+        LoadSetting(nameof(masterVol));
+        LoadSetting(nameof(musicVol));
+        LoadSetting(nameof(sfxVol));
     }
 
     // ---- settings ----
@@ -110,6 +141,8 @@ public class PauseSystem : MonoBehaviour
     {
         sfxVol = value;
         GlobalAudioManager.instance.globalMixer.FindMatchingGroups("SFX")[0].audioMixer.SetFloat("volume", Mathf.Lerp(-80, 0, value));
+
+        SaveSetting(nameof(sfxVol));
     }
 
     public void UpdateMusicVolume(float value)
@@ -117,6 +150,8 @@ public class PauseSystem : MonoBehaviour
         musicVol = value;
         // set mixer volume
         GlobalAudioManager.instance.globalMixer.FindMatchingGroups("Music")[0].audioMixer.SetFloat("volume", Mathf.Lerp(-80, 0, value));
+
+        SaveSetting(nameof(musicVol));
     }
 
     public void UpdateMasterVolume(float value)
@@ -124,18 +159,24 @@ public class PauseSystem : MonoBehaviour
         masterVol = value;
         // set mixer volume
         GlobalAudioManager.instance.globalMixer.FindMatchingGroups("Master")[0].audioMixer.SetFloat("volume", Mathf.Lerp(-80, 0, value));
+
+        SaveSetting(nameof(masterVol));
     }
 
     public void UpdateSensitivity(float value)
     {
         mouseSensitivity = Mathf.Lerp(pauseSystem.mouseSensitivityMin, pauseSystem.mouseSensitivityMax, value);
         sweatersController.instance.lookSpeed = mouseSensitivity;
+
+        SaveSetting(nameof(mouseSensitivity));
     }
 
     public void UpdateFOV(float value)
     {
         FOV = Mathf.Lerp(pauseSystem.FOVmin + 0.1f, pauseSystem.FOVmax, value);
         pauseSystem.mainCamera.fieldOfView = FOV;
+
+        SaveSetting(nameof(FOV));
     }
 
 }
