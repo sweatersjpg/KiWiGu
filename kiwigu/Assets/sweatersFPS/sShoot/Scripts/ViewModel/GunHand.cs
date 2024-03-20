@@ -40,6 +40,8 @@ public class GunHand : MonoBehaviour
 
     Animator anim;
 
+    bool hasBullets;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -53,6 +55,8 @@ public class GunHand : MonoBehaviour
         else mouseButton = 0;
 
         anim = transform.GetComponentInParent<Animator>();
+
+        hasBullets = GetComponentInChildren<ShootBullet>().enabled;
 
         // Transform sights = transform.Find("Sights");
         // if(sights != null) sightsPosition = sights.localPosition;
@@ -116,7 +120,10 @@ public class GunHand : MonoBehaviour
         string[] throwButtons = { "LeftThrow", "RightThrow" };
         string throwButton = throwButtons[mouseButton];
 
-        if (Input.GetButtonDown(throwButton))
+        string[] shootButtons = { "LeftShoot", "RightShoot" };
+        string shootButton = shootButtons[mouseButton];
+
+        if (Input.GetButtonDown(throwButton) || (!hasBullets && Input.GetButtonDown(shootButton)))
         {
             // targetAngle = -45;
             // targetPosition = startPosition + new Vector3(0, 0.3f, -0.2f);
