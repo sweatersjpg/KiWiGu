@@ -25,7 +25,7 @@ public class ThrownGun : MonoBehaviour
         rb.AddForce(transform.forward * throwForce, ForceMode.Impulse);
         rb.AddTorque(transform.right * 20);
 
-        //rb.velocity += sweatersController.instance.velocity;
+        rb.velocity += sweatersController.instance.velocity;
 
         if(ammo.capacity == 0) ammo = new Ammunition(info.capacity);
 

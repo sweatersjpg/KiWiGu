@@ -47,10 +47,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bulletDamage: 0
+  shieldMultiplier: 1
   speed: 370
   gravity: -9.8
   acceleration: 0
   radius: 0.8
+  voidRadius: 0
   trackTarget: 0
   trackingRadius: 2
   trackingSpeed: 2
@@ -63,6 +65,7 @@ MonoBehaviour:
   HitFXLayers: []
   spawnOnHit: []
   dead: 0
+  relativity: 0
   charge: 0
   ignoreMask:
     serializedVersion: 2
