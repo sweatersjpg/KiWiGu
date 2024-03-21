@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
+using static MiniMenuSystem;
 
 public class PistolGrunt : MonoBehaviour
 {
@@ -73,7 +74,7 @@ public class PistolGrunt : MonoBehaviour
     bool animDone;
 
     private bool gotHit;
-    private float maxRotationTime = 0.035f;
+    private float maxRotationTime = 0.2f;
     private Quaternion startRotation;
     private float currentRotationTime;
     private bool isRotating;
@@ -100,6 +101,18 @@ public class PistolGrunt : MonoBehaviour
         if (shield > 0 && ht)
         {
             ht.blockSteal = true;
+        }
+
+        
+
+        ht = GetComponentInChildren<HookTarget>();
+
+        if (ht)
+        {
+            isHoldingGun = true;
+
+            BulletShooter bs = transform.GetComponentInChildren<BulletShooter>();
+            if (bs) bs.info = ht.info;
         }
     }
 
@@ -599,10 +612,11 @@ public class PistolGrunt : MonoBehaviour
 
             if (isHoldingGun)
             {
-                EnableHookTargetsRecursively(ragdollInstance.transform);
-                HookTarget hookTarget = ragdollInstance.GetComponentInChildren<HookTarget>();
-                if (hookTarget != null)
-                    hookTarget.BeforeDestroy();
+                bool stillHasGun = true;
+                HookTarget ht = GetComponentInChildren<HookTarget>();
+                if (ht != null) stillHasGun = ht.BeforeDestroy();
+
+                if(stillHasGun) EnableHookTargetsRecursively(ragdollInstance.transform);
 
                 isHoldingGun = false;
                 isShooting = false;
@@ -650,55 +664,62 @@ public class PistolGrunt : MonoBehaviour
         float burst = info.burstSize;
         if (info.fullAuto) burst = info.autoRate;
 
-        for (int j = 0; j < burst; j++)
+        BulletShooter bs = transform.GetComponentInChildren<BulletShooter>();
+        if (bs)
         {
-            for (int i = 0; i < info.projectiles; i++) Invoke(nameof(SpawnBullet), j * 1 / info.autoRate);
+            if (info.fullAuto) bs.SetShootTime(0.3f);
+            else bs.SetIsShooting();
         }
+
+        //for (int j = 0; j < burst; j++)
+        //{
+        //    for (int i = 0; i < info.projectiles; i++) Invoke(nameof(SpawnBullet), j * 1 / info.autoRate);
+        //}
 
         return burst * 1 / info.autoRate;
     }
 
-    private void SpawnBullet()
-    {
-        if (!animDone)
-            return;
+    //private void SpawnBullet()
+    //{
+    //    if (!animDone)
+    //        return;
 
-        if (!isHoldingGun)
-        {
-            isShooting = false;
-            return;
-        }
+    //    if (!isHoldingGun)
+    //    {
+    //        isShooting = false;
+    //        return;
+    //    }
 
-        HookTarget gun = transform.GetComponentInChildren<HookTarget>();
+    //    HookTarget gun = transform.GetComponentInChildren<HookTarget>();
 
-        if (gun)
-            gunInfo = gun.info;
+    //    if (gun)
+    //        gunInfo = gun.info;
 
-        GameObject bullet = Instantiate(gunInfo.bulletPrefab, BulletExitPoint.transform.position, BulletExitPoint.transform.rotation);
+    //    GameObject bullet = Instantiate(gunInfo.bulletPrefab, BulletExitPoint.transform.position, BulletExitPoint.transform.rotation);
 
-        Vector3 direction = BulletExitPoint.transform.forward;
-        direction += SpreadDirection(gunSpread, 3);
+    //    Vector3 direction = BulletExitPoint.transform.forward;
+    //    direction += SpreadDirection(gunSpread, 3);
 
-        bullet.transform.position = BulletExitPoint.transform.position;
-        bullet.transform.rotation = Quaternion.LookRotation(direction.normalized);
+    //    bullet.transform.position = BulletExitPoint.transform.position;
+    //    bullet.transform.rotation = Quaternion.LookRotation(direction.normalized);
 
-        Bullet b = bullet.GetComponent<Bullet>();
-        b.speed = gunInfo.bulletSpeed;
-        b.gravity = gunInfo.bulletGravity;
-        b.ignoreMask = ~LayerMask.GetMask("GunHand", "HookTarget", "Enemy");
-        b.trackTarget = false;
-        b.fromEnemy = true;
-        b.bulletDamage = gunInfo.damage;
-        b.charge = 0.5f;
-    }
+    //    Bullet b = bullet.GetComponent<Bullet>();
+    //    b.speed = gunInfo.bulletSpeed;
+    //    b.gravity = gunInfo.bulletGravity;
+    //    b.ignoreMask = ~LayerMask.GetMask("GunHand", "HookTarget", "Enemy");
+    //    b.trackTarget = false;
+    //    b.fromEnemy = true;
+    //    b.bulletDamage = gunInfo.damage;
+    //    b.charge = 0.5f;
+    //}
 
-    private Vector3 SpreadDirection(float spread, int rolls)
-    {
-        Vector3 offset = Vector3.zero;
-        for (int i = 0; i < rolls; i++)
-            offset += Random.onUnitSphere * spread;
-        return offset / rolls;
-    }
+    //private Vector3 SpreadDirection(float spread, int rolls)
+    //{
+    //    Vector3 offset = Vector3.zero;
+    //    for (int i = 0; i < rolls; i++)
+    //        offset += Random.onUnitSphere * spread;
+    //    return offset / rolls;
+    //}
 
     private void OnDrawGizmos()
     {

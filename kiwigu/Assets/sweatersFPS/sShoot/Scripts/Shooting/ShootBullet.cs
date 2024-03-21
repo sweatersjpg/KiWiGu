@@ -10,6 +10,7 @@ public class ShootBullet : MonoBehaviour
 {
     public GunHand anim;
     public ParticleSystem flash;
+    public ParticleSystem shell;
 
     float spreadSpeed = 5;
     float spreadTimeStart = 0;
@@ -105,7 +106,7 @@ public class ShootBullet : MonoBehaviour
             else
             {
                 if (Input.GetButtonDown(shootButton))
-                    GlobalAudioManager.instance.PlayGunEmpty(transform);
+                    GlobalAudioManager.instance.PlayGunEmpty(transform, info);
             }
         }
 
@@ -133,6 +134,7 @@ public class ShootBullet : MonoBehaviour
         for (int i = 0; i < info.projectiles; i++) SpawnBullet();
         anim.AnimateShoot();
         if (flash != null) flash.Play();
+        if (shell != null) shell.Emit(1);
 
         if(!info.fullAuto) chargeTimer = 0;
         // Debug.Log(charge);
@@ -181,7 +183,7 @@ public class ShootBullet : MonoBehaviour
         b.speed = info.bulletSpeed;
         b.gravity = info.bulletGravity;
         b.charge = charge;
-        b.ignoreMask = ~LayerMask.GetMask("GunHand", "Player", "HookTarget");
+        b.ignoreMask = ~LayerMask.GetMask("GunHand", "Player", "HookTarget", "BulletView");
         b.bulletDamage = info.damage;
 
         recoil += info.recoilPerShot;

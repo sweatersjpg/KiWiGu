@@ -53,6 +53,8 @@ public class ScreenSystem : MonoBehaviour
 
     float transition = 0;
 
+    float deltaTime;
+
     private void Awake()
     {
         distortionEffectActive = effects.TryGet(out distortionEffect);
@@ -62,7 +64,9 @@ public class ScreenSystem : MonoBehaviour
 
     private void Update()
     {
-        if (PauseSystem.paused && Input.GetKeyDown(KeyCode.Tab)) Resume(2);
+        deltaTime = Time.unscaledDeltaTime;
+
+        if (PauseSystem.paused && Input.GetKeyDown(KeyCode.Tab)) Resume(1);
 
         // open pause menu
         if (!PauseSystem.paused && (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.P))) Resume(0);
@@ -133,7 +137,7 @@ public class ScreenSystem : MonoBehaviour
     {
         if (PauseSystem.paused)
         {
-            if (transition < transitionDuration) transition += 0.016f;
+            if (transition < transitionDuration) transition += deltaTime;
             else
             {
                 transition = transitionDuration;
@@ -147,7 +151,7 @@ public class ScreenSystem : MonoBehaviour
         }
         else
         {
-            if (transition > 0) transition -= 1f / R.frameRate;
+            if (transition > 0) transition -= deltaTime;
             else transition = 0;
             //if (transition < transitionDuration / 2 && menuCamera.gameObject.activeSelf)
             //{
@@ -162,7 +166,7 @@ public class ScreenSystem : MonoBehaviour
         float targetIntensity = distortionIntensity * 1.5f;
         float currentIntensity = (float)distortionEffect.intensity;
         float smoothness = 35;
-        distortionEffect.intensity.Override(Mathf.Lerp(currentIntensity, targetIntensity, Time.deltaTime * smoothness));
+        distortionEffect.intensity.Override(Mathf.Lerp(currentIntensity, targetIntensity, deltaTime * smoothness));
 
         backdrop.color = Color.Lerp(backdropStart, backdropEnd, backdropTransition.Evaluate(transition / transitionDuration));
     }

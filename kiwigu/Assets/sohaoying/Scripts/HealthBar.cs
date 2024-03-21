@@ -51,7 +51,7 @@ class HealthBar : MonoBehaviour
     [SerializeField] List<Image> healthBarImages;
     // some code in this class assumes LBar, RBar, LBorder, RBorder
     [SerializeField] List<Material> healthBarMaterials;
-
+    float actualPercent;
 
     void Start()
     {
@@ -86,7 +86,10 @@ class HealthBar : MonoBehaviour
         float deltaPercent = TargetPercent - startPercent;
         displayPercent = startPercent + deltaPercent * progress;
 
-        ApplyPercent(displayPercent);
+        actualPercent = Mathf.Lerp(actualPercent, TargetPercent, Time.deltaTime * 5);
+
+        // ApplyPercent(displayPercent);
+        ApplyPercent(actualPercent);
     }
 
     void FixedUpdate()

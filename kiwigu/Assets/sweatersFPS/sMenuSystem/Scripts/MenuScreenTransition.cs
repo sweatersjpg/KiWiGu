@@ -26,8 +26,8 @@ public class MenuScreenTransition : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (PauseSystem.paused) transitonTimer += 1 / transitionDuration * Time.deltaTime;
-        else transitonTimer -= 1 / transitionDuration * Time.deltaTime;
+        if (PauseSystem.paused) transitonTimer += 1 / transitionDuration * Time.unscaledDeltaTime;
+        else transitonTimer -= 1 / transitionDuration * Time.unscaledDeltaTime;
 
         if (transitonTimer < 0) transitonTimer = 0;
         if (transitonTimer > transitionDuration) transitonTimer = transitionDuration;

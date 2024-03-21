@@ -22,6 +22,8 @@ public class HookHUD : MonoBehaviour
             return;
 
         UpdateHookIcon();
+
+        if(PauseSystem.paused) reticleIcon.color = new Color(1f, 1f, 1f, 0f);
     }
 
     private void UpdateHookIcon()

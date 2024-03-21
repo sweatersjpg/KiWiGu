@@ -50,6 +50,8 @@ public class MiniMenuSystem : ScreenProgram
 
         public List<Adjustable> adjustables;
 
+        string oldRes;
+
         public Window(MiniMenuSystem M, List<MiniMenu.Settings> settings, string title, int x, int y, int w, int h)
         {
             this.settings = settings;
@@ -58,12 +60,18 @@ public class MiniMenuSystem : ScreenProgram
             pos = new Vector2(x, y);
             size = new Vector2(w, h);
 
-            adjustables = new();
-            foreach (MiniMenu.Settings s in settings) adjustables.Add(SpawnAdjustable(s));
+            Refresh();
         }
 
         public void Draw()
         {
+            string newRes = Screen.currentResolution.width + "x" + Screen.currentResolution.height;
+            if (oldRes != newRes)
+            {
+                oldRes = newRes;
+                Refresh();
+            }
+            
             for (int i = 0; i < adjustables.Count; i++) adjustables[i].Draw((int)(pos.x + size.x / 2) + 1, 3 + i * 2);
 
             M.drawBox(pos.x, pos.y, size.x, size.y, true);
@@ -73,6 +81,12 @@ public class MiniMenuSystem : ScreenProgram
             if (M.MouseOver(pos.x + size.x - 2, pos.y)) M.mouseIcon = HAND_POINTER;
 
             if (M.MouseOver(pos.x + size.x - 2, pos.y) && M.mouseButtonDown) M.window = null;
+        }
+
+        public void Refresh()
+        {
+            adjustables = new();
+            foreach (MiniMenu.Settings s in settings) adjustables.Add(SpawnAdjustable(s));
         }
 
         public Adjustable SpawnAdjustable(MiniMenu.Settings setting)
@@ -180,11 +194,34 @@ public class MiniMenuSystem : ScreenProgram
             else if (setting.title == "music") value = PauseSystem.musicVol;
             else if (setting.title == "sfx") value = PauseSystem.sfxVol;
             else if (setting.title == "master") value = PauseSystem.masterVol;
+            else if (setting.title == "resolution")
+            {
+                value = 0.999f;
+                
+                Resolution[] res = Screen.resolutions;
+                setting.content = new string[res.Length];
+                for (int i = 0; i < setting.content.Length; i++)
+                {
+                    setting.content[i] = res[i].width + "x" + res[i].height;
+                    if(res[i].width + "x" + res[i].height == Screen.currentResolution.width + "x" + Screen.currentResolution.height)
+                    {
+                        value = (float) i / (float) setting.content.Length + 0.001f;
+                    }
+                }
+                
+            }
         }
 
         public override void Draw(int x, int y)
         {
-            M.put(setting.title, x - setting.title.Length - 1, y);
+            string title = setting.title;
+            if(MouseOver(x, y) && setting.content.Length > 0)
+            {
+                if (value >= 1) value = 0.999f;
+                title = setting.content[(int)(value * setting.content.Length)];
+            }
+            
+            M.put(title, x - title.Length - 1, y);
             //M.put("----------", x, y);
             for (int i = 0; i < 10; i++) M.tile(24 + (value * 10 <= i ? 8 : 0), 0, x + i, y);
 
@@ -192,21 +229,25 @@ public class MiniMenuSystem : ScreenProgram
 
             if (M.mouseButtonDown && MouseOver(x, y)) holding = true;
 
-            if (M.mouseButton)
-            {
-                if (holding) M.mouseIcon = HAND_CLOSED;
-            }
-            else holding = false;
-
             if (holding)
             {
                 value = Mathf.InverseLerp(x * 8, (x + 10) * 8, M.mouse.x);
                 if (value < 0) value = 0;
                 if (value > 1) value = 1;
 
-                M.listener.SendMessage(setting.callBack, value);
-                //if (setting.callBack == "UpdateFOV") M.gameObject.SendMessage(setting.callBack, value);
+                if (setting.callBack.Contains("Update")) M.listener.SendMessage(setting.callBack, value);
+                else
+                {
+                    if (M.mouseButtonUp) M.listener.SendMessage(setting.callBack, value);
+                }
             }
+
+            if (M.mouseButton)
+            {
+                if (holding) M.mouseIcon = HAND_CLOSED;
+            }
+            else holding = false;
+
         }
 
         bool MouseOver(int x, int y)

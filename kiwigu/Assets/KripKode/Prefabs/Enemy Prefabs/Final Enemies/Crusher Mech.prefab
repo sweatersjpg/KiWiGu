@@ -684,6 +684,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   breakSFX: {fileID: 8383575664418642281, guid: 83211bcd6b225bf498865d255959544f, type: 3}
   armorHealth: 50
+  hookBreakable: 0
+  refScriptMech: {fileID: 0}
+  isLeft: 0
+  isRight: 0
 --- !u!1 &2336516923765626797
 GameObject:
   m_ObjectHideFlags: 0
@@ -841,6 +845,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   breakSFX: {fileID: 8383575664418642281, guid: 83211bcd6b225bf498865d255959544f, type: 3}
   armorHealth: 50
+  hookBreakable: 1
+  refScriptMech: {fileID: 4553230268822790759}
+  isLeft: 1
+  isRight: 0
 --- !u!1 &2716586094386576154
 GameObject:
   m_ObjectHideFlags: 0
@@ -1098,6 +1106,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   breakSFX: {fileID: 8383575664418642281, guid: 83211bcd6b225bf498865d255959544f, type: 3}
   armorHealth: 50
+  hookBreakable: 1
+  refScriptMech: {fileID: 4553230268822790759}
+  isLeft: 0
+  isRight: 1
 --- !u!1 &3019446417022182281
 GameObject:
   m_ObjectHideFlags: 0
@@ -1588,6 +1600,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   breakSFX: {fileID: 8383575664418642281, guid: 83211bcd6b225bf498865d255959544f, type: 3}
   armorHealth: 50
+  hookBreakable: 0
+  refScriptMech: {fileID: 0}
+  isLeft: 0
+  isRight: 0
 --- !u!1 &4115640695213961372
 GameObject:
   m_ObjectHideFlags: 0
@@ -1894,7 +1910,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4d2ce53ee64d23b4ab2b38a8ce74f259, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  info: {fileID: 11400000, guid: e5bb5fe78f842eb4f8d2297674b143c0, type: 2}
+  info: {fileID: 11400000, guid: 9081c37e1d4641743b27e2394b64b91a, type: 2}
   gunView: {fileID: 4553230269706818819}
   throwGunPrefab: {fileID: 6087863177417318745, guid: 775df9a2e9013c54ab64a1c26875866b, type: 3}
   hasView: 1
@@ -1977,17 +1993,19 @@ MonoBehaviour:
   headPos: {fileID: 3302681532063110361}
   HeadshotIndicator: {fileID: 5046152788282611147, guid: 9cc898ae52c4b91479552c28f559e810, type: 3}
   ExplosionX: {fileID: 1886320638105856866, guid: 13d5be19c9afbe94eb09962e4d4b6afb, type: 3}
+  FireWarningSFX: {fileID: 2838533942546750815, guid: 4ca2e9e9def890849859a51bbf24d3a0, type: 3}
   eyesPosition: {fileID: 4553230269836018217}
   detectionRange: 35
+  findCoverRange: 25
   wanderSpeed: 3
   wanderWaitTime: 5
   wanderRadius: 5
   seekSpeed: 10
   shootCooldown: 2
-  leftGun: {fileID: 4553230269375856094}
-  rightGun: {fileID: 4553230268767480343}
   leftGunExitPoint: {fileID: 4553230269090784381}
   rightGunExitPoint: {fileID: 4553230268717704560}
+  leftGun: {fileID: 4553230269375856094}
+  rightGun: {fileID: 4553230268767480343}
   shootAlternate: 0
   splatoodFX: {fileID: 8636026588871352116, guid: dc5ec3d945ace784cb9e3b8e4b1c5a2b, type: 3}
 --- !u!1 &4553230268915693534
@@ -2246,7 +2264,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4d2ce53ee64d23b4ab2b38a8ce74f259, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  info: {fileID: 11400000, guid: e5bb5fe78f842eb4f8d2297674b143c0, type: 2}
+  info: {fileID: 11400000, guid: ff1c5490332b9e94784e8685aaf92b16, type: 2}
   gunView: {fileID: 4553230269201951398}
   throwGunPrefab: {fileID: 6087863177417318745, guid: 775df9a2e9013c54ab64a1c26875866b, type: 3}
   hasView: 1
@@ -2526,6 +2544,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   breakSFX: {fileID: 8383575664418642281, guid: 83211bcd6b225bf498865d255959544f, type: 3}
   armorHealth: 50
+  hookBreakable: 0
+  refScriptMech: {fileID: 0}
+  isLeft: 0
+  isRight: 0
 --- !u!1 &4932334503622803942
 GameObject:
   m_ObjectHideFlags: 0
@@ -2718,6 +2740,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   breakSFX: {fileID: 8383575664418642281, guid: 83211bcd6b225bf498865d255959544f, type: 3}
   armorHealth: 50
+  hookBreakable: 0
+  refScriptMech: {fileID: 0}
+  isLeft: 0
+  isRight: 0
 --- !u!1 &5212617556834617097
 GameObject:
   m_ObjectHideFlags: 0
@@ -2847,6 +2873,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   breakSFX: {fileID: 8383575664418642281, guid: 83211bcd6b225bf498865d255959544f, type: 3}
   armorHealth: 50
+  hookBreakable: 0
+  refScriptMech: {fileID: 0}
+  isLeft: 0
+  isRight: 0
 --- !u!1 &5317818055745130675
 GameObject:
   m_ObjectHideFlags: 0
@@ -3457,6 +3487,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   breakSFX: {fileID: 8383575664418642281, guid: 83211bcd6b225bf498865d255959544f, type: 3}
   armorHealth: 75
+  hookBreakable: 0
+  refScriptMech: {fileID: 0}
+  isLeft: 0
+  isRight: 0
 --- !u!1 &8200851844188142083
 GameObject:
   m_ObjectHideFlags: 0
