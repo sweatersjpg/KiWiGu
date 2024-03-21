@@ -44,7 +44,7 @@ public class GlobalAudioManager : MonoBehaviour
 
     public void PlayGunFire(Transform location, GunInfo info)
     {
-        PlaySound(location, info.shootSound, 1, 1, 25, "shootSFX");
+        PlaySound(location, info.shootSound, 1, Random.Range(0.9f, 1.05f), 25, "shootSFX");
     }
 
     public void PlayGunEmpty(Transform location, GunInfo info)
