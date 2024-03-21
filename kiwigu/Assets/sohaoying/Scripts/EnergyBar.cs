@@ -13,7 +13,7 @@ class EnergyBar : MonoBehaviour
     [SerializeField] float animTime = 0.5f;
 
     Image barImage;
-    float displayPercent;
+    internal float DisplayPercent;
     float startPercent;
     float timeLeft;
     float prevTarget;
@@ -28,14 +28,14 @@ class EnergyBar : MonoBehaviour
         if (prevTarget != TargetPercent)
         {
             timeLeft = animTime;
-            startPercent = displayPercent;
+            startPercent = DisplayPercent;
         }
         prevTarget = TargetPercent;
 
         if (timeLeft - Time.deltaTime < 0f)
         {
             timeLeft = 0f;
-            displayPercent = TargetPercent;
+            DisplayPercent = TargetPercent;
         }
         timeLeft -= Time.deltaTime;
 
@@ -44,8 +44,8 @@ class EnergyBar : MonoBehaviour
         progress = progress * progress * (3f - 2f * progress); // hermite easing
 
         float deltaPercent = TargetPercent - startPercent;
-        displayPercent = startPercent + deltaPercent * progress;
+        DisplayPercent = startPercent + deltaPercent * progress;
 
-        barImage.fillAmount = displayPercent;
+        barImage.fillAmount = DisplayPercent;
     }
 }

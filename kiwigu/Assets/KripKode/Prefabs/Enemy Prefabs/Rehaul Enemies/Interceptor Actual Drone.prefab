@@ -48,7 +48,7 @@ MeshRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 695158394864803780}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -201,6 +201,7 @@ MonoBehaviour:
   resistance: 0.5
   maxResistance: 0
   tether: 0
+  swing: 0
   blockSteal: 0
 --- !u!1 &695158395439763589
 GameObject:
@@ -319,8 +320,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ReferenceScript: DefenseDrone
   doubleDamage: 0
-  lessDamage: 0
+  chestDamage: 0
   leastDamage: 0
+  isBackpack: 0
+  isShield: 0
 --- !u!1 &695158395606599024
 GameObject:
   m_ObjectHideFlags: 0
@@ -580,7 +583,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5626756182752326387}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.325, z: 0.3499999}
+  m_LocalPosition: {x: 0, y: -0.325, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -598,7 +601,6 @@ GameObject:
   - component: {fileID: 5626756183156009845}
   - component: {fileID: 5626756183156009844}
   - component: {fileID: 5626756183156009850}
-  - component: {fileID: 8083028429827206629}
   - component: {fileID: 8083028429827206630}
   m_Layer: 9
   m_Name: Interceptor Actual Drone
@@ -653,39 +655,6 @@ NavMeshAgent:
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 0
---- !u!114 &8083028429827206629
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5626756183156009849}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9a6610d2e704f1648819acc8d7460285, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  CollisionTag: 
-  EventReference:
-    Guid:
-      Data1: -807209716
-      Data2: 1198973856
-      Data3: 1820108474
-      Data4: -1617302324
-    Path: event:/SFX_Shoot
-  Event: 
-  PlayEvent: 0
-  StopEvent: 0
-  AllowFadeout: 1
-  TriggerOnce: 0
-  Preload: 0
-  AllowNonRigidbodyDoppler: 0
-  Params:
-  - Name: Weapon
-    Value: 1
-  OverrideAttenuation: 0
-  OverrideMinDistance: 1
-  OverrideMaxDistance: 20
 --- !u!114 &8083028429827206630
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -698,7 +667,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 22404523b4a27b245ae13e020b4afb46, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sfxEmitterAvailable: {fileID: 8083028429827206629}
   health: 35
   shield: 0
   explosionPrefab: {fileID: 7636364201620702995, guid: b5816ea69c8765740b42c416d1463566, type: 3}
@@ -706,15 +674,19 @@ MonoBehaviour:
   eyesPosition: {fileID: 5626756182098279481}
   seekRange: 25
   wanderSpeed: 4
-  seekSpeed: 8
-  wanderRadius: 10
-  keepDistance: 3
-  awareDistance: 25
+  seekSpeed: 6
+  wanderRadius: 8
+  keepDistance: 1
+  awareDistance: 35
   wanderWaitTime: 5
   rememberWaitTime: 10
+  grenadePrefab: {fileID: 8717934894555608452, guid: 3830eb4640e015948b6f2ceca1b7ecd9, type: 3}
   bulletExitPoint: {fileID: 5626756182752326348}
-  defendCooldown: 1
+  defendCooldown: 4
   defendTag: Enemy
+  rotationSpeed: 2
+  spawnRadius: 2
+  numGrenades: 3
   droneBody: {fileID: 695158395439763589}
   floatValue: 0.5
   floatSpeed: 0.75

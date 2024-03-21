@@ -52,6 +52,11 @@ public class PlayerHealth : MonoBehaviour
         if (!PauseSystem.paused) healthBar.TargetPercent = health / totalHealth;
     }
 
+    public void ResetHealth()
+    {
+        health = totalHealth;
+    }
+
     public void DealDamage(float damage, Vector3 source)
     {
         RectTransform indicator = Instantiate(directionalPrefab, daddy.transform).GetComponent<RectTransform>();
@@ -75,6 +80,7 @@ public class PlayerHealth : MonoBehaviour
     {
         if (health >= 0 && !(killFloor && transform.position.y < killFloor.position.y)) return;
 
-        PauseSystem.pauseSystem.ReloadScene();
+        // PauseSystem.pauseSystem.ReloadScene();
+        ResetScene.instance.PlayerDeath((killFloor && transform.position.y < killFloor.position.y));
     }
 }

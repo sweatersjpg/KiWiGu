@@ -12,12 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 23c1375cd985d95488add3e7772559e4, type: 3}
   m_Name: R08 Stinger
   m_EditorClassIdentifier: 
+  shootSound: {fileID: 8300000, guid: 8e515d045205da84ca1e39b52b4345a9, type: 3}
+  emptyMagSFX: {fileID: 0}
+  gunName: Stinger
   canAim: 0
   hasToAim: 0
   aimDelay: 0.3
   aimTime: 0.3
   scopeFOV: 50
-  capacity: 20
+  capacity: 60
   recharge: 0
   rechargeRate: 5
   canCharge: 0
@@ -28,12 +31,12 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  fullAuto: 1
+  fullAuto: 0
   projectiles: 1
-  burstSize: 1
-  autoRate: 3
-  fireRate: 3
-  damage: 10
+  burstSize: 3
+  autoRate: 8
+  fireRate: 2
+  damage: 6
   spread: 0.02
   recoil: 7
   spreadVariation:

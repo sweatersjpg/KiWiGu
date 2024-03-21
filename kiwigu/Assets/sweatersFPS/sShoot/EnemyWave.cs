@@ -9,6 +9,8 @@ public class EnemyWave
     public float startDelay;
     public Transform SpawnPoints;
 
+    public bool ignoreWaveForTesting = false;
+
     [Space]
     public Spawn[] enemySpawns;
 
@@ -17,6 +19,7 @@ public class EnemyWave
     {
         public float startDelay;
         public float spawnDelay;
+        public Transform[] customSpawnPoints;
         public int[] stages;
         public bool endless;
         public GameObject enemyPrefab;

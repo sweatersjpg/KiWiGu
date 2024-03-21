@@ -3,13 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using UnityEngine.Events;
-using FMODUnity;
+using UnityEngine.InputSystem;
+using static MiniMenuSystem;
 
 public class ShootBullet : MonoBehaviour
 {
-    [SerializeField] StudioEventEmitter sfxEmitterAvailable;
-    [SerializeField] StudioEventEmitter sfxEmitterOut;
-
     public GunHand anim;
     public ParticleSystem flash;
 
@@ -69,17 +67,26 @@ public class ShootBullet : MonoBehaviour
             time += Time.deltaTime;
         }
 
-        bool canShoot = (Time.time - shotTimer) > 1 / info.fireRate && anim.canShoot && anim.hasGun;
+        float fireRate = info.fireRate;
+        
+        // if can charger and full audo => link charge to fire rate
+        if(info.fullAuto && info.canCharge) fireRate = charge * info.fireRate;
+
+        bool canShoot = (Time.time - shotTimer) > 1 / fireRate && anim.canShoot && anim.hasGun;
         anim.canShoot = canShoot;
 
+        string[] shootButtons = { "LeftShoot", "RightShoot" };
+        string shootButton = shootButtons[anim.mouseButton];
+
         bool doShoot = (info.canCharge) ?
-            Input.GetMouseButtonUp(anim.mouseButton) : Input.GetMouseButtonDown(anim.mouseButton);
-        if (info.fullAuto) doShoot = Input.GetMouseButton(anim.mouseButton);
+            Input.GetButtonUp(shootButton) : Input.GetButtonDown(shootButton);
+        if (info.fullAuto) doShoot = Input.GetButton(shootButton);
 
         if (info.canCharge)
         {
             // if (Input.GetMouseButtonDown(anim.mouseButton)) chargeTimerStart = time;
-            if (Input.GetMouseButton(anim.mouseButton)) chargeTimer += deltaTime / info.timeToMaxCharge;
+            if (Input.GetButton(shootButton)) chargeTimer += deltaTime / info.timeToMaxCharge;
+            if (info.fullAuto && Input.GetButtonUp(shootButton)) chargeTimer = 0;
 
             if (chargeTimer > 1) chargeTimer = 1;
             if (chargeTimer < 0) chargeTimer = 0;
@@ -92,12 +99,13 @@ public class ShootBullet : MonoBehaviour
             if (ammo.count > 0)
             {
                 shotTimer = Time.time;
+
                 for (int i = 0; i < info.burstSize; i++) Invoke(nameof(Shoot), i * 1 / info.autoRate);
             }
             else
             {
-                if (Input.GetMouseButtonDown(anim.mouseButton))
-                    sfxEmitterOut.Play();
+                if (Input.GetButtonDown(shootButton))
+                    GlobalAudioManager.instance.PlayGunEmpty(transform, info);
             }
         }
 
@@ -118,23 +126,45 @@ public class ShootBullet : MonoBehaviour
 
     void Shoot()
     {
-        ammo.count -= 1;
+        GlobalAudioManager.instance.PlayGunFire(transform, info);
 
-        sfxEmitterAvailable.SetParameter("Charge", charge);
-        sfxEmitterAvailable.Play();
+        ammo.count -= 1;
 
         for (int i = 0; i < info.projectiles; i++) SpawnBullet();
         anim.AnimateShoot();
         if (flash != null) flash.Play();
 
-        chargeTimer = 0;
+        if(!info.fullAuto) chargeTimer = 0;
         // Debug.Log(charge);
 
         ShootEvent.Invoke();
+
+        DoRumble();
+    }
+
+    void DoRumble()
+    {
+        if (Input.GetJoystickNames().Length == 0) return;
+        
+        Gamepad.current.SetMotorSpeeds(Random.Range(0.2f, 0.8f), Random.Range(0.5f, 1f));
+        Invoke(nameof(StopRumble), 0.2f);
+    }
+
+    void StopRumble()
+    {
+        if (Input.GetJoystickNames().Length == 0) return;
+        Gamepad.current.SetMotorSpeeds(0, 0);
+    }
+
+    private void OnDestroy()
+    {
+        StopRumble();
     }
 
     void SpawnBullet()
     {
+        if (!info.bulletPrefab) return;
+
         GameObject bullet = Instantiate(info.bulletPrefab);
 
         Vector3 direction = transform.forward;
@@ -151,7 +181,7 @@ public class ShootBullet : MonoBehaviour
         b.speed = info.bulletSpeed;
         b.gravity = info.bulletGravity;
         b.charge = charge;
-        b.ignoreMask = ~LayerMask.GetMask("GunHand", "Player", "HookTarget");
+        b.ignoreMask = ~LayerMask.GetMask("GunHand", "Player", "HookTarget", "BulletView");
         b.bulletDamage = info.damage;
 
         recoil += info.recoilPerShot;

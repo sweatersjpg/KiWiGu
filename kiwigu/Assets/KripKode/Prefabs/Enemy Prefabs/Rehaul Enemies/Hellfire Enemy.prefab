@@ -93,8 +93,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ReferenceScript: HellfireEnemy
   doubleDamage: 0
-  lessDamage: 1
+  chestDamage: 0
   leastDamage: 0
+  isBackpack: 0
+  isShield: 0
 --- !u!1 &307073388043630348
 GameObject:
   m_ObjectHideFlags: 0
@@ -283,8 +285,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ReferenceScript: HellfireEnemy
   doubleDamage: 0
-  lessDamage: 1
+  chestDamage: 0
   leastDamage: 0
+  isBackpack: 0
+  isShield: 0
 --- !u!1 &1630594542227999812
 GameObject:
   m_ObjectHideFlags: 0
@@ -476,8 +480,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ReferenceScript: HellfireEnemy
   doubleDamage: 0
-  lessDamage: 0
+  chestDamage: 0
   leastDamage: 1
+  isBackpack: 0
+  isShield: 0
 --- !u!1 &3014698449563898439
 GameObject:
   m_ObjectHideFlags: 0
@@ -572,8 +578,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ReferenceScript: HellfireEnemy
   doubleDamage: 0
-  lessDamage: 0
+  chestDamage: 0
   leastDamage: 0
+  isBackpack: 0
+  isShield: 0
 --- !u!1 &3047288792565341125
 GameObject:
   m_ObjectHideFlags: 0
@@ -700,8 +708,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ReferenceScript: HellfireEnemy
   doubleDamage: 0
-  lessDamage: 1
+  chestDamage: 0
   leastDamage: 0
+  isBackpack: 0
+  isShield: 0
 --- !u!1 &3276695175770743928
 GameObject:
   m_ObjectHideFlags: 0
@@ -764,8 +774,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ReferenceScript: HellfireEnemy
   doubleDamage: 0
-  lessDamage: 1
+  chestDamage: 0
   leastDamage: 0
+  isBackpack: 0
+  isShield: 0
 --- !u!1 &3419818451729792212
 GameObject:
   m_ObjectHideFlags: 0
@@ -859,8 +871,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ReferenceScript: HellfireEnemy
   doubleDamage: 1
-  lessDamage: 0
+  chestDamage: 0
   leastDamage: 0
+  isBackpack: 0
+  isShield: 0
 --- !u!1 &3537021070783231067
 GameObject:
   m_ObjectHideFlags: 0
@@ -986,8 +1000,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ReferenceScript: HellfireEnemy
   doubleDamage: 0
-  lessDamage: 0
+  chestDamage: 0
   leastDamage: 1
+  isBackpack: 0
+  isShield: 0
 --- !u!1 &4067844980671167704
 GameObject:
   m_ObjectHideFlags: 0
@@ -1303,8 +1319,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ReferenceScript: HellfireEnemy
   doubleDamage: 0
-  lessDamage: 0
+  chestDamage: 0
   leastDamage: 0
+  isBackpack: 0
+  isShield: 0
 --- !u!1 &5022395328331425302
 GameObject:
   m_ObjectHideFlags: 0
@@ -1559,8 +1577,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ReferenceScript: HellfireEnemy
   doubleDamage: 0
-  lessDamage: 1
+  chestDamage: 0
   leastDamage: 0
+  isBackpack: 0
+  isShield: 0
 --- !u!1 &6270916848857652994
 GameObject:
   m_ObjectHideFlags: 0
@@ -1852,8 +1872,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ReferenceScript: HellfireEnemy
   doubleDamage: 0
-  lessDamage: 1
+  chestDamage: 0
   leastDamage: 0
+  isBackpack: 0
+  isShield: 0
 --- !u!1 &7117050019751422664
 GameObject:
   m_ObjectHideFlags: 0
@@ -2199,6 +2221,7 @@ MonoBehaviour:
   resistance: 0.5
   maxResistance: 0
   tether: 0
+  swing: 0
   blockSteal: 1
 --- !u!1 &7906627093545008049
 GameObject:
@@ -2852,7 +2875,6 @@ GameObject:
   m_Component:
   - component: {fileID: 8931406875862246887}
   - component: {fileID: 8931406875862246886}
-  - component: {fileID: 8931406875862246885}
   - component: {fileID: 3970519708299443682}
   m_Layer: 9
   m_Name: Hellfire Enemy
@@ -2902,41 +2924,6 @@ NavMeshAgent:
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
---- !u!114 &8931406875862246885
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8931406875862246907}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9a6610d2e704f1648819acc8d7460285, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  CollisionTag: 
-  EventReference:
-    Guid:
-      Data1: -807209716
-      Data2: 1198973856
-      Data3: 1820108474
-      Data4: -1617302324
-    Path: event:/SFX_Shoot
-  Event: 
-  PlayEvent: 0
-  StopEvent: 0
-  AllowFadeout: 1
-  TriggerOnce: 0
-  Preload: 0
-  AllowNonRigidbodyDoppler: 0
-  Params:
-  - Name: Weapon
-    Value: 2
-  - Name: Charge
-    Value: 0
-  OverrideAttenuation: 0
-  OverrideMinDistance: 1
-  OverrideMaxDistance: 20
 --- !u!114 &3970519708299443682
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2949,28 +2936,38 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c2270a379d211024583cf0c854662d00, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sfxEmitterAvailable: {fileID: 8931406875862246885}
   enemyState: 0
   health: 75
   shield: 100
   animator: {fileID: 815600489792796424}
   shieldObject: {fileID: 8707260385946198753}
+  shieldObjectMetal: {fileID: 0}
+  HeadshotIndicator: {fileID: 0}
+  BreakingShieldIndicator: {fileID: 0}
   BrokenShieldIndicator: {fileID: 5046152788282611147, guid: 79b3f31201dc23a4589d3a4ce1699922, type: 3}
+  headPos: {fileID: 0}
   ragdoll: {fileID: 8931406875862246907, guid: 2b4aa26ac3195e447a973e86b3fcf5c5, type: 3}
+  splatoodFX: {fileID: 0}
+  currentHealth: 0
+  currentShield: 0
   wanderSpeed: 3
   seekSpeed: 4
-  panicSpeed: 5
+  enragedSpeed: 0
+  marchSpeed: 0
+  marchIntervals: 0
   keepDistance: 5
-  shootDistance: 20
+  marchDistance: 0
   wanderWaitTime: 5
   wanderRadius: 10
   rememberWaitTime: 10
   eyesPosition: {fileID: 8931406875959441898}
-  seekRange: 25
+  seekRange: 60
   hookTarget: {fileID: 7882388365707268293, guid: 4f8e81ab3e87ef24997d6fb50e9028c6, type: 3}
   hookTargetPosition: {fileID: 4113458885120078626}
+  gunInfo: {fileID: 0}
   BulletExitPoint: {fileID: 4333179148629364862}
   shootCooldown: 1
+  gunSpread: 0
   isShooting: 0
 --- !u!1 &8931406875959441897
 GameObject:
@@ -3065,8 +3062,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ReferenceScript: HellfireEnemy
   doubleDamage: 0
-  lessDamage: 1
+  chestDamage: 0
   leastDamage: 0
+  isBackpack: 0
+  isShield: 0
 --- !u!1 &8994962826956308159
 GameObject:
   m_ObjectHideFlags: 0
@@ -3193,8 +3192,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ReferenceScript: HellfireEnemy
   doubleDamage: 0
-  lessDamage: 1
+  chestDamage: 0
   leastDamage: 0
+  isBackpack: 0
+  isShield: 0
 --- !u!1 &9105179521281415970
 GameObject:
   m_ObjectHideFlags: 0

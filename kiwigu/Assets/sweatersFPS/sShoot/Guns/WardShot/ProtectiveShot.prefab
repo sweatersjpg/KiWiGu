@@ -46,10 +46,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bulletDamage: 0
+  shieldMultiplier: 1
   speed: 370
   gravity: -9.8
   acceleration: 80
   radius: 0.01
+  voidRadius: 0
   trackTarget: 0
   trackingRadius: 2
   trackingSpeed: 2
@@ -57,13 +59,19 @@ MonoBehaviour:
   bulletMesh: {fileID: 7168401629478513263}
   bulletHolePrefab: {fileID: 0}
   sparksPrefab: {fileID: 0}
+  HitFX: []
+  HitFXLayers: []
   spawnOnHit:
   - {fileID: 8316425911335428651, guid: a97ed5865cb164e489926e96a502357f, type: 3}
+  dead: 0
   charge: 0
   ignoreMask:
     serializedVersion: 2
     m_Bits: 0
   fromEnemy: 0
+  justInfo: 0
+  rbObject: {fileID: 0}
+  rbForce: 10
 --- !u!1 &7168401629478513263
 GameObject:
   m_ObjectHideFlags: 0
@@ -339,6 +347,10 @@ PrefabInstance:
     - target: {fileID: 8316425911335428651, guid: a97ed5865cb164e489926e96a502357f, type: 3}
       propertyPath: m_Name
       value: Bubble
+      objectReference: {fileID: 0}
+    - target: {fileID: 8316425911335428651, guid: a97ed5865cb164e489926e96a502357f, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8316425911335428655, guid: a97ed5865cb164e489926e96a502357f, type: 3}
       propertyPath: m_RootOrder

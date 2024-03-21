@@ -26,7 +26,7 @@ Transform:
   m_GameObject: {fileID: 1860100832090785657}
   m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 80.74107, y: 4.1900015, z: 5.0459156}
-  m_LocalScale: {x: 1, y: 0.001, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 6503836517391287619}
@@ -49,6 +49,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetScale: 1
   scaleSpeed: 3
+  health: 50
+  front: {fileID: 7286659553332139577}
+  endColor: {r: 9.9926815, g: 0.73244786, b: 0.83708334, a: 0}
+  explosionPrefab: {fileID: 5046152788282611147, guid: 79b3f31201dc23a4589d3a4ce1699922, type: 3}
 --- !u!1 &5584334458149183990
 GameObject:
   m_ObjectHideFlags: 0

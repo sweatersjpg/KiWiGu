@@ -226,7 +226,7 @@ GameObject:
   - component: {fileID: 8229721578388367286}
   m_Layer: 12
   m_Name: Hook
-  m_TagString: Untagged
+  m_TagString: Hook
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -265,8 +265,8 @@ MonoBehaviour:
   perfectHookFXprefab: {fileID: 8641178297122344755, guid: 3d2b07f5188dcda46806dc8fe87352fe, type: 3}
   perfectHookCircleFXprefab: {fileID: 3489313591100564266, guid: 40b4b0e9015f15c4b9f3e03320e05a51, type: 3}
   chain: {fileID: 1542844368095188436}
-  hookRange: 10
-  maxHookRange: 12
+  hookRange: 14
+  maxHookRange: 16
   trackingAcceleration: 200
   gravity: 30
   deceleration: 10
@@ -274,8 +274,11 @@ MonoBehaviour:
   hookTarget: {fileID: 0}
   playerDistance: 4
   distToHook: 0
+  pullForce: 100
   velocity: {x: 0, y: 0, z: 0}
   chainSegmentSize: 0.5
+  parentHook: {fileID: 0}
+  childHook: {fileID: 0}
 --- !u!1001 &3499523344758293110
 PrefabInstance:
   m_ObjectHideFlags: 0

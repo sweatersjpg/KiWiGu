@@ -1,7 +1,5 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.UI;
 
 public class AmmoUIDiscrete : MonoBehaviour
@@ -12,8 +10,9 @@ public class AmmoUIDiscrete : MonoBehaviour
 
     public Transform playerHand;
 
-    [SerializeField] Color emptyColor;
+    [SerializeField] Color emptyColor = new Color(1f, 1f, 1f, 0.02f);
     [SerializeField] Color halfColor;
+    [SerializeField] Color weaponColor = new Color(.75f, .75f, .75f);
 
     [SerializeField] List<Sprite> sprites;
     List<Image> ammoImages;
@@ -31,7 +30,7 @@ public class AmmoUIDiscrete : MonoBehaviour
             i.sprite = sprites[0];  // full ammo image
             i.color = Color.white;
         }
-        foreach (Image i in iconImages) i.color = Color.white;
+        foreach (Image i in iconImages) i.color = weaponColor;
 
         float count = gun.ammo.capacity - gun.ammo.count;
         gun.ammo.count = gun.ammo.capacity;
@@ -83,7 +82,7 @@ public class AmmoUIDiscrete : MonoBehaviour
         //        i.sprite = sprites[0];  // full ammo image
         //        i.color = Color.white;
         //    }
-        //    foreach (Image i in iconImages) i.color = Color.white;
+        //    foreach (Image i in iconImages) i.color = weaponColor;
         //}
     }
 

@@ -11,13 +11,13 @@ GameObject:
   - component: {fileID: 2645225632410715133}
   - component: {fileID: 8810238208071606497}
   - component: {fileID: 2200724957976922827}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Stinger
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &2645225632410715133
 Transform:
   m_ObjectHideFlags: 0
@@ -214,6 +214,7 @@ MonoBehaviour:
     capacity: 0
     count: 0
   explosion: {fileID: 1886320638105856866, guid: 868415f162da742468824c5743d47bae, type: 3}
+  directionalHit: {fileID: 3117792717448542874, guid: 4ff473df7562b5a439f40bf6b45acd12, type: 3}
 --- !u!135 &281034215637957169
 SphereCollider:
   m_ObjectHideFlags: 0

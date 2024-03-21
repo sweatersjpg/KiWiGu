@@ -31,11 +31,13 @@ public class sweatersController : MonoBehaviour
     public float acceleration = 3.75f;
     public float airAcceleration = 3;
     public float encomberedAcceleration = 3;
+    public float grappleAcceleration = 0;
 
     [Header("Deceleration")]
     public float deceleration = 4;
     public float turnDeceleration = 64;
     public float airDeceleration = 1;
+    public float grappleDeceleration = 0;
 
     [HideInInspector] public float gravity = 20f;
     [HideInInspector] public float jumpSpeed = 8.0f;
@@ -78,6 +80,7 @@ public class sweatersController : MonoBehaviour
     bool jumpJustReleased = false;
 
     public bool isEncombered;
+    public bool isGrappling;
 
     public bool isSliding;
     public bool isGrounded;
@@ -154,12 +157,34 @@ public class sweatersController : MonoBehaviour
 
         UpdateHeight();
 
-        if(Input.GetKeyDown(KeyCode.O))
+        isGrappling = false;
+
+        if (Input.GetKeyDown(KeyCode.O))
         {
             charController.enabled = false;
             transform.position = spawnPoint;
             charController.enabled = true;
         }
+    }
+
+    public void ResetPlayer()
+    {
+        if (!CheckPointSystem.spawnPoint.Equals(new Vector3()))
+        {
+            charController.enabled = false;
+
+            transform.position = CheckPointSystem.spawnPoint;
+
+            charController.enabled = true;
+
+            rotationX = CheckPointSystem.spawnDirection.x;
+            playerHead.transform.localRotation = Quaternion.Euler(CheckPointSystem.spawnDirection.x, 0, 0);
+            transform.rotation = Quaternion.Euler(0, CheckPointSystem.spawnDirection.y, 0);
+        }
+
+        spawnPoint = transform.position;
+
+        velocity = new Vector3();
     }
 
     // Update is called once per frame
@@ -168,6 +193,7 @@ public class sweatersController : MonoBehaviour
         isSliding = GetIsSliding();
         wasGrounded = isGrounded;
         GetIsGrounded();
+        if (isGrappling) isSliding = true;
 
         Vector3 forward = transform.TransformDirection(Vector3.forward);
         Vector3 right = transform.TransformDirection(Vector3.right);
@@ -181,7 +207,8 @@ public class sweatersController : MonoBehaviour
 
         // acceleration based on ground or air
         float acc = isGrounded && !isSliding ? acceleration : airAcceleration;
-        if (isEncombered) acc = encomberedAcceleration;
+        if (isGrappling && !isGrounded) acc = grappleAcceleration;
+        // if (isEncombered) acc = encomberedAcceleration;
         Vector3 force = acc * input;
 
         // deceleration based on ground air and movement
@@ -189,6 +216,7 @@ public class sweatersController : MonoBehaviour
         if(!isGrounded || isSliding)
         {
             dec = input.magnitude > 0.1f ? airDeceleration : 0;
+            if (isGrappling) dec = grappleDeceleration;
         }
 
         Vector3 vel = new(velocity.x, 0, velocity.z);
@@ -247,6 +275,8 @@ public class sweatersController : MonoBehaviour
         if (isGrounded && !isSliding)
         {
             // decay max speed while on ground
+
+            if(v.magnitude < maxSpeed) maxSpeed = v.magnitude;
             maxSpeed -= maxSpeedDecay * deltaTime;
             if (maxSpeed < targetSpeed) maxSpeed = targetSpeed;
 
@@ -271,7 +301,7 @@ public class sweatersController : MonoBehaviour
         if (debugSpeedDisp) debugSpeedDisp.text = "speed:\n" + Mathf.Floor(v.magnitude * 100) / 100;
 
         // clamp to airSpeed
-        v = Vector3.ClampMagnitude(v, maxSpeed);
+        if(!isGrappling) v = Vector3.ClampMagnitude(v, maxSpeed);
         velocity = new(v.x, velocity.y, v.z);
 
         velocity += 0.5f * deltaTime * force; // add half before moving
@@ -297,6 +327,7 @@ public class sweatersController : MonoBehaviour
     void UpdateHeight()
     {
         targetHeight = Input.GetKey(KeyCode.LeftControl) ? crouchHeight : standingHeight;
+        if (isGrappling) targetHeight = 1;
 
         Debug.DrawRay(transform.position + new Vector3(0, charController.height), Vector3.up * (2f - charController.height));
         if (Physics.Raycast(transform.position + new Vector3(0, charController.height), Vector3.up, 2f - charController.height))
@@ -305,7 +336,8 @@ public class sweatersController : MonoBehaviour
             targetHeight = crouchHeight;
         }
 
-        charController.height -= (charController.height - targetHeight) / 8 * deltaTime * 50;
+        // charController.height -= (charController.height - targetHeight) / 8 * deltaTime * 50;
+        charController.height = Mathf.Lerp(charController.height, targetHeight, deltaTime * 10);
 
         charController.center = new Vector3(0, charController.height / 2, 0);
         playerHead.transform.localPosition = new Vector3(0, charController.height - 0.5f, 0);

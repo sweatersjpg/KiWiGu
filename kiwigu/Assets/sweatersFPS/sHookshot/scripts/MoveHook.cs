@@ -31,6 +31,8 @@ public class MoveHook : MonoBehaviour
     public float playerDistance = 4;
     public float distToHook = 0;
 
+    [SerializeField] float pullForce;
+
     bool headingBack = false;
 
     float speed;
@@ -44,6 +46,13 @@ public class MoveHook : MonoBehaviour
     float chainPointTimer;
     public float chainSegmentSize = 0.5f;
 
+    public MoveHook parentHook;
+    Vector3 offsetFromOtherHook;
+
+    public MoveHook childHook;
+
+    bool hasKicked = false;
+
     void Start()
     {
         float startingSpeed = Mathf.Sqrt(2 * trackingAcceleration * hookRange / 2);
@@ -55,6 +64,40 @@ public class MoveHook : MonoBehaviour
         //velocity += v;
 
         speed = -velocity.magnitude;
+
+        // Collider[] hits = Physics.OverlapSphere(transform.position, 3, LayerMask.GetMask("HookShot"));
+
+        // foreach (Collider hit in hits) Debug.Log(hit.name);
+
+        gameObject.name = "HookShotNormal";
+
+        GameObject[] objs = GameObject.FindGameObjectsWithTag("Hook");
+
+        GameObject otherHook = null;
+
+        foreach (GameObject obj in objs)
+        {
+            if (obj != gameObject 
+                && Vector3.Distance(obj.transform.position, gameObject.transform.position) < 4
+                && obj.name == "HookShotNormal") otherHook = obj;
+        }
+
+        if (otherHook != null)
+        {
+            gameObject.name = "HookShotFollow";
+            // Debug.Log("I am " + gameObject.name + " and I found " + otherHook.name);
+            parentHook = otherHook.transform.GetComponent<MoveHook>();
+
+            if (parentHook.headingBack)
+            {
+                parentHook = null;
+                return;
+            }
+
+            offsetFromOtherHook = parentHook.transform.position - transform.position;
+            parentHook.childHook = this;
+            
+        }
 
     }
 
@@ -68,9 +111,31 @@ public class MoveHook : MonoBehaviour
         }
         else deltaTime = Time.deltaTime;
 
+        if(parentHook)
+        {
+            transform.position = parentHook.transform.position - offsetFromOtherHook/2;
+
+            UpdateChain();
+
+            headingBack = parentHook.headingBack;
+            velocity = parentHook.velocity;
+            speed = parentHook.speed;
+
+            // if (parentHook.hookTarget) MeleLeg.instance.SetAttacking();
+
+            return;
+            // if(speed > 0) return;
+        }
+
         pPosition = transform.position;
 
         Vector3 heading = home.transform.position - transform.position;
+
+        if (childHook && hookTarget && (!hookTarget.tether || Mathf.Round(hookTarget.resistance) == 69) && heading.magnitude < 6 && !hasKicked)
+        {
+            MeleLeg.instance.Kick();
+            hasKicked = true;
+        }
 
         //if(canCatch && heading.magnitude < catchDistance)
         //{
@@ -108,37 +173,22 @@ public class MoveHook : MonoBehaviour
             {
                 UpdateChain();
 
-                sweatersController player = sweatersController.instance;
-
-                Vector3 toPlayer = player.transform.position - transform.position;
-
-                //distToHook = Mathf.Min(toPlayer.magnitude, distToHook);
-
-                //float distance = Mathf.Max(distToHook, playerDistance);
-                //distance = Mathf.Min(distance, maxHookRange);
-
-                //speed += trackingAcceleration * deltaTime * 0.5f;
-                //maxHookRange -= Mathf.Min(speed * deltaTime, maxHookRange);
-                //speed += trackingAcceleration * deltaTime * 0.5f;
-
-                distToHook = Mathf.Min(heading.magnitude + 1, distToHook);
-
-                //float distance = Mathf.Max(maxHookRange, playerDistance);
-                float distance = Mathf.Max(distToHook, playerDistance);
-
-                // grapple hook effect
-                if (heading.magnitude > distance)
+                //if (hookTarget.tether) PullTowards(heading);
+                //else Grapple(heading);
+                
+                if(!hookTarget.swing) PullTowards(heading, pullForce);
+                else
                 {
-                    Vector3 target = transform.position + heading.normalized * distance;
-                    target += (player.transform.position - home.transform.position);
+                    if (distToHook > 4) distToHook = Mathf.Lerp(distToHook, 4, deltaTime * 2);
 
-                    player.transform.position = target;
-                    // Vector3 force = deltaTime * (target - player.transform.position);
+                    //if (distToHook > 8)
+                    //{
+                    //    PullTowards(heading, pullForce / 4);
+                    //    distToHook = Mathf.Min(heading.magnitude + 1, distToHook);
+                    //}
+                    //else
 
-                    Vector3 normal = -toPlayer.normalized;
-                    player.velocity -= Vector3.Project(player.velocity, normal);
-
-                    // player.velocity += force;
+                    Grapple(heading);
                 }
 
                 return;
@@ -217,7 +267,7 @@ public class MoveHook : MonoBehaviour
                     {
                         if (rootParent.gameObject.CompareTag("Drone"))
                         {
-                            CallMethodSafely(enemyComponent, "TakeDamage", new object[] { 9999 });
+                            CallMethodSafely(enemyComponent, "TakeDamage", new object[] { 9999, false });
                         }
                         else if (rootParent.gameObject.CompareTag("Enemy"))
                         {
@@ -260,7 +310,7 @@ public class MoveHook : MonoBehaviour
 
         bool hasHit = Physics.Raycast(pPosition, transform.position - pPosition,
             out RaycastHit hit, (transform.position - pPosition).magnitude,
-            ~LayerMask.GetMask("GunHand", "Player", "HookTarget", "TransparentFX"));
+            ~LayerMask.GetMask("GunHand", "Player", "HookTarget", "TransparentFX", "HookShot"));
 
         if (hasHit)
         {
@@ -280,16 +330,20 @@ public class MoveHook : MonoBehaviour
             GameObject target = hit.transform.gameObject;
             HookTarget ht = target.transform.GetComponentInChildren<HookTarget>();
 
-            if(ht.blockSteal)
+            if (ht && ht.blockSteal)
             {
-                if(GetRootParent(target.transform).CompareTag("Enemy") && GetRootParent(target.transform).GetComponent<HellfireEnemy>())
+                if (GetRootParent(target.transform).CompareTag("Enemy"))
                 {
-                    GetRootParent(target.transform).GetComponent<HellfireEnemy>().TakeDamage(5);
+                    if (GetRootParent(target.transform).GetComponent<HellfireEnemy>())
+                        GetRootParent(target.transform).GetComponent<HellfireEnemy>().TakeDamage(5, false);
+
+                    if (GetRootParent(target.transform).GetComponent<PistolGrunt>())
+                        GetRootParent(target.transform).GetComponent<PistolGrunt>().TakeDamage(5, false);
                 }
                 return;
             }
 
-            if (ht == null)
+            if (!ht)
             {
                 caughtGun = target.transform.GetComponent<ThrownGun>().info;
                 caughtGunAmmo = target.transform.GetComponent<ThrownGun>().ammo; // transfer ammo info
@@ -299,8 +353,8 @@ public class MoveHook : MonoBehaviour
                 ht.resistance -= deltaTime;
                 if (ht.resistance > 0)
                 {
-                    Pullback();
                     hookTarget = ht;
+                    Pullback(true);
 
                     Destroy(fx);
                     fx = Instantiate(perfectHookFXprefab, transform);
@@ -354,6 +408,8 @@ public class MoveHook : MonoBehaviour
 
     void TakeHookTarget()
     {
+        if (!hookTarget.info) return;
+        
         GameObject target = hookTarget.gameObject;
 
         caughtGun = hookTarget.info;
@@ -372,6 +428,11 @@ public class MoveHook : MonoBehaviour
 
     void ResolveCollision(RaycastHit hit)
     {
+        if(hit.transform.gameObject.CompareTag("Shield") && GetRootParent(hit.transform).GetComponent<HellfireEnemy>())
+        {
+            Transform parent = GetRootParent(hit.transform);
+            parent.GetComponent<HellfireEnemy>().HookBlock();
+        }
 
         if (hit.transform.gameObject.CompareTag("RigidTarget"))
         {
@@ -449,15 +510,31 @@ public class MoveHook : MonoBehaviour
         hookTarget = null;
     }
 
-    public void Pullback()
+    public void Pullback() => Pullback(false);
+
+    public void Pullback(bool withForce)
     {
         speed = 0;
         G = new();
 
+        if (!withForce) return;
+
+        sweatersController player = sweatersController.instance;
+
+        if (!player.isGrounded)
+        {
+            if (!hookTarget.tether) player.velocity.y = 0;
+            return;
+        }
+
+        Vector3 toPlayer = player.transform.position - transform.position;
+
+        player.velocity.y = 0;
+        player.velocity -= toPlayer.normalized * 8;
         // home.PullBack();
     }
 
-    public void PullbackWithForce(float force)
+    public void PullbackWithForce(float force, float vScale)
     {
         if (hookTarget)
         {
@@ -466,7 +543,7 @@ public class MoveHook : MonoBehaviour
             if (t < 0.4) // perfect hook
             {
                 hookTarget.resistance = 0;
-                if (force > 0) LaunchPlayer(force);
+                if (force > 0) LaunchPlayer(force, vScale);
 
                 Destroy(fx);
                 fx = Instantiate(perfectHookCircleFXprefab, transform);
@@ -478,20 +555,151 @@ public class MoveHook : MonoBehaviour
 
             fx.transform.parent = null;
 
+            sweatersController player = sweatersController.instance;
+
+            if (hookTarget.tether) player.maxSpeed = player.airSpeed * 0.75f;
+            else player.maxSpeed = player.airSpeed * 0.5f;
+            player.velocity = Vector3.ClampMagnitude(player.velocity, player.maxSpeed);
+
         }
         speed = 0;
         G = new();
 
+        if(parentHook)
+        {
+            if (parentHook.hookTarget && parentHook.hookTarget.tether) parentHook.ReturnHookTarget();
+            parentHook.childHook = null;
+            parentHook = null;
+        }
+        if(childHook)
+        {
+            
+            childHook.parentHook = null;
+            childHook = null;
+        }
+
+        
+
         home.PullBack();
     }
 
-    public void LaunchPlayer(float force)
+    void Grapple(Vector3 heading)
     {
         sweatersController player = sweatersController.instance;
 
-        Vector3 v = (player.transform.position - transform.position).normalized;
+        Vector3 toPlayer = player.transform.position - transform.position;
 
-        player.velocity.y = Mathf.Min(Mathf.Abs(v.y) + 0.5f, 1) * force;
-        player.maxSpeed += 5;
+        player.isGrappling = true;
+
+
+        //distToHook = Mathf.Min(toPlayer.magnitude, distToHook);
+
+        //float distance = Mathf.Max(distToHook, playerDistance);
+        //distance = Mathf.Min(distance, maxHookRange);
+
+        //speed += trackingAcceleration * deltaTime * 0.5f;
+        //maxHookRange -= Mathf.Min(speed * deltaTime, maxHookRange);
+        //speed += trackingAcceleration * deltaTime * 0.5f;
+
+        distToHook = Mathf.Min(heading.magnitude + 1, distToHook);
+
+        // if (toPlayer.y > 1) return; // if above grapple, return
+
+
+        //float distance = Mathf.Max(maxHookRange, playerDistance);
+        float distance = Mathf.Max(distToHook, playerDistance);
+
+        // grapple hook effect
+        if (heading.magnitude > distance)
+        {
+            Vector3 target = transform.position + heading.normalized * distance;
+            target += (player.transform.position - home.transform.position);
+
+            player.transform.position = target;
+            // Vector3 force = deltaTime * (target - player.transform.position);
+
+            Vector3 normal = -toPlayer.normalized;
+            player.velocity -= Vector3.Project(player.velocity, normal);
+
+            // player.velocity += force;
+        }
+    }
+
+    void PullTowards(Vector3 heading, float pullForce)
+    {
+        if (!hookTarget.tether && childHook == null) return;
+        
+        sweatersController player = sweatersController.instance;
+
+        // Vector3 toPlayer = player.transform.position - transform.position;
+
+        if (heading.magnitude < 0.5)
+        {
+            PullbackWithForce(0, 1);
+            return;
+        }
+
+        // float t = hookTarget.maxResistance - hookTarget.resistance;
+
+        //if (t < 0.4 && !hookTarget.tether) // perfect hook
+        //{
+        //    return;
+        //}
+
+        player.velocity = -heading.normalized * (player.velocity.magnitude + Time.deltaTime * pullForce);
+
+        // player.velocity = Vector3.ClampMagnitude(player.velocity, player.maxSpeed);
+
+        // player.maxSpeed = player.velocity.magnitude;
+        // player.velocity += -heading.normalized * Time.deltaTime * pullForce;
+
+        player.isGrappling = true;
+
+        // player.velocity += -heading.normalized * Time.deltaTime * pullForce;
+    }
+
+    public void LaunchPlayer(float force, float vScale)
+    {
+        sweatersController player = sweatersController.instance;
+
+        //Vector3 v = (player.transform.position - transform.position).normalized;
+
+        //player.velocity.y = Mathf.Min(Mathf.Abs(v.y) + 0.5f, 1) * force;
+        //player.maxSpeed += 5;
+
+        Vector3 heading = home.transform.position - transform.position;
+
+        if (heading.y > 0) return; // if higher than grapple dont give boost
+
+        Vector3 normal = -(heading).normalized;
+
+        Vector3 v = (player.velocity - Vector3.Project(player.velocity, normal)).normalized;
+
+        float a = 0.5f;
+
+        // v.y = Mathf.Abs(v.y);
+        if (v.y < 0) v = normal;
+        else if (v.y < a)
+        {
+            v.y = a * (a / v.y);
+        }
+
+        Vector3 forward = player.playerCamera.transform.forward;
+        forward.y = 0;
+        forward.Normalize();
+
+        //v.x = forward.x;
+        //v.z = forward.z;
+
+        v.Normalize();
+
+        float product = Vector3.Dot(new Vector3(v.x, 0, v.z).normalized, forward);
+
+        v *= (player.velocity.magnitude * vScale + force) * product;
+
+        player.maxSpeed = v.magnitude;
+
+        player.velocity = v;
+
     }
 }

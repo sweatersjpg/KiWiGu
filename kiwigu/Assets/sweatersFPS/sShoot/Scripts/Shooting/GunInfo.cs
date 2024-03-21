@@ -5,6 +5,13 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "New GunInfo", menuName = "GunInfo")]
 public class GunInfo : ScriptableObject
 {
+    [Header("Audio")]
+    public AudioClip shootSound;
+    public AudioClip emptyMagSFX;
+
+    [Header("Gun Type")]
+    public string gunName = "";
+
     [Header("Aiming")]
     public bool canAim = true;
     public bool hasToAim = false;
@@ -32,8 +39,10 @@ public class GunInfo : ScriptableObject
     public float autoRate = 1;
     public float fireRate = 1;
 
-    [Header("Metrics")]
+    [Header("Damage")]
     public float damage;
+
+    [Header("Metrics")]
     public float spread = 0; // works also as accuracy
     public float recoil = 45;
     [Space]
@@ -50,6 +59,5 @@ public class GunInfo : ScriptableObject
     public GameObject gunPrefab;
 
     public GameObject guUI;
-    // its crazy that we have to do this but because the gun can't
-    // reference itself as a prefab it's what needs to happen...
+
 }

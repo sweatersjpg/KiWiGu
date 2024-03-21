@@ -12,6 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 23c1375cd985d95488add3e7772559e4, type: 3}
   m_Name: simpleGun
   m_EditorClassIdentifier: 
+  shootSound: {fileID: 8300000, guid: 1d27e9c02376d9847b792ba280ac3a82, type: 3}
+  emptyMagSFX: {fileID: 0}
+  gunName: Simple
   canAim: 1
   hasToAim: 0
   aimDelay: 0.3
@@ -33,9 +36,9 @@ MonoBehaviour:
   burstSize: 1
   autoRate: 1
   fireRate: 3
-  damage: 15
+  damage: 10
   spread: 0.02
-  recoil: 45
+  recoil: 15
   spreadVariation:
     serializedVersion: 2
     m_Curve:
@@ -84,7 +87,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  recoilPerShot: 0.2
+  recoilPerShot: 0.5
   recoilReturnTime: 0.5
   bulletSpeed: 370
   bulletGravity: -9.8

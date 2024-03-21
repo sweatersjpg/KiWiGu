@@ -1,27 +1,26 @@
-using FMODUnity;
 using System.Collections;
-using System.Collections.Generic;
-using TMPro;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.AI;
 
 public class HellfireEnemy : MonoBehaviour
 {
-    [SerializeField] private StudioEventEmitter sfxEmitterAvailable;
-
-    public enum EnemyState { Wandering, Seek, Restock, Shoot };
+    public enum EnemyState { Wandering, Seek, Shoot, Leap };
     [SerializeField] private EnemyState enemyState = EnemyState.Wandering;
 
-    [Header("Drone Basic Settings")]
-    [Range(0, 100)]
+    [Header("Hellfire Basic Settings")]
+    [Range(0, 500)]
     [SerializeField] private float health;
     [Range(0, 100)]
     [SerializeField] private float shield;
     [SerializeField] private Animator animator;
     [SerializeField] private GameObject shieldObject;
+    [SerializeField] private GameObject shieldObjectMetal;
+    [SerializeField] private GameObject HeadshotIndicator;
+    [SerializeField] private GameObject BreakingShieldIndicator;
     [SerializeField] private GameObject BrokenShieldIndicator;
+    [SerializeField] private Transform headPos;
     [SerializeField] private GameObject ragdoll;
+    [SerializeField] GameObject splatoodFX;
     private bool lerpingShield = false;
     private Material shieldMaterial;
     private float shieldLerpStartTime;
@@ -29,17 +28,19 @@ public class HellfireEnemy : MonoBehaviour
     private float startShieldValue;
     private float targetShieldValue;
     private bool isHoldingGun;
-    private float currentHealth;
-    private float currentShield;
+    public float currentHealth;
+    public float currentShield;
     private bool isDead;
 
     [Space(10)]
     [Header("Enemy Movement Settings")]
     [SerializeField] private float wanderSpeed;
     [SerializeField] private float seekSpeed;
-    [SerializeField] private float panicSpeed;
+    [SerializeField] private float enragedSpeed;
+    [SerializeField] private float marchSpeed;
+    [SerializeField] private float marchIntervals;
     [SerializeField] private float keepDistance;
-    [SerializeField] private float shootDistance;
+    [SerializeField] private float marchDistance;
     [SerializeField] private float wanderWaitTime;
     [SerializeField] private float wanderRadius;
     [SerializeField] private float rememberWaitTime;
@@ -47,6 +48,8 @@ public class HellfireEnemy : MonoBehaviour
     private NavMeshAgent agent;
     private float wanderTimer;
     private Vector3 initialPosition;
+    private float marchIntervalTimer;
+    private bool intervaling;
 
     [Space(10)]
     [Header("Enemy Seeking Settings")]
@@ -57,28 +60,48 @@ public class HellfireEnemy : MonoBehaviour
     private GameObject detectedPlayer;
     private float lastVisibleTime;
     private bool rememberPlayer;
-    private bool restocking;
+    private bool holdingShield = true;
 
     [Space(10)]
     [Header("Enemy Attack Settings")]
+    [SerializeField] private GunInfo gunInfo;
     [SerializeField] Transform BulletExitPoint;
     [SerializeField] float shootCooldown;
+    [Range(0, 0.25f)]
+    [SerializeField] private float gunSpread;
+    [Range(1, 10)]
+    [SerializeField] private float splatoodRadius;
     public bool isShooting;
     private GunInfo info;
     private float shootTimer;
     private bool animDone;
-
-    private float maxRotationTime = 0.25f;
+    private float maxRotationTime = 0.2f;
     private Quaternion startRotation;
     private float currentRotationTime;
     private bool isRotating;
+    private bool isLeaping;
+
+    private void Awake()
+    {
+        ht = GetComponentInChildren<HookTarget>();
+
+        if (ht)
+        {
+            isHoldingGun = true;
+            ht.info = gunInfo;
+        }
+    }
 
     private void Start()
     {
         ht = GetComponentInChildren<HookTarget>();
+
         if (ht)
         {
             isHoldingGun = true;
+
+            BulletShooter bs = transform.GetComponentInChildren<BulletShooter>();
+            if (bs) bs.info = ht.info;
         }
 
         agent = GetComponent<NavMeshAgent>();
@@ -92,6 +115,9 @@ public class HellfireEnemy : MonoBehaviour
 
     private void Update()
     {
+        // add to update functions to pause them        
+        if (PauseSystem.paused) return;
+
         if (lerpingShield)
         {
             LerpShieldProgressUpdate();
@@ -103,36 +129,30 @@ public class HellfireEnemy : MonoBehaviour
         StateManager();
         Wander();
         Seek();
-        Restock();
         Shoot();
+        Leap();
         RememberPlayer();
     }
 
     private void StateManager()
     {
-        if (!restocking && agent.velocity.magnitude <= 0.1f)
+        if (agent.velocity.magnitude <= 0.1f)
         {
             animator.SetBool("walk", false);
             animator.SetBool("run", false);
         }
 
         if (isShooting)
-        {
             RotateGunAndBodyTowardsPlayer();
-        }
 
         if (isShooting)
             return;
 
-        if (!isHoldingGun)
-        {
-            enemyState = EnemyState.Restock;
-        }
-        else if (!IsPlayerVisible() && !rememberPlayer)
+        if (!IsPlayerVisible() && !rememberPlayer)
         {
             enemyState = EnemyState.Wandering;
         }
-        else if (IsPlayerVisible() || rememberPlayer)
+        else
         {
             enemyState = EnemyState.Seek;
         }
@@ -143,6 +163,7 @@ public class HellfireEnemy : MonoBehaviour
         if (enemyState == EnemyState.Wandering)
         {
             agent.speed = wanderSpeed;
+            animator.speed = 1.0f;
 
             if (agent.velocity.magnitude >= 0.1f)
             {
@@ -164,63 +185,104 @@ public class HellfireEnemy : MonoBehaviour
     {
         if (enemyState == EnemyState.Seek)
         {
-            agent.speed = seekSpeed;
-
-            if (agent.velocity.magnitude >= 0.1f)
-            {
-                animator.SetBool("run", true);
-            }
+            if (isLeaping)
+                return;
 
             Vector3 adjustedDestination = detectedPlayer.transform.position - (detectedPlayer.transform.position - transform.position).normalized * keepDistance;
 
             if (IsPlayerWithinRange() && !isShooting)
             {
-                agent.SetDestination(transform.position);
-                enemyState = EnemyState.Shoot;
+                if (isHoldingGun)
+                    agent.SetDestination(adjustedDestination);
+                else
+                    agent.SetDestination(detectedPlayer.transform.position);
+
+                float distanceToPlayer = Vector3.Distance(transform.position, detectedPlayer.transform.position);
+
+                if (holdingShield && isHoldingGun)
+                {
+                    animator.speed = 0.9f;
+                    agent.speed = marchSpeed;
+
+                    if (agent.velocity.magnitude >= 0.1f)
+                    {
+                        animator.SetBool("walk", true);
+                        animator.SetBool("run", false);
+                    }
+
+                    if (!intervaling)
+                        marchIntervalTimer += Time.deltaTime;
+
+                    if (marchIntervalTimer >= marchIntervals)
+                    {
+                        intervaling = true;
+                    }
+
+                    if (intervaling)
+                    {
+                        enemyState = EnemyState.Shoot;
+                        agent.SetDestination(transform.position);
+                    }
+                }
+                else if (!holdingShield && isHoldingGun)
+                {
+                    animator.speed = 1.2f;
+                    agent.speed = seekSpeed;
+
+                    if (agent.velocity.magnitude >= 0.1f)
+                    {
+                        animator.SetBool("walk", false);
+                        animator.SetBool("run", true);
+                    }
+
+                    if (!intervaling)
+                        marchIntervalTimer += Time.deltaTime;
+
+                    if (marchIntervalTimer >= marchIntervals * 1.25f)
+                    {
+                        intervaling = true;
+                    }
+
+                    if (intervaling)
+                    {
+                        enemyState = EnemyState.Shoot;
+                        agent.SetDestination(transform.position);
+                    }
+                }
+                else if (!holdingShield && !isHoldingGun)
+                {
+                    animator.speed = 2.0f;
+                    agent.speed = enragedSpeed;
+
+                    if (agent.velocity.magnitude >= 0.1f)
+                    {
+                        animator.SetBool("walk", false);
+                        animator.SetBool("run", true);
+                    }
+                }
+
+                if (distanceToPlayer <= keepDistance + 2 && isHoldingGun)
+                {
+                    enemyState = EnemyState.Shoot;
+                    agent.SetDestination(transform.position);
+                }
+                else if (distanceToPlayer <= wanderRadius && !isHoldingGun)
+                {
+                    enemyState = EnemyState.Leap;
+                }
             }
             else
             {
-                agent.SetDestination(adjustedDestination);
-            }
-        }
-    }
+                animator.speed = 1.2f;
+                agent.speed = seekSpeed;
 
-    private void Restock()
-    {
-        if (enemyState == EnemyState.Restock)
-        {
-            if (restocking)
-                return;
-
-            agent.speed = panicSpeed;
-
-            if (agent.velocity.magnitude >= 0.1f)
-            {
-                animator.SetBool("run", true);
-            }
-
-            GameObject[] restockStations = GameObject.FindGameObjectsWithTag("EnemyRestockStation");
-            GameObject nearestRestockStation = null;
-            float shortestDistance = Mathf.Infinity;
-
-            foreach (GameObject restockStation in restockStations)
-            {
-                float distanceToRestockStation = Vector3.Distance(transform.position, restockStation.transform.position);
-
-                if (distanceToRestockStation < shortestDistance)
+                if (agent.velocity.magnitude >= 0.1f)
                 {
-                    shortestDistance = distanceToRestockStation;
-                    nearestRestockStation = restockStation;
+                    animator.SetBool("walk", false);
+                    animator.SetBool("run", true);
                 }
-            }
-            if (nearestRestockStation != null)
-            {
-                agent.SetDestination(nearestRestockStation.transform.position);
-            }
 
-            if (Vector3.Distance(transform.position, nearestRestockStation.transform.position) <= 1f)
-            {
-                RestockGun();
+                agent.SetDestination(adjustedDestination);
             }
         }
     }
@@ -234,6 +296,46 @@ public class HellfireEnemy : MonoBehaviour
 
             StartCoroutine(ShootRoutine());
         }
+    }
+
+    private void Leap()
+    {
+        if (enemyState == EnemyState.Leap)
+        {
+            if (isLeaping)
+                return;
+
+            StartCoroutine(LeapCoroutine());
+        }
+    }
+
+    public void SplatoodEvent()
+    {
+        var splatoodPos = transform.position + transform.forward * 2;
+
+        Collider[] hitColliders = Physics.OverlapSphere(splatoodPos, splatoodRadius, LayerMask.GetMask("Player"));
+
+        foreach (Collider hitCollider in hitColliders)
+        {
+            if (hitCollider.CompareTag("Player"))
+            {
+                if (sweatersController.instance.isGrounded)
+                {
+                    Vector3 incomingDirection = (detectedPlayer.transform.position - transform.position).normalized;
+                    Vector3 upwardDirection = Vector3.up;
+
+                    Vector3 punchDirection = (incomingDirection + upwardDirection).normalized;
+
+                    hitCollider.GetComponent<PlayerHealth>().DealDamage(35, -incomingDirection.normalized * 10);
+                    sweatersController.instance.velocity += punchDirection * 15;
+
+                    agent.SetDestination(transform.position);
+                }
+            }
+        }
+
+        GameObject dfx = Instantiate(splatoodFX, splatoodPos, Quaternion.identity);
+        Destroy(dfx, 2);
     }
 
     IEnumerator ShootRoutine()
@@ -254,6 +356,26 @@ public class HellfireEnemy : MonoBehaviour
         yield return new WaitForSeconds(shootCooldown);
 
         isShooting = false;
+    }
+
+    IEnumerator LeapCoroutine()
+    {
+        isLeaping = true;
+
+        animator.SetTrigger("leap");
+
+        yield return null; // wait a framerino
+
+        while (animDone)
+        {
+            yield return null;
+        }
+
+        animator.ResetTrigger("leap");
+
+        yield return new WaitForSeconds(2);
+
+        isLeaping = false;
     }
 
     private void RotateGunAndBodyTowardsPlayer()
@@ -327,10 +449,15 @@ public class HellfireEnemy : MonoBehaviour
 
     private bool IsPlayerVisible()
     {
-        Collider[] hitColliders = Physics.OverlapSphere(eyesPosition.position, seekRange);
+        Collider[] hitColliders = Physics.OverlapSphere(eyesPosition.position, seekRange, LayerMask.GetMask("Player"));
         int layerMask = LayerMask.GetMask("Enemy");
         int layerMask2 = LayerMask.GetMask("HookTarget");
-        int combinedLayerMask = layerMask | layerMask2;
+        int layerMask3 = LayerMask.GetMask("Shield");
+        int layerMask4 = LayerMask.GetMask("GunHand");
+        int layerMask5 = LayerMask.GetMask("EnergyWall");
+
+        int combinedLayerMask = layerMask | layerMask2 | layerMask3 | layerMask4 | layerMask5;
+
 
         foreach (Collider hitCollider in hitColliders)
         {
@@ -352,7 +479,7 @@ public class HellfireEnemy : MonoBehaviour
         float distanceTolerance = 0.5f;
         float distanceToDestination = Vector3.Distance(transform.position, detectedPlayer.transform.position);
 
-        if (distanceToDestination < (shootDistance + distanceTolerance) && IsPlayerVisible())
+        if (distanceToDestination < (marchDistance + distanceTolerance) && IsPlayerVisible())
             return true;
         else
             return false;
@@ -369,9 +496,17 @@ public class HellfireEnemy : MonoBehaviour
         return navHit.position;
     }
 
-    public void SwitchAnim()
+    // can't do animDone = !animDone because it breaks due to hide timerino :(
+    public void AnimTrue()
     {
-        animDone = !animDone;
+        animDone = true;
+    }
+
+    public void AnimFalse()
+    {
+        animDone = false;
+        intervaling = false;
+        marchIntervalTimer = 0;
     }
 
     public void ShootEvent()
@@ -379,73 +514,58 @@ public class HellfireEnemy : MonoBehaviour
         EnemyShoot();
     }
 
-    IEnumerator ShootFloat()
-    {
-        yield return new WaitForSeconds(EnemyShoot());
-    }
-
     public virtual void TakeGun()
     {
         isHoldingGun = false;
         isShooting = false;
-        enemyState = EnemyState.Restock;
+        enemyState = EnemyState.Wandering;
     }
 
-    public virtual void RestockGun()
+    public virtual void TakeDamage(float bulletDamage, bool isHeadshot)
     {
-        if (!restocking)
-            StartCoroutine(DelayedRestock());
+        if (isDead)
+            return;
+
+        if (currentHealth < health)
+        {
+            if (isHeadshot)
+            {
+                GlobalAudioManager.instance.PlayHeadshotSFX(headPos);
+                Instantiate(HeadshotIndicator, headPos.transform.position, Quaternion.identity);
+            }
+
+            if (isHoldingGun && !shieldObject)
+            {
+                agent.SetDestination(transform.position);
+                animator.SetInteger("HitIndex", Random.Range(0, 3));
+                animator.SetTrigger("Hit");
+                AnimFalse();
+            }
+
+            currentHealth = Mathf.Min(currentHealth + bulletDamage, health);
+        }
+
+        CheckStats();
     }
 
-    IEnumerator DelayedRestock()
-    {
-        restocking = true;
-
-        animator.SetBool("walk", false);
-        animator.SetBool("run", false);
-
-        yield return new WaitForSeconds(1);
-
-        animator.SetBool("run", true);
-
-        Vector3 newPos = RandomNavSphere(transform.position, wanderRadius, -1);
-        agent.SetDestination(newPos);
-
-        yield return new WaitForSeconds(2);
-
-        GameObject newHookTarget = Instantiate(hookTarget, hookTargetPosition.position, Quaternion.identity);
-        Transform parentTransform = hookTargetPosition;
-        newHookTarget.transform.parent = parentTransform;
-        newHookTarget.transform.localRotation = Quaternion.identity;
-
-        isHoldingGun = true;
-        restocking = false;
-        isShooting = false;
-    }
-
-    public virtual void TakeDamage(float bulletDamage)
+    public void ShieldDamage(float bulletDamage)
     {
         if (isDead)
             return;
 
         if (currentShield < shield)
         {
-            StartLerpShieldProgress();
-
-            float healthPercent = 1.0f - Mathf.Clamp01(currentShield / shield);
-            shieldMaterial.SetFloat("_HealthPercent", healthPercent);
-
             currentShield = Mathf.Min(currentShield + bulletDamage, shield);
-        }
-        else if (currentHealth < health)
-        {
-            agent.SetDestination(transform.position);
-            animator.SetInteger("HitIndex", Random.Range(0, 3));
-            animator.SetTrigger("Hit");
-            currentHealth = Mathf.Min(currentHealth + bulletDamage, health);
+
+            shieldObjectMetal.GetComponent<MeshRenderer>().materials[0].SetFloat("_DamagePercent", currentShield / shield);
         }
 
         CheckStats();
+    }
+
+    public void HookBlock()
+    {
+        StartLerpShieldProgress();
     }
 
     private void StartLerpShieldProgress()
@@ -491,6 +611,7 @@ public class HellfireEnemy : MonoBehaviour
             {
                 Instantiate(BrokenShieldIndicator, shieldObject.transform.position, Quaternion.identity);
                 ht.blockSteal = false;
+                holdingShield = false;
                 Destroy(shieldObject);
             }
         }
@@ -503,18 +624,16 @@ public class HellfireEnemy : MonoBehaviour
 
             if (isHoldingGun)
             {
-                EnableHookTargetsRecursively(Ragdollerino.transform);
+                bool stillHasGun = true;
+                HookTarget ht = GetComponentInChildren<HookTarget>();
+                if (ht != null) stillHasGun = ht.BeforeDestroy();
 
-                GetComponentInChildren<HookTarget>();
-                if (ht != null) ht.BeforeDestroy();
+                if (stillHasGun) EnableHookTargetsRecursively(Ragdollerino.transform);
 
                 isHoldingGun = false;
                 isShooting = false;
             }
             agent.SetDestination(transform.position);
-
-            //animator.SetInteger("DeadIndex", Random.Range(0, 3));
-            //animator.SetTrigger("Dead");
 
             Destroy(Ragdollerino, 15f);
             Destroy(gameObject);
@@ -554,56 +673,76 @@ public class HellfireEnemy : MonoBehaviour
         float burst = info.burstSize;
         if (info.fullAuto) burst = info.autoRate;
 
-        for (int j = 0; j < burst; j++)
+        BulletShooter bs = transform.GetComponentInChildren<BulletShooter>();
+        if (bs)
         {
-            sfxEmitterAvailable.SetParameter("Charge", 0.5f);
-            sfxEmitterAvailable.Play();
-
-            for (int i = 0; i < info.projectiles; i++) Invoke(nameof(SpawnBullet), j * 1 / info.autoRate);
+            bs.SetShootTime(1.3f);
+            // bs.SetIsShooting();
         }
+
+        //for (int j = 0; j < burst; j++)
+        //{
+        //    for (int i = 0; i < info.projectiles; i++) Invoke(nameof(SpawnBullet), j * 1 / info.autoRate);
+        //}
 
         return burst * 1 / info.autoRate;
     }
 
-    private void SpawnBullet()
+    //private void SpawnBullet()
+    //{
+    //    if (!animDone)
+    //        return;
+
+
+    //    if (!isHoldingGun)
+    //    {
+    //        isShooting = false;
+    //        return;
+    //    }
+
+    //    HookTarget gun = transform.GetComponentInChildren<HookTarget>();
+
+    //    if (gun)
+    //        info = gun.info;
+
+    //    GameObject bullet = Instantiate(info.bulletPrefab, BulletExitPoint.transform.position, BulletExitPoint.transform.rotation);
+
+    //    Vector3 direction = BulletExitPoint.transform.forward;
+    //    direction += SpreadDirection(gunSpread, 3);
+
+    //    bullet.transform.position = BulletExitPoint.transform.position;
+    //    bullet.transform.rotation = Quaternion.LookRotation(direction.normalized);
+
+    //    Bullet b = bullet.GetComponent<Bullet>();
+    //    b.speed = info.bulletSpeed;
+    //    b.gravity = info.bulletGravity;
+    //    b.ignoreMask = ~LayerMask.GetMask("GunHand", "HookTarget", "Enemy");
+    //    b.trackTarget = false;
+    //    b.fromEnemy = true;
+    //    b.bulletDamage = info.damage;
+    //    b.charge = 0.5f;
+    //}
+
+    //private Vector3 SpreadDirection(float spread, int rolls)
+    //{
+    //    Vector3 offset = Vector3.zero;
+    //    for (int i = 0; i < rolls; i++)
+    //        offset += Random.onUnitSphere * spread;
+    //    return offset / rolls;
+    //}
+
+    private void OnDrawGizmos()
     {
-        if (!animDone)
-            return;
-
-        if (!isHoldingGun)
-        {
-            isShooting = false;
-            return;
-        }
-
-        HookTarget gun = transform.GetComponentInChildren<HookTarget>();
-
-        if (gun)
-            info = gun.info;
-
-        GameObject bullet = Instantiate(info.bulletPrefab, BulletExitPoint.transform.position, BulletExitPoint.transform.rotation);
-
-        Vector3 direction = BulletExitPoint.transform.forward;
-        direction += SpreadDirection(info.spread, 3);
-
-        bullet.transform.position = BulletExitPoint.transform.position;
-        bullet.transform.rotation = Quaternion.LookRotation(direction.normalized);
-
-        Bullet b = bullet.GetComponent<Bullet>();
-        b.speed = info.bulletSpeed;
-        b.gravity = info.bulletGravity;
-        b.ignoreMask = ~LayerMask.GetMask("GunHand", "HookTarget", "Enemy");
-        b.trackTarget = false;
-        b.fromEnemy = true;
-        b.bulletDamage = info.damage;
-        b.charge = 0.5f;
+        DrawColoredSphere(transform.position, seekRange, Color.red);
+        DrawColoredSphere(transform.position, marchDistance, Color.blue);
+        DrawColoredSphere(transform.position, keepDistance, Color.green);
+        DrawColoredSphere(transform.position, wanderRadius, Color.yellow);
+        DrawColoredSphere(transform.position, splatoodRadius, Color.magenta);
     }
 
-    private Vector3 SpreadDirection(float spread, int rolls)
+    private void DrawColoredSphere(Vector3 center, float radius, Color color)
     {
-        Vector3 offset = Vector3.zero;
-        for (int i = 0; i < rolls; i++)
-            offset += Random.onUnitSphere * spread;
-        return offset / rolls;
+        Gizmos.color = color;
+        Gizmos.DrawWireSphere(center, radius);
     }
 }

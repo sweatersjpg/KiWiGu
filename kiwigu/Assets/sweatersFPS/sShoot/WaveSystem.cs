@@ -11,6 +11,9 @@ public class WaveSystem : MonoBehaviour
     public bool isEnding = false;
 
     [Space]
+    [SerializeField] GameObject[] toEnable;
+
+    [Space]
     [SerializeField] EnemyWave[] waves;
 
     [Space]
@@ -18,11 +21,15 @@ public class WaveSystem : MonoBehaviour
     int activeSpawners = 0;
 
     List<Transform> freeSpawnPoints;
+
+    List<GameObject> enemyMasterList;
     
     // Start is called before the first frame update
     void Start()
     {
         ResetSpawnPoints();
+
+        enemyMasterList = new List<GameObject>();
 
         InvokeRepeating(nameof(ResetSpawnPoints), 1, 1f);
 
@@ -47,15 +54,39 @@ public class WaveSystem : MonoBehaviour
 
         if(CheckPointSystem.spawnPoint != requiredCheckPoint.position && currentWave >= 0)
         {
-            StopAllCoroutines();
-            currentWave = -1;
+            //StopAllCoroutines();
+            //currentWave = -1;
+            ResetWaves();
         }
+
+        if (currentWave >= waves.Length) Destroy(gameObject);
+    }
+
+    public void ResetWaves()
+    {
+        StopAllCoroutines();
+        ResetSpawnPoints();
+
+        currentWave = -1;
+
+        for(int i = enemyMasterList.Count-1; i >= 0; i--)
+        {
+            
+            
+            if (enemyMasterList[i])
+            {
+                
+                Destroy(enemyMasterList[i]);
+            }
+        }
+
+        enemyMasterList = new List<GameObject>();
     }
 
     void ResetSpawnPoints()
     {
         if (currentWave < 0) return;
-        
+
         freeSpawnPoints = new List<Transform>();
 
         for(int i = 0; i < waves[currentWave].SpawnPoints.childCount; i++)
@@ -67,31 +98,38 @@ public class WaveSystem : MonoBehaviour
     IEnumerator StartWave()
     {
         Debug.Log("Starting Wave " + currentWave);
-        
-        yield return new WaitForSeconds(waves[currentWave].startDelay);
 
-        activeSpawners = waves[currentWave].enemySpawns.Length;
-
-        Coroutine[] spawners = new Coroutine[waves[currentWave].enemySpawns.Length];
-
-        for (int i = 0; i < waves[currentWave].enemySpawns.Length; i++)
+        if (!waves[currentWave].ignoreWaveForTesting)
         {
-            spawners[i] = StartCoroutine(nameof(SpawnEnemies), i);
-        }
+            yield return new WaitForSeconds(waves[currentWave].startDelay);
 
-        Debug.Log(activeSpawners);
+            activeSpawners = waves[currentWave].enemySpawns.Length;
 
-        yield return new WaitUntil(() => { return activeSpawners == 0; });
+            Coroutine[] spawners = new Coroutine[waves[currentWave].enemySpawns.Length];
 
-        for(int i = 0; i < spawners.Length; i++)
-        {
-            StopCoroutine(spawners[i]);
+            for (int i = 0; i < waves[currentWave].enemySpawns.Length; i++)
+            {
+                spawners[i] = StartCoroutine(nameof(SpawnEnemies), i);
+            }
+
+            // Debug.Log(activeSpawners);
+
+            yield return new WaitUntil(() => { return activeSpawners == 0; });
+
+            for (int i = 0; i < spawners.Length; i++)
+            {
+                StopCoroutine(spawners[i]);
+            }
         }
 
         // execute next wave
         currentWave++;
         if (currentWave < waves.Length) StartCoroutine(nameof(StartWave));
-        else if(isEnding) SceneManager.LoadScene(1);
+        else if(isEnding) SceneManager.LoadScene(2);
+        else
+        {
+            for (int i = 0; i < toEnable.Length; i++) toEnable[i].SetActive(true);
+        }
     }
 
     IEnumerator SpawnEnemies(int index)
@@ -113,9 +151,28 @@ public class WaveSystem : MonoBehaviour
                 // wait for a free spawner
                 yield return new WaitForSeconds(spawner.spawnDelay);
 
-                yield return new WaitUntil(() => { return freeSpawnPoints.Count > 0; });
+                Transform customSpawn = null;
 
-                enemies.Add(StartEnemySpawn(spawner.enemyPrefab, spawner.weaponType));
+                if (spawner.customSpawnPoints.Length > 0)
+                {
+                    customSpawn = spawner.customSpawnPoints[Random.Range(0, spawner.customSpawnPoints.Length)];
+
+                    yield return new WaitUntil(() => { return freeSpawnPoints.Contains(customSpawn); });
+                }
+                else
+                {
+                    do
+                    {
+                        yield return new WaitUntil(() => { return freeSpawnPoints.Count >= 1; });
+
+                        customSpawn = FetchRandomSpawnPoint();
+                    } while (!customSpawn);
+                    
+                    yield return new WaitUntil(() => { return freeSpawnPoints.Contains(customSpawn); });
+                }
+
+                // Debug.Log("Spawning " + spawner.enemyPrefab.name + " with " + freeSpawnPoints.Count + " spawn points left");
+                enemies.Add(StartEnemySpawn(spawner.enemyPrefab, spawner.weaponType, customSpawn));
             }
 
             yield return new WaitUntil(() => { return CountNull(enemies) == enemies.Count; });
@@ -127,9 +184,15 @@ public class WaveSystem : MonoBehaviour
         activeSpawners--;
     }
 
-    Transform StartEnemySpawn(GameObject prefab, GunInfo gunType)
+    Transform StartEnemySpawn(GameObject prefab, GunInfo gunType, Transform customSpawn)
     {
-        Vector3 spawn = FetchRandomSpawnPoint().position;
+        Vector3 spawn;
+        if (customSpawn)
+        {
+            freeSpawnPoints.Remove(customSpawn);
+            spawn = customSpawn.position;
+        } else spawn = FetchRandomSpawnPoint().position;
+        // if (customSpawns.Length > 0) spawn = customSpawns[Random.Range(0, customSpawns.Length)].position;
 
         Instantiate(spawnFX, spawn, Quaternion.identity);
 
@@ -138,6 +201,7 @@ public class WaveSystem : MonoBehaviour
         if (gunType != null) enemy.GetComponentInChildren<HookTarget>().info = gunType;
 
         // StartCoroutine(nameof(EnableEnemy), enemy);
+        enemyMasterList.Add(enemy);
 
         return enemy.transform;
     }
@@ -150,7 +214,12 @@ public class WaveSystem : MonoBehaviour
 
     Transform FetchRandomSpawnPoint()
     {
+        if (freeSpawnPoints.Count == 0) return null;
+
         int i = Random.Range(0, freeSpawnPoints.Count);
+
+        // Debug.Log(i + " " + freeSpawnPoints.Count);
+
         Transform sp = freeSpawnPoints[i];
         freeSpawnPoints.Remove(sp);
 

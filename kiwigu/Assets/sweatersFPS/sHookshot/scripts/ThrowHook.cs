@@ -11,6 +11,9 @@ public class ThrowHook : MonoBehaviour
 
     public int mouseButton = 0;
 
+    [SerializeField] float pullForce = 15;
+    [SerializeField] float pullVelocityScale = 0.8f;
+
     bool hasHook = true;
 
     //Vector3 targetPosition;
@@ -47,34 +50,41 @@ public class ThrowHook : MonoBehaviour
         else mouseButton = 0;
     }
 
-    private void Update()
-    {
-        if (!hasHook && !sweatersController.instance.wasGrounded)
-        {
-            PlayerUI.SetLeapTooltipActive(false);
+    //private void Update()
+    //{
+        //if (!hasHook && !sweatersController.instance.wasGrounded)
+        //{
+        //    PlayerUI.SetLeapTooltipActive(false);
 
-            if (mh.hookTarget != null && mh.hookTarget.tether)
-            {
-                PlayerUI.SetLeapTooltipActive(true);
+        //    if (mh.hookTarget != null && mh.hookTarget.tether)
+        //    {
+        //        // PlayerUI.SetLeapTooltipActive(true);
 
-                if (Input.GetKeyDown(KeyCode.Space))
-                {
-                    mh.PullbackWithForce(30);   // originally hook.GetComponent<MoveHook>() instead of mh. changed this for the tooltip but change it back if something breaks
-                }
-            }
-        }
-        else if (mh != null && mh.hookTarget != null && mh.hookTarget.tether && sweatersController.instance.wasGrounded)
-        {
-            PlayerUI.SetLeapTooltipActive(false);
-        }
-    }
+        //        //if (Input.GetKeyDown(KeyCode.Space))
+        //        //{
+        //        //    mh.PullbackWithForce(pullForce, pullVelocityScale);   // originally hook.GetComponent<MoveHook>() instead of mh. changed this for the tooltip but change it back if something breaks
+        //        //}
+        //    }
+        //}
+        //else if (mh != null && mh.hookTarget != null && mh.hookTarget.tether && sweatersController.instance.wasGrounded)
+        //{
+        //     // PlayerUI.SetLeapTooltipActive(false);
+        //}
+    //}
 
     // Update is called once per frame
     void LateUpdate()
     {
+        if (PauseSystem.paused) return;
+        
         // ObstacleAvoidance();
+        string[] shootButtons = { "LeftShoot", "RightShoot" };
+        string shootButton = shootButtons[mouseButton];
 
-        if (Input.GetMouseButton(mouseButton) || Input.GetKey(mouseButton == 0 ? KeyCode.Q : KeyCode.E))
+        string[] throwButtons = { "LeftThrow", "RightThrow" };
+        string throwButton = throwButtons[mouseButton];
+
+        if (Input.GetButton(shootButton) || Input.GetButton(throwButton))
         {
             if (hasHook && !keyPressed)
             {
@@ -85,9 +95,9 @@ public class ThrowHook : MonoBehaviour
             // else hook.GetComponent<MoveHook>().PullbackWithForce(0);
         }
 
-        if (Input.GetMouseButtonUp(mouseButton) || Input.GetKeyUp(mouseButton == 0 ? KeyCode.Q : KeyCode.E))
+        if (Input.GetButtonUp(shootButton) || Input.GetButtonUp(throwButton))
         {
-            if (!hasHook) hook.GetComponent<MoveHook>().PullbackWithForce(0);
+            if (!hasHook) hook.GetComponent<MoveHook>().PullbackWithForce(0, 1);
             else CancelInvoke(nameof(Throw));
             keyPressed = false;
         }

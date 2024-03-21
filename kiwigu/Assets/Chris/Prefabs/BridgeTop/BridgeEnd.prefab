@@ -62,7 +62,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 15c5fdc999c30344e931b0f813200e8f, type: 2}
+  - {fileID: 2100000, guid: 8c8881c1f0fd2e248b8a7a64d61aba85, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -110,6 +110,7 @@ GameObject:
   - component: {fileID: 488224860554467406}
   - component: {fileID: 2387596807297166468}
   - component: {fileID: 6693534974347364016}
+  - component: {fileID: 4064699104682408128}
   m_Layer: 0
   m_Name: BridgeEndFill
   m_TagString: Untagged
@@ -160,7 +161,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 984dbf01149078344996d212167866e3, type: 2}
+  - {fileID: 2100000, guid: 84f3a50c1eafe0446acde5426c546652, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -195,6 +196,19 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 26.015612, y: 3, z: 28.007807}
   m_Center: {x: 13.007813, y: 1.5, z: -14.003903}
+--- !u!114 &4064699104682408128
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4189067650420329809}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4551def269543f94c87a2cc545c745c1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  extendsIslandOffset: 1
 --- !u!1 &4969903356894300191
 GameObject:
   m_ObjectHideFlags: 0

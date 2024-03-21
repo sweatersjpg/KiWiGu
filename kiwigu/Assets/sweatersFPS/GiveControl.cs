@@ -1,11 +1,10 @@
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting.Antlr3.Runtime;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GiveControl : MonoBehaviour
 {
-    // Start is called before the first frame update
+    [SerializeField] int sceneIndex;
+
     void Start()
     {
         Cursor.lockState = CursorLockMode.None;
@@ -15,9 +14,9 @@ public class GiveControl : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (Input.anyKeyDown)
         {
-            Application.Quit();
+            SceneManager.LoadScene(sceneIndex);
         }
     }
 }
