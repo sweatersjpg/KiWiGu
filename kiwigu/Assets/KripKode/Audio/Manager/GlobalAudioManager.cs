@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.Audio;
+using static MiniMenuSystem;
 
 public class GlobalAudioManager : MonoBehaviour
 {
@@ -8,8 +9,6 @@ public class GlobalAudioManager : MonoBehaviour
 
     // Sounds
     public AudioClip headshotSFX;
-    public AudioClip emptyMagSFX;
-    public AudioClip[] shootingSounds;
 
     private void Awake()
     {
@@ -45,18 +44,11 @@ public class GlobalAudioManager : MonoBehaviour
 
     public void PlayGunFire(Transform location, GunInfo info)
     {
-        for (int i = 0; i < shootingSounds.Length; i++)
-        {
-            if (info.gunName == shootingSounds[i].name)
-            {
-                PlaySound(location, shootingSounds[i], 1, 1, 25, "shootSFX");
-                return;
-            }
-        }
+        PlaySound(location, info.shootSound, 1, 1, 25, "shootSFX");
     }
 
-    public void PlayGunEmpty(Transform location)
+    public void PlayGunEmpty(Transform location, GunInfo info)
     {
-        PlaySound(location, emptyMagSFX, 1, 1, 25, "emptyMagSFX");
+        PlaySound(location, info.emptyMagSFX, 1, 1, 25, "emptyGunSFX");
     }
 }

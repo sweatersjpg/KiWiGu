@@ -106,7 +106,7 @@ public class ShootBullet : MonoBehaviour
             else
             {
                 if (Input.GetButtonDown(shootButton))
-                    GlobalAudioManager.instance.PlayGunEmpty(transform);
+                    GlobalAudioManager.instance.PlayGunEmpty(transform, info);
             }
         }
 
