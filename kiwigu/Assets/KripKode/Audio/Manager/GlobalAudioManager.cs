@@ -44,11 +44,13 @@ public class GlobalAudioManager : MonoBehaviour
 
     public void PlayGunFire(Transform location, GunInfo info)
     {
+        if (info.shootSound == null) return;
         PlaySound(location, info.shootSound, 1, Random.Range(0.9f, 1.05f), 25, "shootSFX");
     }
 
     public void PlayGunEmpty(Transform location, GunInfo info)
     {
+        if (info.emptyMagSFX == null) return;
         PlaySound(location, info.emptyMagSFX, 1, 1, 25, "emptyGunSFX");
     }
 }
