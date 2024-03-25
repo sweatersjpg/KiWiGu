@@ -66,6 +66,7 @@ public class sweatersController : MonoBehaviour
     public Vector3 velocity;
     public Vector3 rawInput;
     public Vector3 input;
+    public Vector3 facing;
 
     float rotationX = 0;
 
@@ -167,6 +168,8 @@ public class sweatersController : MonoBehaviour
             transform.position = spawnPoint;
             charController.enabled = true;
         }
+
+        facing = playerCamera.transform.forward;
     }
 
     public void ResetPlayer()

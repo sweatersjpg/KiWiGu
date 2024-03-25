@@ -625,6 +625,8 @@ public class MoveHook : MonoBehaviour
         }
     }
 
+    bool isGrapplnig = false;
+
     void PullTowards(Vector3 heading, float pullForce)
     {
         if (!hookTarget.tether && childHook == null) return;
@@ -638,6 +640,15 @@ public class MoveHook : MonoBehaviour
             PullbackWithForce(0, 1);
             return;
         }
+
+        if (isGrapplnig && Vector3.Dot(-heading.normalized, player.velocity.normalized) <= 0)
+        {
+            isGrapplnig = false;
+            PullbackWithForce(0, 1);
+            return;
+        }
+
+        isGrapplnig = true;
 
         // float t = hookTarget.maxResistance - hookTarget.resistance;
 
