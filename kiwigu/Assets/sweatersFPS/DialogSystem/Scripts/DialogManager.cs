@@ -98,6 +98,7 @@ public class DialogManager : MonoBehaviour
         if(sentences.Count == 0)
         {
             // hide dialog box
+            currentDialogPriority = 0;
             dialogBox.SetActive(false);
             return;
         }
