@@ -50,6 +50,9 @@ public class Bullet : MonoBehaviour
     float startTime;
     float time;
 
+    Vector3 initialVelocity;
+    public bool relativity = true;
+
     [HideInInspector] public float charge;
 
     [HideInInspector] public LayerMask ignoreMask;
@@ -87,13 +90,20 @@ public class Bullet : MonoBehaviour
             }
             rb.AddForce(forceDirection * 10f, ForceMode.Impulse);
 
+
             Destroy(gameObject);
         }
+
+        initialVelocity = transform.forward * speed;
 
         // supposedly removes from ignoreMask
         // ignoreMask &= ~(1 << LayerMask.GetMask("BulletView"));
         // does not work lol
 
+        if(!fromEnemy)
+        {
+            if(relativity) initialVelocity += sweatersController.instance.velocity;
+        }
 
     }
 
@@ -476,7 +486,7 @@ public class Bullet : MonoBehaviour
     {
         // y = v * t + 0.5 * gravity * t * t
 
-        Vector3 velocity = transform.forward * speed;
+        Vector3 velocity = initialVelocity;
         Vector3 acc = transform.forward * acceleration;
 
         float x = velocity.x * time + 0.5f * acc.x * time * time;

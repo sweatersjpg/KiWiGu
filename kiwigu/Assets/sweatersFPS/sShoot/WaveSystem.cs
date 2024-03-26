@@ -120,6 +120,7 @@ public class WaveSystem : MonoBehaviour
             {
                 StopCoroutine(spawners[i]);
             }
+
         }
 
         // execute next wave
@@ -129,6 +130,12 @@ public class WaveSystem : MonoBehaviour
         else
         {
             for (int i = 0; i < toEnable.Length; i++) toEnable[i].SetActive(true);
+            
+            foreach (GameObject enemy in enemyMasterList)
+            {
+                if(enemy) KillEnemy(enemy);
+            }
+
         }
     }
 
@@ -236,6 +243,34 @@ public class WaveSystem : MonoBehaviour
         }
 
         return nullCount;
+    }
+
+    // killing enemies
+
+    private void KillEnemy(GameObject enemyObject)
+    {
+        if (!enemyObject) return;
+
+        EnemyHitBox enemy = enemyObject.GetComponentInChildren<EnemyHitBox>();
+
+        var scriptType = System.Type.GetType(enemy.ReferenceScript);
+
+        Transform rootParent = enemyObject.transform;
+
+        if (rootParent != null && scriptType != null)
+        {
+            var enemyComponent = rootParent.GetComponent(scriptType) as MonoBehaviour;
+
+            if (enemyComponent != null)
+            {
+                var takeDamageMethod = scriptType.GetMethod("TakeDamage");
+
+                if (takeDamageMethod != null)
+                {
+                    takeDamageMethod.Invoke(enemyComponent, new object[] { 10000, false });
+                }
+            }
+        }
     }
 
 }
