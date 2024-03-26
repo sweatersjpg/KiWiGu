@@ -7,7 +7,7 @@ public class DialogTrigger : MonoBehaviour
 
     [SerializeField] Dialog dialog;
     
-    [SerializeField] bool noAudioSource = false;
+    //[SerializeField] bool noAudioSource = false;
     [SerializeField] bool displayOnContact = false;
     [SerializeField] bool destroyOnContact = false;
     [SerializeField] bool startDialogAsap = false;
@@ -53,7 +53,7 @@ public class DialogTrigger : MonoBehaviour
         //{
         //    TriggerDialog();
         //}
-        if(playerInBounds && noAudioSource)
+        if(playerInBounds && audio == null) //((dialog.characterIDs[0] == 0) || (dialog.characterIDs[0] == 4)))
         {
             DialogManager.instance.TriggerDialog(dialog);
         }
@@ -62,7 +62,7 @@ public class DialogTrigger : MonoBehaviour
         {
             DialogManager.instance.TriggerDialog(dialog, audio);//, startDialogAsap);
             displayOnContact = false;
-            //if (destroyOnContact) Destroy(gameObject);
+            if (destroyOnContact) Destroy(gameObject);
 
         }
     }
