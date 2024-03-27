@@ -62,7 +62,7 @@ public class PauseSystem : MonoBehaviour
 
     public void GotoMainMenu()
     {
-        Time.timeScale = 1;
+        if (paused) TogglePaused();
         SceneManager.LoadScene(0);
     }
 

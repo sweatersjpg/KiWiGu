@@ -17,7 +17,8 @@ public class CheckPointSystem : MonoBehaviour
         if (spawnPoint.Equals(new Vector3()) && startingSpawn)
         {
             spawnPoint = transform.position;
-            DontDestroyOnLoad(this);
+            spawnDirection = transform.localEulerAngles;
+            // DontDestroyOnLoad(this);
         }
     }
 
