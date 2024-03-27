@@ -1,24 +1,28 @@
 using UnityEngine;
+using static UnityEngine.Rendering.DebugUI;
 
 public class ArmorPiece : MonoBehaviour
 {
     public GameObject breakSFX;
     public float armorHealth;
-    private Vector3 pos;
+    public float armorHealthCurrent;
+
     public bool hookBreakable;
     public Mechemy refScriptMech;
     public bool isLeft;
     public bool isRight;
 
+    private Material breakableMat;
+
     private void Awake()
     {
-        pos = GetComponent<SkinnedMeshRenderer>().bounds.center;
+        breakableMat = GetComponent<SkinnedMeshRenderer>().material;
     }
 
     public void Hit(float damage)
     {
-        armorHealth -= damage;
-        if (armorHealth <= 0)
+        armorHealthCurrent += damage;
+        if (armorHealthCurrent >= armorHealth)
         {
             if (hookBreakable)
             {
@@ -32,8 +36,10 @@ public class ArmorPiece : MonoBehaviour
                 }
             }
 
-            Instantiate(breakSFX, pos, Quaternion.identity);
+            Instantiate(breakSFX, GetComponent<SkinnedMeshRenderer>().bounds.center, Quaternion.identity);
             Destroy(gameObject);
         }
+
+        breakableMat.SetFloat("_DamagePercent", armorHealthCurrent / armorHealth);
     }
 }
