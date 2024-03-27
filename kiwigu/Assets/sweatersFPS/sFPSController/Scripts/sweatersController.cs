@@ -107,13 +107,17 @@ public class sweatersController : MonoBehaviour
     {
         charController = GetComponent<CharacterController>();
 
-        if(!CheckPointSystem.spawnPoint.Equals(new Vector3()))
+        if (!CheckPointSystem.spawnPoint.Equals(new Vector3()))
         {
             charController.enabled = false;
 
             transform.position = CheckPointSystem.spawnPoint;
 
             charController.enabled = true;
+
+            rotationX = CheckPointSystem.spawnDirection.x;
+            playerHead.transform.localRotation = Quaternion.Euler(CheckPointSystem.spawnDirection.x, 0, 0);
+            transform.rotation = Quaternion.Euler(0, CheckPointSystem.spawnDirection.y, 0);
         }
 
         // Lock cursor
