@@ -131,7 +131,6 @@ public class ThrowHook : MonoBehaviour
 
     public void CatchHook(GunInfo info, Ammunition ammo)
     {
-        GlobalAudioManager.instance.PlayHook(transform, "Snatched");
         CancelInvoke();
         hookView.SetActive(true);
 
@@ -142,6 +141,8 @@ public class ThrowHook : MonoBehaviour
 
         if (info != null)
         {
+            GlobalAudioManager.instance.PlayHook(transform, "Snatched");
+
             ShootBullet gun = Instantiate(info.gunPrefab, transform.parent).GetComponentInChildren<ShootBullet>();
 
             gun.ammo = new Ammunition(ammo.capacity);
