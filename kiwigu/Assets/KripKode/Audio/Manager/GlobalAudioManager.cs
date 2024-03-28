@@ -88,19 +88,12 @@ public class GlobalAudioManager : MonoBehaviour
             battleSourceB.volume = Mathf.Clamp(battleSourceB.volume - Time.deltaTime * 0.15f, 0, 0.5f);
         }
 
-        // Activate battle music
-        Transform transform = sweatersController.instance.transform;
-        Collider[] colliders = Physics.OverlapSphere(transform.position, 25, LayerMask.GetMask("Enemy"));
-
-        foreach (Collider collider in colliders)
-        {
-            if (collider.tag == "Enemy")
-            {
-                battleTrigger = true;
-                return;
-            }
-        }
-        battleTrigger = false;
+        Transform playerTransform = sweatersController.instance.transform;
+        Collider[] enemies = Physics.OverlapSphere(playerTransform.position, 25, 1 << LayerMask.NameToLayer("Enemy"));
+        if (enemies.Length > 0)
+            battleTrigger = true;
+        else
+            battleTrigger = false;
     }
 
     public void PlayExplosion(Transform location)
