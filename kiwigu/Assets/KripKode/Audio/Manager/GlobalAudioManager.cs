@@ -19,6 +19,7 @@ public class GlobalAudioManager : MonoBehaviour
     public AudioClip grappleLaunchSFX;
     public AudioClip interceptorExplosionSFX;
     public AudioClip bulwarkExplosionSFX;
+    public AudioClip bulwarkExtendSFX;
 
     // Variables
     [Space(10)]
@@ -92,6 +93,7 @@ public class GlobalAudioManager : MonoBehaviour
         {
             case "Bulwark":
                 PlaySound(location, bulwarkExplosionSFX, 1, 1, 50, "explosionSFX");
+                PlaySound(location, bulwarkExtendSFX, 1, 1, 50, "explosionSFX");
                 break;
             case "Interceptor":
                 PlaySound(location, interceptorExplosionSFX, 1, 1, 50, "explosionSFX");
