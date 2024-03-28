@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 1886320638105856869}
   - component: {fileID: 1886320638105856867}
   m_Layer: 0
-  m_Name: Explosion
+  m_Name: ExplosionInterceptor
   m_TagString: Untagged
   m_Icon: {fileID: -964228994112308473, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
@@ -99,7 +99,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   force: 10
   duration: 0.4
-  finalRadius: 4
+  finalRadius: 6
   explosionSize:
     serializedVersion: 2
     m_Curve:
@@ -127,7 +127,7 @@ MonoBehaviour:
   damageDealt: 25
   explosionFX: {fileID: 1886320638137335495}
   scaleExplosion: 1
-  explosionType: Normal
+  explosionType: Interceptor
 --- !u!1 &1886320638137335492
 GameObject:
   m_ObjectHideFlags: 0

@@ -22,8 +22,12 @@ public class EnergyWall : MonoBehaviour
 
     [SerializeField] GameObject explosionPrefab;
 
+    [SerializeField] string explosionType;
+
     private void Start()
     {
+        GlobalAudioManager.instance.PlayExplosion(transform, explosionType);
+
         InitializePositionAndScale();
         StartCoroutine(ScaleUpAndDestroy());
 
