@@ -16,11 +16,16 @@ public class DoubleHookIndicator : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (CheckForHookTarget(out _) && HasBothHooks())
+        if (CheckForHookTarget(out HookTarget ht) && HasBothHooks())
         {
-            toEnable.SetActive(true);
+            if (!ht.tether && ht.resistance != 69)
+            {
+                toEnable.SetActive(true);
+                return;
+            }
         }
-        else toEnable.SetActive(false);
+
+        toEnable.SetActive(false);
     }
 
     bool HasBothHooks()
@@ -28,11 +33,11 @@ public class DoubleHookIndicator : MonoBehaviour
         return sweatersController.instance.gameObject.GetComponentsInChildren<ThrowHook>().Length == 2;
     }
 
-    private bool CheckForHookTarget(out Vector3 hit)
+    private bool CheckForHookTarget(out HookTarget ht)
     {
         //return Physics.Raycast(transform.position, transform.forward, out hit, maxDistance) &&
         //       hit.collider.CompareTag("HookTarget");
-        hit = AcquireTarget.instance.GetJustHookTarget();
+        Vector3 hit = AcquireTarget.instance.GetJustHookTarget(out ht);
 
         return Vector3.Distance(transform.position, hit) < maxDistance;
     }
