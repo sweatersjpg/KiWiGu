@@ -15,7 +15,12 @@ public class GlobalAudioManager : MonoBehaviour
     public AudioClip hookTugSFX;
     public AudioClip[] hookHitSFXs;
     public AudioClip hookBounceSFX;
-    public AudioClip hookWhipbackSFX;
+    public AudioClip hookWhipBackSFX;
+    public AudioClip grappleLaunchSFX;
+    public AudioClip interceptorExplosionSFX;
+    public AudioClip bulwarkExplosionSFX;
+    public AudioClip bulwarkExtendSFX;
+    public AudioClip bulwarkRetractSFX;
 
     // Variables
     [Space(10)]
@@ -83,28 +88,53 @@ public class GlobalAudioManager : MonoBehaviour
         PlaySound(location, info.emptyMagSFX, 1, 0.5f, 25, "emptyGunSFX");
     }
 
-    public void PlayExplosion(Transform location)
+    public void PlayExplosion(Transform location, string explosionType)
     {
-        AudioClip explosionSFX = explosionsSFX[Random.Range(0, explosionsSFX.Length)];
-        PlaySound(location, explosionSFX, 1, 1, 50, "explosionSFX");
+        switch (explosionType)
+        {
+            case "Retract":
+                PlaySound(location, bulwarkRetractSFX, 1, 1, 50, "explosionSFX");
+                break;
+            case "Bulwark":
+                PlaySound(location, bulwarkExplosionSFX, 1, 1, 50, "explosionSFX");
+                PlaySound(location, bulwarkExtendSFX, 1, 1, 50, "explosionSFX");
+                break;
+            case "Interceptor":
+                PlaySound(location, interceptorExplosionSFX, 1, 1, 50, "explosionSFX");
+                break;
+            case "Normal":
+                AudioClip explosionSFX = explosionsSFX[Random.Range(0, explosionsSFX.Length)];
+                PlaySound(location, explosionSFX, 1, 1, 50, "explosionSFX");
+                break;
+        }
     }
 
     public void PlayHook(Transform location, string actionReference)
     {
-        if (actionReference == "Throw")
-            PlaySound(location, hookThrowSFX, 1, 1, 50, "hookThrowSFX");
-        else if (actionReference == "Snatched")
-            PlaySound(location, hookSnatchedSFX, 1, 1, 50, "hookSnatchedSFX");
-        else if (actionReference == "Tug")
-            PlaySound(location, hookTugSFX, 1, 1, 50, "hookTugSFX");
-        else if (actionReference == "Bounce")
-            PlaySound(location, hookBounceSFX, 1, Random.Range(0.9f, 1.05f), 50, "hookBounceSFX");
-        else if (actionReference == "Whip Back")
-            PlaySound(location, hookWhipbackSFX, 1, 1, 50, "hookWhipBackSFX");
-        else if (actionReference == "Hit")
+        switch (actionReference)
         {
-            AudioClip hookHitSFX = hookHitSFXs[Random.Range(0, hookHitSFXs.Length)];
-            PlaySound(location, hookHitSFX, 1, 1, 50, "hookHitSFX");
+            case "Throw":
+                PlaySound(location, hookThrowSFX, 1, 1, 50, "hookThrowSFX");
+                break;
+            case "Snatched":
+                PlaySound(location, hookSnatchedSFX, 1, 1, 50, "hookSnatchedSFX");
+                break;
+            case "Tug":
+                PlaySound(location, hookTugSFX, 1, 1, 50, "hookTugSFX");
+                break;
+            case "Bounce":
+                PlaySound(location, hookBounceSFX, 1, Random.Range(0.9f, 1.05f), 50, "hookBounceSFX");
+                break;
+            case "Whip Back":
+                PlaySound(location, hookWhipBackSFX, 1, 1, 50, "hookWhipBackSFX");
+                break;
+            case "Launch":
+                PlaySound(location, grappleLaunchSFX, 1, 1, 50, "grappleLaunchSFX");
+                break;
+            case "Hit":
+                AudioClip hookHitSFX = hookHitSFXs[Random.Range(0, hookHitSFXs.Length)];
+                PlaySound(location, hookHitSFX, 1, 1, 50, "hookHitSFX");
+                break;
         }
     }
 

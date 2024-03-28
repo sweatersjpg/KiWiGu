@@ -19,11 +19,12 @@ public class Explosion : MonoBehaviour
     [SerializeField] bool scaleExplosion = true;
 
     float startTime;
+    public string explosionType;
 
     // Start is called before the first frame update
     void Start()
     {
-        GlobalAudioManager.instance.PlayExplosion(transform);
+        GlobalAudioManager.instance.PlayExplosion(transform, explosionType);
         startTime = Time.time;
 
         if(explosionFX)

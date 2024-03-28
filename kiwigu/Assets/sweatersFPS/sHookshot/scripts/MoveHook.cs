@@ -636,7 +636,11 @@ public class MoveHook : MonoBehaviour
     void PullTowards(Vector3 heading, float pullForce)
     {
         if (!hookTarget.tether && childHook == null) return;
-        
+
+
+        if(!isGrapplnig)
+            GlobalAudioManager.instance.PlayHook(transform, "Launch");
+
         sweatersController player = sweatersController.instance;
 
         // Vector3 toPlayer = player.transform.position - transform.position;
@@ -653,6 +657,7 @@ public class MoveHook : MonoBehaviour
             PullbackWithForce(0, 1);
             return;
         }
+
 
         isGrapplnig = true;
 
