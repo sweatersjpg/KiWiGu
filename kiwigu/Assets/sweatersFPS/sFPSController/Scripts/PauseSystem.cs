@@ -152,7 +152,9 @@ public class PauseSystem : MonoBehaviour
     public void UpdateSfxVolume(float value)
     {
         sfxVol = value;
-        GlobalAudioManager.instance.globalMixer.FindMatchingGroups("SFX")[0].audioMixer.SetFloat("volume", Mathf.Lerp(-80, 0, value));
+
+        AudioMixerGroup sfxGroup = GlobalAudioManager.instance.globalMixer.FindMatchingGroups("SFX")[0];
+        sfxGroup.audioMixer.SetFloat("volumeSFX", Mathf.Lerp(-80, 0, value));
 
         SaveSetting(nameof(sfxVol));
     }
@@ -160,8 +162,9 @@ public class PauseSystem : MonoBehaviour
     public void UpdateMusicVolume(float value)
     {
         musicVol = value;
-        // set mixer volume
-        GlobalAudioManager.instance.globalMixer.FindMatchingGroups("Music")[0].audioMixer.SetFloat("volume", Mathf.Lerp(-80, 0, value));
+
+        AudioMixerGroup musicGroup = GlobalAudioManager.instance.globalMixer.FindMatchingGroups("Music")[0];
+        musicGroup.audioMixer.SetFloat("volumeMusic", Mathf.Lerp(-80, 0, value));
 
         SaveSetting(nameof(musicVol));
     }
@@ -169,8 +172,9 @@ public class PauseSystem : MonoBehaviour
     public void UpdateMasterVolume(float value)
     {
         masterVol = value;
-        // set mixer volume
-        GlobalAudioManager.instance.globalMixer.FindMatchingGroups("Master")[0].audioMixer.SetFloat("volume", Mathf.Lerp(-80, 0, value));
+
+        AudioMixerGroup musicGroup = GlobalAudioManager.instance.globalMixer.FindMatchingGroups("Master")[0];
+        musicGroup.audioMixer.SetFloat("volumeMaster", Mathf.Lerp(-80, 0, value));
 
         SaveSetting(nameof(masterVol));
     }

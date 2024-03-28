@@ -353,6 +353,8 @@ public class MoveHook : MonoBehaviour
                 ht.resistance -= deltaTime;
                 if (ht.resistance > 0)
                 {
+                    GlobalAudioManager.instance.PlayHook(transform, "Hit");
+
                     hookTarget = ht;
                     Pullback(true);
 
@@ -409,7 +411,9 @@ public class MoveHook : MonoBehaviour
     void TakeHookTarget()
     {
         if (!hookTarget.info) return;
-        
+
+        GlobalAudioManager.instance.PlayHook(transform, "Whip Back");
+
         GameObject target = hookTarget.gameObject;
 
         caughtGun = hookTarget.info;
@@ -428,7 +432,9 @@ public class MoveHook : MonoBehaviour
 
     void ResolveCollision(RaycastHit hit)
     {
-        if(hit.transform.gameObject.CompareTag("Shield") && GetRootParent(hit.transform).GetComponent<HellfireEnemy>())
+        GlobalAudioManager.instance.PlayHook(transform, "Bounce");
+
+        if (hit.transform.gameObject.CompareTag("Shield") && GetRootParent(hit.transform).GetComponent<HellfireEnemy>())
         {
             Transform parent = GetRootParent(hit.transform);
             parent.GetComponent<HellfireEnemy>().HookBlock();
@@ -630,7 +636,11 @@ public class MoveHook : MonoBehaviour
     void PullTowards(Vector3 heading, float pullForce)
     {
         if (!hookTarget.tether && childHook == null) return;
-        
+
+
+        if(!isGrapplnig)
+            GlobalAudioManager.instance.PlayHook(transform, "Launch");
+
         sweatersController player = sweatersController.instance;
 
         // Vector3 toPlayer = player.transform.position - transform.position;
@@ -647,6 +657,7 @@ public class MoveHook : MonoBehaviour
             PullbackWithForce(0, 1);
             return;
         }
+
 
         isGrapplnig = true;
 

@@ -22,6 +22,11 @@ public class CheckPointSystem : MonoBehaviour
         }
     }
 
+    //private void OnDestroy()
+    //{
+    //    spawnPoint = new Vector3();
+    //}
+
     private void OnTriggerEnter(Collider collision)
     {
         if (collision.gameObject.layer == LayerMask.NameToLayer("Player"))

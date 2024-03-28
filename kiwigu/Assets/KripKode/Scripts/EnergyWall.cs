@@ -24,6 +24,8 @@ public class EnergyWall : MonoBehaviour
 
     private void Start()
     {
+        GlobalAudioManager.instance.PlayExplosion(transform, "Bulwark");
+
         InitializePositionAndScale();
         StartCoroutine(ScaleUpAndDestroy());
 
@@ -50,7 +52,6 @@ public class EnergyWall : MonoBehaviour
     private void UpdateScaling()
     {
         Vector3 currentScale = transform.localScale;
-
 
         if(!isDoneTime && isScalingUp)
         {
@@ -95,6 +96,7 @@ public class EnergyWall : MonoBehaviour
     {
         isScalingUp = true;
         yield return new WaitForSeconds(4);
+        GlobalAudioManager.instance.PlayExplosion(transform, "Retract");
         isDoneTime = true;
         isScalingUp = false;
     }
