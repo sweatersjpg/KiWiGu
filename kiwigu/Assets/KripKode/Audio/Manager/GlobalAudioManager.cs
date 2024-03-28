@@ -14,6 +14,8 @@ public class GlobalAudioManager : MonoBehaviour
     public AudioClip hookSnatchedSFX;
     public AudioClip hookTugSFX;
     public AudioClip[] hookHitSFXs;
+    public AudioClip hookBounceSFX;
+    public AudioClip hookWhipbackSFX;
 
     // Variables
     [Space(10)]
@@ -57,6 +59,7 @@ public class GlobalAudioManager : MonoBehaviour
         audioSource.pitch = pitch;
         audioSource.maxDistance = range;
         audioSource.rolloffMode = AudioRolloffMode.Custom;
+        audioSource.dopplerLevel = 0;
 
         audioSource.Play();
 
@@ -94,6 +97,10 @@ public class GlobalAudioManager : MonoBehaviour
             PlaySound(location, hookSnatchedSFX, 1, 1, 50, "hookSnatchedSFX");
         else if (actionReference == "Tug")
             PlaySound(location, hookTugSFX, 1, 1, 50, "hookTugSFX");
+        else if (actionReference == "Bounce")
+            PlaySound(location, hookBounceSFX, 1, Random.Range(0.9f, 1.05f), 50, "hookBounceSFX");
+        else if (actionReference == "Whip Back")
+            PlaySound(location, hookWhipbackSFX, 1, 1, 50, "hookWhipBackSFX");
         else if (actionReference == "Hit")
         {
             AudioClip hookHitSFX = hookHitSFXs[Random.Range(0, hookHitSFXs.Length)];
