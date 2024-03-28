@@ -9,6 +9,15 @@ public class GlobalAudioManager : MonoBehaviour
 
     // Sounds
     public AudioClip headshotSFX;
+    public AudioClip[] explosionsSFX;
+
+    // Variables
+    [Space(10)]
+    public AudioSource battleSourceA;
+    public AudioClip battleStemOne;
+    public AudioSource battleSourceB;
+    public AudioClip battleStemTwo;
+    public bool battleTrigger = false;
 
     private void Awake()
     {
@@ -16,6 +25,18 @@ public class GlobalAudioManager : MonoBehaviour
         {
             instance = this;
         }
+
+        battleSourceA.clip = battleStemOne;
+        battleSourceB.clip = battleStemTwo;
+        battleSourceA.Play();
+        battleSourceB.Play();
+        battleSourceA.volume = 0.5f;
+        battleSourceB.volume = 0;
+    }
+
+    private void Update()
+    {
+        PlayBattleMusic();
     }
 
     private void PlaySound(Transform location, AudioClip clip, float volume, float pitch, float range, string reference)
@@ -45,12 +66,46 @@ public class GlobalAudioManager : MonoBehaviour
     public void PlayGunFire(Transform location, GunInfo info)
     {
         if (info.shootSound == null) return;
-        PlaySound(location, info.shootSound, 1, Random.Range(0.9f, 1.05f), 25, "shootSFX");
+        PlaySound(location, info.shootSound, 0.5f, Random.Range(0.9f, 1.05f), 25, "shootSFX");
     }
 
     public void PlayGunEmpty(Transform location, GunInfo info)
     {
         if (info.emptyMagSFX == null) return;
-        PlaySound(location, info.emptyMagSFX, 1, 1, 25, "emptyGunSFX");
+        PlaySound(location, info.emptyMagSFX, 1, 0.5f, 25, "emptyGunSFX");
+    }
+
+    public void PlayBattleMusic()
+    {
+        if (battleTrigger)
+        {
+            battleSourceA.volume = Mathf.Clamp(battleSourceA.volume - Time.deltaTime * 0.5f, 0, 0.5f);
+            battleSourceB.volume = Mathf.Clamp(battleSourceB.volume + Time.deltaTime * 0.5f, 0, 0.5f);
+        }
+        else
+        {
+            battleSourceA.volume = Mathf.Clamp(battleSourceA.volume + Time.deltaTime * 0.15f, 0, 0.5f);
+            battleSourceB.volume = Mathf.Clamp(battleSourceB.volume - Time.deltaTime * 0.15f, 0, 0.5f);
+        }
+
+        // Activate battle music
+        Transform transform = sweatersController.instance.transform;
+        Collider[] colliders = Physics.OverlapSphere(transform.position, 25, LayerMask.GetMask("Enemy"));
+
+        foreach (Collider collider in colliders)
+        {
+            if (collider.tag == "Enemy")
+            {
+                battleTrigger = true;
+                return;
+            }
+        }
+        battleTrigger = false;
+    }
+
+    public void PlayExplosion(Transform location)
+    {
+        AudioClip explosionSFX = explosionsSFX[Random.Range(0, explosionsSFX.Length)];
+        PlaySound(location, explosionSFX, 1, 1, 25, "explosionSFX");
     }
 }

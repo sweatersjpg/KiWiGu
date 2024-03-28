@@ -23,6 +23,7 @@ public class Explosion : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        GlobalAudioManager.instance.PlayExplosion(transform);
         startTime = Time.time;
 
         if(explosionFX)
