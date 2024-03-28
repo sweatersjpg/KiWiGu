@@ -60,13 +60,13 @@ public class GlobalAudioManager : MonoBehaviour
 
     public void PlayHeadshotSFX(Transform location)
     {
-        PlaySound(location, headshotSFX, 1, 1, 25, "headshotSFX");
+        PlaySound(location, headshotSFX, 1, 1, 75, "headshotSFX");
     }
 
     public void PlayGunFire(Transform location, GunInfo info)
     {
         if (info.shootSound == null) return;
-        PlaySound(location, info.shootSound, 0.5f, Random.Range(0.9f, 1.05f), 25, "shootSFX");
+        PlaySound(location, info.shootSound, 0.5f, Random.Range(0.9f, 1.05f), 75, "shootSFX");
     }
 
     public void PlayGunEmpty(Transform location, GunInfo info)
