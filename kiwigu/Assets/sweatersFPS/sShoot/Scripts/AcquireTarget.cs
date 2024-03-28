@@ -96,10 +96,12 @@ public class AcquireTarget : MonoBehaviour
         return transform.position + transform.forward * maxDistance;
     }
 
-    public Vector3 GetJustHookTarget()
+    public Vector3 GetJustHookTarget(out HookTarget hookTarget)
     {
         bool hasHit = Physics.SphereCast(transform.position, radius * radius, transform.forward,
             out RaycastHit hit, maxDistance, ~LayerMask.GetMask("GunHand", "Player"));
+
+        hookTarget = null;
 
         if (hasHit)
         {
@@ -107,7 +109,11 @@ public class AcquireTarget : MonoBehaviour
 
             Vector3 target = hit.point;
 
-            if (ht) target = ht.transform.position;
+            if (ht)
+            {
+                target = ht.transform.position;
+                hookTarget = ht;
+            }
             else target = transform.position + transform.forward * maxDistance;
 
             if ((target - transform.position).magnitude < minDistance)
