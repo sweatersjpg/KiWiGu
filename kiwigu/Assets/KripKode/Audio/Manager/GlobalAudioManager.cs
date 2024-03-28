@@ -20,6 +20,7 @@ public class GlobalAudioManager : MonoBehaviour
     public AudioClip interceptorExplosionSFX;
     public AudioClip bulwarkExplosionSFX;
     public AudioClip bulwarkExtendSFX;
+    public AudioClip bulwarkRetractSFX;
 
     // Variables
     [Space(10)]
@@ -91,6 +92,9 @@ public class GlobalAudioManager : MonoBehaviour
     {
         switch (explosionType)
         {
+            case "Retract":
+                PlaySound(location, bulwarkRetractSFX, 1, 1, 50, "explosionSFX");
+                break;
             case "Bulwark":
                 PlaySound(location, bulwarkExplosionSFX, 1, 1, 50, "explosionSFX");
                 PlaySound(location, bulwarkExtendSFX, 1, 1, 50, "explosionSFX");
