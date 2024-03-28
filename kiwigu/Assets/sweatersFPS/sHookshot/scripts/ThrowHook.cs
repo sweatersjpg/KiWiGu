@@ -108,6 +108,7 @@ public class ThrowHook : MonoBehaviour
 
     void Throw()
     {
+        GlobalAudioManager.instance.PlayHook(transform, "Throw");
         hook = Instantiate(hookPrefab);
         hook.transform.SetPositionAndRotation(transform.position, Quaternion.LookRotation(transform.forward));
         hook.transform.LookAt(AcquireTarget.instance.GetHookTarget());
@@ -130,6 +131,7 @@ public class ThrowHook : MonoBehaviour
 
     public void CatchHook(GunInfo info, Ammunition ammo)
     {
+        GlobalAudioManager.instance.PlayHook(transform, "Snatched");
         CancelInvoke();
         hookView.SetActive(true);
 
@@ -153,6 +155,7 @@ public class ThrowHook : MonoBehaviour
 
     public void PullBack()
     {
+        GlobalAudioManager.instance.PlayHook(transform, "Tug");
         //CancelInvoke();
         //targetPosition = startPosition - new Vector3(0, 0, 0.5f);
         //Invoke(nameof(Reach), 0.5f);

@@ -10,6 +10,10 @@ public class GlobalAudioManager : MonoBehaviour
     // Sounds
     public AudioClip headshotSFX;
     public AudioClip[] explosionsSFX;
+    public AudioClip hookThrowSFX;
+    public AudioClip hookSnatchedSFX;
+    public AudioClip hookTugSFX;
+    public AudioClip[] hookHitSFXs;
 
     // Variables
     [Space(10)]
@@ -80,6 +84,21 @@ public class GlobalAudioManager : MonoBehaviour
     {
         AudioClip explosionSFX = explosionsSFX[Random.Range(0, explosionsSFX.Length)];
         PlaySound(location, explosionSFX, 1, 1, 50, "explosionSFX");
+    }
+
+    public void PlayHook(Transform location, string actionReference)
+    {
+        if (actionReference == "Throw")
+            PlaySound(location, hookThrowSFX, 1, 1, 50, "hookThrowSFX");
+        else if (actionReference == "Snatched")
+            PlaySound(location, hookSnatchedSFX, 1, 1, 50, "hookSnatchedSFX");
+        else if (actionReference == "Tug")
+            PlaySound(location, hookTugSFX, 1, 1, 50, "hookTugSFX");
+        else if (actionReference == "Hit")
+        {
+            AudioClip hookHitSFX = hookHitSFXs[Random.Range(0, hookHitSFXs.Length)];
+            PlaySound(location, hookHitSFX, 1, 1, 50, "hookHitSFX");
+        }
     }
 
     public void PlayBattleMusic()
