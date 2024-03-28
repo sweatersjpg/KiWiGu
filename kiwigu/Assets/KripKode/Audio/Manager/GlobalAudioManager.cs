@@ -52,6 +52,7 @@ public class GlobalAudioManager : MonoBehaviour
         audioSource.volume = volume;
         audioSource.pitch = pitch;
         audioSource.maxDistance = range;
+        audioSource.rolloffMode = AudioRolloffMode.Custom;
 
         audioSource.Play();
 
@@ -60,19 +61,25 @@ public class GlobalAudioManager : MonoBehaviour
 
     public void PlayHeadshotSFX(Transform location)
     {
-        PlaySound(location, headshotSFX, 1, 1, 75, "headshotSFX");
+        PlaySound(location, headshotSFX, 1, 1, 50, "headshotSFX");
     }
 
     public void PlayGunFire(Transform location, GunInfo info)
     {
         if (info.shootSound == null) return;
-        PlaySound(location, info.shootSound, 0.5f, Random.Range(0.9f, 1.05f), 75, "shootSFX");
+        PlaySound(location, info.shootSound, 0.5f, Random.Range(0.9f, 1.05f), 50, "shootSFX");
     }
 
     public void PlayGunEmpty(Transform location, GunInfo info)
     {
         if (info.emptyMagSFX == null) return;
         PlaySound(location, info.emptyMagSFX, 1, 0.5f, 25, "emptyGunSFX");
+    }
+
+    public void PlayExplosion(Transform location)
+    {
+        AudioClip explosionSFX = explosionsSFX[Random.Range(0, explosionsSFX.Length)];
+        PlaySound(location, explosionSFX, 1, 1, 50, "explosionSFX");
     }
 
     public void PlayBattleMusic()
@@ -94,11 +101,5 @@ public class GlobalAudioManager : MonoBehaviour
             battleTrigger = true;
         else
             battleTrigger = false;
-    }
-
-    public void PlayExplosion(Transform location)
-    {
-        AudioClip explosionSFX = explosionsSFX[Random.Range(0, explosionsSFX.Length)];
-        PlaySound(location, explosionSFX, 1, 1, 25, "explosionSFX");
     }
 }
