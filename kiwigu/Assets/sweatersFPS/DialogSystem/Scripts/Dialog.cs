@@ -13,9 +13,11 @@ public class Dialog : ScriptableObject
     }
 
     public bool singleVoiceLine = false;
+    [Range(1, 256)]
     public int priority;
 
     public DialogType type;
+    public int dialogIndex = 0;
 
     public int[] characterIDs;
     public static string[] characters = { "DANNY", "THE CHOSEN", "GRUNT", "MECHENEMY", "APOSTLE"};
@@ -34,6 +36,7 @@ public class Dialog : ScriptableObject
 
     public void OnValidate()
     {
+        dialogIndex = 0;
         displayText = new string[lines.Length];
 
         if ((singleVoiceLine))

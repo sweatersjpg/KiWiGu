@@ -72,20 +72,9 @@ MonoBehaviour:
       type: 0
       content: []
       callBack: UpdateSfxVolume
-  - title: credits
-    onClick: 
-    settings:
-    - title: Credits
-      type: 3
-      content:
-      - "\n  Slommy Studios"
-      - "Abby\n Environment Assets"
-      - "Carlo\n Programming"
-      - "Chris\n Levels & Design"
-      - "Sam\n Programming"
-      - "Sarita\n Music & VFX"
-      - "Tiggi\n Art & Modeling"
-      callBack: 
+  - title: menu
+    onClick: GotoMainMenu
+    settings: []
   - title: reload
     onClick: ReloadScene
     settings: []

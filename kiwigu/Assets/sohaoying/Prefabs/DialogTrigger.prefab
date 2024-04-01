@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 3894540568506345821}
   - component: {fileID: 3894540568506345818}
   - component: {fileID: 3894540568506345819}
-  m_Layer: 8
+  m_Layer: 20
   m_Name: DialogTrigger
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -27,7 +27,7 @@ Transform:
   m_GameObject: {fileID: 3894540568506345816}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 10, y: 10, z: 10}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 0}
@@ -44,8 +44,8 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Size: {x: 22.510487, y: 13.811886, z: 11.469345}
+  m_Center: {x: -2.5021229, y: 1.8574352, z: 3.762169}
 --- !u!114 &3894540568506345819
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -58,18 +58,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dc4e0e3719cb44652873b21fe44f4c44, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dialog:
-    type: 1
-    sentences:
-    - 'DANNY: Testing, is this thing on?'
-    - "DANNY: Hey, it\u2019s Danny."
-    - "DANNY: I\u2019m staying back with the others, but maybe I can still be helpful."
-    - "DANNY: I\u2019ve got a live feed from your visor, so I\u2019ll try to shout
-      out anything I see."
-    sentenceDurations:
-    - 3
-    - 2
-    - 5
-    - 5
+  dialog: {fileID: 0}
   displayOnContact: 1
   destroyOnContact: 1
+  startDialogAsap: 0

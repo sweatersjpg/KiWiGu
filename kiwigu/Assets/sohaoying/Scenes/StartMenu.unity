@@ -123,6 +123,50 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &170430808
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 170430810}
+  - component: {fileID: 170430809}
+  m_Layer: 0
+  m_Name: CheckPointReset
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &170430809
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 170430808}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3fa755bcc2644af44a1eb85940f7c719, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &170430810
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 170430808}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 2.6221094, y: 3.7543006, z: 28.921965}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &180270212
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -313,7 +357,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2905511539943661447, guid: 81a18a4fd7a975a4c8e02841ed6ba15b, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 86.00007
+      value: 86.000046
       objectReference: {fileID: 0}
     - target: {fileID: 4996388313177243090, guid: 81a18a4fd7a975a4c8e02841ed6ba15b, type: 3}
       propertyPath: m_Pivot.x

@@ -12,7 +12,7 @@ public class DialogManager : MonoBehaviour
     [HideInInspector] public bool active;
 
     [SerializeField] float textSpeed = 20;
-    [SerializeField] int currentDialogPriority = 0;
+    public int currentDialogPriority = 0;
     
     [Space]
     [SerializeField] List<AudioSource> currentAudioSources;
@@ -91,6 +91,8 @@ public class DialogManager : MonoBehaviour
         }
         yield return new WaitForSeconds(textDuration);
         textComplete = true;
+
+        currentDialogPriority = 0;
     }
     
     public void NextDialog()
@@ -135,63 +137,9 @@ public class DialogManager : MonoBehaviour
         //}
     }
 
-    public void TriggerDialog(Dialog dialog)
-    {
-        if (dialog.priority <= currentDialogPriority) return;
-        currentDialogPriority = dialog.priority;
-
-        List<string> lines = new List<string>();
-        List<float> lineDurations = new List<float>();
-        int dialogIndex = 0;
-
-        switch (dialog.type)
-        {
-            case Dialog.DialogType.Sequence:
-                for (int i = dialogIndex; i < dialog.displayText.Length; i++)
-                {
-                    lines.Add(dialog.displayText[i]);
-                    lineDurations.Add(dialog.lineDurations[i]);
-                }
-                dialogIndex = dialog.displayText.Length - 1;
-                break;
-            case Dialog.DialogType.Random:
-                int randomIndex = Random.Range(0, dialog.displayText.Length);
-                lines.Add(dialog.displayText[randomIndex]);
-                lineDurations.Add(dialog.lineDurations[randomIndex]);
-                break;
-            case Dialog.DialogType.Repeat:
-                lines.Add(dialog.displayText[dialogIndex++ % dialog.displayText.Length]);
-                lineDurations.Add(dialog.lineDurations[dialogIndex++ % dialog.lineDurations.Count]);
-                break;
-        }
-
-        /* PLACEHOLDER. depends how audio will be done
-         * 
-         * YOU STILL HAVE TO DRAG IN THE PLAYER AND APOSTLE AUDIOSOURCES; THERE AREN'T ANY RN.
-         * or follow a different system. ask later
-        */
-        switch (dialog.characterIDs[0])
-        {
-            case 0: // Danny radio speaking
-                currentAudioSources.Add(playerAudioSource);
-                break;
-            case 4: // Apostle speaking
-                currentAudioSources.Add(apostleAudioSource);
-                break;
-        }
-        
-        if (dialog.audioClips != null && dialog.audioClips.Length > 0)
-        {
-            currentAudioSources[currentAudioSources.Count - 1].clip = dialog.audioClips[0];
-            currentAudioSources[currentAudioSources.Count -1].Play();
-        }
-
-        StartDialog(lines, lineDurations);
-    }
-
     /* FOR LATER
-       THERE SHOULD BE ONLY ONE AUDIOCLIP PER DIALOG OBJECT... THEORETICALLY. but i left it as an array just in case...
-       should avoid putting danny beats near other dialog triggers
+       
+    should avoid putting danny beats near other dialog triggers
 
     ALSO FOR LATER: consider whether to stop audio or just leave it overlapping.
     it's currently overlapping and you'll probably have to stop it later. do this when the voice lines are in
@@ -211,24 +159,13 @@ public class DialogManager : MonoBehaviour
      * mech mandown: 4
      * grunt mandown: 4
      * 
-     * mech spotted: 1
-     * grunt spotted: 1
+     * mech spotted: 2
+     * grunt spotted: 2
      * 
-     * mech idle: 0
-     * grunt idle: 0
-     * 
-     * 
-     
+     * mech idle: 1
+     * grunt idle: 1
 
-    only enemies should need to specify an AudioSource, Danny's radio is from the player and there's only one Apostle
     */
-    public void TriggerDialog(Dialog dialog, AudioSource audioSource)
-    {
-        // PLACEHOLDER. depends how audio will be done
-        currentAudioSources.Add(audioSource);
-
-        TriggerDialog(dialog);
-    }
 
     /*public void ShowInteractPrompt()
     {
