@@ -239,6 +239,7 @@ public class sweatersController : MonoBehaviour
 
         // apply gravity when not grounded or sliding
         if (!isGrounded || isSliding) force.y -= gravity;
+        if (isSliding) force.y -= gravity;
 
         // jump buffer logic
         if(Input.GetButtonDown("Jump"))
