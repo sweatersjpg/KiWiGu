@@ -10,12 +10,13 @@ public class AmmoUIManager : MonoBehaviour
     public GameObject hookIcon;
 
     [SerializeField] List<GameObject> controls;
+    [SerializeField] GameObject noAmmoIndicator;
 
     void FixedUpdate()
     {
         ShootBullet fetchedGun = FetchGun();
 
-        if (fetchedGun == null && display != null)
+        if (fetchedGun == null && display != null)  // when you've just thrown a gun
         {
             Destroy(display);
             display = null;
@@ -27,9 +28,10 @@ public class AmmoUIManager : MonoBehaviour
             {
                 o.SetActive(false);
             }
+            noAmmoIndicator.SetActive(false);
         }
 
-        if (fetchedGun != null && display == null)
+        if (fetchedGun != null && display == null)  // when you've just grabbed a gun
         {
 
             if (!fetchedGun.anim.info.guUI) return;
@@ -46,6 +48,11 @@ public class AmmoUIManager : MonoBehaviour
             AmmoUIDiscrete ammo = display.GetComponent<AmmoUIDiscrete>();
             if (ammo) ammo.playerHand = playerHand;
             else display.GetComponentInChildren<AmmoUI>().playerHand = playerHand;
+        }
+
+        if (fetchedGun != null) // when you're holding a gun
+        {
+            if (fetchedGun.ammo.count == 0) noAmmoIndicator.SetActive(true);
         }
 
     }
