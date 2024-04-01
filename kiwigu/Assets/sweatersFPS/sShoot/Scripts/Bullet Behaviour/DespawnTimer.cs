@@ -32,7 +32,7 @@ public class DespawnTimer : MonoBehaviour
 
             for (int i = 0; i < mrs.Length; i++)
             {
-                mrs[i].enabled = !mrs[i].enabled;
+                if (mrs[i]) mrs[i].enabled = !mrs[i].enabled;
             }
         }
 
