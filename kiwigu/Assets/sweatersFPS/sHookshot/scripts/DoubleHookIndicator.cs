@@ -18,7 +18,7 @@ public class DoubleHookIndicator : MonoBehaviour
     {
         if (CheckForHookTarget(out HookTarget ht) && HasBothHooks())
         {
-            if (!ht.tether && ht.resistance != 69)
+            if (!ht.tether || ht.resistance == 69)
             {
                 toEnable.SetActive(true);
                 return;
