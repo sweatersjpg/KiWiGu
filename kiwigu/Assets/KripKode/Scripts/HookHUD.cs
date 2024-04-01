@@ -50,6 +50,7 @@ public class HookHUD : MonoBehaviour
 
         reticleIcon.localPosition = Vector3.Lerp(reticleIcon.localPosition, targetLocalPosition, Time.deltaTime * lerpSpeed);
         // reticleIcon.color = Color.Lerp(reticleIcon.color, targetColor, Time.deltaTime * (lerpSpeed * 2));
+        LerpColor(targetColor);
     }
 
     private bool CheckForHookTarget(out Vector3 hit)
@@ -66,11 +67,13 @@ public class HookHUD : MonoBehaviour
             rightHook.sprite = noHook;
         }
 
-        return Vector3.Distance(transform.position, hit) < maxDistance;
+        return Vector3.Distance(sweatersController.instance.playerCamera.transform.position, hit) < maxDistance;
     }
 
     private void UpdateIconProperties(Vector3 hit)
     {
+        Debug.Log("hook targetted!!!");
+
         Vector3 screenPos = Camera.main.WorldToScreenPoint(hit);
         // reticleIcon.rectTransform.position = screenPos + new Vector3(0, 10f, 0);
         reticleIcon.position = Vector3.Lerp(reticleIcon.position,
@@ -78,5 +81,12 @@ public class HookHUD : MonoBehaviour
 
         Color targetColor = new Color(1f, 1f, 1f, 1f);
         // reticleIcon.color = Color.Lerp(reticleIcon.color, targetColor, Time.deltaTime * (lerpSpeed * 2));
+        LerpColor(targetColor);
+    }
+
+    void LerpColor(Color targetColor)
+    {
+        leftHook.color = Color.Lerp(leftHook.color, targetColor, Time.deltaTime * (lerpSpeed * 2));
+        rightHook.color = Color.Lerp(rightHook.color, targetColor, Time.deltaTime * (lerpSpeed * 2));
     }
 }
