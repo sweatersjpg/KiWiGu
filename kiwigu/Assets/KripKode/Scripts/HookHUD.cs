@@ -18,6 +18,12 @@ public class HookHUD : MonoBehaviour
 
     private void Update()
     {
+        if (PauseSystem.paused)
+        {
+            LerpColor(new Color(1, 1, 1, 0));
+            return;
+        }
+
         if (!CheckForHookTarget(out _))
         {
             LerpIconToCenter();
@@ -86,7 +92,7 @@ public class HookHUD : MonoBehaviour
 
     void LerpColor(Color targetColor)
     {
-        leftHook.color = Color.Lerp(leftHook.color, targetColor, Time.deltaTime * (lerpSpeed * 2));
-        rightHook.color = Color.Lerp(rightHook.color, targetColor, Time.deltaTime * (lerpSpeed * 2));
+        leftHook.color = Color.Lerp(leftHook.color, targetColor, Time.unscaledDeltaTime * (lerpSpeed * 2));
+        rightHook.color = Color.Lerp(rightHook.color, targetColor, Time.unscaledDeltaTime * (lerpSpeed * 2));
     }
 }
