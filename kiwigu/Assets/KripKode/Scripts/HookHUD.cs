@@ -30,8 +30,6 @@ public class HookHUD : MonoBehaviour
 
         UpdateHookIcon();
 
-        print("hello???");
-
         // if(PauseSystem.paused) reticleIcon.color = new Color(1f, 1f, 1f, 0f);
     }
 
