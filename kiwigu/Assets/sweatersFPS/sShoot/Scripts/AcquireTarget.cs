@@ -99,7 +99,7 @@ public class AcquireTarget : MonoBehaviour
     public Vector3 GetJustHookTarget(out HookTarget hookTarget)
     {
         bool hasHit = Physics.SphereCast(transform.position, radius * radius, transform.forward,
-            out RaycastHit hit, maxDistance, ~LayerMask.GetMask("GunHand", "Player"));
+            out RaycastHit hit, maxDistance, ~LayerMask.GetMask("GunHand", "Player", "Shield"));
 
         hookTarget = null;
 

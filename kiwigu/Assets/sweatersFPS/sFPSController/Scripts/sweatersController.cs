@@ -353,6 +353,21 @@ public class sweatersController : MonoBehaviour
         playerHead.transform.localPosition = new Vector3(0, charController.height - 0.5f, 0);
     }
 
+    public Vector3 GetRelativity()
+    {
+        Vector3 v = velocity;
+        v.y = 0;
+
+        Vector3 look = playerCamera.transform.forward;
+        look.y = 0;
+        look.Normalize();
+
+        v = Vector3.Project(v, look);
+        v.y = velocity.y;
+
+        return v;
+    }
+
     void OnControllerColliderHit(ControllerColliderHit hit)
     {
         Rigidbody body = hit.rigidbody;
