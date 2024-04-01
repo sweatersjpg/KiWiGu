@@ -22,8 +22,6 @@ public class Mechemy : MonoBehaviour
     [Header("Enemy Detection Settings")]
     [SerializeField] private Transform eyesPosition;
     [SerializeField] private float detectionRange;
-    [SerializeField] private float triggerPlayerCoverRange;
-    [SerializeField] private float coverRange;
     private GameObject detectedPlayer;
 
     [Space(10)]
@@ -43,7 +41,6 @@ public class Mechemy : MonoBehaviour
     public HookTarget leftGun;
     public HookTarget rightGun;
     Transform BulletExitPoint;
-    public bool shootAlternate;
     private bool isShooting;
     private bool animDone;
     private bool isRotating;
@@ -163,7 +160,7 @@ public class Mechemy : MonoBehaviour
             if (isCrushing)
                 return;
 
-            animator.speed = Mathf.Clamp(agent.speed / 2.5f, 0.5f, 1.0f);
+            animator.speed = Mathf.Clamp(agent.speed / 2.5f, 0.5f, 1.2f);
             agent.speed = seekSpeed;
 
             if (agent.velocity.magnitude >= 0.1f)
@@ -271,53 +268,17 @@ public class Mechemy : MonoBehaviour
         {
             animator.speed = 1.0f;
 
-            if (!isShooting && Vector3.Distance(transform.position, detectedPlayer.transform.position) <= triggerPlayerCoverRange)
+            if (agent.velocity.magnitude >= 0.1f)
             {
-                animator.speed = Mathf.Clamp(agent.speed / 2.5f, 0.5f, 1.0f);
-                agent.speed = seekSpeed;
-
-                if (agent.velocity.magnitude >= 0.1f)
-                {
-                    animator.SetBool("walk", false);
-                    animator.SetBool("run", true);
-                }
-
-                GameObject[] coverPoints = GameObject.FindGameObjectsWithTag("Cover");
-                GameObject nearestCover = null;
-                float nearestDistance = Mathf.Infinity;
-
-                foreach (GameObject cover in coverPoints)
-                {
-                    float distance = Vector3.Distance(transform.position, cover.transform.position);
-                    if (distance < nearestDistance)
-                    {
-                        nearestDistance = distance;
-                        nearestCover = cover;
-                    }
-                }
-
-                if (nearestDistance <= coverRange)
-                {
-                    agent.SetDestination(nearestCover.transform.position);
-                }
-
-                if (Vector3.Distance(transform.position, nearestCover.transform.position) <= 3f || nearestDistance > coverRange)
-                {
-                    RotateNavMeshAgentTowardsObj(detectedPlayer.transform.position);
-
-                    if (isShooting)
-                        return;
-                    StartCoroutine(ShootRoutine());
-                }
+                animator.SetBool("walk", false);
+                animator.SetBool("run", true);
             }
-            else
-            {
-                RotateNavMeshAgentTowardsObj(detectedPlayer.transform.position);
 
-                if (isShooting)
-                    return;
-                StartCoroutine(ShootRoutine());
-            }
+            RotateNavMeshAgentTowardsObj(detectedPlayer.transform.position);
+
+            if (isShooting)
+                return;
+            StartCoroutine(ShootRoutine());
         }
     }
 
@@ -346,19 +307,6 @@ public class Mechemy : MonoBehaviour
         GameObject go = Instantiate(FireWarningSFX, headPos.transform.position, Quaternion.identity);
         Destroy(go, 2);
 
-        if (holdingLeftGun && holdingRightGun)
-        {
-            shootAlternate = Random.Range(0, 2) == 0;
-        }
-        else if (holdingLeftGun)
-        {
-            shootAlternate = false;
-        }
-        else if (holdingRightGun)
-        {
-            shootAlternate = true;
-        }
-
         animDone = true;
     }
 
@@ -379,7 +327,7 @@ public class Mechemy : MonoBehaviour
         Quaternion targetRotation = Quaternion.LookRotation(objPos - agent.transform.position);
 
         agent.transform.rotation = Quaternion.Slerp(agent.transform.rotation, targetRotation, Time.deltaTime * 10);
-        
+
         RotateGunObjectExitPoint(detectedPlayer.transform.position);
     }
 
@@ -406,6 +354,7 @@ public class Mechemy : MonoBehaviour
                     float time = distance / infoHT.bulletSpeed;
                     float gravity = infoHT.bulletGravity;
                     angle = Mathf.Atan((time * time * gravity) / (2 * distance)) * Mathf.Rad2Deg;
+                    angle *= 0.45f;
                     angleCalculated = true;
                     angleCalculated = true;
                 }
@@ -485,9 +434,6 @@ public class Mechemy : MonoBehaviour
 
     private float EnemyShoot()
     {
-        if ((shootAlternate && !holdingRightGun) || (!shootAlternate && !holdingLeftGun) || !IsPlayerVisible())
-            return 0;
-
         HookTarget gun = transform.GetComponentInChildren<HookTarget>();
         if (gun == null)
         {
@@ -499,12 +445,25 @@ public class Mechemy : MonoBehaviour
 
         if (gun)
         {
-            if (shootAlternate)
+            if (holdingRightGun && holdingLeftGun)
+            {
+                if (Random.Range(0, 2) == 0)
+                {
+                    infoHT = rightGun.info;
+                    BulletExitPoint = rightGunExitPoint;
+                }
+                else
+                {
+                    infoHT = leftGun.info;
+                    BulletExitPoint = leftGunExitPoint;
+                }
+            }
+            else if (holdingRightGun)
             {
                 infoHT = rightGun.info;
                 BulletExitPoint = rightGunExitPoint;
             }
-            else
+            else if (holdingLeftGun)
             {
                 infoHT = leftGun.info;
                 BulletExitPoint = leftGunExitPoint;
@@ -530,8 +489,6 @@ public class Mechemy : MonoBehaviour
     {
         DrawColoredSphere(transform.position, detectionRange, Color.red);
         DrawColoredSphere(transform.position, wanderRadius, Color.yellow);
-        DrawColoredSphere(transform.position, triggerPlayerCoverRange, Color.blue);
-        DrawColoredSphere(transform.position, coverRange, Color.green);
     }
 
     private void DrawColoredSphere(Vector3 center, float radius, Color color)

@@ -1041,18 +1041,15 @@ MonoBehaviour:
   FireWarningSFX: {fileID: 2838533942546750815, guid: 4ca2e9e9def890849859a51bbf24d3a0, type: 3}
   eyesPosition: {fileID: 6791719881144983663}
   detectionRange: 40
-  triggerPlayerCoverRange: 30
-  coverRange: 15
-  wanderSpeed: 3
+  wanderSpeed: 4
   wanderWaitTime: 5
   wanderRadius: 5
-  seekSpeed: 10
-  shootCooldown: 2
+  seekSpeed: 14
+  shootCooldown: 0.75
   leftGunExitPoint: {fileID: 6791719879512707940}
   rightGunExitPoint: {fileID: 6791719880513635523}
   leftGun: {fileID: 6791719880176225626}
   rightGun: {fileID: 6791719880970973294}
-  shootAlternate: 0
   splatoodFX: {fileID: 8636026588871352116, guid: dc5ec3d945ace784cb9e3b8e4b1c5a2b, type: 3}
 --- !u!1 &6378400820060443750
 GameObject:
@@ -1846,7 +1843,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4d2ce53ee64d23b4ab2b38a8ce74f259, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  info: {fileID: 11400000, guid: 9081c37e1d4641743b27e2394b64b91a, type: 2}
+  info: {fileID: 11400000, guid: ff1c5490332b9e94784e8685aaf92b16, type: 2}
   gunView: {fileID: 6791719880222632233}
   throwGunPrefab: {fileID: 6087863177417318745, guid: 775df9a2e9013c54ab64a1c26875866b, type: 3}
   hasView: 1
@@ -3333,6 +3330,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 6791719880513635523}
     m_Modifications:
+    - target: {fileID: 4327764642279862662, guid: 7ad020d64766f7940b3697e489cc3729, type: 3}
+      propertyPath: info
+      value: 
+      objectReference: {fileID: 11400000, guid: ff1c5490332b9e94784e8685aaf92b16, type: 2}
     - target: {fileID: 4327764642279862662, guid: 7ad020d64766f7940b3697e489cc3729, type: 3}
       propertyPath: isShooting
       value: 0
