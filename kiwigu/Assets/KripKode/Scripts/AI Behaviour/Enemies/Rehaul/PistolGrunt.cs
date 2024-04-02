@@ -657,6 +657,10 @@ public class PistolGrunt : MonoBehaviour
         {
             isHoldingGun = false;
             isShooting = false;
+
+            BulletShooter b = transform.GetComponentInChildren<BulletShooter>();
+            if (b) Destroy(b);
+
             return 0;
         }
         GunInfo info = gun.info;
