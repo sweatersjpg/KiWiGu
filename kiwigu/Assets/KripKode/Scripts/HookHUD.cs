@@ -10,8 +10,8 @@ public class HookHUD : MonoBehaviour
     public Sprite hook;
     public Sprite noHook;
 
-    public float maxDistance = 12f;
-    public float lerpSpeed = 5f;
+    private float maxDistance = 20f;
+    private float lerpSpeed = 5f;
 
     public GameObject hookIconLeft;
     public GameObject hookIconRight;
