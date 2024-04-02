@@ -654,6 +654,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4619342294706443279}
   - component: {fileID: 4619342294706443276}
+  - component: {fileID: 1265740310501830929}
   - component: {fileID: 8015278467566398380}
   - component: {fileID: 4619342294706443272}
   m_Layer: 7
@@ -700,6 +701,28 @@ CharacterController:
   m_SkinWidth: 0.0001
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 1, z: 0}
+--- !u!114 &1265740310501830929
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4619342294706443379}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: be2a1a9d7033e234895abdc7bbefe3bf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  footsteps:
+  - {fileID: 8300000, guid: ee7f0d0548860264aa377545d63c689d, type: 3}
+  - {fileID: 8300000, guid: 1c70ec8e6bd114c4ba1b86ee65b5e0ac, type: 3}
+  - {fileID: 8300000, guid: d322f53e61397db4997116694b7e9f49, type: 3}
+  landSounds:
+  - {fileID: 8300000, guid: a4959313a5818324baae1dcd151d63b4, type: 3}
+  - {fileID: 8300000, guid: 9498f1e0e0f3d5b448c5cbaf3022159d, type: 3}
+  - {fileID: 8300000, guid: e31ff107af8a42341a62d03dbba74a0c, type: 3}
+  timeScale: 2
+  pitchRange: 0.1
 --- !u!114 &8015278467566398380
 MonoBehaviour:
   m_ObjectHideFlags: 0

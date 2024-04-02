@@ -24,6 +24,8 @@ public class ViewBob : MonoBehaviour
 
     public WeaponCameraFX cameraFX;
 
+    float airBorneTimer;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -44,13 +46,20 @@ public class ViewBob : MonoBehaviour
         // float Y = Mathf.Abs(Mathf.Sin(time * timeScale / 2 + (hand < 0 ? Mathf.PI/2 : 0))) * delta.y;
         float Y = Mathf.Abs(Mathf.Sin(time * timeScale)) * delta.y;
 
-        float X = Mathf.Abs(Mathf.Sin(time * timeScale / 2 + (hand < 0 ? Mathf.PI / 2 : 0))) * delta.x;
-        float Z = Mathf.Abs(Mathf.Sin(time * timeScale / 2 + (hand < 0 ? Mathf.PI / 2 : 0))) * delta.z;
+        float X = Mathf.Abs(Mathf.Sin(time * timeScale / 2 + (hand < 0 ? Mathf.PI / 2 : 0))) * delta.x - delta.x;
+        float Z = Mathf.Abs(Mathf.Sin(time * timeScale / 2 + (hand < 0 ? Mathf.PI / 2 : 0))) * delta.z - delta.z;
 
-        if (velocity.magnitude > 0.5f) targetPosition = new(X, Y - delta.y*2, Z);
+        if (velocity.magnitude > 0.5f) targetPosition = new(X, Y-delta.y, Z);
         else targetPosition = new();
 
-        if (!player.isGrounded) targetPosition = new(0, velocity.y * -0.01f, 0);
+        if (!player.isGrounded)
+        {
+            airBorneTimer += Time.deltaTime;
+        } else airBorneTimer = 0;
+
+        if (Input.GetButtonDown("Jump")) airBorneTimer = 0.2f;
+
+        if(airBorneTimer > 0.2f) targetPosition = new(0, velocity.y * -0.01f, 0);
         targetPosition = Vector3.ClampMagnitude(targetPosition, deltaLimit);
 
         targetRotation = new(0, 0, Vector3.Dot(velocity, player.transform.right) * rotationDelta.z * hand);
