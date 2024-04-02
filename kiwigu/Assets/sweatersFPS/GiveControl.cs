@@ -4,6 +4,7 @@ using UnityEngine.SceneManagement;
 public class GiveControl : MonoBehaviour
 {
     [SerializeField] int sceneIndex;
+    float timer = 0;
 
     void Start()
     {
@@ -14,9 +15,8 @@ public class GiveControl : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.anyKeyDown)
-        {
-            SceneManager.LoadScene(sceneIndex);
-        }
+        timer += Time.unscaledDeltaTime;
+
+        if (timer > 3 && Input.anyKeyDown) SceneManager.LoadScene(sceneIndex);
     }
 }

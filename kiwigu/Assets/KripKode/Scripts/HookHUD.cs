@@ -86,6 +86,9 @@ public class HookHUD : MonoBehaviour
             screenPos + new Vector3(0, 10f, 0), Time.deltaTime * lerpSpeed * 2);
 
         Color targetColor = new Color(1f, 1f, 1f, 1f);
+
+        if (leftHook.sprite == noHook) targetColor = Color.red;
+
         // reticleIcon.color = Color.Lerp(reticleIcon.color, targetColor, Time.deltaTime * (lerpSpeed * 2));
         LerpColor(targetColor);
     }
