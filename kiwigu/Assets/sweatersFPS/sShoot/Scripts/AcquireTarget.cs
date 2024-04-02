@@ -98,14 +98,20 @@ public class AcquireTarget : MonoBehaviour
 
     public Vector3 GetJustHookTarget(out HookTarget hookTarget)
     {
-        bool hasHit = Physics.SphereCast(transform.position, radius * radius, transform.forward,
+        bool hasHit = Physics.SphereCast(Camera.main.transform.position, radius * radius, Camera.main.transform.forward,
             out RaycastHit hit, maxDistance, ~LayerMask.GetMask("GunHand", "Player", "Shield", "BulletView"));
 
         hookTarget = null;
 
         if (hasHit)
         {
-            Transform targetTransform = GetRootParent(hit.transform);
+            Transform targetTransform;
+             
+            if (hit.transform.GetComponent<HookTarget>() == null)
+                targetTransform = GetRootParent(hit.transform);
+            else
+                targetTransform = hit.transform;
+
             // if(!targetTransform.CompareTag("Enemy")) targetTransform = hit.transform;
             
             HookTarget[] hts = targetTransform.GetComponentsInChildren<HookTarget>();

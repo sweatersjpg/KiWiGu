@@ -560,7 +560,7 @@ public class MoveHook : MonoBehaviour
                 hookTarget.resistance = 0;
             }
 
-            fx.transform.parent = null;
+            if(fx) fx.transform.parent = null;
 
             sweatersController player = sweatersController.instance;
 
