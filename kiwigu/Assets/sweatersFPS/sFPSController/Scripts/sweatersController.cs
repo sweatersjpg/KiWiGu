@@ -356,14 +356,17 @@ public class sweatersController : MonoBehaviour
     public Vector3 GetRelativity()
     {
         Vector3 v = velocity;
-        v.y = 0;
+        // v.y = 0;
 
         Vector3 look = playerCamera.transform.forward;
-        look.y = 0;
+        // look.y = 0;
         look.Normalize();
 
         v = Vector3.Project(v, look);
-        v.y = velocity.y;
+        // v.y = velocity.y;
+
+        // no relativity if going backwards
+        if (Vector3.Dot(look, v) < 0) return new();
 
         return v;
     }

@@ -106,7 +106,7 @@ public class AcquireTarget : MonoBehaviour
         if (hasHit)
         {
             Transform targetTransform = GetRootParent(hit.transform);
-            if(!targetTransform.CompareTag("Enemy")) targetTransform = hit.transform;
+            // if(!targetTransform.CompareTag("Enemy")) targetTransform = hit.transform;
             
             HookTarget[] hts = targetTransform.GetComponentsInChildren<HookTarget>();
             HookTarget ht = hts.Length > 0 ? hts[0] : null;
@@ -115,6 +115,8 @@ public class AcquireTarget : MonoBehaviour
             {
                 if (!hts[i].blockSteal) ht = hts[i];
             }
+
+            if(ht && Vector3.Distance(ht.transform.position, hit.point) > 4) ht = null;
 
             Vector3 target = hit.point;
 

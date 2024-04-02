@@ -62,6 +62,7 @@ public class MoveHook : MonoBehaviour
         //Vector3 v = sweatersController.instance.velocity;
         //v.y = 0;
         //velocity += v;
+        velocity += sweatersController.instance.GetRelativity();
 
         speed = -velocity.magnitude;
 
