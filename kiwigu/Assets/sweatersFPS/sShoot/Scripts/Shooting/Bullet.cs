@@ -100,9 +100,9 @@ public class Bullet : MonoBehaviour
         // ignoreMask &= ~(1 << LayerMask.GetMask("BulletView"));
         // does not work lol
 
-        if(!fromEnemy)
+        if(!fromEnemy && relativity)
         {
-            if(relativity) initialVelocity += sweatersController.instance.velocity;
+            initialVelocity += sweatersController.instance.GetRelativity();
         }
 
     }

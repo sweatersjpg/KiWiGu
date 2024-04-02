@@ -25,7 +25,7 @@ public class ThrownGun : MonoBehaviour
         rb.AddForce(transform.forward * throwForce, ForceMode.Impulse);
         rb.AddTorque(transform.right * 20);
 
-        rb.velocity += sweatersController.instance.velocity;
+        rb.velocity += sweatersController.instance.GetRelativity();
 
         if(ammo.capacity == 0) ammo = new Ammunition(info.capacity);
 
@@ -64,14 +64,20 @@ public class ThrownGun : MonoBehaviour
         
     }
 
+    public void TakeDamage(object[] args)
+    {
+        float damage = (float)args[2];
+
+        Explode();
+    }
+
     private void OnCollisionEnter(Collision collision)
     {
         // Debug.Log(ammo.count / ammo.capacity + " " + ammo.count + " " + ammo.capacity);
 
         //if (ammo.count / ammo.capacity < 0.2f)
         //{
-            Instantiate(explosion, transform.position, Quaternion.identity);
-            Destroy(gameObject);
+        Explode();
 
         //}
         //else if (collision.gameObject.layer == LayerMask.NameToLayer("Enemy"))
@@ -84,5 +90,11 @@ public class ThrownGun : MonoBehaviour
         //    d.GetComponent<DirectionalAttack>().target = t.transform;
         //    d.GetComponent<DirectionalAttack>().ignoreList.Add(gameObject);
         //}
+    }
+
+    void Explode()
+    {
+        Instantiate(explosion, transform.position, Quaternion.identity);
+        Destroy(gameObject);
     }
 }

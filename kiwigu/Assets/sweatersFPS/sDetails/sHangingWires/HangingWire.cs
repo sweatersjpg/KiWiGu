@@ -5,6 +5,9 @@ using UnityEngine;
 public class HangingWire : MonoBehaviour
 {
 
+    public AudioClip ziplineLoop;
+    AudioSource audioSource;
+    
     [SerializeField] int segments = 20;
     // [SerializeField] float drop = 3;
 
@@ -40,7 +43,11 @@ public class HangingWire : MonoBehaviour
         wire.startWidth = width;
         wire.endWidth = width;
 
-        if(IsZipline) AddColliders();
+        if (!IsZipline) return;
+        
+        AddColliders();
+
+        
     }
 
     private void Update()
@@ -66,6 +73,7 @@ public class HangingWire : MonoBehaviour
             }
 
             grappleVel = sweatersController.instance.velocity;
+            SetupAudio(grapple.gameObject);
         }
         
         if (grapple && transform.childCount == 1)
@@ -78,6 +86,21 @@ public class HangingWire : MonoBehaviour
             Destroy(transform.GetChild(0).gameObject);
             AddColliders();
         }
+    }
+
+    void SetupAudio(GameObject target)
+    {
+        audioSource = target.AddComponent<AudioSource>();
+        audioSource.outputAudioMixerGroup = GlobalAudioManager.instance.globalMixer.FindMatchingGroups("SFX")[0];
+        audioSource.spatialBlend = 1;
+        audioSource.clip = ziplineLoop;
+        audioSource.volume = 1;
+        audioSource.maxDistance = 20;
+        audioSource.rolloffMode = AudioRolloffMode.Custom;
+        audioSource.dopplerLevel = 1;
+        audioSource.loop = true;
+
+        audioSource.Play();
     }
 
     // Zip line should fall from root (index == wires.positionCount-1) to tail (index == 0)

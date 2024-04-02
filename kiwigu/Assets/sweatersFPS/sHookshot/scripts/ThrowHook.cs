@@ -111,7 +111,7 @@ public class ThrowHook : MonoBehaviour
         GlobalAudioManager.instance.PlayHook(transform, "Throw");
         hook = Instantiate(hookPrefab);
         hook.transform.SetPositionAndRotation(transform.position, Quaternion.LookRotation(transform.forward));
-        hook.transform.LookAt(AcquireTarget.instance.GetHookTarget());
+        hook.transform.LookAt(AcquireTarget.instance.GetJustHookTarget(out _));
 
         hook.GetComponent<MoveHook>().home = this;
 

@@ -132,6 +132,17 @@ public class HellfireEnemy : MonoBehaviour
         Shoot();
         Leap();
         RememberPlayer();
+
+        // always check if holding gun
+        HookTarget gun = transform.GetComponentInChildren<HookTarget>();
+        if (gun == null)
+        {
+            isHoldingGun = false;
+            isShooting = false;
+
+            BulletShooter b = transform.GetComponentInChildren<BulletShooter>();
+            if (b) Destroy(b);
+        }
     }
 
     private void StateManager()
@@ -666,6 +677,10 @@ public class HellfireEnemy : MonoBehaviour
         {
             isHoldingGun = false;
             isShooting = false;
+
+            BulletShooter b = transform.GetComponentInChildren<BulletShooter>();
+            if (b) Destroy(b);
+
             return 0;
         }
         GunInfo info = gun.info;
