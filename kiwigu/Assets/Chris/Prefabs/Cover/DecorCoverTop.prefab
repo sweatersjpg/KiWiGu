@@ -11,12 +11,13 @@ GameObject:
   - component: {fileID: 2103938332975023516}
   - component: {fileID: 3070728516577446457}
   - component: {fileID: 970978825499459315}
+  - component: {fileID: 4103142214122395045}
   m_Layer: 0
   m_Name: DecorCoverTop
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &2103938332975023516
 Transform:
@@ -84,6 +85,20 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!64 &4103142214122395045
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1619431544516878118}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Convex: 1
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 5245860922170307071, guid: 4b00eceff4043cf418333b050d6510f5, type: 3}
 --- !u!1001 &7094201773135085491
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -139,6 +154,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: DecorCoverBase
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 17e583245b7e92341bc799aba55fbb0e, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 17e583245b7e92341bc799aba55fbb0e, type: 3}
 --- !u!4 &7347925778141861976 stripped
@@ -146,3 +165,22 @@ Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 17e583245b7e92341bc799aba55fbb0e, type: 3}
   m_PrefabInstance: {fileID: 7094201773135085491}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &7976652556395119330 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 17e583245b7e92341bc799aba55fbb0e, type: 3}
+  m_PrefabInstance: {fileID: 7094201773135085491}
+  m_PrefabAsset: {fileID: 0}
+--- !u!64 &256100527005427330
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7976652556395119330}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Convex: 1
+  m_CookingOptions: 30
+  m_Mesh: {fileID: -7775297897270839805, guid: 17e583245b7e92341bc799aba55fbb0e, type: 3}

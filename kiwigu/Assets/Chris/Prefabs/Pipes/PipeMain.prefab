@@ -11,12 +11,13 @@ GameObject:
   - component: {fileID: 2576779518327600530}
   - component: {fileID: 1471925856298613303}
   - component: {fileID: 3713679195381223165}
+  - component: {fileID: 2402639736329739227}
   m_Layer: 0
   m_Name: PipeMain
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &2576779518327600530
 Transform:
@@ -83,3 +84,17 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!64 &2402639736329739227
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2920971374981508904}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 5563464625305388494, guid: 760d7a9d4ce8a6e459c6b73950835e06, type: 3}

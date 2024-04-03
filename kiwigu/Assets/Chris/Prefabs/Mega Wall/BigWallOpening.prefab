@@ -11,12 +11,13 @@ GameObject:
   - component: {fileID: 5524578917437844847}
   - component: {fileID: 8864461565847511754}
   - component: {fileID: 6692370615319483904}
+  - component: {fileID: 5638533220890657009}
   m_Layer: 0
   m_Name: BigWallOpening
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &5524578917437844847
 Transform:
@@ -84,6 +85,20 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!64 &5638533220890657009
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5179403376316577749}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: -8893573666288862834, guid: 9e83a81b6492f5f4b974d90efe8b8dd7, type: 3}
 --- !u!1001 &3722000083292310036
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -139,6 +154,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: BigWallBigPipes
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: a5ab64ce772fd4e4dbf8e8c6af1f4073, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a5ab64ce772fd4e4dbf8e8c6af1f4073, type: 3}
 --- !u!4 &3759813161551769087 stripped
@@ -146,3 +165,22 @@ Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: a5ab64ce772fd4e4dbf8e8c6af1f4073, type: 3}
   m_PrefabInstance: {fileID: 3722000083292310036}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &4568438424902694725 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: a5ab64ce772fd4e4dbf8e8c6af1f4073, type: 3}
+  m_PrefabInstance: {fileID: 3722000083292310036}
+  m_PrefabAsset: {fileID: 0}
+--- !u!64 &3070843333416110140
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4568438424902694725}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: -6518319959435709178, guid: a5ab64ce772fd4e4dbf8e8c6af1f4073, type: 3}
