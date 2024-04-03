@@ -105,7 +105,8 @@ public class DialogTrigger : MonoBehaviour
                 break;
         }
 
-        /* ADD AUDIO LATER*/
+        if(dialog.audioClips.Length > 0)
+            GlobalAudioManager.instance.PlayVoiceLine(dialog.audioClips[dialog.dialogIndex]);
 
         DialogManager.instance.StartDialog(lines, lineDurations);
     }
