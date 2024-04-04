@@ -230,7 +230,7 @@ MonoBehaviour:
   hookTargetPosition: {fileID: 8311139979945567735}
   gunInfo: {fileID: 11400000, guid: fab8cefa91b75534aa1db3779ed53470, type: 2}
   BulletExitPoint: {fileID: 8311139981361321930}
-  shootCooldown: 1
+  shootCooldown: 0.5
   gunSpread: 0.175
   splatoodRadius: 5
   isShooting: 0
@@ -3267,6 +3267,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 8311139981361321930}
     m_Modifications:
+    - target: {fileID: 4327764642279862662, guid: 7ad020d64766f7940b3697e489cc3729, type: 3}
+      propertyPath: info
+      value: 
+      objectReference: {fileID: 11400000, guid: fab8cefa91b75534aa1db3779ed53470, type: 2}
     - target: {fileID: 4327764642279862662, guid: 7ad020d64766f7940b3697e489cc3729, type: 3}
       propertyPath: baseSpread
       value: 0.02

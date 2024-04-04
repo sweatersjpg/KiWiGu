@@ -29,7 +29,6 @@ public class Mechemy : MonoBehaviour
     [SerializeField] private float wanderSpeed;
     [SerializeField] private float wanderWaitTime;
     [SerializeField] private float wanderRadius;
-    [SerializeField] private float seekSpeed;
     private Vector3 initialPosition;
     private float wanderTimer;
 
@@ -108,7 +107,6 @@ public class Mechemy : MonoBehaviour
         if (agent.velocity.magnitude <= 0.1f)
         {
             animator.SetBool("walk", false);
-            animator.SetBool("run", false);
         }
 
         if (!IsPlayerWithinRange())
@@ -135,7 +133,7 @@ public class Mechemy : MonoBehaviour
         if (enemyState == EnemyState.Wandering)
         {
             agent.speed = wanderSpeed;
-            animator.speed = 1.0f;
+            animator.speed = Mathf.Clamp(agent.speed / 2.5f, 0.5f, 1.15f);
 
             if (agent.velocity.magnitude >= 0.1f)
             {
@@ -160,13 +158,11 @@ public class Mechemy : MonoBehaviour
             if (isCrushing)
                 return;
 
-            animator.speed = Mathf.Clamp(agent.speed / 2.5f, 0.5f, 1.2f);
-            agent.speed = seekSpeed;
+            animator.speed = Mathf.Clamp(agent.speed / 2.5f, 0.5f, 1.0f);
 
             if (agent.velocity.magnitude >= 0.1f)
             {
                 animator.SetBool("walk", false);
-                animator.SetBool("run", true);
             }
 
             agent.SetDestination(detectedPlayer.transform.position);
@@ -271,7 +267,6 @@ public class Mechemy : MonoBehaviour
             if (agent.velocity.magnitude >= 0.1f)
             {
                 animator.SetBool("walk", false);
-                animator.SetBool("run", true);
             }
 
             RotateNavMeshAgentTowardsObj(detectedPlayer.transform.position);

@@ -384,7 +384,7 @@ public class HellfireEnemy : MonoBehaviour
 
         animator.ResetTrigger("leap");
 
-        yield return new WaitForSeconds(2);
+        yield return new WaitForSeconds(1f);
 
         isLeaping = false;
     }
