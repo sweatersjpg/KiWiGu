@@ -21,16 +21,12 @@ public class PauseSystem : MonoBehaviour
 
     [Range(2, 6)]
     public static float mouseSensitivity = 4;
-    public float mouseSensitivityMin = 2;
-    public float mouseSensitivityMax = 6;
+    public float mouseSensitivityMin = 1;
+    public float mouseSensitivityMax = 7;
 
     public static float musicVol = 0.1f;
     public static float sfxVol = 0.1f;
     public static float masterVol = 0.1f;
-
-    FMOD.Studio.Bus musicBus;
-    FMOD.Studio.Bus masterBus;
-    FMOD.Studio.Bus sfxBus;
 
     private void Awake()
     {
@@ -39,28 +35,24 @@ public class PauseSystem : MonoBehaviour
             pauseSystem = this;
             //DontDestroyOnLoad(gameObject);
         }
+        // pauseSystem = this;
     }
 
     // Start is called before the first frame update
     void Start()
     {
-        mainCamera = sweatersController.instance.playerCamera;
+        // mainCamera = sweatersController.instance.playerCamera;
+        mainCamera = Camera.main;
 
-        masterBus = FMODUnity.RuntimeManager.GetBus("bus:/");
-        masterBus.setVolume(masterVol);
-
-        musicBus = FMODUnity.RuntimeManager.GetBus("bus:/Music");
-        musicBus.setVolume(musicVol);
-
-        sfxBus = FMODUnity.RuntimeManager.GetBus("bus:/SFX");
-        sfxBus.setVolume(sfxVol);
+        LoadSettings();
+        // add mixers
     }
 
     // Update is called once per frame
     void Update()
     {
         //if (isMainMenu) return;
-        if(Input.GetKeyUp(KeyCode.Escape) || Input.GetKeyUp(KeyCode.P) || Input.GetKeyUp(KeyCode.I)) TogglePaused();
+        if (Input.GetKeyUp(KeyCode.Escape) || Input.GetKeyUp(KeyCode.P) || Input.GetKeyUp(KeyCode.I)) TogglePaused();
     }
 
     public void QuitGame()
@@ -70,13 +62,13 @@ public class PauseSystem : MonoBehaviour
 
     public void GotoMainMenu()
     {
-        Time.timeScale = 1;
+        if (paused) TogglePaused();
         SceneManager.LoadScene(0);
     }
 
     public void ReloadScene()
     {
-        if(paused) TogglePaused();
+        if (paused) TogglePaused();
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
@@ -89,7 +81,7 @@ public class PauseSystem : MonoBehaviour
     {
         Cursor.lockState = !paused ? CursorLockMode.None : CursorLockMode.Locked;
         Cursor.visible = !paused;
-        //Time.timeScale = !paused ? 0 : 1;
+        Time.timeScale = !paused ? 0 : 1;
 
         paused = !paused;
     }
@@ -100,11 +92,59 @@ public class PauseSystem : MonoBehaviour
         //pausePanel.SetActive(state);
     }
 
+    void SaveSetting(string setting)
+    {
+        float value = (float) GetType().GetField(setting).GetValue(this);
+        PlayerPrefs.SetFloat(setting, value);
+    }
+
+    void SaveSettings()
+    {
+        SaveSetting(nameof(FOV));
+        SaveSetting(nameof(mouseSensitivity));
+        SaveSetting(nameof(masterVol));
+        SaveSetting(nameof(musicVol));
+        SaveSetting(nameof(sfxVol));
+    }
+
+    void LoadSetting(string setting)
+    {
+        float value = PlayerPrefs.GetFloat(setting, (float)GetType().GetField(setting).GetValue(this));
+        GetType().GetField(setting).SetValue(this, value);
+    }
+
+    void LoadSettings()
+    {
+        LoadSetting(nameof(FOV));
+        LoadSetting(nameof(mouseSensitivity));
+        LoadSetting(nameof(masterVol));
+        LoadSetting(nameof(musicVol));
+        LoadSetting(nameof(sfxVol));
+    }
+
     // ---- settings ----
 
     // toggle
 
-    public void SetFullscreen(bool value) => Screen.fullScreen = value;
+    public void SetFullscreen(bool value)
+    {
+        Resolution res = Screen.resolutions[Screen.resolutions.Length - 1];
+        if(!value) res = Screen.resolutions[Screen.resolutions.Length - 2];
+
+        Screen.SetResolution(res.width, res.height, value);
+
+        // Screen.fullScreen = value;
+    }
+
+    public void SetResolution(float value)
+    {
+        if (value == 1) value = 0.999f;
+        
+        Resolution[] resolutions = Screen.resolutions;
+        Resolution res = resolutions[(int)(value * resolutions.Length)];
+
+        Screen.SetResolution(res.width, res.height, Screen.fullScreen);
+    }
 
     // sliders
 
@@ -112,31 +152,47 @@ public class PauseSystem : MonoBehaviour
     public void UpdateSfxVolume(float value)
     {
         sfxVol = value;
-        sfxBus.setVolume(sfxVol);
+
+        AudioMixerGroup sfxGroup = GlobalAudioManager.instance.globalMixer.FindMatchingGroups("SFX")[0];
+        sfxGroup.audioMixer.SetFloat("volumeSFX", Mathf.Lerp(-80, 0, value));
+
+        SaveSetting(nameof(sfxVol));
     }
 
     public void UpdateMusicVolume(float value)
     {
         musicVol = value;
-        musicBus.setVolume(musicVol);
+
+        AudioMixerGroup musicGroup = GlobalAudioManager.instance.globalMixer.FindMatchingGroups("Music")[0];
+        musicGroup.audioMixer.SetFloat("volumeMusic", Mathf.Lerp(-80, 0, value));
+
+        SaveSetting(nameof(musicVol));
     }
 
     public void UpdateMasterVolume(float value)
     {
         masterVol = value;
-        masterBus.setVolume(masterVol);
+
+        AudioMixerGroup musicGroup = GlobalAudioManager.instance.globalMixer.FindMatchingGroups("Master")[0];
+        musicGroup.audioMixer.SetFloat("volumeMaster", Mathf.Lerp(-80, 0, value));
+
+        SaveSetting(nameof(masterVol));
     }
 
     public void UpdateSensitivity(float value)
     {
         mouseSensitivity = Mathf.Lerp(pauseSystem.mouseSensitivityMin, pauseSystem.mouseSensitivityMax, value);
-        sweatersController.instance.lookSpeed = mouseSensitivity;
+        if(sweatersController.instance) sweatersController.instance.lookSpeed = mouseSensitivity;
+
+        SaveSetting(nameof(mouseSensitivity));
     }
 
     public void UpdateFOV(float value)
     {
-        FOV = Mathf.Lerp(pauseSystem.FOVmin+0.1f, pauseSystem.FOVmax, value);
+        FOV = Mathf.Lerp(pauseSystem.FOVmin + 0.1f, pauseSystem.FOVmax, value);
         pauseSystem.mainCamera.fieldOfView = FOV;
+
+        SaveSetting(nameof(FOV));
     }
 
 }

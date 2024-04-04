@@ -18,7 +18,7 @@ public class HookTarget : MonoBehaviour
     public bool blockSteal;
 
     private void Start()
-    {        
+    {
         // Mesh mesh = info.gunPrefab.GetComponentInChildren<MeshFilter>().sharedMesh;
         if (hasView)
         {
@@ -29,6 +29,11 @@ public class HookTarget : MonoBehaviour
                 GameObject gun = Instantiate(gunView.gameObject, transform);
                 gun.transform.localPosition = new();
                 gun.layer = gameObject.layer;
+
+                foreach (Transform child in gun.transform)
+                {
+                    child.gameObject.layer = gameObject.layer;
+                }
             }
 
             //gunView.GetComponent<MeshFilter>().mesh = info.gunPrefab.GetComponentInChildren<MeshFilter>().sharedMesh;
@@ -38,7 +43,7 @@ public class HookTarget : MonoBehaviour
         maxResistance = resistance;
     }
 
-    public void BeforeDestroy()
+    public bool BeforeDestroy()
     {
         ThrownGun gun = Instantiate(throwGunPrefab, transform).GetComponent<ThrownGun>();
         gun.transform.parent = null;
@@ -54,9 +59,12 @@ public class HookTarget : MonoBehaviour
             hook.transform.parent = null;
 
             hook.TakeThrownGun(gun.gameObject);
+
+            return false;
         } else
         {
             Destroy(gun.gameObject);
+            return true;
         }
     }
 }

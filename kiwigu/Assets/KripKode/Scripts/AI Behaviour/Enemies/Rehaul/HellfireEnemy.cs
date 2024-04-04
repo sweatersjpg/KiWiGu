@@ -1,12 +1,9 @@
-using FMODUnity;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
 
 public class HellfireEnemy : MonoBehaviour
 {
-    [SerializeField] private StudioEventEmitter sfxEmitterAvailable;
-
     public enum EnemyState { Wandering, Seek, Shoot, Leap };
     [SerializeField] private EnemyState enemyState = EnemyState.Wandering;
 
@@ -72,16 +69,17 @@ public class HellfireEnemy : MonoBehaviour
     [SerializeField] float shootCooldown;
     [Range(0, 0.25f)]
     [SerializeField] private float gunSpread;
+    [Range(1, 10)]
+    [SerializeField] private float splatoodRadius;
     public bool isShooting;
     private GunInfo info;
     private float shootTimer;
     private bool animDone;
-    private float maxRotationTime = 0.05f;
+    private float maxRotationTime = 0.2f;
     private Quaternion startRotation;
     private float currentRotationTime;
     private bool isRotating;
     private bool isLeaping;
-    private bool canLeap = true;
 
     private void Awake()
     {
@@ -101,6 +99,9 @@ public class HellfireEnemy : MonoBehaviour
         if (ht)
         {
             isHoldingGun = true;
+
+            BulletShooter bs = transform.GetComponentInChildren<BulletShooter>();
+            if (bs) bs.info = ht.info;
         }
 
         agent = GetComponent<NavMeshAgent>();
@@ -131,6 +132,17 @@ public class HellfireEnemy : MonoBehaviour
         Shoot();
         Leap();
         RememberPlayer();
+
+        // always check if holding gun
+        HookTarget gun = transform.GetComponentInChildren<HookTarget>();
+        if (gun == null)
+        {
+            isHoldingGun = false;
+            isShooting = false;
+
+            BulletShooter b = transform.GetComponentInChildren<BulletShooter>();
+            if (b) Destroy(b);
+        }
     }
 
     private void StateManager()
@@ -184,6 +196,9 @@ public class HellfireEnemy : MonoBehaviour
     {
         if (enemyState == EnemyState.Seek)
         {
+            if (isLeaping)
+                return;
+
             Vector3 adjustedDestination = detectedPlayer.transform.position - (detectedPlayer.transform.position - transform.position).normalized * keepDistance;
 
             if (IsPlayerWithinRange() && !isShooting)
@@ -307,23 +322,30 @@ public class HellfireEnemy : MonoBehaviour
 
     public void SplatoodEvent()
     {
-        Collider[] hitColliders = Physics.OverlapSphere(transform.position, 5, LayerMask.GetMask("Player"));
+        var splatoodPos = transform.position + transform.forward * 2;
+
+        Collider[] hitColliders = Physics.OverlapSphere(splatoodPos, splatoodRadius, LayerMask.GetMask("Player"));
 
         foreach (Collider hitCollider in hitColliders)
         {
             if (hitCollider.CompareTag("Player"))
             {
-                Vector3 incomingDirection = (detectedPlayer.transform.position - transform.position).normalized;
-                Vector3 upwardDirection = Vector3.up;
+                if (sweatersController.instance.isGrounded)
+                {
+                    Vector3 incomingDirection = (detectedPlayer.transform.position - transform.position).normalized;
+                    Vector3 upwardDirection = Vector3.up;
 
-                Vector3 punchDirection = (incomingDirection + upwardDirection).normalized;
+                    Vector3 punchDirection = (incomingDirection + upwardDirection).normalized;
 
-                hitCollider.GetComponent<PlayerHealth>().DealDamage(35, -incomingDirection.normalized * 10);
-                sweatersController.instance.velocity += punchDirection * 25;
+                    hitCollider.GetComponent<PlayerHealth>().DealDamage(35, -incomingDirection.normalized * 10);
+                    sweatersController.instance.velocity += punchDirection * 15;
+
+                    agent.SetDestination(transform.position);
+                }
             }
         }
 
-        GameObject dfx = Instantiate(splatoodFX, transform.position, Quaternion.identity);
+        GameObject dfx = Instantiate(splatoodFX, splatoodPos, Quaternion.identity);
         Destroy(dfx, 2);
     }
 
@@ -442,8 +464,11 @@ public class HellfireEnemy : MonoBehaviour
         int layerMask = LayerMask.GetMask("Enemy");
         int layerMask2 = LayerMask.GetMask("HookTarget");
         int layerMask3 = LayerMask.GetMask("Shield");
+        int layerMask4 = LayerMask.GetMask("GunHand");
+        int layerMask5 = LayerMask.GetMask("EnergyWall");
 
-        int combinedLayerMask = layerMask | layerMask2 | layerMask3;
+        int combinedLayerMask = layerMask | layerMask2 | layerMask3 | layerMask4 | layerMask5;
+
 
         foreach (Collider hitCollider in hitColliders)
         {
@@ -500,11 +525,6 @@ public class HellfireEnemy : MonoBehaviour
         EnemyShoot();
     }
 
-    IEnumerator ShootFloat()
-    {
-        yield return new WaitForSeconds(EnemyShoot());
-    }
-
     public virtual void TakeGun()
     {
         isHoldingGun = false;
@@ -520,7 +540,10 @@ public class HellfireEnemy : MonoBehaviour
         if (currentHealth < health)
         {
             if (isHeadshot)
+            {
+                GlobalAudioManager.instance.PlayHeadshotSFX(headPos);
                 Instantiate(HeadshotIndicator, headPos.transform.position, Quaternion.identity);
+            }
 
             if (isHoldingGun && !shieldObject)
             {
@@ -546,11 +569,14 @@ public class HellfireEnemy : MonoBehaviour
             currentShield = Mathf.Min(currentShield + bulletDamage, shield);
 
             shieldObjectMetal.GetComponent<MeshRenderer>().materials[0].SetFloat("_DamagePercent", currentShield / shield);
-
-            StartLerpShieldProgress();
         }
 
         CheckStats();
+    }
+
+    public void HookBlock()
+    {
+        StartLerpShieldProgress();
     }
 
     private void StartLerpShieldProgress()
@@ -609,10 +635,11 @@ public class HellfireEnemy : MonoBehaviour
 
             if (isHoldingGun)
             {
-                EnableHookTargetsRecursively(Ragdollerino.transform);
+                bool stillHasGun = true;
+                HookTarget ht = GetComponentInChildren<HookTarget>();
+                if (ht != null) stillHasGun = ht.BeforeDestroy();
 
-                GetComponentInChildren<HookTarget>();
-                if (ht != null) ht.BeforeDestroy();
+                if (stillHasGun) EnableHookTargetsRecursively(Ragdollerino.transform);
 
                 isHoldingGun = false;
                 isShooting = false;
@@ -650,6 +677,10 @@ public class HellfireEnemy : MonoBehaviour
         {
             isHoldingGun = false;
             isShooting = false;
+
+            BulletShooter b = transform.GetComponentInChildren<BulletShooter>();
+            if (b) Destroy(b);
+
             return 0;
         }
         GunInfo info = gun.info;
@@ -657,58 +688,63 @@ public class HellfireEnemy : MonoBehaviour
         float burst = info.burstSize;
         if (info.fullAuto) burst = info.autoRate;
 
-        for (int j = 0; j < burst; j++)
+        BulletShooter bs = transform.GetComponentInChildren<BulletShooter>();
+        if (bs)
         {
-            sfxEmitterAvailable.SetParameter("Charge", 0.5f);
-            sfxEmitterAvailable.Play();
-
-            for (int i = 0; i < info.projectiles; i++) Invoke(nameof(SpawnBullet), j * 1 / info.autoRate);
+            bs.SetShootTime(1.3f);
+            // bs.SetIsShooting();
         }
+
+        //for (int j = 0; j < burst; j++)
+        //{
+        //    for (int i = 0; i < info.projectiles; i++) Invoke(nameof(SpawnBullet), j * 1 / info.autoRate);
+        //}
 
         return burst * 1 / info.autoRate;
     }
 
-    private void SpawnBullet()
-    {
-        if (!animDone)
-            return;
+    //private void SpawnBullet()
+    //{
+    //    if (!animDone)
+    //        return;
 
-        if (!isHoldingGun)
-        {
-            isShooting = false;
-            return;
-        }
 
-        HookTarget gun = transform.GetComponentInChildren<HookTarget>();
+    //    if (!isHoldingGun)
+    //    {
+    //        isShooting = false;
+    //        return;
+    //    }
 
-        if (gun)
-            info = gun.info;
+    //    HookTarget gun = transform.GetComponentInChildren<HookTarget>();
 
-        GameObject bullet = Instantiate(info.bulletPrefab, BulletExitPoint.transform.position, BulletExitPoint.transform.rotation);
+    //    if (gun)
+    //        info = gun.info;
 
-        Vector3 direction = BulletExitPoint.transform.forward;
-        direction += SpreadDirection(gunSpread, 3);
+    //    GameObject bullet = Instantiate(info.bulletPrefab, BulletExitPoint.transform.position, BulletExitPoint.transform.rotation);
 
-        bullet.transform.position = BulletExitPoint.transform.position;
-        bullet.transform.rotation = Quaternion.LookRotation(direction.normalized);
+    //    Vector3 direction = BulletExitPoint.transform.forward;
+    //    direction += SpreadDirection(gunSpread, 3);
 
-        Bullet b = bullet.GetComponent<Bullet>();
-        b.speed = info.bulletSpeed;
-        b.gravity = info.bulletGravity;
-        b.ignoreMask = ~LayerMask.GetMask("GunHand", "HookTarget", "Enemy");
-        b.trackTarget = false;
-        b.fromEnemy = true;
-        b.bulletDamage = info.damage;
-        b.charge = 0.5f;
-    }
+    //    bullet.transform.position = BulletExitPoint.transform.position;
+    //    bullet.transform.rotation = Quaternion.LookRotation(direction.normalized);
 
-    private Vector3 SpreadDirection(float spread, int rolls)
-    {
-        Vector3 offset = Vector3.zero;
-        for (int i = 0; i < rolls; i++)
-            offset += Random.onUnitSphere * spread;
-        return offset / rolls;
-    }
+    //    Bullet b = bullet.GetComponent<Bullet>();
+    //    b.speed = info.bulletSpeed;
+    //    b.gravity = info.bulletGravity;
+    //    b.ignoreMask = ~LayerMask.GetMask("GunHand", "HookTarget", "Enemy");
+    //    b.trackTarget = false;
+    //    b.fromEnemy = true;
+    //    b.bulletDamage = info.damage;
+    //    b.charge = 0.5f;
+    //}
+
+    //private Vector3 SpreadDirection(float spread, int rolls)
+    //{
+    //    Vector3 offset = Vector3.zero;
+    //    for (int i = 0; i < rolls; i++)
+    //        offset += Random.onUnitSphere * spread;
+    //    return offset / rolls;
+    //}
 
     private void OnDrawGizmos()
     {
@@ -716,6 +752,7 @@ public class HellfireEnemy : MonoBehaviour
         DrawColoredSphere(transform.position, marchDistance, Color.blue);
         DrawColoredSphere(transform.position, keepDistance, Color.green);
         DrawColoredSphere(transform.position, wanderRadius, Color.yellow);
+        DrawColoredSphere(transform.position, splatoodRadius, Color.magenta);
     }
 
     private void DrawColoredSphere(Vector3 center, float radius, Color color)

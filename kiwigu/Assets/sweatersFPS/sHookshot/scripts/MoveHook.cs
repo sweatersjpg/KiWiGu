@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.UIElements.Experimental;
 
 public class MoveHook : MonoBehaviour
 {
@@ -63,6 +62,7 @@ public class MoveHook : MonoBehaviour
         //Vector3 v = sweatersController.instance.velocity;
         //v.y = 0;
         //velocity += v;
+        velocity += sweatersController.instance.GetRelativity();
 
         speed = -velocity.magnitude;
 
@@ -132,7 +132,7 @@ public class MoveHook : MonoBehaviour
 
         Vector3 heading = home.transform.position - transform.position;
 
-        if (childHook && hookTarget && !hookTarget.tether && heading.magnitude < 6 && !hasKicked)
+        if (childHook && hookTarget && (!hookTarget.tether || Mathf.Round(hookTarget.resistance) == 69) && heading.magnitude < 6 && !hasKicked)
         {
             MeleLeg.instance.Kick();
             hasKicked = true;
@@ -354,6 +354,8 @@ public class MoveHook : MonoBehaviour
                 ht.resistance -= deltaTime;
                 if (ht.resistance > 0)
                 {
+                    GlobalAudioManager.instance.PlayHook(transform, "Hit");
+
                     hookTarget = ht;
                     Pullback(true);
 
@@ -409,6 +411,10 @@ public class MoveHook : MonoBehaviour
 
     void TakeHookTarget()
     {
+        if (!hookTarget.info) return;
+
+        GlobalAudioManager.instance.PlayHook(transform, "Whip Back");
+
         GameObject target = hookTarget.gameObject;
 
         caughtGun = hookTarget.info;
@@ -427,6 +433,13 @@ public class MoveHook : MonoBehaviour
 
     void ResolveCollision(RaycastHit hit)
     {
+        GlobalAudioManager.instance.PlayHook(transform, "Bounce");
+
+        if (hit.transform.gameObject.CompareTag("Shield") && GetRootParent(hit.transform).GetComponent<HellfireEnemy>())
+        {
+            Transform parent = GetRootParent(hit.transform);
+            parent.GetComponent<HellfireEnemy>().HookBlock();
+        }
 
         if (hit.transform.gameObject.CompareTag("RigidTarget"))
         {
@@ -547,7 +560,7 @@ public class MoveHook : MonoBehaviour
                 hookTarget.resistance = 0;
             }
 
-            fx.transform.parent = null;
+            if(fx) fx.transform.parent = null;
 
             sweatersController player = sweatersController.instance;
 
@@ -619,10 +632,16 @@ public class MoveHook : MonoBehaviour
         }
     }
 
+    bool isGrapplnig = false;
+
     void PullTowards(Vector3 heading, float pullForce)
     {
         if (!hookTarget.tether && childHook == null) return;
-        
+
+
+        if(!isGrapplnig)
+            GlobalAudioManager.instance.PlayHook(transform, "Launch");
+
         sweatersController player = sweatersController.instance;
 
         // Vector3 toPlayer = player.transform.position - transform.position;
@@ -632,6 +651,16 @@ public class MoveHook : MonoBehaviour
             PullbackWithForce(0, 1);
             return;
         }
+
+        if (isGrapplnig && Vector3.Dot(-heading.normalized, player.velocity.normalized) <= 0)
+        {
+            isGrapplnig = false;
+            PullbackWithForce(0, 1);
+            return;
+        }
+
+
+        isGrapplnig = true;
 
         // float t = hookTarget.maxResistance - hookTarget.resistance;
 

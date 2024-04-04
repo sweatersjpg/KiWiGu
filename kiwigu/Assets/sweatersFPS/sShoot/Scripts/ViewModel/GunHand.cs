@@ -40,6 +40,8 @@ public class GunHand : MonoBehaviour
 
     Animator anim;
 
+    bool hasBullets;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -53,6 +55,8 @@ public class GunHand : MonoBehaviour
         else mouseButton = 0;
 
         anim = transform.GetComponentInParent<Animator>();
+
+        hasBullets = GetComponentInChildren<ShootBullet>().enabled;
 
         // Transform sights = transform.Find("Sights");
         // if(sights != null) sightsPosition = sights.localPosition;
@@ -116,7 +120,10 @@ public class GunHand : MonoBehaviour
         string[] throwButtons = { "LeftThrow", "RightThrow" };
         string throwButton = throwButtons[mouseButton];
 
-        if (Input.GetButtonDown(throwButton))
+        string[] shootButtons = { "LeftShoot", "RightShoot" };
+        string shootButton = shootButtons[mouseButton];
+
+        if (Input.GetButtonDown(throwButton) || (!hasBullets && Input.GetButtonDown(shootButton)))
         {
             // targetAngle = -45;
             // targetPosition = startPosition + new Vector3(0, 0.3f, -0.2f);
@@ -124,6 +131,15 @@ public class GunHand : MonoBehaviour
             anim.Play("swap");
             Invoke(nameof(ThrowGun), 0.05f);
         }
+
+        // stupid
+        //string[] shootButtons = { "LeftShoot", "RightShoot" };
+        //string shootButton = shootButtons[mouseButton];
+
+        //if (info.damage == 69)
+        //{
+        //    if (Input.GetButtonDown(shootButton)) anim.Play("dwink");
+        //}
         // else targetAngle = 0;
 
         //if (Input.GetKeyUp(mouseButton == 0 ? KeyCode.Q : KeyCode.E))
@@ -152,7 +168,7 @@ public class GunHand : MonoBehaviour
 
         Transform gunView = transform.Find("GunView");
 
-        gun.SetMesh(gunView.GetComponent<MeshFilter>().mesh, info.gunPrefab.GetComponentInChildren<MeshRenderer>().sharedMaterial);
+        // gun.SetMesh(gunView.GetComponent<MeshFilter>().mesh, info.gunPrefab.GetComponentInChildren<MeshRenderer>().sharedMaterial);
         gun.info = info;
 
         gunView.gameObject.SetActive(false);
@@ -192,7 +208,10 @@ public class GunHand : MonoBehaviour
 
         // view.localPosition += new Vector3(0, 0, -0.1f);
 
-        anim.Play("shoot");
+        if(info.damage == 69) anim.Play("dwink");
+
+        else if (info.recoil > 0) anim.Play("shoot");
+        else anim.Play("shootNoRecoil");
         
     }
 

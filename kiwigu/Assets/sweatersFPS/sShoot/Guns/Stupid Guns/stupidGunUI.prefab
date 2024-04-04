@@ -179,16 +179,16 @@ RectTransform:
   m_GameObject: {fileID: 3018735561092823352}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 8.16027}
-  m_LocalScale: {x: 4.57, y: 4.57, z: 4.57}
+  m_LocalScale: {x: 3.80256, y: 3.80256, z: 3.80256}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 5248327546399112027}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -798.6, y: -411}
-  m_SizeDelta: {x: 25.2015, y: 25.201}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 176, y: 134}
+  m_SizeDelta: {x: 25.201477, y: 25.200989}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4918664159942390903
 CanvasRenderer:
@@ -220,7 +220,7 @@ MonoBehaviour:
       m_Calls: []
   m_Sprite: {fileID: 1902607428, guid: 7df0834aa822e5f40a70a9b0deb7ba34, type: 3}
   m_Type: 0
-  m_PreserveAspect: 0
+  m_PreserveAspect: 1
   m_FillCenter: 1
   m_FillMethod: 4
   m_FillAmount: 1
@@ -397,12 +397,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerHand: {fileID: 0}
   noWeaponColor: {r: 1, g: 1, b: 1, a: 0.101960786}
-  images:
-  - {fileID: 5326024031806806777}
-  - {fileID: 7624199402740630545}
-  - {fileID: 4023125310052461414}
+  iconColor: {r: 0.75, g: 0.75, b: 0.75, a: 1}
+  energyBarImage: {fileID: 1411494880170761584}
+  otherImages:
   - {fileID: 4023125309887083414}
   - {fileID: 1274038386701158209}
+  - {fileID: 1411494880170761584}
+  - {fileID: 7624199402740630545}
 --- !u!1 &4023125310052461412
 GameObject:
   m_ObjectHideFlags: 0

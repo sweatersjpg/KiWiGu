@@ -12,6 +12,7 @@ public class Bullet : MonoBehaviour
 {
     [Header("Damage")]
     public float bulletDamage = 5;
+    public float shieldMultiplier = 1;
 
     [Header("Metrics")]
     public float speed = 370;
@@ -20,6 +21,7 @@ public class Bullet : MonoBehaviour
 
     [Space]
     public float radius = 0.2f;
+    public float voidRadius = 0f;
 
     [Header("Tracking")]
     public bool trackTarget = false;
@@ -47,6 +49,9 @@ public class Bullet : MonoBehaviour
 
     float startTime;
     float time;
+
+    Vector3 initialVelocity;
+    public bool relativity = true;
 
     [HideInInspector] public float charge;
 
@@ -85,8 +90,21 @@ public class Bullet : MonoBehaviour
             }
             rb.AddForce(forceDirection * 10f, ForceMode.Impulse);
 
+
             Destroy(gameObject);
         }
+
+        initialVelocity = transform.forward * speed;
+
+        // supposedly removes from ignoreMask
+        // ignoreMask &= ~(1 << LayerMask.GetMask("BulletView"));
+        // does not work lol
+
+        if(!fromEnemy && relativity)
+        {
+            initialVelocity += sweatersController.instance.GetRelativity();
+        }
+
     }
 
     // Update is called once per frame
@@ -181,6 +199,23 @@ public class Bullet : MonoBehaviour
                 DoHit(hitTwo, direction);
             }
         }
+
+        VoidBullets(origin, direction);
+    }
+
+    void VoidBullets(Vector3 origin, Vector3 direction)
+    {
+        if (voidRadius <= 0) return;
+        
+        bool hasHit = Physics.SphereCast(origin, voidRadius, direction, out RaycastHit hit, direction.magnitude,
+            LayerMask.GetMask("BulletView"));
+
+        if (fromEnemy) hasHit = false;
+
+        if (hasHit)
+        {
+            Destroy(hit.transform.parent.parent.gameObject);
+        }
     }
 
     //void CastRay(float time, float radius, LayerMask mask)
@@ -272,7 +307,7 @@ public class Bullet : MonoBehaviour
 
                 if (takeDamageMethod != null)
                 {
-                    takeDamageMethod.Invoke(enemyComponent, new object[] { bulletDamage });
+                    takeDamageMethod.Invoke(enemyComponent, new object[] { bulletDamage * shieldMultiplier });
                 }
             }
         }
@@ -293,9 +328,20 @@ public class Bullet : MonoBehaviour
 
     void DoHit(RaycastHit hit, Vector3 direction)
     {
-        if (hit.transform.gameObject.layer == LayerMask.NameToLayer("EnergyWall"))
+        if(hit.transform.CompareTag("TakeDamage"))
         {
-            if (Vector3.Dot(hit.transform.right, direction) > 0) return;
+            hit.transform.gameObject.SendMessageUpwards("TakeDamage", 
+                new object[] { hit.point, direction, bulletDamage * shieldMultiplier });
+        }
+        else if (hit.transform.gameObject.layer == LayerMask.NameToLayer("EnergyWall"))
+        {
+            // if behind shield, pass through otherwise deal damage
+            if (Vector3.Dot(hit.transform.right, direction) > 0)  return;
+            else
+            {
+                hit.transform.gameObject.SendMessageUpwards("TakeDamage",
+                    new object[] { hit.point, direction, bulletDamage * shieldMultiplier });
+            }
         }
         else if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Player"))
         {
@@ -342,6 +388,12 @@ public class Bullet : MonoBehaviour
                 if (enemy.isShield)
                     ShieldDamage(enemy);
             }
+        }
+        else if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Shield") && hit.transform.gameObject.CompareTag("Armor"))
+        {
+            ArmorPiece armor = hit.transform.gameObject.GetComponent<ArmorPiece>();
+
+            armor.Hit(bulletDamage);
         }
         else
         {
@@ -434,7 +486,7 @@ public class Bullet : MonoBehaviour
     {
         // y = v * t + 0.5 * gravity * t * t
 
-        Vector3 velocity = transform.forward * speed;
+        Vector3 velocity = initialVelocity;
         Vector3 acc = transform.forward * acceleration;
 
         float x = velocity.x * time + 0.5f * acc.x * time * time;

@@ -6,10 +6,11 @@ public class DialogTrigger : MonoBehaviour
 {
 
     [SerializeField] Dialog dialog;
+    
     [SerializeField] bool displayOnContact = false;
     [SerializeField] bool destroyOnContact = false;
+    [SerializeField] bool startDialogAsap = false;
 
-    [Space]
     // [SerializeField] GameObject[] enable;
     // [SerializeField] GameObject[] disable;
 
@@ -47,17 +48,12 @@ public class DialogTrigger : MonoBehaviour
         //{
         //    TriggerDialog();
         //}
-
         if(playerInBounds && displayOnContact)
         {
-            DialogManager.instance.TriggerDialog(dialog, displayOnContact);
-            displayOnContact = false;
+            TriggerDialog();
             if (destroyOnContact) Destroy(gameObject);
-
         }
     }
-
-
 
     //void UpdateChanges()
     //{
@@ -73,5 +69,45 @@ public class DialogTrigger : MonoBehaviour
     private void OnTriggerExit(Collider collision)
     {
         playerInBounds = false;
+    }
+
+    public void TriggerDialog()
+    {
+        // enemy barks won't activate if a bark of the same or higher priority is already playing
+        if ((((dialog.characterIDs[0] == 2) || (dialog.characterIDs[0] == 3)) && (dialog.priority <= DialogManager.instance.currentDialogPriority))
+            //but danny and others can interrupt themselves even if it's of the same priority
+            || (dialog.priority < DialogManager.instance.currentDialogPriority)) return;
+        DialogManager.instance.currentDialogPriority = dialog.priority;
+
+        List<string> lines = new List<string>();
+        List<float> lineDurations = new List<float>();
+
+        switch (dialog.type)
+        {
+            case Dialog.DialogType.Sequence:
+                for (int i = 0; i < dialog.displayText.Length; i++) //dialog.dialogIndex; i < dialog.displayText.Length; i++)
+                {
+                    lines.Add(dialog.displayText[i]);
+                    lineDurations.Add(dialog.lineDurations[i]);
+                }
+                //dialog.dialogIndex = dialog.displayText.Length - 1;
+                break;
+            case Dialog.DialogType.Random:
+                int randomIndex = Random.Range(0, dialog.displayText.Length);
+                lines.Add(dialog.displayText[randomIndex]);
+                lineDurations.Add(dialog.lineDurations[randomIndex]);
+                break;
+            case Dialog.DialogType.Repeat:
+                dialog.dialogIndex++;
+                lines.Add(dialog.displayText[dialog.dialogIndex % dialog.displayText.Length]);
+                lineDurations.Add(dialog.lineDurations[dialog.dialogIndex % dialog.lineDurations.Count]);
+                print("DUDE" + dialog.dialogIndex % dialog.displayText.Length);
+                break;
+        }
+
+        if(dialog.audioClips.Length > 0)
+            GlobalAudioManager.instance.PlayVoiceLine(dialog.audioClips[dialog.dialogIndex]);
+
+        DialogManager.instance.StartDialog(lines, lineDurations);
     }
 }

@@ -9,6 +9,9 @@ public class CheckPointSystem : MonoBehaviour
     public static Vector3 spawnPoint;
     public static Vector3 spawnDirection;
 
+    int index;
+    float timer;
+
     // Start is called before the first frame update
     void Awake()
     {
@@ -17,9 +20,47 @@ public class CheckPointSystem : MonoBehaviour
         if (spawnPoint.Equals(new Vector3()) && startingSpawn)
         {
             spawnPoint = transform.position;
-            DontDestroyOnLoad(this);
+            spawnDirection = transform.localEulerAngles;
+            // DontDestroyOnLoad(this);
         }
     }
+
+
+    private void Start()
+    {
+        index = FindIndex();
+    }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown((KeyCode)49 + index))
+        {
+            if(timer > 0)
+            {
+                spawnPoint = transform.position;
+                spawnDirection = transform.localEulerAngles;
+                PauseSystem.pauseSystem.ReloadScene();
+            }
+            timer = 0.2f;
+        }
+
+        timer = Mathf.Max(timer - Time.unscaledDeltaTime, 0);
+    }
+
+    int FindIndex()
+    {
+        for(int i = 0; i < transform.parent.childCount; i++)
+        {
+            if (transform.parent.GetChild(i).Equals(transform)) return i;
+        }
+
+        return -1;
+    }
+
+    //private void OnDestroy()
+    //{
+    //    spawnPoint = new Vector3();
+    //}
 
     private void OnTriggerEnter(Collider collision)
     {

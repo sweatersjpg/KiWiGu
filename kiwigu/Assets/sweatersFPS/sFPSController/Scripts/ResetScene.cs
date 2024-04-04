@@ -9,6 +9,9 @@ public class ResetScene : MonoBehaviour
     public static ResetScene instance;
 
     [SerializeField] GameObject playerDummy;
+    [SerializeField] GameObject barrelPrefab;
+
+    Vector3[] barrelPositions;
 
     private void Awake()
     {
@@ -18,7 +21,13 @@ public class ResetScene : MonoBehaviour
 
     void Start()
     {
-        
+
+        ExplosiveBarrel[] ebs = FindObjectsByType<ExplosiveBarrel>(FindObjectsSortMode.None);
+        barrelPositions = new Vector3[ebs.Length];
+        for(int i = 0; i < ebs.Length; i++)
+        {
+            barrelPositions[i] = ebs[i].transform.position;
+        }
     }
 
     // Update is called once per frame
@@ -61,5 +70,12 @@ public class ResetScene : MonoBehaviour
 
         MoveHook[] hooks = FindObjectsByType<MoveHook>(FindObjectsSortMode.None);
         for (int i = 0; i < hooks.Length; i++) Destroy(hooks[i].gameObject);
+
+        // reset all explosive barrels
+        ExplosiveBarrel[] ebs = FindObjectsByType<ExplosiveBarrel>(FindObjectsSortMode.None);
+        for (int i = 0; i < ebs.Length; i++) Destroy(ebs[i].gameObject);
+        for (int i = 0; i < barrelPositions.Length; i++) Instantiate(barrelPrefab, barrelPositions[i], Quaternion.identity);
+
     }
+
 }

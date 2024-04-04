@@ -66,6 +66,7 @@ public class sweatersController : MonoBehaviour
     public Vector3 velocity;
     public Vector3 rawInput;
     public Vector3 input;
+    public Vector3 facing;
 
     float rotationX = 0;
 
@@ -106,13 +107,17 @@ public class sweatersController : MonoBehaviour
     {
         charController = GetComponent<CharacterController>();
 
-        if(!CheckPointSystem.spawnPoint.Equals(new Vector3()))
+        if (!CheckPointSystem.spawnPoint.Equals(new Vector3()))
         {
             charController.enabled = false;
 
             transform.position = CheckPointSystem.spawnPoint;
 
             charController.enabled = true;
+
+            rotationX = CheckPointSystem.spawnDirection.x;
+            playerHead.transform.localRotation = Quaternion.Euler(CheckPointSystem.spawnDirection.x, 0, 0);
+            transform.rotation = Quaternion.Euler(0, CheckPointSystem.spawnDirection.y, 0);
         }
 
         // Lock cursor
@@ -141,6 +146,8 @@ public class sweatersController : MonoBehaviour
 
         minJumpGravity = jumpSpeed * jumpSpeed / (2 * minJumpHeight);
 
+        lookSpeed = PauseSystem.mouseSensitivity;
+
         //playerCamera = Camera.main;
     }
 
@@ -165,6 +172,8 @@ public class sweatersController : MonoBehaviour
             transform.position = spawnPoint;
             charController.enabled = true;
         }
+
+        facing = playerCamera.transform.forward;
     }
 
     public void ResetPlayer()
@@ -230,6 +239,7 @@ public class sweatersController : MonoBehaviour
 
         // apply gravity when not grounded or sliding
         if (!isGrounded || isSliding) force.y -= gravity;
+        if (isSliding) force.y -= gravity;
 
         // jump buffer logic
         if(Input.GetButtonDown("Jump"))
@@ -341,6 +351,24 @@ public class sweatersController : MonoBehaviour
 
         charController.center = new Vector3(0, charController.height / 2, 0);
         playerHead.transform.localPosition = new Vector3(0, charController.height - 0.5f, 0);
+    }
+
+    public Vector3 GetRelativity()
+    {
+        Vector3 v = velocity;
+        // v.y = 0;
+
+        Vector3 look = playerCamera.transform.forward;
+        // look.y = 0;
+        look.Normalize();
+
+        v = Vector3.Project(v, look);
+        // v.y = velocity.y;
+
+        // no relativity if going backwards
+        if (Vector3.Dot(look, v) < 0) return new();
+
+        return v;
     }
 
     void OnControllerColliderHit(ControllerColliderHit hit)

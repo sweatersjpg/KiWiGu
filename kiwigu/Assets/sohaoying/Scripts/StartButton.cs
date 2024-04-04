@@ -18,6 +18,7 @@ public class StartButton : MonoBehaviour
 
     void ButtonPressed()
     {
+        if (PauseSystem.paused) return;
         buttonPressed = true;
     }
 

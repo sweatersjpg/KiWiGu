@@ -75,7 +75,7 @@ LineRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Positions:
-  - {x: 52.12925, y: -11.357317, z: -9.8571}
+  - {x: 1, y: 1, z: 1}
   - {x: 0, y: 0, z: 0}
   m_Parameters:
     serializedVersion: 3
@@ -144,10 +144,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 290b0427f9d21ed4f87a1bb34963a8b0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ziplineLoop: {fileID: 8300000, guid: f2e24a5a6c33673409a48eeb0c74325b, type: 3}
   segments: 20
   tension: 12
   gravity: 0.6
   dampener: 0.8
   width: 0.1
-  IsZipline: 0
+  IsZipline: 1
   zipLineGravity: 50

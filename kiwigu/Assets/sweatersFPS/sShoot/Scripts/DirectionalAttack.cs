@@ -23,6 +23,8 @@ public class DirectionalAttack : MonoBehaviour
 
     Vector3 startPos;
 
+    Collider currentHit;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -52,42 +54,73 @@ public class DirectionalAttack : MonoBehaviour
 
     void CheckRadius(float radius)
     {
-        Collider[] hits = Physics.OverlapSphere(transform.position, radius, LayerMask.GetMask("Enemy", "PhysicsObject"));
+        Collider[] hits = Physics.OverlapSphere(transform.position, radius, 
+            LayerMask.GetMask("Enemy", "PhysicsObject", "Shield", "EnergyWall", "Default"));
+
+        // prioritize shields
+        foreach (Collider hit in hits)
+        {
+            if (ignoreList.Contains(hit.gameObject)) continue;
+            currentHit = hit;
+
+            if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Shield") && hit.transform.gameObject.CompareTag("Shield"))
+            {
+                EnemyHitBox enemy = hit.transform.gameObject.GetComponent<EnemyHitBox>();
+
+                if (enemy != null)
+                {
+                    if (enemy.isShield)
+                        ShieldDamage(enemy);
+                }
+            }
+        }
 
         foreach (Collider hit in hits)
         {
             if (ignoreList.Contains(hit.gameObject)) continue;
+            currentHit = hit;
 
-            if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Enemy"))
+            if (hit.transform.CompareTag("TakeDamage"))
             {
-                EnemyHitBox enemy = hit.transform.gameObject.GetComponentInParent<EnemyHitBox>();
+                Vector3 direction = transform.forward;
+                hit.transform.gameObject.SendMessageUpwards("TakeDamage",
+                    new object[] { hit.ClosestPoint(transform.position), direction, damageDealt });
+
+                alreadyHit.Add(hit.gameObject);
+            }
+            else if (hit.transform.gameObject.layer == LayerMask.NameToLayer("EnergyWall"))
+            {
+                // if behind shield, pass through otherwise deal damage
+                Vector3 direction = (transform.position - hit.transform.position);
+                hit.transform.gameObject.SendMessageUpwards("TakeDamage",
+                        new object[] { hit.ClosestPoint(transform.position), direction, damageDealt });
+
+                alreadyHit.Add(hit.gameObject);
+            }
+            else if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Enemy") && !hit.transform.gameObject.CompareTag("Backpack")) 
+            {
+                EnemyHitBox enemy = hit.transform.gameObject.GetComponent<EnemyHitBox>();
+
                 if (enemy != null)
                 {
+                    if (enemy.doubleDamage)
+                        ApplyDamage(enemy, 2f, true);
+                    else if (enemy.chestDamage)
+                        ApplyDamage(enemy, 1.5f, false);
+                    else if (enemy.leastDamage)
+                        ApplyDamage(enemy, 0.75f, false);
+                    else
+                        ApplyDamage(enemy, 1f, false); ;
+                }
+            }
+            else if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Backpack") && hit.transform.gameObject.CompareTag("Backpack"))
+            {
+                EnemyHitBox enemy = hit.transform.gameObject.GetComponent<EnemyHitBox>();
 
-                    var scriptType = System.Type.GetType(enemy.ReferenceScript);
-
-                    Transform rootParent = GetRootParent(enemy.transform);
-
-                    if (rootParent != null)
-                    {
-                        if (alreadyHit.Contains(rootParent.gameObject)) return;
-
-                        var enemyComponent = rootParent.GetComponent(scriptType) as MonoBehaviour;
-
-                        alreadyHit.Add(rootParent.gameObject);
-                        Instantiate(hitEffect, hit.ClosestPoint(transform.position), Quaternion.identity);
-
-                        if (enemyComponent != null)
-                        {
-                            var takeDamageMethod = scriptType.GetMethod("TakeDamage");
-
-                            if (takeDamageMethod != null)
-                            {
-                                takeDamageMethod.Invoke(enemyComponent, new object[] { damageDealt, false });
-                            }
-                        }
-                    }
-                    
+                if (enemy != null)
+                {
+                    if (enemy.isBackpack)
+                        BackpackDamage(enemy);
                 }
             }
             else if (hit.attachedRigidbody != null)
@@ -100,7 +133,6 @@ public class DirectionalAttack : MonoBehaviour
                 // print(hit.name);
             }
 
-            
         }
     }
 
@@ -115,5 +147,94 @@ public class DirectionalAttack : MonoBehaviour
         }
 
         return child;
+    }
+
+    private void ApplyDamage(EnemyHitBox enemy, float damageMultiplier, bool isHeadshot)
+    {
+        if (enemy == null)
+            return;
+
+        var scriptType = System.Type.GetType(enemy.ReferenceScript);
+
+        Transform rootParent = GetRootParent(enemy.transform);
+
+        if (rootParent != null && scriptType != null)
+        {
+            if (alreadyHit.Contains(rootParent.gameObject)) return;
+            alreadyHit.Add(rootParent.gameObject);
+
+            Instantiate(hitEffect, currentHit.ClosestPoint(transform.position), Quaternion.identity);
+
+            var enemyComponent = rootParent.GetComponent(scriptType) as MonoBehaviour;
+
+            if (enemyComponent != null)
+            {
+                var takeDamageMethod = scriptType.GetMethod("TakeDamage");
+
+                if (takeDamageMethod != null)
+                {
+                    if (isHeadshot)
+                        takeDamageMethod.Invoke(enemyComponent, new object[] { damageDealt * damageMultiplier, true });
+                    else
+                        takeDamageMethod.Invoke(enemyComponent, new object[] { damageDealt * damageMultiplier, false });
+                }
+            }
+        }
+    }
+
+    private void BackpackDamage(EnemyHitBox enemy)
+    {
+        if (enemy == null)
+            return;
+
+        var scriptType = System.Type.GetType(enemy.ReferenceScript);
+
+        Transform rootParent = GetRootParent(enemy.transform);
+
+        if (rootParent != null && scriptType != null)
+        {
+            if (alreadyHit.Contains(rootParent.gameObject)) return;
+            alreadyHit.Add(rootParent.gameObject);
+
+            Instantiate(hitEffect, currentHit.ClosestPoint(transform.position), Quaternion.identity);
+
+            var enemyComponent = rootParent.GetComponent(scriptType) as MonoBehaviour;
+
+            if (enemyComponent != null)
+            {
+                var takeDamageMethod = scriptType.GetMethod("BackpackDamage");
+
+                takeDamageMethod?.Invoke(enemyComponent, new object[] { damageDealt });
+            }
+        }
+    }
+
+    private void ShieldDamage(EnemyHitBox enemy)
+    {
+        if (enemy == null)
+            return;
+
+        var scriptType = System.Type.GetType(enemy.ReferenceScript);
+
+        Transform rootParent = GetRootParent(enemy.transform);
+
+        if (rootParent != null && scriptType != null)
+        {
+            if (alreadyHit.Contains(rootParent.gameObject)) return;
+            alreadyHit.Add(rootParent.gameObject);
+
+            
+
+            Instantiate(hitEffect, currentHit.ClosestPoint(transform.position), Quaternion.identity);
+
+            var enemyComponent = rootParent.GetComponent(scriptType) as MonoBehaviour;
+
+            if (enemyComponent != null)
+            {
+                var takeDamageMethod = scriptType.GetMethod("ShieldDamage");
+
+                takeDamageMethod?.Invoke(enemyComponent, new object[] { damageDealt * 0.5f });
+            }
+        }
     }
 }

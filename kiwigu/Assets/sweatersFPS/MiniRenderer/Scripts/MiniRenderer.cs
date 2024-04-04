@@ -129,7 +129,7 @@ public class MiniRenderer : MonoBehaviour
         GetComponent<ScreenSystem>().Init(this);
 
         //if(!useCoroutine)
-        InvokeRepeating(nameof(Render), 0f, 1f / frameRate);
+        // InvokeRepeating(nameof(Render), 0f, 1f / frameRate);
 
         //else StartCoroutine(RenderLoop());
 
@@ -143,6 +143,18 @@ public class MiniRenderer : MonoBehaviour
     //        yield return new WaitForSecondsRealtime(1f/frameRate);
     //    }
     //}
+
+    double frameTimer = 0;
+
+    private void Update()
+    {
+        //float deltaTime = Time.unscaledDeltaTime;
+
+        //frameTimer += deltaTime;
+        //if (frameTimer >= 1 / frameRate)
+
+        Render();
+    }
 
     void Render()
     {

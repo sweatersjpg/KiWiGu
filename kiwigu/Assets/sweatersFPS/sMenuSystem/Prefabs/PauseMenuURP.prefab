@@ -15,7 +15,6 @@ GameObject:
   - component: {fileID: 390614569014119841}
   - component: {fileID: 481911955314792014}
   - component: {fileID: 481911955314792013}
-  - component: {fileID: 390614570653311701}
   m_Layer: 6
   m_Name: PauseMenuURP
   m_TagString: Untagged
@@ -105,7 +104,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spriteSheet: {fileID: 2800000, guid: dfc08d23fe1644fe396fa58d53444f1a, type: 3}
-  fontSheet: {fileID: 2800000, guid: 1a748d07530fd44169fb331d1de926c3, type: 3}
+  fontSheet: {fileID: 2800000, guid: 52de320f0d7564b4b870813d5282a8db, type: 3}
   frameRate: 60
   width: 320
   height: 256
@@ -130,7 +129,6 @@ MonoBehaviour:
   R: {fileID: 0}
   programs:
   - {fileID: 481911955314792014}
-  - {fileID: 390614570653311701}
   - {fileID: 481911955314792013}
   programIndex: 0
   menuCamera: {fileID: 390614569684195230}
@@ -230,7 +228,7 @@ MonoBehaviour:
   mouseButtonUp: 0
   mouseScrollDelta: 0
   mouseIcon: 112
-  title: pause.exe
+  title: pause
   spriteSheet: {fileID: 0}
   WIDTH: 39
   HEIGHT: 31
@@ -259,30 +257,6 @@ MonoBehaviour:
   spriteSheet: {fileID: 2800000, guid: c5dbc70c24b254acb84b591cf52a4a8b, type: 3}
   WIDTH: 39
   HEIGHT: 31
---- !u!114 &390614570653311701
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 390614569014119830}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 86919068ca8d349b4b2a7e7d09392dd9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  R: {fileID: 0}
-  mouse: {x: 0, y: 0}
-  mouseButton: 0
-  mouseButtonDown: 0
-  mouseButtonUp: 0
-  mouseScrollDelta: 0
-  mouseIcon: 112
-  title: inv.exe
-  spriteSheet: {fileID: 2800000, guid: 96e5b82273236487c90736d3905c5ab2, type: 3}
-  WIDTH: 39
-  HEIGHT: 31
-  itemPrefab: {fileID: 5461595124262667666, guid: 30cb21930791148b8a463f8f214da2b3, type: 3}
 --- !u!1 &390614569362610134
 GameObject:
   m_ObjectHideFlags: 0

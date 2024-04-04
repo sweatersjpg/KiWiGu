@@ -3,16 +3,14 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using UnityEngine.Events;
-using FMODUnity;
 using UnityEngine.InputSystem;
+using static MiniMenuSystem;
 
 public class ShootBullet : MonoBehaviour
 {
-    [SerializeField] StudioEventEmitter sfxEmitterAvailable;
-    [SerializeField] StudioEventEmitter sfxEmitterOut;
-
     public GunHand anim;
     public ParticleSystem flash;
+    public ParticleSystem shell;
 
     float spreadSpeed = 5;
     float spreadTimeStart = 0;
@@ -70,7 +68,12 @@ public class ShootBullet : MonoBehaviour
             time += Time.deltaTime;
         }
 
-        bool canShoot = (Time.time - shotTimer) > 1 / info.fireRate && anim.canShoot && anim.hasGun;
+        float fireRate = info.fireRate;
+        
+        // if can charger and full audo => link charge to fire rate
+        if(info.fullAuto && info.canCharge) fireRate = charge * info.fireRate;
+
+        bool canShoot = (Time.time - shotTimer) > 1 / fireRate && anim.canShoot && anim.hasGun;
         anim.canShoot = canShoot;
 
         string[] shootButtons = { "LeftShoot", "RightShoot" };
@@ -84,6 +87,7 @@ public class ShootBullet : MonoBehaviour
         {
             // if (Input.GetMouseButtonDown(anim.mouseButton)) chargeTimerStart = time;
             if (Input.GetButton(shootButton)) chargeTimer += deltaTime / info.timeToMaxCharge;
+            if (info.fullAuto && Input.GetButtonUp(shootButton)) chargeTimer = 0;
 
             if (chargeTimer > 1) chargeTimer = 1;
             if (chargeTimer < 0) chargeTimer = 0;
@@ -96,12 +100,13 @@ public class ShootBullet : MonoBehaviour
             if (ammo.count > 0)
             {
                 shotTimer = Time.time;
+
                 for (int i = 0; i < info.burstSize; i++) Invoke(nameof(Shoot), i * 1 / info.autoRate);
             }
             else
             {
                 if (Input.GetButtonDown(shootButton))
-                    sfxEmitterOut.Play();
+                    GlobalAudioManager.instance.PlayGunEmpty(transform, info);
             }
         }
 
@@ -122,16 +127,16 @@ public class ShootBullet : MonoBehaviour
 
     void Shoot()
     {
-        ammo.count -= 1;
+        GlobalAudioManager.instance.PlayGunFire(transform, info);
 
-        sfxEmitterAvailable.SetParameter("Charge", charge);
-        sfxEmitterAvailable.Play();
+        ammo.count -= 1;
 
         for (int i = 0; i < info.projectiles; i++) SpawnBullet();
         anim.AnimateShoot();
         if (flash != null) flash.Play();
+        if (shell != null) shell.Emit(1);
 
-        chargeTimer = 0;
+        if(!info.fullAuto) chargeTimer = 0;
         // Debug.Log(charge);
 
         ShootEvent.Invoke();
@@ -160,6 +165,8 @@ public class ShootBullet : MonoBehaviour
 
     void SpawnBullet()
     {
+        if (!info.bulletPrefab) return;
+
         GameObject bullet = Instantiate(info.bulletPrefab);
 
         Vector3 direction = transform.forward;
@@ -176,7 +183,7 @@ public class ShootBullet : MonoBehaviour
         b.speed = info.bulletSpeed;
         b.gravity = info.bulletGravity;
         b.charge = charge;
-        b.ignoreMask = ~LayerMask.GetMask("GunHand", "Player", "HookTarget");
+        b.ignoreMask = ~LayerMask.GetMask("GunHand", "Player", "HookTarget", "BulletView");
         b.bulletDamage = info.damage;
 
         recoil += info.recoilPerShot;

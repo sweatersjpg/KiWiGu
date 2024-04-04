@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
+// SEE: PLACEHOLDER, FOR LATER
+
 public class DialogManager : MonoBehaviour
 {
     public static DialogManager instance;
@@ -10,7 +12,14 @@ public class DialogManager : MonoBehaviour
     [HideInInspector] public bool active;
 
     [SerializeField] float textSpeed = 20;
+    public int currentDialogPriority = 0;
 
+    [Space]
+    [SerializeField] List<AudioSource> currentAudioSources;
+    [SerializeField] AudioSource playerAudioSource;
+    [SerializeField] AudioSource apostleAudioSource;
+
+    [Space]
     [SerializeField] GameObject dialogBox;
     [SerializeField] TextMeshProUGUI dialogTextMesh;
     [SerializeField] GameObject moreIcon;
@@ -23,6 +32,8 @@ public class DialogManager : MonoBehaviour
 
     bool textComplete = true;
     string currentText;
+
+    IEnumerator textDisplayCo;
 
     private void Awake()
     {
@@ -44,14 +55,14 @@ public class DialogManager : MonoBehaviour
     {
         //if (Input.anyKeyDown)
         //{
-            if(textComplete) NextDialog();
-            /*else
-            {
-                StopAllCoroutines();
-                textComplete = true;
-                dialogTextMesh.text = currentText;
-            }
-        }*/
+        if (textComplete) NextDialog();
+        /*else
+        {
+            StopAllCoroutines();
+            textComplete = true;
+            dialogTextMesh.text = currentText;
+        }
+    }*/
 
         //moreIcon.SetActive(textComplete);
 
@@ -61,24 +72,32 @@ public class DialogManager : MonoBehaviour
         showInteractPrompt = false;
     }
 
+    // FOR LATER: disable on death
+    void OnDisable()
+    {
+        currentAudioSources.Clear();
+    }
+
     IEnumerator DisplayText(string text, float textDuration)
     {
         currentText = text;
         dialogTextMesh.text = "";
         textComplete = false;
 
-        for(int i = 0; i < text.Length; i++)
+        for (int i = 0; i < text.Length; i++)
         {
             dialogTextMesh.text += text[i];
-            yield return new WaitForSecondsRealtime(1/textSpeed);
+            yield return new WaitForSeconds(1 / textSpeed);
         }
-        yield return new WaitForSecondsRealtime(textDuration);
+        yield return new WaitForSeconds(textDuration);
         textComplete = true;
+
+        currentDialogPriority = 0;
     }
-    
+
     public void NextDialog()
     {
-        if(sentences.Count == 0)
+        if (sentences.Count == 0)
         {
             // hide dialog box
             dialogBox.SetActive(false);
@@ -88,59 +107,68 @@ public class DialogManager : MonoBehaviour
         string s = sentences.Dequeue();
         float sd = sentenceDurations.Dequeue();
 
-        // play dialog
+        // remove dialog queue if interrupting
+        if (textDisplayCo != null)
+        {
+            StopCoroutine(textDisplayCo);
+        }
 
-        StartCoroutine(DisplayText(s, sd));
+        // play dialog
+        textDisplayCo = DisplayText(s, sd);
+        StartCoroutine(textDisplayCo);
 
         // dialogTextMesh.text = s;
     }
 
-    public void StartDialog(List<string> lines, List<float> durations, bool startDialogAsap)
+    public void StartDialog(List<string> dialogLines, List<float> durations)
     {
+        //if (startDialogAsap) {
         sentences.Clear();
         sentenceDurations.Clear();
-        foreach(string s in lines) sentences.Enqueue(s);
+        //}
+        foreach (string s in dialogLines) sentences.Enqueue(s);
         foreach (float d in durations) sentenceDurations.Enqueue(d);
 
         // enable dialog box
         dialogBox.SetActive(true);
 
-        //if (startDialogAsap) NextDialog(); // SOHA REENABLE LATER
+        //if (startDialogAsap) {
+        NextDialog();
+        //}
     }
 
-    public void TriggerDialog(Dialog dialog, bool displayOnContact)
-    {
-        List<string> lines = new List<string>();
-        List<float> lineDurations = new List<float>();
-        int dialogIndex = 0;
+    /* FOR LATER
+       
+    should avoid putting danny beats near other dialog triggers
 
-        switch (dialog.type)
-        {
-            case Dialog.DialogType.Sequence:
-                for (int i = dialogIndex; i < dialog.sentences.Length; i++)
-                {
-                    lines.Add(dialog.sentences[i]);
-                    lineDurations.Add(dialog.sentenceDurations[i]);
-                    print(i);
-                }
-                dialogIndex = dialog.sentences.Length - 1;
-                break;
-            case Dialog.DialogType.Random:
-                int randomIndex = Random.Range(0, dialog.sentences.Length);
-                lines.Add(dialog.sentences[randomIndex]);
-                lineDurations.Add(dialog.sentenceDurations[randomIndex]);
-                break;
-            case Dialog.DialogType.Repeat:
-                lines.Add(dialog.sentences[dialogIndex++ % dialog.sentences.Length]);
-                lineDurations.Add(dialog.sentenceDurations[dialogIndex++ % dialog.sentenceDurations.Length]);
-                break;
-        }
+    ALSO FOR LATER: consider whether to stop audio or just leave it overlapping.
+    it's currently overlapping and you'll probably have to stop it later. do this when the voice lines are in
+     
+     * Priority Brainstorming?? set this later
+     * apostle: 19
+     * danny: 11
+     * hook blocked: 9
+     * 
+     * mech hooked: 5
+     * grunt hooked: 5
+     * alternatively, consider not making the "hooked" events dialog at all, just having the grunting sounds that play wiithout subs
+     * 
+     * mech stolen: 4
+     * grunt stolen: 4
+     * 
+     * mech mandown: 4
+     * grunt mandown: 4
+     * 
+     * mech spotted: 2
+     * grunt spotted: 2
+     * 
+     * mech idle: 1
+     * grunt idle: 1
 
-        StartDialog(lines, lineDurations, displayOnContact);
-    }
+    */
 
-    public void ShowInteractPrompt()
+    /*public void ShowInteractPrompt()
     {
         showInteractPrompt = true;
-    }
+    }*/
 }

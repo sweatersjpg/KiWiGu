@@ -14,11 +14,13 @@ public class MenuButton : MonoBehaviour
 
     public void ButtonPressed()
     {
+        if (PauseSystem.paused) return;
         credits.SetActive(true);
     }
 
     public void Quit()
     {
+        if (PauseSystem.paused) return;
         Application.Quit();
     }
 }

@@ -33,6 +33,30 @@ MonoBehaviour:
       type: 1
       content: []
       callBack: SetFullscreen
+    - title: resolution
+      type: 0
+      content:
+      - 640x480
+      - 720x480
+      - 720x576
+      - 800x600
+      - 1024x768
+      - 1152x864
+      - 1280x720
+      - 1280x768
+      - 1280x800
+      - 1280x960
+      - 1280x1024
+      - 1360x768
+      - 1366x768
+      - 1440x900
+      - 1440x1080
+      - 1600x900
+      - 1600x1200
+      - 1680x1050
+      - 1920x1080
+      - 1920x1200
+      callBack: SetResolution
   - title: volume
     onClick: 
     settings:
@@ -48,20 +72,9 @@ MonoBehaviour:
       type: 0
       content: []
       callBack: UpdateSfxVolume
-  - title: credits
-    onClick: 
-    settings:
-    - title: Credits
-      type: 3
-      content:
-      - "\n  Slommy Studios"
-      - "Abby\n Environment Assets"
-      - "Carlo\n Programming"
-      - "Chris\n Levels & Design"
-      - "Sam\n Programming"
-      - "Sarita\n Music & VFX"
-      - "Tiggi\n Art & Modeling"
-      callBack: 
+  - title: menu
+    onClick: GotoMainMenu
+    settings: []
   - title: reload
     onClick: ReloadScene
     settings: []
