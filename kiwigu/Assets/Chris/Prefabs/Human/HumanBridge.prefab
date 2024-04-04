@@ -11,13 +11,13 @@ GameObject:
   - component: {fileID: 6512873036187525906}
   - component: {fileID: 7912125325874719927}
   - component: {fileID: 5343929261645535357}
-  - component: {fileID: 8390008453882881090}
+  - component: {fileID: 1318410807359978237}
   m_Layer: 0
   m_Name: HumanBridge
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &6512873036187525906
 Transform:
@@ -85,8 +85,8 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &8390008453882881090
-MeshCollider:
+--- !u!65 &1318410807359978237
+BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -95,7 +95,6 @@ MeshCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  serializedVersion: 4
-  m_Convex: 1
-  m_CookingOptions: 30
-  m_Mesh: {fileID: -6956899670222173805, guid: ed221072a0356784caa8c51172ea67d6, type: 3}
+  serializedVersion: 2
+  m_Size: {x: 4, y: 1, z: 11.000019}
+  m_Center: {x: -2, y: -0.5, z: 5.4999905}
