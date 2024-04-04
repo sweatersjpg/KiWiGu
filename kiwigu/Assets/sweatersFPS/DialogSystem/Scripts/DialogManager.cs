@@ -13,7 +13,7 @@ public class DialogManager : MonoBehaviour
 
     [SerializeField] float textSpeed = 20;
     public int currentDialogPriority = 0;
-    
+
     [Space]
     [SerializeField] List<AudioSource> currentAudioSources;
     [SerializeField] AudioSource playerAudioSource;
@@ -55,14 +55,14 @@ public class DialogManager : MonoBehaviour
     {
         //if (Input.anyKeyDown)
         //{
-            if(textComplete) NextDialog();
-            /*else
-            {
-                StopAllCoroutines();
-                textComplete = true;
-                dialogTextMesh.text = currentText;
-            }
-        }*/
+        if (textComplete) NextDialog();
+        /*else
+        {
+            StopAllCoroutines();
+            textComplete = true;
+            dialogTextMesh.text = currentText;
+        }
+    }*/
 
         //moreIcon.SetActive(textComplete);
 
@@ -84,20 +84,20 @@ public class DialogManager : MonoBehaviour
         dialogTextMesh.text = "";
         textComplete = false;
 
-        for(int i = 0; i < text.Length; i++)
+        for (int i = 0; i < text.Length; i++)
         {
             dialogTextMesh.text += text[i];
-            yield return new WaitForSeconds(1/textSpeed);
+            yield return new WaitForSeconds(1 / textSpeed);
         }
         yield return new WaitForSeconds(textDuration);
         textComplete = true;
 
         currentDialogPriority = 0;
     }
-    
+
     public void NextDialog()
     {
-        if(sentences.Count == 0)
+        if (sentences.Count == 0)
         {
             // hide dialog box
             dialogBox.SetActive(false);
@@ -123,17 +123,17 @@ public class DialogManager : MonoBehaviour
     public void StartDialog(List<string> dialogLines, List<float> durations)
     {
         //if (startDialogAsap) {
-            sentences.Clear();
-            sentenceDurations.Clear();
+        sentences.Clear();
+        sentenceDurations.Clear();
         //}
-        foreach(string s in dialogLines) sentences.Enqueue(s);
+        foreach (string s in dialogLines) sentences.Enqueue(s);
         foreach (float d in durations) sentenceDurations.Enqueue(d);
 
         // enable dialog box
         dialogBox.SetActive(true);
 
         //if (startDialogAsap) {
-            NextDialog();
+        NextDialog();
         //}
     }
 

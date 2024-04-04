@@ -30,6 +30,8 @@ public class GlobalAudioManager : MonoBehaviour
     public AudioClip battleStemTwo;
     public bool battleTrigger = false;
 
+    public AudioSource voiceLineSource;
+
     private void Awake()
     {
         if (instance == null)
@@ -136,6 +138,13 @@ public class GlobalAudioManager : MonoBehaviour
                 PlaySound(location, hookHitSFX, 1, 1, 50, "hookHitSFX");
                 break;
         }
+    }
+
+    public void PlayVoiceLine(AudioClip clip)
+    {
+        voiceLineSource.Stop();
+        voiceLineSource.clip = clip;
+        voiceLineSource.Play();
     }
 
     public void PlayBattleMusic()
