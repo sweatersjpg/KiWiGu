@@ -1,5 +1,135 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &808468730
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 808468731}
+  - component: {fileID: 808468734}
+  - component: {fileID: 808468732}
+  m_Layer: 9
+  m_Name: Mechemy Leg HB L
+  m_TagString: Enemy
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &808468731
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 808468730}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3070255818913446242}
+  m_RootOrder: 7
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!136 &808468734
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 808468730}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 0
+  m_Radius: 0.15
+  m_Height: 0.82525253
+  m_Direction: 1
+  m_Center: {x: -0.25, y: 1.74, z: 0.049999997}
+--- !u!114 &808468732
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 808468730}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cc87e33995c012d4582004dbe16cb6ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ReferenceScript: Mechemy
+  doubleDamage: 0
+  chestDamage: 0
+  leastDamage: 1
+  isBackpack: 0
+  isShield: 0
+--- !u!1 &1420820217
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1420820218}
+  - component: {fileID: 1420820221}
+  - component: {fileID: 1420820219}
+  m_Layer: 9
+  m_Name: Mechemy Leg HB R
+  m_TagString: Enemy
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1420820218
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1420820217}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3070255818913446242}
+  m_RootOrder: 8
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!136 &1420820221
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1420820217}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 0
+  m_Radius: 0.15
+  m_Height: 0.82525253
+  m_Direction: 1
+  m_Center: {x: 0.25, y: 1.74, z: 0.049999997}
+--- !u!114 &1420820219
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1420820217}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cc87e33995c012d4582004dbe16cb6ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ReferenceScript: Mechemy
+  doubleDamage: 0
+  chestDamage: 0
+  leastDamage: 1
+  isBackpack: 0
+  isShield: 0
 --- !u!1 &53905905935795732
 GameObject:
   m_ObjectHideFlags: 0
@@ -98,6 +228,8 @@ Transform:
   - {fileID: 8287421775340888339}
   - {fileID: 173698383830475699}
   - {fileID: 157041160846735878}
+  - {fileID: 808468731}
+  - {fileID: 1420820218}
   m_Father: {fileID: 6470459088030409007}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -230,14 +362,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   breakSFX: {fileID: 8383575664418642281, guid: 83211bcd6b225bf498865d255959544f, type: 3}
-  armorHealth: 50
+  armorHealth: 35
   armorHealthCurrent: 0
   hookBreakable: 1
   refScriptMech: {fileID: 1093139505692408660}
   isLeft: 0
   isRight: 1
   isTop: 0
-  PILOTCollider: {fileID: 0}
+  PILOTCollider:
+  - {fileID: 0}
 --- !u!1 &822980052679553615
 GameObject:
   m_ObjectHideFlags: 0
@@ -1050,7 +1183,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyState: 0
-  health: 100
+  health: 150
   animator: {fileID: 1093139505692408661}
   headPos: {fileID: 1127908393013818284}
   HeadshotIndicator: {fileID: 5046152788282611147, guid: 9cc898ae52c4b91479552c28f559e810, type: 3}
@@ -1061,7 +1194,7 @@ MonoBehaviour:
   wanderSpeed: 4
   wanderWaitTime: 5
   wanderRadius: 5
-  shootCooldown: 0.75
+  shootCooldown: 0.55
   leftGunExitPoint: {fileID: 6791719879512707940}
   rightGunExitPoint: {fileID: 6791719880513635523}
   leftGun: {fileID: 6791719880176225626}
@@ -1195,14 +1328,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   breakSFX: {fileID: 8383575664418642281, guid: 83211bcd6b225bf498865d255959544f, type: 3}
-  armorHealth: 50
+  armorHealth: 35
   armorHealthCurrent: 0
   hookBreakable: 1
   refScriptMech: {fileID: 1093139505692408660}
   isLeft: 1
   isRight: 0
   isTop: 0
-  PILOTCollider: {fileID: 0}
+  PILOTCollider:
+  - {fileID: 0}
 --- !u!1 &6445574640002075260
 GameObject:
   m_ObjectHideFlags: 0
@@ -1331,14 +1465,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   breakSFX: {fileID: 8383575664418642281, guid: 83211bcd6b225bf498865d255959544f, type: 3}
-  armorHealth: 50
+  armorHealth: 35
   armorHealthCurrent: 0
   hookBreakable: 0
   refScriptMech: {fileID: 0}
   isLeft: 0
   isRight: 0
   isTop: 1
-  PILOTCollider: {fileID: 157041160846735873}
+  PILOTCollider:
+  - {fileID: 157041160846735873}
 --- !u!1 &6655804874349085826
 GameObject:
   m_ObjectHideFlags: 0
@@ -2276,9 +2411,9 @@ CapsuleCollider:
   m_IsTrigger: 0
   m_Enabled: 0
   m_Radius: 0.15
-  m_Height: 1
+  m_Height: 0.82525253
   m_Direction: 1
-  m_Center: {x: 0, y: 2.55, z: 0.049999997}
+  m_Center: {x: 0, y: 2.6373734, z: 0.049999997}
 --- !u!114 &157041160846735872
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2424,14 +2559,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   breakSFX: {fileID: 8383575664418642281, guid: 83211bcd6b225bf498865d255959544f, type: 3}
-  armorHealth: 50
+  armorHealth: 35
   armorHealthCurrent: 0
   hookBreakable: 0
   refScriptMech: {fileID: 0}
   isLeft: 0
   isRight: 0
-  isTop: 0
-  PILOTCollider: {fileID: 0}
+  isTop: 1
+  PILOTCollider:
+  - {fileID: 1420820221}
 --- !u!1 &7533507200856822671
 GameObject:
   m_ObjectHideFlags: 0
@@ -2687,14 +2823,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   breakSFX: {fileID: 8383575664418642281, guid: 83211bcd6b225bf498865d255959544f, type: 3}
-  armorHealth: 50
+  armorHealth: 35
   armorHealthCurrent: 0
   hookBreakable: 0
   refScriptMech: {fileID: 0}
   isLeft: 0
   isRight: 0
-  isTop: 0
-  PILOTCollider: {fileID: 0}
+  isTop: 1
+  PILOTCollider:
+  - {fileID: 808468734}
 --- !u!1 &8092030372576927381
 GameObject:
   m_ObjectHideFlags: 0
@@ -3125,14 +3262,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   breakSFX: {fileID: 8383575664418642281, guid: 83211bcd6b225bf498865d255959544f, type: 3}
-  armorHealth: 50
+  armorHealth: 35
   armorHealthCurrent: 0
   hookBreakable: 0
   refScriptMech: {fileID: 0}
   isLeft: 0
   isRight: 0
   isTop: 0
-  PILOTCollider: {fileID: 0}
+  PILOTCollider:
+  - {fileID: 0}
 --- !u!1 &8930260372406627269
 GameObject:
   m_ObjectHideFlags: 0

@@ -349,7 +349,7 @@ public class Mechemy : MonoBehaviour
                     float time = distance / infoHT.bulletSpeed;
                     float gravity = infoHT.bulletGravity;
                     angle = Mathf.Atan((time * time * gravity) / (2 * distance)) * Mathf.Rad2Deg;
-                    angle *= 0.45f;
+                    angle *= Random.Range(0.35f, 0.75f);
                     angleCalculated = true;
                     angleCalculated = true;
                 }
@@ -429,6 +429,9 @@ public class Mechemy : MonoBehaviour
 
     private float EnemyShoot()
     {
+        if (!detectedPlayer)
+            return 0;
+
         HookTarget gun = transform.GetComponentInChildren<HookTarget>();
         if (gun == null)
         {

@@ -14,7 +14,7 @@ public class ArmorPiece : MonoBehaviour
 
     private Material breakableMat;
     public bool isTop;
-    public CapsuleCollider PILOTCollider;
+    public CapsuleCollider[] PILOTCollider;
 
     private void Awake()
     {
@@ -42,7 +42,10 @@ public class ArmorPiece : MonoBehaviour
 
             if(isTop)
             {
-                PILOTCollider.enabled = true;
+                foreach (CapsuleCollider col in PILOTCollider)
+                {
+                    col.enabled = true;
+                }
             }
 
             Destroy(gameObject);
