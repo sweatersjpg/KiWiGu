@@ -1,11 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEditor.PlayerSettings;
 
 public class sFishing : MonoBehaviour
 {
     public MoveHook hook;
     public GameObject splashParticles;
+
+    public FishingLootTable lootTable;
 
     public float timeScale = 1;
     public float bobHeight = 0.5f;
@@ -26,8 +29,7 @@ public class sFishing : MonoBehaviour
     {
         hook = GetComponent<MoveHook>();
 
-        splash = Instantiate(splashParticles, transform).GetComponent<ParticleSystem>();
-        splash.transform.parent = null;
+        splash = Instantiate(splashParticles, transform.position, Quaternion.Euler(-90, 0, 0)).GetComponent<ParticleSystem>();
         splash.Emit(30);
 
         startPoint = transform.position;
@@ -120,7 +122,23 @@ public class sFishing : MonoBehaviour
 
     public void BeforeDestroy()
     {
-        Destroy(splash);
+        Destroy(splash, 1);
+        splash.Emit(10);
+
+        if (!fishCaught) return;
+
+        GunInfo loot = lootTable.GetLoot();
+
+        ThrownGun gun = Instantiate(loot.gunPrefab.GetComponent<GunHand>().thrownGunPrefab, 
+            startPoint + Vector3.up * 1, Quaternion.Euler(-90, 0, 0)).GetComponent<ThrownGun>();
+        gun.ammo = new Ammunition(loot.capacity);
+        gun.info = loot;
+        gun.throwForce = 8;
+        gun.transform.localScale = new Vector3(4, 4, 4);
+
+        GameObject p = Instantiate(hook.perfectHookFXprefab, transform);
+        p.transform.parent = null;
+        p.transform.localScale *= 4;
     }
 
     public void RandomSplash()
@@ -132,9 +150,7 @@ public class sFishing : MonoBehaviour
     public void SpawnSplash(Vector3 pos)
     {
         pos.y = startPoint.y;
-        ParticleSystem s = Instantiate(splashParticles, transform).GetComponent<ParticleSystem>();
-        s.transform.parent = null;
-        s.transform.position = pos;
+        ParticleSystem s = Instantiate(splashParticles, pos, Quaternion.Euler(-90, 0, 0)).GetComponent<ParticleSystem>();
         s.Emit(3);
         Destroy(s, 1);
     }
