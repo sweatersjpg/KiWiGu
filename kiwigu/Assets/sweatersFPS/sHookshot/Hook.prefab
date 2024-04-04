@@ -224,6 +224,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8405639022871376779}
   - component: {fileID: 8229721578388367286}
+  - component: {fileID: 1057506036283195699}
   m_Layer: 12
   m_Name: Hook
   m_TagString: Hook
@@ -279,6 +280,25 @@ MonoBehaviour:
   chainSegmentSize: 0.5
   parentHook: {fileID: 0}
   childHook: {fileID: 0}
+  isFishing: 0
+--- !u!114 &1057506036283195699
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8405639022871376823}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e163c3a28fcc99041b800e606a1bd487, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hook: {fileID: 8229721578388367286}
+  splashParticles: {fileID: 7651175134954061189, guid: dc3f039d28422b2449e9bf0178840563, type: 3}
+  timeScale: 1
+  bobHeight: 0.5
+  catchDuration: 2
+  fishChance: 0.2
 --- !u!1001 &3499523344758293110
 PrefabInstance:
   m_ObjectHideFlags: 0

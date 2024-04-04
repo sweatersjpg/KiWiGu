@@ -1,3 +1,4 @@
+using UnityEditor.SceneManagement;
 using UnityEngine;
 
 public class MoveHook : MonoBehaviour
@@ -89,6 +90,9 @@ public class MoveHook : MonoBehaviour
             // Debug.Log("I am " + gameObject.name + " and I found " + otherHook.name);
             parentHook = otherHook.transform.GetComponent<MoveHook>();
 
+            sFishing s = GetComponent<sFishing>();
+            if (s) Destroy(s);
+
             if (parentHook.headingBack)
             {
                 parentHook = null;
@@ -126,6 +130,12 @@ public class MoveHook : MonoBehaviour
 
             return;
             // if(speed > 0) return;
+        }
+
+        if (isFishing)
+        {
+            UpdateChain();
+            return;
         }
 
         pPosition = transform.position;
@@ -315,9 +325,29 @@ public class MoveHook : MonoBehaviour
 
         if (hasHit)
         {
+            if(hit.transform.gameObject.layer == LayerMask.NameToLayer("Water"))
+            {
+                StartFishing();
+                return;
+            }
             ResolveCollision(hit);
             AddChainSegment(hit.point);
         }
+    }
+
+    [HideInInspector] public bool isFishing = false;
+
+    void StartFishing()
+    {
+
+        sFishing f = GetComponent<sFishing>();
+        if (f)
+        {
+            f.enabled = true;
+            isFishing = true;
+        }
+
+        // gameObject.AddComponent<sFishing>();
     }
 
     void HookGun()
@@ -521,6 +551,7 @@ public class MoveHook : MonoBehaviour
 
     public void Pullback(bool withForce)
     {
+        
         speed = 0;
         G = new();
 
@@ -543,6 +574,14 @@ public class MoveHook : MonoBehaviour
 
     public void PullbackWithForce(float force, float vScale)
     {
+        isFishing = false;
+        sFishing s = GetComponent<sFishing>();
+        if (s)
+        {
+            if(s.enabled) s.BeforeDestroy();
+            Destroy(s);
+        }
+
         if (hookTarget)
         {
             float t = hookTarget.maxResistance - hookTarget.resistance;
