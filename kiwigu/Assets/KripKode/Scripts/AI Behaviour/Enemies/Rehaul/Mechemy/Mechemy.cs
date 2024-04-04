@@ -15,6 +15,7 @@ public class Mechemy : MonoBehaviour
     [SerializeField] private GameObject HeadshotIndicator;
     [SerializeField] private GameObject ExplosionX;
     [SerializeField] private GameObject FireWarningSFX;
+    [SerializeField] private Transform spineBone;
     private bool isDead;
     private float currentHealth;
 
@@ -86,6 +87,22 @@ public class Mechemy : MonoBehaviour
         Wander();
         ShootState();
         Crush();
+    }
+
+    private void LateUpdate()
+    {
+        if (isDead)
+            return;
+
+        if (spineBone && detectedPlayer)
+        {
+            spineBone.LookAt(detectedPlayer.transform.position);
+        }
+
+        if (detectedPlayer && Vector3.Distance(transform.position, detectedPlayer.transform.position) > detectionRange)
+        {
+            spineBone.localRotation = Quaternion.Euler(Vector3.zero);
+        }
     }
 
     private void StateManager()
