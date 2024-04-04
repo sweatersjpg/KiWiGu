@@ -22,6 +22,7 @@ public class PistolGrunt : MonoBehaviour
     [SerializeField] private GameObject ragdoll;
     [SerializeField] private GameObject explosionPrefab;
     [SerializeField] private Transform headPos;
+    [SerializeField] private Transform spineBone;
     private bool lerpingShield = false;
     private Material shieldMaterial;
     private float shieldLerpStartTime;
@@ -103,7 +104,7 @@ public class PistolGrunt : MonoBehaviour
             ht.blockSteal = true;
         }
 
-        
+
 
         ht = GetComponentInChildren<HookTarget>();
 
@@ -120,7 +121,7 @@ public class PistolGrunt : MonoBehaviour
     {
         if (PauseSystem.paused)
             return;
-        
+
         if (lerpingShield)
         {
             UpdateLerpShieldProgress();
@@ -135,6 +136,22 @@ public class PistolGrunt : MonoBehaviour
         Punch();
         Shoot();
         RememberPlayer();
+    }
+
+    private void LateUpdate()
+    {
+        if (isDead)
+            return;
+
+        if (spineBone && detectedPlayer)
+        {
+            spineBone.LookAt(detectedPlayer.transform.position - new Vector3(0.0f, -1, 0));
+        }
+
+        if (detectedPlayer && Vector3.Distance(transform.position, detectedPlayer.transform.position) > shootDistance)
+        {
+            spineBone.localRotation = Quaternion.Euler(Vector3.zero);
+        }
     }
 
     public virtual void TakeGun()
@@ -264,7 +281,7 @@ public class PistolGrunt : MonoBehaviour
 
             RaycastHit hit;
             //Debug.DrawLine(eyesPosition.position, playerPosition, Color.red);
-            
+
             if (Physics.Raycast(eyesPosition.position, directionToPlayer, out hit, Mathf.Infinity, layerMask))
             {
                 if (hit.collider.gameObject != detectedPlayer)
@@ -453,11 +470,11 @@ public class PistolGrunt : MonoBehaviour
         {
             RaycastHit hit;
             //Debug.DrawLine(eyesPosition.position, hitCollider.transform.position, Color.red);
-            
+
             if (Physics.Raycast(eyesPosition.position, hitCollider.transform.position - eyesPosition.position - new Vector3(0, -1, 0), out hit, seekRange, ~combinedLayerMask))
             {
                 Debug.DrawRay(eyesPosition.position, hitCollider.transform.position - eyesPosition.position - new Vector3(0, -1, 0));
-                
+
                 if (hit.collider.CompareTag("Player"))
                 {
                     detectedPlayer = hit.collider.gameObject;
@@ -525,7 +542,7 @@ public class PistolGrunt : MonoBehaviour
             currentBackpackHealth = Mathf.Min(currentBackpackHealth + bulletDamage, backPackHealth);
         }
 
-        if(currentBackpackHealth >= backPackHealth)
+        if (currentBackpackHealth >= backPackHealth)
         {
             Instantiate(explosionPrefab, transform.position, Quaternion.identity);
             TakeDamage(1000000, false);
@@ -547,7 +564,7 @@ public class PistolGrunt : MonoBehaviour
             currentShield = Mathf.Min(currentShield + bulletDamage, shield);
         }
         else if (currentHealth < health)
-        {            
+        {
             if (isHeadshot)
                 Instantiate(HeadshotIndicator, headPos.transform.position, Quaternion.identity);
 
@@ -616,7 +633,7 @@ public class PistolGrunt : MonoBehaviour
                 HookTarget ht = GetComponentInChildren<HookTarget>();
                 if (ht != null) stillHasGun = ht.BeforeDestroy();
 
-                if(stillHasGun) EnableHookTargetsRecursively(ragdollInstance.transform);
+                if (stillHasGun) EnableHookTargetsRecursively(ragdollInstance.transform);
 
                 isHoldingGun = false;
                 isShooting = false;
@@ -649,6 +666,9 @@ public class PistolGrunt : MonoBehaviour
 
     private float EnemyShoot()
     {
+        if (!detectedPlayer)
+            return 0;
+
         if (!isHoldingGun || !IsPlayerVisible())
             return 0;
 
