@@ -569,8 +569,13 @@ public class PistolGrunt : MonoBehaviour
                 Instantiate(HeadshotIndicator, headPos.transform.position, Quaternion.identity);
 
             agent.SetDestination(transform.position);
-            animator.SetInteger("HitIndex", Random.Range(0, 3));
-            animator.SetTrigger("Hit");
+
+            if(currentHealth >= health / 2f)
+            {
+                animator.SetInteger("HitIndex", Random.Range(0, 3));
+                animator.SetTrigger("Hit");
+            }
+
             gotHit = true;
             currentHealth = Mathf.Min(currentHealth + bulletDamage, health);
         }
