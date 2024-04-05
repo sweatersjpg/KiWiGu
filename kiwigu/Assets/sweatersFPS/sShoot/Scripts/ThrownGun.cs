@@ -35,16 +35,22 @@ public class ThrownGun : MonoBehaviour
         {
             GameObject gun = Instantiate(gunView.gameObject, transform);
             gun.transform.localPosition = new();
-            gun.layer = gameObject.layer;
 
-            for(int i = 0; i < gun.transform.childCount; i++)
-            {
-                gun.transform.GetChild(i).gameObject.layer = gameObject.layer;
-            }
+            SetLayerRecursively(gun);
 
             gun.transform.localScale *= 1.2f;
         }
 
+    }
+
+    void SetLayerRecursively(GameObject a)
+    {
+        a.layer = gameObject.layer;
+        
+        for (int i = 0; i < a.transform.childCount; i++)
+        {
+            SetLayerRecursively(a.transform.GetChild(i).gameObject);
+        }
     }
 
     public void SetMesh(Mesh mesh, Material mat)

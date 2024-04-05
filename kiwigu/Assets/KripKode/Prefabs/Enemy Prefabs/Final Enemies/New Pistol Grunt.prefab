@@ -2709,6 +2709,7 @@ MonoBehaviour:
   ragdoll: {fileID: 6396152858014963360, guid: 06344ae09ddae6b44b5a2dfc5c3e4eca, type: 3}
   explosionPrefab: {fileID: 1886320638105856866, guid: 868415f162da742468824c5743d47bae, type: 3}
   headPos: {fileID: 2674643501309778892}
+  spineBone: {fileID: 7230453923712913056}
   currentBackpackHealth: 0
   wanderSpeed: 3
   seekSpeed: 4
@@ -2723,7 +2724,7 @@ MonoBehaviour:
   gunSpread: 0.125
   isDefense: 0
   BulletExitPoint: {fileID: 7733474255781963841}
-  shootCooldown: 0.5
+  shootCooldown: 0.25
   punchSpeed: 8
   punchDistance: 1.25
 --- !u!1 &7733474255781963840
@@ -3058,6 +3059,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 7733474255781963841}
     m_Modifications:
+    - target: {fileID: 4327764642279862662, guid: 7ad020d64766f7940b3697e489cc3729, type: 3}
+      propertyPath: info
+      value: 
+      objectReference: {fileID: 11400000, guid: 67e1ee40f3b2f4c4381001dca3be3fba, type: 2}
     - target: {fileID: 4327764642279862662, guid: 7ad020d64766f7940b3697e489cc3729, type: 3}
       propertyPath: isShooting
       value: 0

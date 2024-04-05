@@ -13,6 +13,8 @@ public class ArmorPiece : MonoBehaviour
     public bool isRight;
 
     private Material breakableMat;
+    public bool isTop;
+    public CapsuleCollider[] PILOTCollider;
 
     private void Awake()
     {
@@ -37,6 +39,15 @@ public class ArmorPiece : MonoBehaviour
             }
 
             Instantiate(breakSFX, GetComponent<SkinnedMeshRenderer>().bounds.center, Quaternion.identity);
+
+            if(isTop)
+            {
+                foreach (CapsuleCollider col in PILOTCollider)
+                {
+                    col.enabled = true;
+                }
+            }
+
             Destroy(gameObject);
         }
 

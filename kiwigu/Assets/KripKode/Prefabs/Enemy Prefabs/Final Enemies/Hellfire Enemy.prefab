@@ -212,6 +212,7 @@ MonoBehaviour:
   headPos: {fileID: 2499834575786832054}
   ragdoll: {fileID: 8931406875862246907, guid: 2b4aa26ac3195e447a973e86b3fcf5c5, type: 3}
   splatoodFX: {fileID: 8636026588871352116, guid: dc5ec3d945ace784cb9e3b8e4b1c5a2b, type: 3}
+  spineBone: {fileID: 7203709717839865306}
   currentHealth: 0
   currentShield: 0
   wanderSpeed: 3
@@ -230,7 +231,7 @@ MonoBehaviour:
   hookTargetPosition: {fileID: 8311139979945567735}
   gunInfo: {fileID: 11400000, guid: fab8cefa91b75534aa1db3779ed53470, type: 2}
   BulletExitPoint: {fileID: 8311139981361321930}
-  shootCooldown: 1
+  shootCooldown: 0.5
   gunSpread: 0.175
   splatoodRadius: 5
   isShooting: 0
@@ -3267,6 +3268,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 8311139981361321930}
     m_Modifications:
+    - target: {fileID: 4327764642279862662, guid: 7ad020d64766f7940b3697e489cc3729, type: 3}
+      propertyPath: info
+      value: 
+      objectReference: {fileID: 11400000, guid: fab8cefa91b75534aa1db3779ed53470, type: 2}
     - target: {fileID: 4327764642279862662, guid: 7ad020d64766f7940b3697e489cc3729, type: 3}
       propertyPath: baseSpread
       value: 0.02
