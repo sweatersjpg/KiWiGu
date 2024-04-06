@@ -11,12 +11,14 @@ GameObject:
   - component: {fileID: 6796006270470666344}
   - component: {fileID: 7637990788406982605}
   - component: {fileID: 5628214680094032647}
+  - component: {fileID: 3495059358806507600}
+  - component: {fileID: 5138099611453749426}
   m_Layer: 0
   m_Name: Small_Piston
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &6796006270470666344
 Transform:
@@ -83,3 +85,29 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!65 &3495059358806507600
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6132657077338464978}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 13.254695, y: 6.053225, z: 7.590813}
+  m_Center: {x: -6.6273475, y: 0.009616341, z: -0.0045824926}
+--- !u!65 &5138099611453749426
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6132657077338464978}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.8207855, y: 7.5062976, z: 9.452383}
+  m_Center: {x: -12.396141, y: 0, z: -0.0000054088437}

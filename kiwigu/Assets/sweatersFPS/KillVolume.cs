@@ -13,4 +13,13 @@ public class KillVolume : MonoBehaviour
             ResetScene.instance.PlayerDeath(true);
         }
     }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.layer == LayerMask.NameToLayer("Player"))
+        {
+            // SceneManager.LoadScene(0);
+            ResetScene.instance.PlayerDeath(true);
+        }
+    }
 }
