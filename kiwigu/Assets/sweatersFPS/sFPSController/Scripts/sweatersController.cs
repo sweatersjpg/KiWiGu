@@ -82,6 +82,7 @@ public class sweatersController : MonoBehaviour
 
     public bool isEncombered;
     public bool isGrappling;
+    public bool ignoreGravity;
 
     public bool isSliding;
     public bool isGrounded;
@@ -165,6 +166,7 @@ public class sweatersController : MonoBehaviour
         UpdateHeight();
 
         isGrappling = false;
+        ignoreGravity = false;
 
         if (Input.GetKeyDown(KeyCode.O))
         {
@@ -237,9 +239,13 @@ public class sweatersController : MonoBehaviour
 
         velocity = new(vel.x, velocity.y, vel.z);
 
-        // apply gravity when not grounded or sliding
-        if (!isGrounded || isSliding) force.y -= gravity;
-        if (isSliding) force.y -= gravity;
+        // apply gravity when not grounded or sliding and not grappling
+        if(!ignoreGravity)
+        {
+            if (!isGrounded || isSliding) force.y -= gravity;
+            if (isSliding) force.y -= gravity;
+        }
+        
 
         // jump buffer logic
         if(Input.GetButtonDown("Jump"))

@@ -1,4 +1,3 @@
-using UnityEditor.SceneManagement;
 using UnityEngine;
 
 public class MoveHook : MonoBehaviour
@@ -688,6 +687,7 @@ public class MoveHook : MonoBehaviour
         if (heading.magnitude < 0.5)
         {
             PullbackWithForce(0, 1);
+            isGrapplnig = false;
             return;
         }
 
@@ -696,6 +696,11 @@ public class MoveHook : MonoBehaviour
             isGrapplnig = false;
             PullbackWithForce(0, 1);
             return;
+        }
+
+        if(!isGrapplnig)
+        {
+            player.velocity = -heading.normalized * player.velocity.magnitude;
         }
 
 
@@ -708,13 +713,18 @@ public class MoveHook : MonoBehaviour
         //    return;
         //}
 
-        player.velocity = -heading.normalized * (player.velocity.magnitude + Time.deltaTime * pullForce);
+        // -- direct approach --
+        // player.velocity = -heading.normalized * (player.velocity.magnitude + Time.deltaTime * pullForce);
+
+        // -- force approach --
+        player.velocity -= Time.deltaTime * pullForce * heading.normalized;
 
         // player.velocity = Vector3.ClampMagnitude(player.velocity, player.maxSpeed);
 
         // player.maxSpeed = player.velocity.magnitude;
         // player.velocity += -heading.normalized * Time.deltaTime * pullForce;
 
+        player.ignoreGravity = true;
         player.isGrappling = true;
 
         // player.velocity += -heading.normalized * Time.deltaTime * pullForce;
