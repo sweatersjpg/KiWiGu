@@ -55,7 +55,7 @@ public class MeleLeg : MonoBehaviour
         //if (attacking) AnimateToAttack();
         //else AnimateToRest();
 
-        if ((Input.GetButtonDown("Kick")) && canKick && transform.parent.childCount == 2) Kick();
+        if ((Input.GetButtonDown("Kick")) && canKick && transform.parent.parent.childCount == 2) Kick();
 
         if (canKick) recoil = Mathf.Lerp(recoil, 0, Time.deltaTime * recoilSpeed);
         else recoil = Mathf.Lerp(recoil, maxRecoil, Time.deltaTime * recoilSpeed);
@@ -72,7 +72,7 @@ public class MeleLeg : MonoBehaviour
     public void Kick()
     {
         canKick = false;
-        Invoke(nameof(SetCanKick), 0.5f);
+        Invoke(nameof(SetCanKick), 1f);
         
         anim.SetTrigger("WholeKick");
         Invoke(nameof(DealDamage), 0.2f);
