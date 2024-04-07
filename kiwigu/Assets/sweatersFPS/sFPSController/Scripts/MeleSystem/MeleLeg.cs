@@ -67,6 +67,9 @@ public class MeleLeg : MonoBehaviour
     {
         GameObject attack = Instantiate(attackPrefab, transform.parent);
         attack.GetComponent<DirectionalAttack>().target = attackLocation;
+
+        GlobalAudioManager.instance.PlayKick(attackLocation);
+        //GlobalAudioManager.instance.PlayBulletHit(attackLocation, "Armor");
     }
 
     public void Kick()

@@ -163,6 +163,8 @@ public class DirectionalAttack : MonoBehaviour
             if (alreadyHit.Contains(rootParent.gameObject)) return;
             alreadyHit.Add(rootParent.gameObject);
 
+            GlobalAudioManager.instance.PlayBulletHit(transform, "Flesh");
+
             Instantiate(hitEffect, currentHit.ClosestPoint(transform.position), Quaternion.identity);
 
             var enemyComponent = rootParent.GetComponent(scriptType) as MonoBehaviour;
@@ -196,6 +198,8 @@ public class DirectionalAttack : MonoBehaviour
             if (alreadyHit.Contains(rootParent.gameObject)) return;
             alreadyHit.Add(rootParent.gameObject);
 
+            GlobalAudioManager.instance.PlayBulletHit(transform, "Armor");
+
             Instantiate(hitEffect, currentHit.ClosestPoint(transform.position), Quaternion.identity);
 
             var enemyComponent = rootParent.GetComponent(scriptType) as MonoBehaviour;
@@ -223,7 +227,7 @@ public class DirectionalAttack : MonoBehaviour
             if (alreadyHit.Contains(rootParent.gameObject)) return;
             alreadyHit.Add(rootParent.gameObject);
 
-            
+            GlobalAudioManager.instance.PlayBulletHit(transform, "Armor");
 
             Instantiate(hitEffect, currentHit.ClosestPoint(transform.position), Quaternion.identity);
 
