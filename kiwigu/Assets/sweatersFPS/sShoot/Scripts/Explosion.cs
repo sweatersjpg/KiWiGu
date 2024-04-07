@@ -77,8 +77,6 @@ public class Explosion : MonoBehaviour
 
                 ArmorPiece armor = hit.transform.gameObject.GetComponent<ArmorPiece>();
 
-                GlobalAudioManager.instance.PlayBulletHit(hit.transform, "Armor");
-
                 armor.Hit(damageDealt);
             }
         }
