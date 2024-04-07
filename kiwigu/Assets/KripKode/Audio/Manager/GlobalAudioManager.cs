@@ -156,7 +156,7 @@ public class GlobalAudioManager : MonoBehaviour
         switch (type)
         {
             case "Flesh":
-                PlaySound(location, bulletHitFleshSFX[Random.Range(0, bulletHitFleshSFX.Length)], 0.7f, 1, 50, "hitFleshSFX");
+                PlaySound(location, bulletHitFleshSFX[Random.Range(0, bulletHitFleshSFX.Length)], 0.4f, 1, 50, "hitFleshSFX");
                 break;
             case "Armor":
                 PlaySound(location, bulletHitArmorSFX[Random.Range(0, bulletHitArmorSFX.Length)], 1, 1, 50, "hitArmorSFX");

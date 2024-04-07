@@ -68,6 +68,16 @@ public class Explosion : MonoBehaviour
                         ShieldDamage(enemy);
                 }
             }
+            else if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Shield") && hit.transform.gameObject.CompareTag("Armor"))
+            {
+                alreadyHit.Add(hit.gameObject);
+
+                ArmorPiece armor = hit.transform.gameObject.GetComponent<ArmorPiece>();
+
+                GlobalAudioManager.instance.PlayBulletHit(hit.transform, "Armor");
+
+                armor.Hit(damageDealt);
+            }
         }
 
         foreach (Collider hit in hits)
