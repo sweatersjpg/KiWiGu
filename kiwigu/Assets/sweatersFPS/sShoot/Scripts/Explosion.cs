@@ -70,7 +70,10 @@ public class Explosion : MonoBehaviour
             }
             else if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Shield") && hit.transform.gameObject.CompareTag("Armor"))
             {
-                alreadyHit.Add(hit.gameObject);
+                Transform root = GetRootParent(hit.transform);
+
+                if(alreadyHit.Contains(root.gameObject)) return;
+                alreadyHit.Add(root.gameObject);
 
                 ArmorPiece armor = hit.transform.gameObject.GetComponent<ArmorPiece>();
 
