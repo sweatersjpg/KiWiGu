@@ -148,7 +148,6 @@ public class GlobalAudioManager : MonoBehaviour
     public void PlayKick(Transform location)
     {
         PlaySound(location, kickSFX[Random.Range(0, kickSFX.Length)], 1, 1, 50, "kickSFX");
-
     }
 
     public void PlayBulletHit(Transform location, string type)

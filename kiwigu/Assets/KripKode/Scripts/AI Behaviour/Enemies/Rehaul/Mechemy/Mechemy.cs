@@ -7,7 +7,7 @@ public class Mechemy : MonoBehaviour
     public enum EnemyState { Wandering, Shoot, Crush };
     [SerializeField] private EnemyState enemyState = EnemyState.Wandering;
 
-    [Header("Hellfire Basic Settings")]
+    [Header("Mechemy Basic Settings")]
     [Range(0, 500)]
     [SerializeField] private float health;
     [SerializeField] private Animator animator;
@@ -91,19 +91,22 @@ public class Mechemy : MonoBehaviour
 
     private void LateUpdate()
     {
-        if (isDead)
+        if (isDead || !detectedPlayer)
             return;
 
-        if (spineBone && detectedPlayer)
+        Vector3 directionToPlayer = detectedPlayer.transform.position - transform.position;
+        float angleToPlayer = Vector3.Angle(transform.forward, directionToPlayer);
+
+        if (angleToPlayer <= 90)
         {
             spineBone.LookAt(detectedPlayer.transform.position);
         }
-
-        if (detectedPlayer && Vector3.Distance(transform.position, detectedPlayer.transform.position) > detectionRange)
+        else if (detectedPlayer && Vector3.Distance(transform.position, detectedPlayer.transform.position) > detectionRange)
         {
-            spineBone.localRotation = Quaternion.Euler(Vector3.zero);
+            spineBone.rotation = Quaternion.Euler(Vector3.zero);
         }
     }
+
 
     private void StateManager()
     {
@@ -200,7 +203,6 @@ public class Mechemy : MonoBehaviour
         {
             if (isHeadshot)
             {
-                GlobalAudioManager.instance.PlayHeadshotSFX(headPos);
                 Instantiate(HeadshotIndicator, headPos.transform.position, Quaternion.identity);
             }
 
@@ -338,7 +340,7 @@ public class Mechemy : MonoBehaviour
 
         Quaternion targetRotation = Quaternion.LookRotation(objPos - agent.transform.position);
 
-        agent.transform.rotation = Quaternion.Slerp(agent.transform.rotation, targetRotation, Time.deltaTime * 10);
+        agent.transform.rotation = Quaternion.Slerp(agent.transform.rotation, targetRotation, Time.deltaTime * 1.75f);
 
         RotateGunObjectExitPoint(detectedPlayer.transform.position);
     }

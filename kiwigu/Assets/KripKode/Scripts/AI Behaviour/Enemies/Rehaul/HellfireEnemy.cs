@@ -152,14 +152,16 @@ public class HellfireEnemy : MonoBehaviour
         if (isDead)
             return;
 
-        if (spineBone && detectedPlayer)
-        {
-            spineBone.LookAt(detectedPlayer.transform.position - new Vector3(0.0f, -0.5f, 0));
-        }
+        Vector3 directionToPlayer = detectedPlayer.transform.position - transform.position;
+        float angleToPlayer = Vector3.Angle(transform.forward, directionToPlayer);
 
-        if (detectedPlayer && Vector3.Distance(transform.position, detectedPlayer.transform.position) > seekRange)
+        if (angleToPlayer <= 90)
         {
-            spineBone.localRotation = Quaternion.Euler(Vector3.zero);
+            spineBone.LookAt(detectedPlayer.transform.position);
+        }
+        else if (detectedPlayer && Vector3.Distance(transform.position, detectedPlayer.transform.position) > seekRange)
+        {
+            spineBone.rotation = Quaternion.Euler(Vector3.zero);
         }
     }
 
@@ -559,7 +561,6 @@ public class HellfireEnemy : MonoBehaviour
         {
             if (isHeadshot)
             {
-                GlobalAudioManager.instance.PlayHeadshotSFX(headPos);
                 Instantiate(HeadshotIndicator, headPos.transform.position, Quaternion.identity);
             }
 
