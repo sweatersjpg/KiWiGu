@@ -561,6 +561,7 @@ public class HellfireEnemy : MonoBehaviour
         {
             if (isHeadshot)
             {
+                GlobalAudioManager.instance.PlayHeadshotSFX(headPos);
                 Instantiate(HeadshotIndicator, headPos.transform.position, Quaternion.identity);
             }
 
