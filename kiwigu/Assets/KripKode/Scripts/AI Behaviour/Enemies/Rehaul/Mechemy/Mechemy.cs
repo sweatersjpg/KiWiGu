@@ -23,6 +23,9 @@ public class Mechemy : MonoBehaviour
     [Header("Enemy Detection Settings")]
     [SerializeField] private Transform eyesPosition;
     [SerializeField] private float detectionRange;
+    [SerializeField] private float rememberWaitTime;
+    private float lastVisibleTime;
+    private bool rememberPlayer;
     private GameObject detectedPlayer;
 
     [Space(10)]
@@ -36,6 +39,7 @@ public class Mechemy : MonoBehaviour
     [Space(10)]
     [Header("Enemy Attack Settings")]
     [SerializeField] float shootCooldown;
+    [SerializeField] float rememberPlayerTime;
     [SerializeField] private Transform leftGunExitPoint;
     [SerializeField] private Transform rightGunExitPoint;
     public HookTarget leftGun;
@@ -83,7 +87,7 @@ public class Mechemy : MonoBehaviour
             return;
 
         StateManager();
-
+        RememberPlayer();
         Wander();
         ShootState();
         Crush();
@@ -129,7 +133,7 @@ public class Mechemy : MonoBehaviour
             animator.SetBool("walk", false);
         }
 
-        if (!IsPlayerWithinRange())
+        if (!IsPlayerWithinRange() && !rememberPlayer)
         {
             enemyState = EnemyState.Wandering;
         }
@@ -175,14 +179,15 @@ public class Mechemy : MonoBehaviour
     {
         if (enemyState == EnemyState.Crush)
         {
-            if (isCrushing)
+            if (isCrushing || isShooting)
                 return;
 
-            animator.speed = Mathf.Clamp(agent.speed / 2.5f, 0.5f, 1.0f);
+            agent.speed = wanderSpeed * 2;
+            animator.speed = Mathf.Clamp(agent.speed / 2.5f, 0.5f, 1.5f);
 
             if (agent.velocity.magnitude >= 0.1f)
             {
-                animator.SetBool("walk", false);
+                animator.SetBool("walk", true);
             }
 
             agent.SetDestination(detectedPlayer.transform.position);
@@ -281,6 +286,20 @@ public class Mechemy : MonoBehaviour
     {
         if (enemyState == EnemyState.Shoot)
         {
+            if (!IsPlayerWithinRange())
+            {
+                agent.SetDestination(detectedPlayer.transform.position);
+                agent.speed = wanderSpeed;
+                animator.speed = Mathf.Clamp(agent.speed / 2.5f, 0.5f, 1.15f);
+
+                if (agent.velocity.magnitude >= 0.1f)
+                {
+                    animator.SetBool("walk", true);
+                }
+
+                return;
+            }
+
             animator.speed = 1.0f;
 
             if (agent.velocity.magnitude >= 0.1f)
@@ -292,6 +311,7 @@ public class Mechemy : MonoBehaviour
 
             if (isShooting)
                 return;
+
             StartCoroutine(ShootRoutine());
         }
     }
@@ -391,6 +411,29 @@ public class Mechemy : MonoBehaviour
             currentRotationTime = 0f;
             isRotating = true;
             angleCalculated = false;
+        }
+    }
+
+    private void RememberPlayer()
+    {
+        if (!detectedPlayer)
+            return;
+
+        if (IsPlayerVisible())
+        {
+            lastVisibleTime = Time.time;
+            rememberPlayer = true;
+        }
+        else
+        {
+            if (Time.time - lastVisibleTime >= rememberWaitTime)
+            {
+                rememberPlayer = false;
+            }
+            else
+            {
+                rememberPlayer = true;
+            }
         }
     }
 
