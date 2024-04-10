@@ -137,7 +137,7 @@ public class MoveHook : MonoBehaviour
             return;
         }
 
-        pPosition = transform.position;
+        pPosition = transform.position - transform.forward;
 
         Vector3 heading = home.transform.position - transform.position;
 
@@ -185,6 +185,13 @@ public class MoveHook : MonoBehaviour
 
                 //if (hookTarget.tether) PullTowards(heading);
                 //else Grapple(heading);
+
+                if(Input.GetKey(KeyCode.LeftShift))
+                {
+                    // if (distToHook > 4) distToHook = Mathf.Lerp(distToHook, 4, deltaTime * 2);
+                    Grapple(heading);
+                    isGrapplnig = false;
+                } else
                 
                 if(!hookTarget.swing) PullTowards(heading, pullForce);
                 else
@@ -316,6 +323,8 @@ public class MoveHook : MonoBehaviour
     {
         // raycast from ppos to pos
 
+        GrappleAnything();
+
         if (caughtGun == null && !headingBack) HookGun();
 
         bool hasHit = Physics.Raycast(pPosition, transform.position - pPosition,
@@ -331,6 +340,38 @@ public class MoveHook : MonoBehaviour
             }
             ResolveCollision(hit);
             AddChainSegment(hit.point);
+        }
+    }
+
+    void GrappleAnything()
+    {
+        if (headingBack) return;
+        
+        bool hasHit = Physics.Raycast(pPosition, transform.position - pPosition,
+            out RaycastHit hit, (transform.position - pPosition).magnitude,
+            LayerMask.GetMask("Default"));
+
+        if(hasHit)
+        {
+            GameObject grapplePoint = new GameObject("Grapple Point");
+            // grapplePoint.transform.parent = transform;
+            grapplePoint.layer = LayerMask.NameToLayer("HookTarget");
+
+            grapplePoint.transform.position = hit.point;
+
+            SphereCollider sc = grapplePoint.AddComponent<SphereCollider>();
+            sc.radius = 1;
+            sc.isTrigger = true;
+
+            HookTarget ht = grapplePoint.AddComponent<HookTarget>();
+            ht.hasView = false;
+            ht.tether = true;
+
+            Destroy(ht.gameObject, 5);
+
+            // Debug.Log("hook target made");
+
+            HookTarget(ht);
         }
     }
 
@@ -418,6 +459,40 @@ public class MoveHook : MonoBehaviour
 
             Pullback();
         }
+    }
+
+    void HookTarget(HookTarget ht)
+    {
+        ht.resistance -= deltaTime;
+        if (ht.resistance > 0)
+        {
+            GlobalAudioManager.instance.PlayHook(transform, "Hit");
+
+            hookTarget = ht;
+            Pullback(true);
+
+            Destroy(fx);
+            fx = Instantiate(perfectHookFXprefab, transform);
+
+            ht.gameObject.layer = LayerMask.NameToLayer("GunHand");
+
+            // sweatersController.instance.isEncombered = true;
+            distToHook = (sweatersController.instance.transform.position - ht.transform.position).magnitude;
+            transform.parent = ht.transform;
+            transform.localPosition = new();
+
+            return; // don't take gun
+        }
+
+        GameObject target = ht.gameObject;
+        caughtGun = ht.info;
+        caughtGunAmmo = new Ammunition(ht.info.capacity); // max capacity
+
+        target.transform.parent = transform;
+        target.transform.localPosition = new ();
+        target.layer = LayerMask.NameToLayer("GunHand");
+
+        Pullback();
     }
 
     public void TakeThrownGun(GameObject target)
