@@ -22,6 +22,7 @@ public class EnemyWave
         public Transform[] customSpawnPoints;
         public int[] stages;
         public bool endless;
+        public bool notRequired;
         public GameObject enemyPrefab;
         public GunInfo weaponType;
     }

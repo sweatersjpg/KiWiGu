@@ -46,6 +46,10 @@ public class PauseSystem : MonoBehaviour
 
         LoadSettings();
         // add mixers
+        UpdateMasterVolume(masterVol);
+        UpdateMusicVolume(musicVol);
+        UpdateSfxVolume(sfxVol);
+
     }
 
     // Update is called once per frame
@@ -154,19 +158,21 @@ public class PauseSystem : MonoBehaviour
         sfxVol = value;
 
         AudioMixerGroup sfxGroup = GlobalAudioManager.instance.globalMixer.FindMatchingGroups("SFX")[0];
-        sfxGroup.audioMixer.SetFloat("volumeSFX", Mathf.Lerp(-80, 0, value));
+        sfxGroup.audioMixer.SetFloat("volumeSFX", 10 * Mathf.Log10(value + 0.0001f));
 
         SaveSetting(nameof(sfxVol));
     }
-
+    
     public void UpdateMusicVolume(float value)
     {
         musicVol = value;
 
         AudioMixerGroup musicGroup = GlobalAudioManager.instance.globalMixer.FindMatchingGroups("Music")[0];
-        musicGroup.audioMixer.SetFloat("volumeMusic", Mathf.Lerp(-80, 0, value));
+        musicGroup.audioMixer.SetFloat("volumeMusic", 10 * Mathf.Log10(value + 0.0001f));
 
         SaveSetting(nameof(musicVol));
+
+        Debug.Log(value + " = " + musicVol);
     }
 
     public void UpdateMasterVolume(float value)
@@ -174,7 +180,7 @@ public class PauseSystem : MonoBehaviour
         masterVol = value;
 
         AudioMixerGroup musicGroup = GlobalAudioManager.instance.globalMixer.FindMatchingGroups("Master")[0];
-        musicGroup.audioMixer.SetFloat("volumeMaster", Mathf.Lerp(-80, 0, value));
+        musicGroup.audioMixer.SetFloat("volumeMaster", 10 * Mathf.Log10(value + 0.0001f));
 
         SaveSetting(nameof(masterVol));
     }

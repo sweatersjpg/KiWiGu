@@ -73,6 +73,19 @@ public class DirectionalAttack : MonoBehaviour
                         ShieldDamage(enemy);
                 }
             }
+            else if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Shield") && hit.transform.gameObject.CompareTag("Armor"))
+            {
+                Transform root = GetRootParent(hit.transform);
+
+                if (alreadyHit.Contains(root.gameObject)) return;
+                alreadyHit.Add(root.gameObject);
+
+                ArmorPiece armor = hit.transform.gameObject.GetComponent<ArmorPiece>();
+
+                GlobalAudioManager.instance.PlayBulletHit(hit.transform, "Armor");
+
+                armor.Hit(damageDealt);
+            }
         }
 
         foreach (Collider hit in hits)
@@ -163,6 +176,8 @@ public class DirectionalAttack : MonoBehaviour
             if (alreadyHit.Contains(rootParent.gameObject)) return;
             alreadyHit.Add(rootParent.gameObject);
 
+            GlobalAudioManager.instance.PlayBulletHit(transform, "Flesh");
+
             Instantiate(hitEffect, currentHit.ClosestPoint(transform.position), Quaternion.identity);
 
             var enemyComponent = rootParent.GetComponent(scriptType) as MonoBehaviour;
@@ -196,6 +211,8 @@ public class DirectionalAttack : MonoBehaviour
             if (alreadyHit.Contains(rootParent.gameObject)) return;
             alreadyHit.Add(rootParent.gameObject);
 
+            GlobalAudioManager.instance.PlayBulletHit(transform, "Armor");
+
             Instantiate(hitEffect, currentHit.ClosestPoint(transform.position), Quaternion.identity);
 
             var enemyComponent = rootParent.GetComponent(scriptType) as MonoBehaviour;
@@ -223,7 +240,7 @@ public class DirectionalAttack : MonoBehaviour
             if (alreadyHit.Contains(rootParent.gameObject)) return;
             alreadyHit.Add(rootParent.gameObject);
 
-            
+            GlobalAudioManager.instance.PlayBulletHit(transform, "Armor");
 
             Instantiate(hitEffect, currentHit.ClosestPoint(transform.position), Quaternion.identity);
 

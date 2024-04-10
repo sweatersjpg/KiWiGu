@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.U2D;
 
 public class HellfireEnemy : MonoBehaviour
 {
@@ -21,6 +22,7 @@ public class HellfireEnemy : MonoBehaviour
     [SerializeField] private Transform headPos;
     [SerializeField] private GameObject ragdoll;
     [SerializeField] GameObject splatoodFX;
+    [SerializeField] private Transform spineBone;
     private bool lerpingShield = false;
     private Material shieldMaterial;
     private float shieldLerpStartTime;
@@ -142,6 +144,24 @@ public class HellfireEnemy : MonoBehaviour
 
             BulletShooter b = transform.GetComponentInChildren<BulletShooter>();
             if (b) Destroy(b);
+        }
+    }
+
+    private void LateUpdate()
+    {
+        if (isDead)
+            return;
+
+        Vector3 directionToPlayer = detectedPlayer.transform.position - transform.position;
+        float angleToPlayer = Vector3.Angle(transform.forward, directionToPlayer);
+
+        if (angleToPlayer <= 90)
+        {
+            spineBone.LookAt(detectedPlayer.transform.position);
+        }
+        else if (detectedPlayer && Vector3.Distance(transform.position, detectedPlayer.transform.position) > seekRange)
+        {
+            spineBone.rotation = Quaternion.Euler(Vector3.zero);
         }
     }
 
@@ -384,7 +404,7 @@ public class HellfireEnemy : MonoBehaviour
 
         animator.ResetTrigger("leap");
 
-        yield return new WaitForSeconds(2);
+        yield return new WaitForSeconds(1f);
 
         isLeaping = false;
     }
@@ -407,7 +427,7 @@ public class HellfireEnemy : MonoBehaviour
 
         Quaternion targetRotation = Quaternion.LookRotation(objPos - agent.transform.position);
 
-        agent.transform.rotation = Quaternion.Slerp(agent.transform.rotation, targetRotation, Time.deltaTime * 10);
+        agent.transform.rotation = Quaternion.Slerp(agent.transform.rotation, targetRotation, Time.deltaTime * 0.5f);
     }
 
     private void RotateGunObjectExitPoint(Vector3 playerPosition)
@@ -541,7 +561,6 @@ public class HellfireEnemy : MonoBehaviour
         {
             if (isHeadshot)
             {
-                GlobalAudioManager.instance.PlayHeadshotSFX(headPos);
                 Instantiate(HeadshotIndicator, headPos.transform.position, Quaternion.identity);
             }
 

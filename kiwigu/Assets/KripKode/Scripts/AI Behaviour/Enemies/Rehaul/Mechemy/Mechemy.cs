@@ -7,7 +7,7 @@ public class Mechemy : MonoBehaviour
     public enum EnemyState { Wandering, Shoot, Crush };
     [SerializeField] private EnemyState enemyState = EnemyState.Wandering;
 
-    [Header("Hellfire Basic Settings")]
+    [Header("Mechemy Basic Settings")]
     [Range(0, 500)]
     [SerializeField] private float health;
     [SerializeField] private Animator animator;
@@ -15,6 +15,7 @@ public class Mechemy : MonoBehaviour
     [SerializeField] private GameObject HeadshotIndicator;
     [SerializeField] private GameObject ExplosionX;
     [SerializeField] private GameObject FireWarningSFX;
+    [SerializeField] private Transform spineBone;
     private bool isDead;
     private float currentHealth;
 
@@ -29,7 +30,6 @@ public class Mechemy : MonoBehaviour
     [SerializeField] private float wanderSpeed;
     [SerializeField] private float wanderWaitTime;
     [SerializeField] private float wanderRadius;
-    [SerializeField] private float seekSpeed;
     private Vector3 initialPosition;
     private float wanderTimer;
 
@@ -89,6 +89,25 @@ public class Mechemy : MonoBehaviour
         Crush();
     }
 
+    private void LateUpdate()
+    {
+        if (isDead || !detectedPlayer)
+            return;
+
+        Vector3 directionToPlayer = detectedPlayer.transform.position - transform.position;
+        float angleToPlayer = Vector3.Angle(transform.forward, directionToPlayer);
+
+        if (angleToPlayer <= 90)
+        {
+            spineBone.LookAt(detectedPlayer.transform.position);
+        }
+        else if (detectedPlayer && Vector3.Distance(transform.position, detectedPlayer.transform.position) > detectionRange)
+        {
+            spineBone.rotation = Quaternion.Euler(Vector3.zero);
+        }
+    }
+
+
     private void StateManager()
     {
         IsPlayerVisible();
@@ -108,7 +127,6 @@ public class Mechemy : MonoBehaviour
         if (agent.velocity.magnitude <= 0.1f)
         {
             animator.SetBool("walk", false);
-            animator.SetBool("run", false);
         }
 
         if (!IsPlayerWithinRange())
@@ -135,7 +153,7 @@ public class Mechemy : MonoBehaviour
         if (enemyState == EnemyState.Wandering)
         {
             agent.speed = wanderSpeed;
-            animator.speed = 1.0f;
+            animator.speed = Mathf.Clamp(agent.speed / 2.5f, 0.5f, 1.15f);
 
             if (agent.velocity.magnitude >= 0.1f)
             {
@@ -160,13 +178,11 @@ public class Mechemy : MonoBehaviour
             if (isCrushing)
                 return;
 
-            animator.speed = Mathf.Clamp(agent.speed / 2.5f, 0.5f, 1.2f);
-            agent.speed = seekSpeed;
+            animator.speed = Mathf.Clamp(agent.speed / 2.5f, 0.5f, 1.0f);
 
             if (agent.velocity.magnitude >= 0.1f)
             {
                 animator.SetBool("walk", false);
-                animator.SetBool("run", true);
             }
 
             agent.SetDestination(detectedPlayer.transform.position);
@@ -187,7 +203,6 @@ public class Mechemy : MonoBehaviour
         {
             if (isHeadshot)
             {
-                GlobalAudioManager.instance.PlayHeadshotSFX(headPos);
                 Instantiate(HeadshotIndicator, headPos.transform.position, Quaternion.identity);
             }
 
@@ -271,7 +286,6 @@ public class Mechemy : MonoBehaviour
             if (agent.velocity.magnitude >= 0.1f)
             {
                 animator.SetBool("walk", false);
-                animator.SetBool("run", true);
             }
 
             RotateNavMeshAgentTowardsObj(detectedPlayer.transform.position);
@@ -326,7 +340,7 @@ public class Mechemy : MonoBehaviour
 
         Quaternion targetRotation = Quaternion.LookRotation(objPos - agent.transform.position);
 
-        agent.transform.rotation = Quaternion.Slerp(agent.transform.rotation, targetRotation, Time.deltaTime * 10);
+        agent.transform.rotation = Quaternion.Slerp(agent.transform.rotation, targetRotation, Time.deltaTime * 1.75f);
 
         RotateGunObjectExitPoint(detectedPlayer.transform.position);
     }
@@ -354,7 +368,7 @@ public class Mechemy : MonoBehaviour
                     float time = distance / infoHT.bulletSpeed;
                     float gravity = infoHT.bulletGravity;
                     angle = Mathf.Atan((time * time * gravity) / (2 * distance)) * Mathf.Rad2Deg;
-                    angle *= 0.45f;
+                    angle *= Random.Range(0.35f, 0.75f);
                     angleCalculated = true;
                     angleCalculated = true;
                 }
@@ -434,6 +448,9 @@ public class Mechemy : MonoBehaviour
 
     private float EnemyShoot()
     {
+        if (!detectedPlayer)
+            return 0;
+
         HookTarget gun = transform.GetComponentInChildren<HookTarget>();
         if (gun == null)
         {

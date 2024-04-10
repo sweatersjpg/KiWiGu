@@ -89,6 +89,9 @@ public class MoveHook : MonoBehaviour
             // Debug.Log("I am " + gameObject.name + " and I found " + otherHook.name);
             parentHook = otherHook.transform.GetComponent<MoveHook>();
 
+            sFishing s = GetComponent<sFishing>();
+            if (s) Destroy(s);
+
             if (parentHook.headingBack)
             {
                 parentHook = null;
@@ -126,6 +129,12 @@ public class MoveHook : MonoBehaviour
 
             return;
             // if(speed > 0) return;
+        }
+
+        if (isFishing)
+        {
+            UpdateChain();
+            return;
         }
 
         pPosition = transform.position;
@@ -315,9 +324,29 @@ public class MoveHook : MonoBehaviour
 
         if (hasHit)
         {
+            if(hit.transform.gameObject.layer == LayerMask.NameToLayer("Water"))
+            {
+                StartFishing();
+                return;
+            }
             ResolveCollision(hit);
             AddChainSegment(hit.point);
         }
+    }
+
+    [HideInInspector] public bool isFishing = false;
+
+    void StartFishing()
+    {
+
+        sFishing f = GetComponent<sFishing>();
+        if (f)
+        {
+            f.enabled = true;
+            isFishing = true;
+        }
+
+        // gameObject.AddComponent<sFishing>();
     }
 
     void HookGun()
@@ -476,10 +505,11 @@ public class MoveHook : MonoBehaviour
             AddChainSegment(transform.position + Random.insideUnitSphere * 0.1f - velocity.normalized * 0.1f);
         }
 
-        chain.SetPosition(chain.positionCount - 1, home.transform.position);
+        chain.SetPosition(chain.positionCount - 1, sweatersController.instance.playerCamera.transform.position - sweatersController.instance.playerCamera.transform.up);
+        chain.SetPosition(chain.positionCount - 2, home.transform.position + home.transform.up * 0.12f);
         chain.SetPosition(0, transform.position);
 
-        for (int i = 1; i < chain.positionCount - 1; i++)
+        for (int i = 1; i < chain.positionCount - 2; i++)
         {
             Vector3 p = chain.GetPosition(i);
 
@@ -501,7 +531,7 @@ public class MoveHook : MonoBehaviour
         chain.positionCount++;
 
         // shift positions down
-        for (int i = chain.positionCount - 2; i >= 1; i--)
+        for (int i = chain.positionCount - 3; i >= 1; i--)
         {
             chain.SetPosition(i + 1, chain.GetPosition(i));
         }
@@ -521,6 +551,7 @@ public class MoveHook : MonoBehaviour
 
     public void Pullback(bool withForce)
     {
+        
         speed = 0;
         G = new();
 
@@ -543,6 +574,14 @@ public class MoveHook : MonoBehaviour
 
     public void PullbackWithForce(float force, float vScale)
     {
+        isFishing = false;
+        sFishing s = GetComponent<sFishing>();
+        if (s)
+        {
+            if(s.enabled) s.BeforeDestroy();
+            Destroy(s);
+        }
+
         if (hookTarget)
         {
             float t = hookTarget.maxResistance - hookTarget.resistance;
@@ -649,6 +688,7 @@ public class MoveHook : MonoBehaviour
         if (heading.magnitude < 0.5)
         {
             PullbackWithForce(0, 1);
+            isGrapplnig = false;
             return;
         }
 
@@ -657,6 +697,11 @@ public class MoveHook : MonoBehaviour
             isGrapplnig = false;
             PullbackWithForce(0, 1);
             return;
+        }
+
+        if(!isGrapplnig)
+        {
+            player.velocity = -heading.normalized * player.velocity.magnitude;
         }
 
 
@@ -669,13 +714,18 @@ public class MoveHook : MonoBehaviour
         //    return;
         //}
 
-        player.velocity = -heading.normalized * (player.velocity.magnitude + Time.deltaTime * pullForce);
+        // -- direct approach --
+        // player.velocity = -heading.normalized * (player.velocity.magnitude + Time.deltaTime * pullForce);
+
+        // -- force approach --
+        player.velocity -= Time.deltaTime * pullForce * heading.normalized;
 
         // player.velocity = Vector3.ClampMagnitude(player.velocity, player.maxSpeed);
 
         // player.maxSpeed = player.velocity.magnitude;
         // player.velocity += -heading.normalized * Time.deltaTime * pullForce;
 
+        player.ignoreGravity = true;
         player.isGrappling = true;
 
         // player.velocity += -heading.normalized * Time.deltaTime * pullForce;

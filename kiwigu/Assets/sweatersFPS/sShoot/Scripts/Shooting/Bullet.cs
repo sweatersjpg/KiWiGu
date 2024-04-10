@@ -342,6 +342,8 @@ public class Bullet : MonoBehaviour
                 hit.transform.gameObject.SendMessageUpwards("TakeDamage",
                     new object[] { hit.point, direction, bulletDamage * shieldMultiplier });
             }
+
+            GlobalAudioManager.instance.PlayBulletHit(hit.transform, "Armor");
         }
         else if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Player"))
         {
@@ -361,6 +363,9 @@ public class Bullet : MonoBehaviour
                     ApplyDamage(enemy, 0.75f, false);
                 else
                     ApplyDamage(enemy, 1f, false); ;
+
+                if(enemy.doubleDamage) GlobalAudioManager.instance.PlayBulletHit(hit.transform, "Headshot");
+                else GlobalAudioManager.instance.PlayBulletHit(hit.transform, "Flesh");
             }
         }
         else if (hit.transform.gameObject.CompareTag("RigidTarget"))
@@ -377,6 +382,8 @@ public class Bullet : MonoBehaviour
             {
                 if (enemy.isBackpack)
                     BackpackDamage(enemy);
+
+                GlobalAudioManager.instance.PlayBulletHit(hit.transform, "Armor");
             }
         }
         else if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Shield") && hit.transform.gameObject.CompareTag("Shield"))
@@ -387,19 +394,24 @@ public class Bullet : MonoBehaviour
             {
                 if (enemy.isShield)
                     ShieldDamage(enemy);
+
+                GlobalAudioManager.instance.PlayBulletHit(hit.transform, "Armor");
             }
         }
         else if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Shield") && hit.transform.gameObject.CompareTag("Armor"))
         {
             ArmorPiece armor = hit.transform.gameObject.GetComponent<ArmorPiece>();
 
+            GlobalAudioManager.instance.PlayBulletHit(hit.transform, "Armor");
+
             armor.Hit(bulletDamage);
         }
         else
         {
             // Debug.Log(hit.transform.name);
-
-            SpawnHole(hit);
+            
+            Transform hole = SpawnHole(hit);
+            if(hole != null) GlobalAudioManager.instance.PlayBulletHit(hole, "not special uwu");
         }
 
         if (sparksPrefab != null || HitFX.Length > 0)
@@ -436,13 +448,15 @@ public class Bullet : MonoBehaviour
         dead = true;
     }
 
-    void SpawnHole(RaycastHit hit)
+    Transform SpawnHole(RaycastHit hit)
     {
-        if (bulletHolePrefab == null) return;
+        if (bulletHolePrefab == null) return null;
 
         Transform hole = Instantiate(bulletHolePrefab).transform;
         hole.SetPositionAndRotation(hit.point, Quaternion.LookRotation(-hit.normal));
         hole.parent = hit.transform;
+
+        return hole;
     }
 
     void SpawnHitFX(RaycastHit hit, Vector3 direction, GameObject prefab)

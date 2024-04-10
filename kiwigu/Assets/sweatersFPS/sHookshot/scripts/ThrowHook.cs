@@ -94,8 +94,7 @@ public class ThrowHook : MonoBehaviour
             }
             // else hook.GetComponent<MoveHook>().PullbackWithForce(0);
         }
-
-        if (Input.GetButtonUp(shootButton) || Input.GetButtonUp(throwButton))
+        else if (Input.GetButtonUp(shootButton) || Input.GetButtonUp(throwButton))
         {
             if (!hasHook) hook.GetComponent<MoveHook>().PullbackWithForce(0, 1);
             else CancelInvoke(nameof(Throw));

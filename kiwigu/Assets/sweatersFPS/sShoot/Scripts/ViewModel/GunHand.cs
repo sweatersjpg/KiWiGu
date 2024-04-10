@@ -208,7 +208,8 @@ public class GunHand : MonoBehaviour
 
         // view.localPosition += new Vector3(0, 0, -0.1f);
 
-        if(info.damage == 69) anim.Play("dwink");
+        if (info.damage == 69) anim.Play("dwink");
+        else if (info.damage == 420) anim.Play("kisssss");
 
         else if (info.recoil > 0) anim.Play("shoot");
         else anim.Play("shootNoRecoil");

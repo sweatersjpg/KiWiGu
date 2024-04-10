@@ -11,12 +11,13 @@ GameObject:
   - component: {fileID: 7928557949561827940}
   - component: {fileID: 6460482831124823489}
   - component: {fileID: 9100870696315422987}
+  - component: {fileID: 6903775960989671564}
   m_Layer: 0
   m_Name: FancyPillar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &7928557949561827940
 Transform:
@@ -83,3 +84,17 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!64 &6903775960989671564
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7299268324700661982}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: -2993082599747306922, guid: 52383e77d3d9ade4aa9efd0023d0cad8, type: 3}

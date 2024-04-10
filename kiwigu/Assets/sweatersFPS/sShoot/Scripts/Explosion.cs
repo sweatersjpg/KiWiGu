@@ -68,6 +68,17 @@ public class Explosion : MonoBehaviour
                         ShieldDamage(enemy);
                 }
             }
+            else if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Shield") && hit.transform.gameObject.CompareTag("Armor"))
+            {
+                Transform root = GetRootParent(hit.transform);
+
+                if(alreadyHit.Contains(root.gameObject)) return;
+                alreadyHit.Add(root.gameObject);
+
+                ArmorPiece armor = hit.transform.gameObject.GetComponent<ArmorPiece>();
+
+                armor.Hit(damageDealt);
+            }
         }
 
         foreach (Collider hit in hits)
@@ -93,11 +104,17 @@ public class Explosion : MonoBehaviour
             }
             else if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Player"))
             {
+                // rocket jumping uwu
                 Vector3 direction = (transform.position - hit.transform.position);
-                hit.transform.GetComponent<PlayerHealth>().DealDamage(damageDealt / 2, direction.normalized);
+                hit.transform.GetComponent<PlayerHealth>().DealDamage(damageDealt / 2, direction.normalized); // half damage
+
+                direction.Normalize();
+                // Vector3 launchDirection = sweatersController.instance.playerCamera.transform.forward.normalized;
+                Vector3 launch = new Vector3(direction.x * 10, -Mathf.Abs(direction.y * 20), direction.z * 10);
 
                 if (sweatersController.instance.velocity.y < 0) sweatersController.instance.velocity.y *= -0.5f;
-                sweatersController.instance.velocity -= direction.normalized * 20;
+                sweatersController.instance.velocity -= launch;
+                sweatersController.instance.maxSpeed = Mathf.Max(sweatersController.instance.airSpeed / 2, sweatersController.instance.maxSpeed);
 
                 alreadyHit.Add(hit.gameObject);
             }

@@ -144,7 +144,7 @@ public class WaveSystem : MonoBehaviour
         EnemyWave.Spawn spawner = waves[currentWave].enemySpawns[index];
 
         // if endless, mark spawner as finished
-        if (spawner.endless) activeSpawners--;
+        if (spawner.endless || spawner.notRequired) activeSpawners--;
 
         List<Transform> enemies = new List<Transform>();
 
@@ -188,7 +188,7 @@ public class WaveSystem : MonoBehaviour
             if (spawner.endless && i == spawner.stages.Length - 1) i = -1;
         }
 
-        activeSpawners--;
+        if(!spawner.notRequired) activeSpawners--;
     }
 
     Transform StartEnemySpawn(GameObject prefab, GunInfo gunType, Transform customSpawn)

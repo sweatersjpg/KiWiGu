@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2889651358608664707}
   - component: {fileID: 1542844368095188436}
-  m_Layer: 12
+  m_Layer: 8
   m_Name: Chain
   m_TagString: Untagged
   m_Icon: {fileID: 4422084297763085224, guid: 0000000000000000d000000000000000, type: 0}
@@ -74,6 +74,7 @@ LineRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Positions:
+  - {x: 0, y: 0, z: 0}
   - {x: 0, y: 0, z: 0}
   - {x: 0, y: 0, z: 0}
   m_Parameters:
@@ -224,6 +225,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8405639022871376779}
   - component: {fileID: 8229721578388367286}
+  - component: {fileID: 1057506036283195699}
   m_Layer: 12
   m_Name: Hook
   m_TagString: Hook
@@ -279,6 +281,26 @@ MonoBehaviour:
   chainSegmentSize: 0.5
   parentHook: {fileID: 0}
   childHook: {fileID: 0}
+  isFishing: 0
+--- !u!114 &1057506036283195699
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8405639022871376823}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e163c3a28fcc99041b800e606a1bd487, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hook: {fileID: 8229721578388367286}
+  splashParticles: {fileID: 7651175134954061189, guid: dc3f039d28422b2449e9bf0178840563, type: 3}
+  lootTable: {fileID: 11400000, guid: 76eaf5b3b1634b2449415a1a6735f27d, type: 2}
+  timeScale: 1
+  bobHeight: 0.5
+  catchDuration: 0.8
+  fishChance: 0.2
 --- !u!1001 &3499523344758293110
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -329,6 +351,10 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 14bc39d9a24533340bc259b0ef91b466, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 73.782
+      objectReference: {fileID: 0}
+    - target: {fileID: -7511558181221131132, guid: 14bc39d9a24533340bc259b0ef91b466, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 14bc39d9a24533340bc259b0ef91b466, type: 3}
       propertyPath: m_Name
