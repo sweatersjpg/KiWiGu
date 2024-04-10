@@ -88,16 +88,19 @@ public class ThrowHook : MonoBehaviour
         {
             if (hasHook && !keyPressed)
             {
+                hasHook = false;
                 keyPressed = true;
-                Invoke(nameof(Throw), 0.05f);
+                // Invoke(nameof(Throw), 0.05f);
+                Throw();
                 anim.Play("throw");
             }
             // else hook.GetComponent<MoveHook>().PullbackWithForce(0);
         }
-        else if (Input.GetButtonUp(shootButton) || Input.GetButtonUp(throwButton))
+        
+        if (Input.GetButtonUp(shootButton) || Input.GetButtonUp(throwButton))
         {
-            if (!hasHook) hook.GetComponent<MoveHook>().PullbackWithForce(0, 1);
-            else CancelInvoke(nameof(Throw));
+            if (!hasHook) hook?.GetComponent<MoveHook>().PullbackWithForce(0, 1);
+            // CancelInvoke(nameof(Throw));
             keyPressed = false;
         }
 
