@@ -149,7 +149,7 @@ public class HellfireEnemy : MonoBehaviour
 
     private void LateUpdate()
     {
-        if (isDead)
+        if (isDead || !detectedPlayer)
             return;
 
         Vector3 directionToPlayer = detectedPlayer.transform.position - transform.position;
@@ -561,7 +561,6 @@ public class HellfireEnemy : MonoBehaviour
         {
             if (isHeadshot)
             {
-                GlobalAudioManager.instance.PlayHeadshotSFX(headPos);
                 Instantiate(HeadshotIndicator, headPos.transform.position, Quaternion.identity);
             }
 

@@ -140,7 +140,7 @@ public class PistolGrunt : MonoBehaviour
 
     private void LateUpdate()
     {
-        if (isDead)
+        if (isDead || !detectedPlayer)
             return;
 
         Vector3 directionToPlayer = detectedPlayer.transform.position - transform.position;
