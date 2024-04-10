@@ -1,4 +1,3 @@
-using UnityEditor.SceneManagement;
 using UnityEngine;
 
 public class MoveHook : MonoBehaviour
@@ -506,10 +505,11 @@ public class MoveHook : MonoBehaviour
             AddChainSegment(transform.position + Random.insideUnitSphere * 0.1f - velocity.normalized * 0.1f);
         }
 
-        chain.SetPosition(chain.positionCount - 1, home.transform.position);
+        chain.SetPosition(chain.positionCount - 1, sweatersController.instance.playerCamera.transform.position - sweatersController.instance.playerCamera.transform.up);
+        chain.SetPosition(chain.positionCount - 2, home.transform.position + home.transform.up * 0.12f);
         chain.SetPosition(0, transform.position);
 
-        for (int i = 1; i < chain.positionCount - 1; i++)
+        for (int i = 1; i < chain.positionCount - 2; i++)
         {
             Vector3 p = chain.GetPosition(i);
 
@@ -531,7 +531,7 @@ public class MoveHook : MonoBehaviour
         chain.positionCount++;
 
         // shift positions down
-        for (int i = chain.positionCount - 2; i >= 1; i--)
+        for (int i = chain.positionCount - 3; i >= 1; i--)
         {
             chain.SetPosition(i + 1, chain.GetPosition(i));
         }
@@ -688,6 +688,7 @@ public class MoveHook : MonoBehaviour
         if (heading.magnitude < 0.5)
         {
             PullbackWithForce(0, 1);
+            isGrapplnig = false;
             return;
         }
 
@@ -696,6 +697,11 @@ public class MoveHook : MonoBehaviour
             isGrapplnig = false;
             PullbackWithForce(0, 1);
             return;
+        }
+
+        if(!isGrapplnig)
+        {
+            player.velocity = -heading.normalized * player.velocity.magnitude;
         }
 
 
@@ -708,13 +714,18 @@ public class MoveHook : MonoBehaviour
         //    return;
         //}
 
-        player.velocity = -heading.normalized * (player.velocity.magnitude + Time.deltaTime * pullForce);
+        // -- direct approach --
+        // player.velocity = -heading.normalized * (player.velocity.magnitude + Time.deltaTime * pullForce);
+
+        // -- force approach --
+        player.velocity -= Time.deltaTime * pullForce * heading.normalized;
 
         // player.velocity = Vector3.ClampMagnitude(player.velocity, player.maxSpeed);
 
         // player.maxSpeed = player.velocity.magnitude;
         // player.velocity += -heading.normalized * Time.deltaTime * pullForce;
 
+        player.ignoreGravity = true;
         player.isGrappling = true;
 
         // player.velocity += -heading.normalized * Time.deltaTime * pullForce;

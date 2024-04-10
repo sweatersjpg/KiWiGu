@@ -17,10 +17,15 @@ public class GlobalAudioManager : MonoBehaviour
     public AudioClip hookBounceSFX;
     public AudioClip hookWhipBackSFX;
     public AudioClip grappleLaunchSFX;
+    public AudioClip[] kickSFX;
     public AudioClip interceptorExplosionSFX;
     public AudioClip bulwarkExplosionSFX;
     public AudioClip bulwarkExtendSFX;
     public AudioClip bulwarkRetractSFX;
+
+    public AudioClip[] bulletHitSFX;
+    public AudioClip[] bulletHitFleshSFX;
+    public AudioClip[] bulletHitArmorSFX;
 
     // Variables
     [Space(10)]
@@ -136,6 +141,30 @@ public class GlobalAudioManager : MonoBehaviour
             case "Hit":
                 AudioClip hookHitSFX = hookHitSFXs[Random.Range(0, hookHitSFXs.Length)];
                 PlaySound(location, hookHitSFX, 1, 1, 50, "hookHitSFX");
+                break;
+        }
+    }
+
+    public void PlayKick(Transform location)
+    {
+        PlaySound(location, kickSFX[Random.Range(0, kickSFX.Length)], 1, 1, 50, "kickSFX");
+    }
+
+    public void PlayBulletHit(Transform location, string type)
+    {
+        switch (type)
+        {
+            case "Flesh":
+                PlaySound(location, bulletHitFleshSFX[Random.Range(0, bulletHitFleshSFX.Length)], 0.4f, 1, 50, "hitFleshSFX");
+                break;
+            case "Armor":
+                PlaySound(location, bulletHitArmorSFX[Random.Range(0, bulletHitArmorSFX.Length)], 1, 1, 50, "hitArmorSFX");
+                break;
+            case "Headshot":
+                PlayHeadshotSFX(location);
+                break;
+            default:
+                PlaySound(location, bulletHitSFX[Random.Range(0, bulletHitSFX.Length)], 1, 1, 30, "bulletHitSFX");
                 break;
         }
     }

@@ -40,8 +40,15 @@ public class ResetScene : MonoBehaviour
     {
         sweatersController.instance.gameObject.SetActive(false);
 
-        Instantiate(playerDummy, sweatersController.instance.transform.position, 
+        GameObject dummy = Instantiate(playerDummy, sweatersController.instance.transform.position, 
             sweatersController.instance.playerCamera.transform.rotation);
+
+        // dummy.GetComponentInChildren<Rigidbody>().AddForce(sweatersController.instance.velocity, ForceMode.VelocityChange);
+        Rigidbody[] rbs = dummy.GetComponentsInChildren<Rigidbody>();
+        for(int i = 0; i < rbs.Length; i++)
+        {
+            rbs[i].AddForce(sweatersController.instance.velocity * Random.Range(0,1f), ForceMode.VelocityChange);
+        }
 
         Invoke(nameof(Reload), fromFall ? 2f : 4f);
     }
