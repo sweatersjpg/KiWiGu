@@ -184,7 +184,7 @@ public class Mechemy : MonoBehaviour
                 return;
 
             agent.speed = wanderSpeed * 2;
-            animator.speed = Mathf.Clamp(agent.speed / 2.5f, 0.5f, 1.5f);
+            animator.speed = Mathf.Clamp(agent.speed / 2.5f, 0.5f, 2.0f);
 
             if (agent.velocity.magnitude >= 0.1f)
             {
@@ -313,28 +313,41 @@ public class Mechemy : MonoBehaviour
             if (isShooting)
                 return;
 
-            StartCoroutine(ShootRoutine());
+                if (!detectedPlayer)
+                    return;
+
+                if (holdingRightGun && holdingLeftGun)
+                {
+                    if (Random.Range(0, 2) == 0)
+                    {
+                        infoHT = rightGun.info;
+                        BulletExitPoint = rightGunExitPoint;
+                    }
+                    else
+                    {
+                        infoHT = leftGun.info;
+                        BulletExitPoint = leftGunExitPoint;
+                    }
+                }
+                else if (holdingRightGun)
+                {
+                    infoHT = rightGun.info;
+                    BulletExitPoint = rightGunExitPoint;
+                }
+                else if (holdingLeftGun)
+                {
+                    infoHT = leftGun.info;
+                    BulletExitPoint = leftGunExitPoint;
+                }
+
+                if (!holdingRightGun && !holdingLeftGun)
+                {
+                    return;
+                }
+
+                BulletShooter bs = BulletExitPoint.GetComponentInChildren<BulletShooter>();
+                bs.isShooting = Time.time % 4 > 2;
         }
-    }
-
-    IEnumerator ShootRoutine()
-    {
-        isShooting = true;
-
-        animator.SetTrigger("shoot");
-
-        yield return null;
-
-        while (animDone)
-        {
-            yield return null;
-        }
-
-        animator.ResetTrigger("shoot");
-
-        yield return new WaitForSeconds(shootCooldown);
-
-        isShooting = false;
     }
 
     public void AnimTrue()
@@ -348,11 +361,6 @@ public class Mechemy : MonoBehaviour
     public void AnimFalse()
     {
         animDone = false;
-    }
-
-    public void ShootEvent()
-    {
-        EnemyShoot();
     }
 
     private void RotateNavMeshAgentTowardsObj(Vector3 objPos)
@@ -491,46 +499,6 @@ public class Mechemy : MonoBehaviour
         NavMesh.SamplePosition(randDirection, out NavMeshHit navHit, dist, layermask);
 
         return navHit.position;
-    }
-
-    private float EnemyShoot()
-    {
-        if (!detectedPlayer)
-            return 0;
-
-        if (holdingRightGun && holdingLeftGun)
-        {
-            if (Random.Range(0, 2) == 0)
-            {
-                infoHT = rightGun.info;
-                BulletExitPoint = rightGunExitPoint;
-            }
-            else
-            {
-                infoHT = leftGun.info;
-                BulletExitPoint = leftGunExitPoint;
-            }
-        }
-        else if (holdingRightGun)
-        {
-            infoHT = rightGun.info;
-            BulletExitPoint = rightGunExitPoint;
-        }
-        else if (holdingLeftGun)
-        {
-            infoHT = leftGun.info;
-            BulletExitPoint = leftGunExitPoint;
-        }
-
-        if (!holdingRightGun && !holdingLeftGun)
-        {
-            return 0;
-        }
-
-        BulletShooter bs = BulletExitPoint.GetComponentInChildren<BulletShooter>();
-        bs.isShooting = Time.time % 9 > 5;
-
-        return 0;
     }
 
     private void OnDrawGizmos()

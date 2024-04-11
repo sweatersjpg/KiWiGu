@@ -6,6 +6,7 @@ public class TheMini : MonoBehaviour
     [Header("TheMini Basic Settings")]
     [Range(0, 500)]
     [SerializeField] private float health;
+    private float currentHealth;
     [SerializeField] private Transform spineBone;
 
     [Space(10)]
@@ -17,6 +18,7 @@ public class TheMini : MonoBehaviour
     [Space(10)]
     [Header("Gun Settings")]
     [SerializeField] float shootCooldown;
+    [SerializeField] private GameObject ExplosionX;
     [SerializeField] private Transform leftGunExitPoint;
     [SerializeField] private Transform rightGunExitPoint;
     Transform BulletExitPoint;
@@ -37,6 +39,8 @@ public class TheMini : MonoBehaviour
 
     private bool checkedLeftGun;
     private bool checkedRightGun;
+
+    private bool isDead;
 
     private void Awake()
     {
@@ -116,6 +120,8 @@ public class TheMini : MonoBehaviour
 
         if (!holdingRightGun && !holdingLeftGun)
         {
+            Instantiate(ExplosionX, spineBone.transform.position, transform.rotation);
+            Destroy(gameObject);
             return;
         }
 
@@ -123,6 +129,29 @@ public class TheMini : MonoBehaviour
         bs.isShooting = Time.time % 9 > 5;
     }
 
+    public virtual void TakeDamage(float bulletDamage, bool isHeadshot)
+    {
+        if (isDead)
+            return;
+
+        if (currentHealth < health)
+        {
+            currentHealth = Mathf.Min(currentHealth + bulletDamage, health);
+        }
+
+        CheckStats();
+    }
+
+    public void CheckStats()
+    {
+        if (currentHealth >= health && !isDead)
+        {
+            isDead = true;
+
+            Instantiate(ExplosionX, spineBone.transform.position, transform.rotation);
+            Destroy(gameObject);
+        }
+    }
 
     private void RotateNavMeshAgentTowardsObj(Vector3 objPos)
     {
