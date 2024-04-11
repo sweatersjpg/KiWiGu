@@ -56,6 +56,7 @@ public class Mechemy : MonoBehaviour
 
     private bool checkedLeftGun;
     private bool checkedRightGun;
+
     private bool holdingLeftGun;
     private bool holdingRightGun;
 
@@ -360,6 +361,9 @@ public class Mechemy : MonoBehaviour
 
         Quaternion targetRotation = Quaternion.LookRotation(objPos - agent.transform.position);
 
+        targetRotation.x = 0;
+        targetRotation.z = 0;
+
         agent.transform.rotation = Quaternion.Slerp(agent.transform.rotation, targetRotation, Time.deltaTime * 1.75f);
 
         RotateGunObjectExitPoint(detectedPlayer.transform.position);
@@ -494,55 +498,39 @@ public class Mechemy : MonoBehaviour
         if (!detectedPlayer)
             return 0;
 
-        HookTarget gun = transform.GetComponentInChildren<HookTarget>();
-        if (gun == null)
+        if (holdingRightGun && holdingLeftGun)
         {
-            isShooting = false;
-            return 0;
-        }
-
-        infoHT = gun.info;
-
-        if (gun)
-        {
-            if (holdingRightGun && holdingLeftGun)
-            {
-                if (Random.Range(0, 2) == 0)
-                {
-                    infoHT = rightGun.info;
-                    BulletExitPoint = rightGunExitPoint;
-                }
-                else
-                {
-                    infoHT = leftGun.info;
-                    BulletExitPoint = leftGunExitPoint;
-                }
-            }
-            else if (holdingRightGun)
+            if (Random.Range(0, 2) == 0)
             {
                 infoHT = rightGun.info;
                 BulletExitPoint = rightGunExitPoint;
             }
-            else if (holdingLeftGun)
+            else
             {
                 infoHT = leftGun.info;
                 BulletExitPoint = leftGunExitPoint;
             }
         }
-
-        float burst = infoHT.burstSize;
-        if (infoHT.fullAuto) burst = infoHT.autoRate;
-
-        BulletShooter bs = BulletExitPoint.GetComponentInChildren<BulletShooter>();
-
-        if (bs) bs.info = infoHT;
-
-        if (bs)
+        else if (holdingRightGun)
         {
-            bs.SetShootTime(1.15f);
+            infoHT = rightGun.info;
+            BulletExitPoint = rightGunExitPoint;
+        }
+        else if (holdingLeftGun)
+        {
+            infoHT = leftGun.info;
+            BulletExitPoint = leftGunExitPoint;
         }
 
-        return burst * 1 / infoHT.autoRate;
+        if (!holdingRightGun && !holdingLeftGun)
+        {
+            return 0;
+        }
+
+        BulletShooter bs = BulletExitPoint.GetComponentInChildren<BulletShooter>();
+        bs.isShooting = Time.time % 9 > 5;
+
+        return 0;
     }
 
     private void OnDrawGizmos()
