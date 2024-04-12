@@ -356,7 +356,10 @@ public class Bullet : MonoBehaviour
             if (enemy != null)
             {
                 if (enemy.doubleDamage)
+                {
                     ApplyDamage(enemy, 2f, true);
+                    GlobalAudioManager.instance.PlayBulletHit(hit.transform, "Headshot");
+                }
                 else if (enemy.chestDamage)
                     ApplyDamage(enemy, 1.5f, false);
                 else if (enemy.leastDamage)
@@ -364,8 +367,7 @@ public class Bullet : MonoBehaviour
                 else
                     ApplyDamage(enemy, 1f, false); ;
 
-                if(enemy.doubleDamage) GlobalAudioManager.instance.PlayBulletHit(hit.transform, "Headshot");
-                else GlobalAudioManager.instance.PlayBulletHit(hit.transform, "Flesh");
+                GlobalAudioManager.instance.PlayBulletHit(hit.transform, "Flesh");
             }
         }
         else if (hit.transform.gameObject.CompareTag("RigidTarget"))
