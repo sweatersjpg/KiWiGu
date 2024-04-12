@@ -211,6 +211,7 @@ MonoBehaviour:
   BrokenShieldIndicator: {fileID: 5046152788282611147, guid: 79b3f31201dc23a4589d3a4ce1699922, type: 3}
   headPos: {fileID: 2499834575786832054}
   ragdoll: {fileID: 8931406875862246907, guid: 2b4aa26ac3195e447a973e86b3fcf5c5, type: 3}
+  ragdollSpawnPoint: {fileID: 3049383733553494417}
   splatoodFX: {fileID: 8636026588871352116, guid: dc5ec3d945ace784cb9e3b8e4b1c5a2b, type: 3}
   spineBone: {fileID: 7203709717839865306}
   currentHealth: 0
@@ -936,6 +937,37 @@ Transform:
   m_Father: {fileID: 3653804590460534875}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 27.761932, y: -0.7023445, z: 0.9124332}
+--- !u!1 &2619940747592822162
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3049383733553494417}
+  m_Layer: 9
+  m_Name: RagDollSpawnPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3049383733553494417
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2619940747592822162}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: -1.056, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4075179830348874401}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2723710319390975887
 GameObject:
   m_ObjectHideFlags: 0
@@ -997,7 +1029,7 @@ Transform:
   m_Children:
   - {fileID: 4563767156937657092}
   m_Father: {fileID: 4075179830348874401}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: -14.028141, y: 21.870592, z: -156.85701}
 --- !u!1 &2967879160941676434
 GameObject:
@@ -2111,7 +2143,7 @@ Transform:
   m_Children:
   - {fileID: 1182682270024835843}
   m_Father: {fileID: 4075179830348874401}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: -41.77579, y: -12.23146, z: 159.0234}
 --- !u!1 &6416100046209779678
 GameObject:
@@ -2433,7 +2465,7 @@ Transform:
   m_Children:
   - {fileID: 7203709717839865306}
   m_Father: {fileID: 4075179830348874401}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0.3040766, y: -3.117329, z: 0.52213675}
 --- !u!136 &4387926202325823793
 CapsuleCollider:
@@ -3155,6 +3187,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 3049383733553494417}
   - {fileID: 5824123188522466269}
   - {fileID: 146476564109571486}
   - {fileID: 4387926202325823794}

@@ -76,6 +76,12 @@ public class ThrowHook : MonoBehaviour
     void LateUpdate()
     {
         if (PauseSystem.paused) return;
+
+        if (!hasHook && hook == null)
+        {
+            Destroy(gameObject);
+            return;
+        }
         
         // ObstacleAvoidance();
         string[] shootButtons = { "LeftShoot", "RightShoot" };
@@ -99,7 +105,7 @@ public class ThrowHook : MonoBehaviour
         
         if (Input.GetButtonUp(shootButton) || Input.GetButtonUp(throwButton))
         {
-            if (!hasHook) hook?.GetComponent<MoveHook>().PullbackWithForce(0, 1);
+            if (!hasHook && hook) hook.GetComponent<MoveHook>().PullbackWithForce(0, 1);
             // CancelInvoke(nameof(Throw));
             keyPressed = false;
         }
