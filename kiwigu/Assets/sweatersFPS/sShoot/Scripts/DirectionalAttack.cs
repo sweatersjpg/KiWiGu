@@ -142,7 +142,9 @@ public class DirectionalAttack : MonoBehaviour
                 alreadyHit.Add(hit.gameObject);
 
                 //hit.attachedRigidbody.AddExplosionForce(force, transform.position, radius);
+                hit.attachedRigidbody.AddForce(sweatersController.instance.velocity, ForceMode.VelocityChange);
                 hit.attachedRigidbody.AddForce(force * transform.forward, ForceMode.Impulse);
+
                 // print(hit.name);
             }
 

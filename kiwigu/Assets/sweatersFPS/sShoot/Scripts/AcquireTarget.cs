@@ -98,7 +98,9 @@ public class AcquireTarget : MonoBehaviour
 
     public Vector3 GetJustHookTarget(out HookTarget hookTarget)
     {
-        bool hasHit = Physics.SphereCast(Camera.main.transform.position, radius * radius, Camera.main.transform.forward,
+        Camera cam = sweatersController.instance.playerCamera;
+        
+        bool hasHit = Physics.SphereCast(cam.transform.position, radius * radius, cam.transform.forward,
             out RaycastHit hit, maxDistance, ~LayerMask.GetMask("GunHand", "Player", "Shield", "BulletView"));
 
         hookTarget = null;

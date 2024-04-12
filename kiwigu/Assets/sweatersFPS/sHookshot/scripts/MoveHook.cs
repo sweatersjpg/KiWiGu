@@ -103,6 +103,10 @@ public class MoveHook : MonoBehaviour
             
         }
 
+        // start first raycast from camera
+        pPosition = sweatersController.instance.playerCamera.transform.position
+            - sweatersController.instance.playerCamera.transform.forward * 0.8f;
+
     }
 
     // Update is called once per frame
@@ -137,7 +141,8 @@ public class MoveHook : MonoBehaviour
             return;
         }
 
-        pPosition = transform.position;
+        // moved to end of update
+        // pPosition = transform.position;
 
         Vector3 heading = home.transform.position - transform.position;
 
@@ -255,6 +260,8 @@ public class MoveHook : MonoBehaviour
 
         DoPhysics();
         UpdateChain();
+
+        pPosition = transform.position;
     }
 
     void DamageEnemy(Transform t)
