@@ -1,7 +1,6 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
-using UnityEngine.U2D;
 
 public class HellfireEnemy : MonoBehaviour
 {

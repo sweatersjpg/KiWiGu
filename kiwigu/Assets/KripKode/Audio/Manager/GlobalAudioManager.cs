@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.Audio;
-using static MiniMenuSystem;
 
 public class GlobalAudioManager : MonoBehaviour
 {
