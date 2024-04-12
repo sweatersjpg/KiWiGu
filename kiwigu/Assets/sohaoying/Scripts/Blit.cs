@@ -54,7 +54,7 @@ namespace Cyan
             {
                 this.renderPassEvent = renderPassEvent;
                 this.settings = settings;
-                blitMaterial = settings.blitMaterial;
+                blitMaterial = Instantiate(settings.blitMaterial);  // soha edit: make instance to avoid changing the actual material
                 m_ProfilerTag = tag;
                 m_TemporaryColorTexture.Init("_TemporaryColorTexture");
                 if (settings.dstType == Target.TextureID)
@@ -156,6 +156,13 @@ namespace Cyan
                     cmd.ReleaseTemporaryRT(m_TemporaryColorTexture.id);
                 }
             }
+
+            // soha edit: resets the material
+            void OnDisable()
+            {
+                Destroy(blitMaterial);
+                blitMaterial = settings.blitMaterial;
+            }
         }
 
         [System.Serializable]
@@ -256,6 +263,15 @@ namespace Cyan
 
             blitPass.Setup(renderer);
             renderer.EnqueuePass(blitPass);
+        }
+
+        // soha edit: this is to update the glitch material, assuming that this script is used only for the glitch effect
+        public void UpdateValues(float glitchStrength, float noiseAmount, float scanLinesStrength, float vignetteIntensity)
+        {
+            blitPass.blitMaterial.SetFloat("_GlitchStrength", glitchStrength);
+            blitPass.blitMaterial.SetFloat("_NoiseAmount", noiseAmount);
+            blitPass.blitMaterial.SetFloat("_ScanLinesStrength", scanLinesStrength);
+            blitPass.blitMaterial.SetFloat("_VignetteIntensity", vignetteIntensity);
         }
     }
 }
