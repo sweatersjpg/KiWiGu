@@ -626,7 +626,8 @@ public class MoveHook : MonoBehaviour
         }
         if(childHook)
         {
-            
+            childHook.headingBack = true;
+            childHook.speed = 0;
             childHook.parentHook = null;
             childHook = null;
         }
