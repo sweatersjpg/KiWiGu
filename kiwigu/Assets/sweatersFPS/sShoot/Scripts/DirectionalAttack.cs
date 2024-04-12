@@ -99,10 +99,11 @@ public class DirectionalAttack : MonoBehaviour
 
         foreach (Collider hit in hits)
         {
-            Debug.Log("Kick dmg : " + damageDealt);
             
             if (ignoreList.Contains(hit.gameObject)) continue;
             currentHit = hit;
+
+            //Debug.Log("Kick dmg : " + damageDealt);
 
             if (hit.transform.CompareTag("TakeDamage"))
             {

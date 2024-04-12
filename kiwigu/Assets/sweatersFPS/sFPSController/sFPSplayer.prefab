@@ -903,6 +903,8 @@ GameObject:
   m_Component:
   - component: {fileID: 7049817263654989183}
   - component: {fileID: 721250640}
+  - component: {fileID: 1276439706600419539}
+  - component: {fileID: 1459379610152176195}
   m_Layer: 8
   m_Name: RightHand
   m_TagString: Untagged
@@ -946,6 +948,34 @@ MonoBehaviour:
   deltaLimit: 0.1
   velocity: {x: 0, y: 0, z: 0}
   cameraFX: {fileID: 4619342294562106012}
+--- !u!114 &1276439706600419539
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7049817263654989182}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d67282f2b2a85564cb98b46ff053f5a8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isLeftHand: 0
+  isRightHand: 1
+--- !u!114 &1459379610152176195
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7049817263654989182}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b68ff099e1cead541b19f09c828d0f05, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hookPrefab: {fileID: 3935398618193876659, guid: 22a38e184f7b5844b993bf31543b79eb, type: 3}
+  debugGun: {fileID: 9025670313450575901, guid: d0d635c464925394a99d17e56cf257e7, type: 3}
 --- !u!1 &7049817264240251262
 GameObject:
   m_ObjectHideFlags: 0
@@ -957,6 +987,7 @@ GameObject:
   - component: {fileID: 7049817264240251263}
   - component: {fileID: 1607020736}
   - component: {fileID: 49666585}
+  - component: {fileID: 4020978247001353345}
   m_Layer: 8
   m_Name: LeftHand
   m_TagString: Untagged
@@ -1015,6 +1046,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isLeftHand: 1
   isRightHand: 0
+--- !u!114 &4020978247001353345
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7049817264240251262}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b68ff099e1cead541b19f09c828d0f05, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hookPrefab: {fileID: 3935398618193876659, guid: 22a38e184f7b5844b993bf31543b79eb, type: 3}
+  debugGun: {fileID: 9025670313450575901, guid: d0d635c464925394a99d17e56cf257e7, type: 3}
 --- !u!1 &7049817264283544459
 GameObject:
   m_ObjectHideFlags: 0
@@ -1665,7 +1710,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3935398618193876659, guid: 22a38e184f7b5844b993bf31543b79eb, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 22a38e184f7b5844b993bf31543b79eb, type: 3}
@@ -2125,7 +2170,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3935398618193876659, guid: 22a38e184f7b5844b993bf31543b79eb, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 22a38e184f7b5844b993bf31543b79eb, type: 3}
