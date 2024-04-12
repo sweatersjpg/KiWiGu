@@ -53,6 +53,8 @@ public class MoveHook : MonoBehaviour
 
     bool hasKicked = false;
 
+    float lifeTime = 0;
+
     void Start()
     {
         float startingSpeed = Mathf.Sqrt(2 * trackingAcceleration * hookRange / 2);
@@ -119,7 +121,10 @@ public class MoveHook : MonoBehaviour
         }
         else deltaTime = Time.deltaTime;
 
-        if(parentHook)
+        lifeTime += Time.deltaTime;
+        if(lifeTime > 0.5f) gameObject.name = "HookShot (Heading Back)";
+
+        if (parentHook)
         {
             transform.position = parentHook.transform.position - offsetFromOtherHook/2;
 
@@ -481,6 +486,8 @@ public class MoveHook : MonoBehaviour
         {
             hit.transform.gameObject.GetComponent<PhysicsHit>().Hit(hit.point, velocity);
         }
+
+        gameObject.name = "HookShot (Heading Back)";
 
         if (headingBack) return;
 
