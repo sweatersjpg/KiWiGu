@@ -43,7 +43,7 @@ public class BulletShooter : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        if (info.gunName == "ELB")
+        if (info && info.gunName == "ELB")
         {
             transform.Find("LaserBeamFX").gameObject.SetActive(true);
             flash.gameObject.SetActive(false);

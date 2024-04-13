@@ -46,15 +46,19 @@ public class AmmoUIManager : MonoBehaviour
             display = Instantiate(fetchedGun.anim.info.guUI, transform);
 
             AmmoUIDiscrete ammo = display.GetComponent<AmmoUIDiscrete>();
-            if (ammo) ammo.playerHand = playerHand;
-            else display.GetComponentInChildren<AmmoUI>().playerHand = playerHand;
+            if (ammo != null) ammo.playerHand = playerHand;
+            else
+            {
+                AmmoUI ammoUI = display.GetComponentInChildren<AmmoUI>();
+                if (ammoUI != null)
+                    ammoUI.playerHand = playerHand;
+            }
         }
 
         if (fetchedGun != null) // when you're holding a gun
         {
             if (fetchedGun.ammo.count == 0) noAmmoIndicator.SetActive(true);
         }
-
     }
 
     ShootBullet FetchGun()
