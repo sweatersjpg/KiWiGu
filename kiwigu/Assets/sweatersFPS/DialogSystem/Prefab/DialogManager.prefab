@@ -35,8 +35,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 100, y: 100}
+  m_AnchoredPosition: {x: 0, y: -513.6}
+  m_SizeDelta: {x: 1920, y: 1080}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &5967732173623072887
 MonoBehaviour:
@@ -52,6 +52,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   active: 0
   textSpeed: 60
+  currentDialogPriority: 0
+  currentAudioSources: []
+  playerAudioSource: {fileID: 0}
+  apostleAudioSource: {fileID: 0}
   dialogBox: {fileID: 1435583841348819931}
   dialogTextMesh: {fileID: 1435583842069767727}
   moreIcon: {fileID: 1435583842121054059}
