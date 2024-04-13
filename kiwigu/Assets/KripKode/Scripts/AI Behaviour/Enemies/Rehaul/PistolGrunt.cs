@@ -1,7 +1,6 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
-using static MiniMenuSystem;
 
 public class PistolGrunt : MonoBehaviour
 {
@@ -56,9 +55,6 @@ public class PistolGrunt : MonoBehaviour
     private GameObject detectedPlayer;
     private float lastVisibleTime;
     private bool rememberPlayer;
-    private bool loggedHidingObject;
-    private GameObject loggedGameObject;
-    private Vector3 hidingPos;
 
     [Space(10)]
     [Header("Enemy Attack Settings")]
@@ -71,7 +67,6 @@ public class PistolGrunt : MonoBehaviour
     [SerializeField] private float punchSpeed;
     [SerializeField] private float punchDistance;
     private bool isShooting;
-    float shootTimer;
     bool animDone;
 
     private bool gotHit;

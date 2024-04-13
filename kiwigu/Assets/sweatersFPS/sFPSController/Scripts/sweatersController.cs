@@ -410,7 +410,7 @@ public class sweatersController : MonoBehaviour
         bool hasHit = Physics.CapsuleCast(p1, p2, charController.radius, Vector3.down, out RaycastHit hit, 2);
 
         Debug.DrawRay(transform.position, Vector3.down * 2f, Color.blue);
-        Debug.DrawRay(hit.point, hit.normal, Color.blue);
+        Debug.DrawRay(hit.point, hit.normal, Color.green);
 
         Debug.DrawLine(p1, p2, Color.black);
 

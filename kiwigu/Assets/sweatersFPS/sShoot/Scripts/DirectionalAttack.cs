@@ -12,6 +12,7 @@ public class DirectionalAttack : MonoBehaviour
     [SerializeField] float radius = 2;
     [SerializeField] float duration;
     [SerializeField] float damageDealt = 20;
+    [SerializeField] float velocityDamageMultiplier = 2;
 
     [SerializeField] GameObject hitEffect;
 
@@ -25,6 +26,8 @@ public class DirectionalAttack : MonoBehaviour
 
     Collider currentHit;
 
+    float baseDamage;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -32,11 +35,17 @@ public class DirectionalAttack : MonoBehaviour
         startTime = Time.time;
 
         startPos = transform.position;
+
+        baseDamage = damageDealt;
+
+        damageDealt = baseDamage + sweatersController.instance.velocity.magnitude * velocityDamageMultiplier;
     }
 
     // Update is called once per frame
     void Update()
     {
+        
+        
         CheckRadius(radius);
 
         Vector3 pos = startPos;
@@ -90,8 +99,11 @@ public class DirectionalAttack : MonoBehaviour
 
         foreach (Collider hit in hits)
         {
+            
             if (ignoreList.Contains(hit.gameObject)) continue;
             currentHit = hit;
+
+            //Debug.Log("Kick dmg : " + damageDealt);
 
             if (hit.transform.CompareTag("TakeDamage"))
             {
@@ -142,7 +154,9 @@ public class DirectionalAttack : MonoBehaviour
                 alreadyHit.Add(hit.gameObject);
 
                 //hit.attachedRigidbody.AddExplosionForce(force, transform.position, radius);
+                hit.attachedRigidbody.AddForce(sweatersController.instance.velocity, ForceMode.VelocityChange);
                 hit.attachedRigidbody.AddForce(force * transform.forward, ForceMode.Impulse);
+
                 // print(hit.name);
             }
 

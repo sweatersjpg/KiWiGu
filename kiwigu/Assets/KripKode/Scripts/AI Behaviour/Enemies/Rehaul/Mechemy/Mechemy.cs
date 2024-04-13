@@ -56,6 +56,7 @@ public class Mechemy : MonoBehaviour
 
     private bool checkedLeftGun;
     private bool checkedRightGun;
+
     private bool holdingLeftGun;
     private bool holdingRightGun;
 
@@ -183,7 +184,7 @@ public class Mechemy : MonoBehaviour
                 return;
 
             agent.speed = wanderSpeed * 2;
-            animator.speed = Mathf.Clamp(agent.speed / 2.5f, 0.5f, 1.5f);
+            animator.speed = Mathf.Clamp(agent.speed / 2.5f, 0.5f, 2.0f);
 
             if (agent.velocity.magnitude >= 0.1f)
             {
@@ -312,28 +313,41 @@ public class Mechemy : MonoBehaviour
             if (isShooting)
                 return;
 
-            StartCoroutine(ShootRoutine());
+                if (!detectedPlayer)
+                    return;
+
+                if (holdingRightGun && holdingLeftGun)
+                {
+                    if (Random.Range(0, 2) == 0)
+                    {
+                        infoHT = rightGun.info;
+                        BulletExitPoint = rightGunExitPoint;
+                    }
+                    else
+                    {
+                        infoHT = leftGun.info;
+                        BulletExitPoint = leftGunExitPoint;
+                    }
+                }
+                else if (holdingRightGun)
+                {
+                    infoHT = rightGun.info;
+                    BulletExitPoint = rightGunExitPoint;
+                }
+                else if (holdingLeftGun)
+                {
+                    infoHT = leftGun.info;
+                    BulletExitPoint = leftGunExitPoint;
+                }
+
+                if (!holdingRightGun && !holdingLeftGun)
+                {
+                    return;
+                }
+
+                BulletShooter bs = BulletExitPoint.GetComponentInChildren<BulletShooter>();
+                bs.isShooting = Time.time % 4 > 2;
         }
-    }
-
-    IEnumerator ShootRoutine()
-    {
-        isShooting = true;
-
-        animator.SetTrigger("shoot");
-
-        yield return null;
-
-        while (animDone)
-        {
-            yield return null;
-        }
-
-        animator.ResetTrigger("shoot");
-
-        yield return new WaitForSeconds(shootCooldown);
-
-        isShooting = false;
     }
 
     public void AnimTrue()
@@ -349,16 +363,14 @@ public class Mechemy : MonoBehaviour
         animDone = false;
     }
 
-    public void ShootEvent()
-    {
-        EnemyShoot();
-    }
-
     private void RotateNavMeshAgentTowardsObj(Vector3 objPos)
     {
         agent.SetDestination(agent.transform.position);
 
         Quaternion targetRotation = Quaternion.LookRotation(objPos - agent.transform.position);
+
+        targetRotation.x = 0;
+        targetRotation.z = 0;
 
         agent.transform.rotation = Quaternion.Slerp(agent.transform.rotation, targetRotation, Time.deltaTime * 1.75f);
 
@@ -487,62 +499,6 @@ public class Mechemy : MonoBehaviour
         NavMesh.SamplePosition(randDirection, out NavMeshHit navHit, dist, layermask);
 
         return navHit.position;
-    }
-
-    private float EnemyShoot()
-    {
-        if (!detectedPlayer)
-            return 0;
-
-        HookTarget gun = transform.GetComponentInChildren<HookTarget>();
-        if (gun == null)
-        {
-            isShooting = false;
-            return 0;
-        }
-
-        infoHT = gun.info;
-
-        if (gun)
-        {
-            if (holdingRightGun && holdingLeftGun)
-            {
-                if (Random.Range(0, 2) == 0)
-                {
-                    infoHT = rightGun.info;
-                    BulletExitPoint = rightGunExitPoint;
-                }
-                else
-                {
-                    infoHT = leftGun.info;
-                    BulletExitPoint = leftGunExitPoint;
-                }
-            }
-            else if (holdingRightGun)
-            {
-                infoHT = rightGun.info;
-                BulletExitPoint = rightGunExitPoint;
-            }
-            else if (holdingLeftGun)
-            {
-                infoHT = leftGun.info;
-                BulletExitPoint = leftGunExitPoint;
-            }
-        }
-
-        float burst = infoHT.burstSize;
-        if (infoHT.fullAuto) burst = infoHT.autoRate;
-
-        BulletShooter bs = BulletExitPoint.GetComponentInChildren<BulletShooter>();
-
-        if (bs) bs.info = infoHT;
-
-        if (bs)
-        {
-            bs.SetShootTime(1.15f);
-        }
-
-        return burst * 1 / infoHT.autoRate;
     }
 
     private void OnDrawGizmos()

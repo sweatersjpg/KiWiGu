@@ -1,7 +1,6 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
-using UnityEngine.U2D;
 
 public class HellfireEnemy : MonoBehaviour
 {
@@ -21,6 +20,7 @@ public class HellfireEnemy : MonoBehaviour
     [SerializeField] private GameObject BrokenShieldIndicator;
     [SerializeField] private Transform headPos;
     [SerializeField] private GameObject ragdoll;
+    [SerializeField] private Transform ragdollSpawnPoint;
     [SerializeField] GameObject splatoodFX;
     [SerializeField] private Transform spineBone;
     private bool lerpingShield = false;
@@ -650,7 +650,7 @@ public class HellfireEnemy : MonoBehaviour
         {
             isDead = true;
 
-            GameObject Ragdollerino = Instantiate(ragdoll, transform.position, transform.rotation);
+            GameObject Ragdollerino = Instantiate(ragdoll, ragdollSpawnPoint.position, ragdollSpawnPoint.rotation);
 
             if (isHoldingGun)
             {

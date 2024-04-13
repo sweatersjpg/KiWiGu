@@ -23,8 +23,10 @@ public class WaveSystem : MonoBehaviour
     List<Transform> freeSpawnPoints;
 
     List<GameObject> enemyMasterList;
-    
+
     // Start is called before the first frame update
+
+
     void Start()
     {
         ResetSpawnPoints();
@@ -39,6 +41,7 @@ public class WaveSystem : MonoBehaviour
             StartCoroutine(nameof(StartWave));
         }
         else currentWave = -1;
+
     }
 
     // Update is called once per frame
