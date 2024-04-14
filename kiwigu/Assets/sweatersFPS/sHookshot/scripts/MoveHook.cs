@@ -122,7 +122,7 @@ public class MoveHook : MonoBehaviour
         else deltaTime = Time.deltaTime;
 
         lifeTime += Time.deltaTime;
-        if(lifeTime > 0.5f) gameObject.name = "HookShot (Heading Back)";
+        if(lifeTime > 0.1f) gameObject.name = "HookShot (Heading Back)";
 
         if (parentHook)
         {
