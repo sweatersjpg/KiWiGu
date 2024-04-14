@@ -332,10 +332,10 @@ public class MoveHook : MonoBehaviour
 
         bool hasHit = Physics.Raycast(pPosition, transform.position - pPosition,
             out RaycastHit hit, (transform.position - pPosition).magnitude,
-            ~LayerMask.GetMask("GunHand", "Player", "HookTarget", "TransparentFX", "HookShot", "BulletView"));
+            ~LayerMask.GetMask("GunHand", "Player", "HookTarget", "TransparentFX", "HookShot", "BulletView", "DialogTrigger"));
 
         if (hasHit)
-        {
+        {            
             if(hit.transform.gameObject.layer == LayerMask.NameToLayer("Water"))
             {
                 StartFishing();
