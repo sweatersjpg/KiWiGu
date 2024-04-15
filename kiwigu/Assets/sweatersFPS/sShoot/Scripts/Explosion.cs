@@ -68,6 +68,17 @@ public class Explosion : MonoBehaviour
                         ShieldDamage(enemy);
                 }
             }
+            else if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Shield") && hit.transform.gameObject.CompareTag("Armor"))
+            {
+                Transform root = GetRootParent(hit.transform);
+
+                if(alreadyHit.Contains(root.gameObject)) return;
+                alreadyHit.Add(root.gameObject);
+
+                ArmorPiece armor = hit.transform.gameObject.GetComponent<ArmorPiece>();
+
+                armor.Hit(damageDealt);
+            }
         }
 
         foreach (Collider hit in hits)
@@ -94,7 +105,7 @@ public class Explosion : MonoBehaviour
             else if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Player"))
             {
                 // rocket jumping uwu
-                Vector3 direction = (transform.position - hit.transform.position);
+                Vector3 direction = (transform.position - sweatersController.instance.playerCamera.transform.position);
                 hit.transform.GetComponent<PlayerHealth>().DealDamage(damageDealt / 2, direction.normalized); // half damage
 
                 direction.Normalize();

@@ -53,6 +53,8 @@ public class MoveHook : MonoBehaviour
 
     bool hasKicked = false;
 
+    float lifeTime = 0;
+
     void Start()
     {
         float startingSpeed = Mathf.Sqrt(2 * trackingAcceleration * hookRange / 2);
@@ -103,6 +105,10 @@ public class MoveHook : MonoBehaviour
             
         }
 
+        // start first raycast from camera
+        pPosition = sweatersController.instance.playerCamera.transform.position
+            - sweatersController.instance.playerCamera.transform.forward * 0.8f;
+
     }
 
     // Update is called once per frame
@@ -115,7 +121,10 @@ public class MoveHook : MonoBehaviour
         }
         else deltaTime = Time.deltaTime;
 
-        if(parentHook)
+        lifeTime += Time.deltaTime;
+        if(lifeTime > 0.5f) gameObject.name = "HookShot (Heading Back)";
+
+        if (parentHook)
         {
             transform.position = parentHook.transform.position - offsetFromOtherHook/2;
 
@@ -137,7 +146,8 @@ public class MoveHook : MonoBehaviour
             return;
         }
 
-        pPosition = transform.position;
+        // moved to end of update
+        // pPosition = transform.position;
 
         Vector3 heading = home.transform.position - transform.position;
 
@@ -255,6 +265,8 @@ public class MoveHook : MonoBehaviour
 
         DoPhysics();
         UpdateChain();
+
+        pPosition = transform.position;
     }
 
     void DamageEnemy(Transform t)
@@ -320,7 +332,7 @@ public class MoveHook : MonoBehaviour
 
         bool hasHit = Physics.Raycast(pPosition, transform.position - pPosition,
             out RaycastHit hit, (transform.position - pPosition).magnitude,
-            ~LayerMask.GetMask("GunHand", "Player", "HookTarget", "TransparentFX", "HookShot"));
+            ~LayerMask.GetMask("GunHand", "Player", "HookTarget", "TransparentFX", "HookShot", "BulletView"));
 
         if (hasHit)
         {
@@ -475,6 +487,8 @@ public class MoveHook : MonoBehaviour
             hit.transform.gameObject.GetComponent<PhysicsHit>().Hit(hit.point, velocity);
         }
 
+        gameObject.name = "HookShot (Heading Back)";
+
         if (headingBack) return;
 
         speed /= 2;
@@ -505,10 +519,11 @@ public class MoveHook : MonoBehaviour
             AddChainSegment(transform.position + Random.insideUnitSphere * 0.1f - velocity.normalized * 0.1f);
         }
 
-        chain.SetPosition(chain.positionCount - 1, home.transform.position);
+        chain.SetPosition(chain.positionCount - 1, sweatersController.instance.playerCamera.transform.position - sweatersController.instance.playerCamera.transform.up);
+        chain.SetPosition(chain.positionCount - 2, home.transform.position + home.transform.up * 0.12f);
         chain.SetPosition(0, transform.position);
 
-        for (int i = 1; i < chain.positionCount - 1; i++)
+        for (int i = 1; i < chain.positionCount - 2; i++)
         {
             Vector3 p = chain.GetPosition(i);
 
@@ -530,7 +545,7 @@ public class MoveHook : MonoBehaviour
         chain.positionCount++;
 
         // shift positions down
-        for (int i = chain.positionCount - 2; i >= 1; i--)
+        for (int i = chain.positionCount - 3; i >= 1; i--)
         {
             chain.SetPosition(i + 1, chain.GetPosition(i));
         }
@@ -618,7 +633,8 @@ public class MoveHook : MonoBehaviour
         }
         if(childHook)
         {
-            
+            childHook.headingBack = true;
+            childHook.speed = 0;
             childHook.parentHook = null;
             childHook = null;
         }

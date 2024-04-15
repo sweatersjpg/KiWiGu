@@ -23,8 +23,10 @@ public class WaveSystem : MonoBehaviour
     List<Transform> freeSpawnPoints;
 
     List<GameObject> enemyMasterList;
-    
+
     // Start is called before the first frame update
+
+
     void Start()
     {
         ResetSpawnPoints();
@@ -39,6 +41,7 @@ public class WaveSystem : MonoBehaviour
             StartCoroutine(nameof(StartWave));
         }
         else currentWave = -1;
+
     }
 
     // Update is called once per frame
@@ -144,7 +147,7 @@ public class WaveSystem : MonoBehaviour
         EnemyWave.Spawn spawner = waves[currentWave].enemySpawns[index];
 
         // if endless, mark spawner as finished
-        if (spawner.endless) activeSpawners--;
+        if (spawner.endless || spawner.notRequired) activeSpawners--;
 
         List<Transform> enemies = new List<Transform>();
 
@@ -188,7 +191,7 @@ public class WaveSystem : MonoBehaviour
             if (spawner.endless && i == spawner.stages.Length - 1) i = -1;
         }
 
-        activeSpawners--;
+        if(!spawner.notRequired) activeSpawners--;
     }
 
     Transform StartEnemySpawn(GameObject prefab, GunInfo gunType, Transform customSpawn)
