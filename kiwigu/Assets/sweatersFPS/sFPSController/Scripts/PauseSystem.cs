@@ -83,6 +83,7 @@ public class PauseSystem : MonoBehaviour
 
     public void TogglePaused()
     {
+        Cyan.Blit.instance.PauseGlitch();
         Cursor.lockState = !paused ? CursorLockMode.None : CursorLockMode.Locked;
         Cursor.visible = !paused;
         Time.timeScale = !paused ? 0 : 1;
