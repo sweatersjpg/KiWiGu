@@ -1,0 +1,96 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 23c1375cd985d95488add3e7772559e4, type: 3}
+  m_Name: ZenGun
+  m_EditorClassIdentifier: 
+  shootSound: {fileID: 0}
+  emptyMagSFX: {fileID: 0}
+  gunName: 
+  canAim: 1
+  hasToAim: 0
+  aimDelay: 0.3
+  aimTime: 0.3
+  scopeFOV: 50
+  capacity: 100
+  recharge: 0
+  rechargeRate: 5
+  canCharge: 0
+  timeToMaxCharge: 1
+  chargeCurve:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  fullAuto: 0
+  projectiles: 1
+  burstSize: 1
+  autoRate: 2
+  fireRate: 2
+  damage: 420
+  spread: 0.02
+  recoil: 20
+  spreadVariation:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  cameraRecoil:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 1
+      outSlope: 1
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 1
+      outSlope: 1
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  recoilPerShot: 0.5
+  recoilReturnTime: 0.5
+  bulletSpeed: 370
+  bulletGravity: -9.8
+  bulletPrefab: {fileID: 0}
+  gunPrefab: {fileID: 9025670313450575901, guid: f968b15542eb60c48a0a62724da2512c, type: 3}
+  guUI: {fileID: 0}

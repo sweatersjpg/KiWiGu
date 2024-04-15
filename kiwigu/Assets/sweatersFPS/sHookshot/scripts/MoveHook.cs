@@ -122,7 +122,7 @@ public class MoveHook : MonoBehaviour
         else deltaTime = Time.deltaTime;
 
         lifeTime += Time.deltaTime;
-        if(lifeTime > 0.5f) gameObject.name = "HookShot (Heading Back)";
+        if(lifeTime > 0.1f) gameObject.name = "HookShot (Heading Back)";
 
         if (parentHook)
         {
@@ -332,10 +332,10 @@ public class MoveHook : MonoBehaviour
 
         bool hasHit = Physics.Raycast(pPosition, transform.position - pPosition,
             out RaycastHit hit, (transform.position - pPosition).magnitude,
-            ~LayerMask.GetMask("GunHand", "Player", "HookTarget", "TransparentFX", "HookShot", "BulletView"));
+            ~LayerMask.GetMask("GunHand", "Player", "HookTarget", "TransparentFX", "HookShot", "BulletView", "DialogTrigger"));
 
         if (hasHit)
-        {
+        {            
             if(hit.transform.gameObject.layer == LayerMask.NameToLayer("Water"))
             {
                 StartFishing();

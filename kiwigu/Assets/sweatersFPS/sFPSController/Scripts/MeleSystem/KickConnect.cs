@@ -19,7 +19,7 @@ public class KickConnect : MonoBehaviour
     void Update()
     {
         bool hasHit = Physics.Raycast(transform.position, (attackLocation.position - transform.position), out RaycastHit hit, targetDistance,
-            ~LayerMask.GetMask("GunHand", "Player", "HookTarget", "TransparentFX", "HookShot"));
+            ~LayerMask.GetMask("GunHand", "Player", "HookTarget", "TransparentFX", "HookShot", "DialogTrigger"));
 
         Debug.DrawRay(transform.position, (attackLocation.position - transform.position));
 

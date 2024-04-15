@@ -23,7 +23,8 @@ public class AcquireTarget : MonoBehaviour
     void Update()
     {
         // finer target including walls
-        Vector3 target1 = GetTarget(0.01f, ~LayerMask.GetMask("GunHand", "Player", "HookTarget", "EnergyWall", "BulletView"));
+        Vector3 target1 = GetTarget(0.01f,
+            ~LayerMask.GetMask("GunHand", "Player", "HookTarget", "EnergyWall", "BulletView", "DialogTrigger", "TransparentFX"));
 
         // wider target including enemies / PhysicsObjects
         Vector3 target2 = GetTarget(radius, LayerMask.GetMask("Enemy", "PhysicsObject"));
