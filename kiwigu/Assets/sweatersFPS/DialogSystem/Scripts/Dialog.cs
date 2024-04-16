@@ -54,7 +54,7 @@ public class Dialog : ScriptableObject
                 {
                     if (i < audioClips.Length && audioClips[i] != null)
                     {
-                        lineDurations.Add(audioClips[i].length);
+                        lineDurations.Add(audioClips[i].length - (displayText[i].Length / DialogManager.TextSpeed));
                     }
                     else    // if no voice for this line, set to default duration
                     {

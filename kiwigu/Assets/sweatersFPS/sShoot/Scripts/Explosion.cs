@@ -105,7 +105,7 @@ public class Explosion : MonoBehaviour
             else if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Player"))
             {
                 // rocket jumping uwu
-                Vector3 direction = (transform.position - hit.transform.position);
+                Vector3 direction = (transform.position - sweatersController.instance.playerCamera.transform.position);
                 hit.transform.GetComponent<PlayerHealth>().DealDamage(damageDealt / 2, direction.normalized); // half damage
 
                 direction.Normalize();

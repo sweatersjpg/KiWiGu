@@ -53,13 +53,16 @@ class HealthBar : MonoBehaviour
     [SerializeField] List<Material> healthBarMaterials;
     float actualPercent;
 
-    void Start()
+    void OnEnable()
     {
         fullBarDist = dist = leftBar.anchoredPosition3D.x;
         fullDist = ((RectTransform)healthBarImages[3].transform).anchoredPosition3D.x;
-        foreach (Image i in healthBarImages)
+
+        // make an instance of each material so it doesn't edit the original (this is a UI Image specific problem)
+        for (int i = 0; i < healthBarImages.Count; i++)
         {
-            healthBarMaterials.Add(i.GetComponent<Image>().material);
+            healthBarMaterials.Add(Instantiate(healthBarImages[i].material));
+            healthBarImages[i].material = healthBarMaterials[i];
         }
     }
 
@@ -145,10 +148,5 @@ class HealthBar : MonoBehaviour
         leftBar.anchoredPosition3D = new Vector3(dist * ((percent - pulseThresholdPercent) / (1f - pulseThresholdPercent)), buffer.y, buffer.z);
         buffer = rightBar.anchoredPosition3D;
         rightBar.anchoredPosition3D = new Vector3(-dist * ((percent - pulseThresholdPercent) / (1f - pulseThresholdPercent)), buffer.y, buffer.z);
-    }
-
-    void OnApplicationQuit()
-    {
-        ApplyPercent(1f);   // reset materials
     }
 }

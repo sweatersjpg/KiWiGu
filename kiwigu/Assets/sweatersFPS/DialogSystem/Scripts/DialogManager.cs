@@ -11,7 +11,7 @@ public class DialogManager : MonoBehaviour
 
     [HideInInspector] public bool active;
 
-    [SerializeField] float textSpeed = 20;
+    public static float TextSpeed = 90f;
     public int currentDialogPriority = 0;
 
     [Space]
@@ -87,7 +87,7 @@ public class DialogManager : MonoBehaviour
         for (int i = 0; i < text.Length; i++)
         {
             dialogTextMesh.text += text[i];
-            yield return new WaitForSeconds(1 / textSpeed);
+            yield return new WaitForSeconds(1 / TextSpeed);
         }
         yield return new WaitForSeconds(textDuration);
         textComplete = true;

@@ -18,6 +18,9 @@ public class ThrownGun : MonoBehaviour
     public GameObject explosion;
     public GameObject directionalHit;
 
+    public bool hasView = true;
+    public bool explodeOnContact = true;
+
     void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -28,6 +31,8 @@ public class ThrownGun : MonoBehaviour
         rb.velocity += sweatersController.instance.GetRelativity();
 
         if(ammo.capacity == 0) ammo = new Ammunition(info.capacity);
+
+        if (!hasView) return;
 
         Transform gunView = info.gunPrefab.transform.Find("GunView");
 
@@ -83,7 +88,7 @@ public class ThrownGun : MonoBehaviour
 
         //if (ammo.count / ammo.capacity < 0.2f)
         //{
-        Explode();
+        if(explodeOnContact) Explode();
 
         //}
         //else if (collision.gameObject.layer == LayerMask.NameToLayer("Enemy"))
@@ -99,7 +104,7 @@ public class ThrownGun : MonoBehaviour
     }
 
     void Explode()
-    {
+    {        
         Instantiate(explosion, transform.position, Quaternion.identity);
         Destroy(gameObject);
     }

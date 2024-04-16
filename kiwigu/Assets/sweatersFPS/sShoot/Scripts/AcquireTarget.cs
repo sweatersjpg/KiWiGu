@@ -23,7 +23,8 @@ public class AcquireTarget : MonoBehaviour
     void Update()
     {
         // finer target including walls
-        Vector3 target1 = GetTarget(0.01f, ~LayerMask.GetMask("GunHand", "Player", "HookTarget", "EnergyWall", "BulletView"));
+        Vector3 target1 = GetTarget(0.01f,
+            ~LayerMask.GetMask("GunHand", "Player", "HookTarget", "EnergyWall", "BulletView", "DialogTrigger", "TransparentFX"));
 
         // wider target including enemies / PhysicsObjects
         Vector3 target2 = GetTarget(radius, LayerMask.GetMask("Enemy", "PhysicsObject"));
@@ -98,7 +99,9 @@ public class AcquireTarget : MonoBehaviour
 
     public Vector3 GetJustHookTarget(out HookTarget hookTarget)
     {
-        bool hasHit = Physics.SphereCast(Camera.main.transform.position, radius * radius, Camera.main.transform.forward,
+        Camera cam = sweatersController.instance.playerCamera;
+        
+        bool hasHit = Physics.SphereCast(cam.transform.position, radius * radius, cam.transform.forward,
             out RaycastHit hit, maxDistance, ~LayerMask.GetMask("GunHand", "Player", "Shield", "BulletView"));
 
         hookTarget = null;

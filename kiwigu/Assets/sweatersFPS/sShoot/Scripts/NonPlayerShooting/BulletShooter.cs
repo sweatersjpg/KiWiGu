@@ -136,7 +136,7 @@ public class BulletShooter : MonoBehaviour
         b.speed = info.bulletSpeed;
         b.gravity = info.bulletGravity;
         b.charge = charge;
-        b.ignoreMask = ~LayerMask.GetMask("GunHand", "HookTarget", "BulletView");
+        b.ignoreMask = ~LayerMask.GetMask("GunHand", "HookTarget", "BulletView", "DialogTrigger", "TransparentFX");
         b.bulletDamage = info.damage;
         b.fromEnemy = true;
 
