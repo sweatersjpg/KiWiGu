@@ -399,7 +399,7 @@ public class PistolGrunt : MonoBehaviour
 
         float rotationSpeed = isShooting ? 4f : 10f;
 
-        agent.transform.rotation = Quaternion.Slerp(agent.transform.rotation, targetRotation, rotationSpeed * Time.deltaTime * 0.5f);
+        agent.transform.rotation = Quaternion.Slerp(agent.transform.rotation, targetRotation, rotationSpeed * Time.deltaTime * 1.5f);
     }
 
 
