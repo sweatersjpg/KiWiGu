@@ -194,8 +194,17 @@ namespace Cyan
             RenderTextureObject
         }
 
+        public static Blit instance;
+
         public BlitSettings settings = new BlitSettings();
         public BlitPass blitPass;
+
+        public Blit()
+        {
+            if (instance != null) Destroy(instance);
+
+            instance = this;
+        }
 
         public override void Create()
         {
@@ -272,6 +281,11 @@ namespace Cyan
             blitPass.blitMaterial.SetFloat("_NoiseAmount", noiseAmount);
             blitPass.blitMaterial.SetFloat("_ScanLinesStrength", scanLinesStrength);
             blitPass.blitMaterial.SetFloat("_VignetteIntensity", vignetteIntensity);
+        }
+
+        public void PauseGlitch()
+        {
+            blitPass.blitMaterial.SetFloat("_GlitchStrength", 0f);
         }
     }
 }
