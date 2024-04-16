@@ -7,11 +7,13 @@ public class Popup : MonoBehaviour
     [SerializeField] GameObject popupObject;
     private void OnTriggerEnter(Collider collision)
     {
-        popupObject.SetActive(true);
+        if(popupObject)
+            popupObject.SetActive(true);
     }
 
     private void OnTriggerExit(Collider collision)
     {
-        popupObject.SetActive(false);
+        if (popupObject)
+            popupObject.SetActive(false);
     }
 }
