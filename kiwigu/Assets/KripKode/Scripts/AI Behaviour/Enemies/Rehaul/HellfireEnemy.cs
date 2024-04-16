@@ -427,7 +427,7 @@ public class HellfireEnemy : MonoBehaviour
 
         Quaternion targetRotation = Quaternion.LookRotation(objPos - agent.transform.position);
 
-        agent.transform.rotation = Quaternion.Slerp(agent.transform.rotation, targetRotation, Time.deltaTime * 0.5f);
+        agent.transform.rotation = Quaternion.Slerp(agent.transform.rotation, targetRotation, Time.deltaTime * 2.0f);
     }
 
     private void RotateGunObjectExitPoint(Vector3 playerPosition)

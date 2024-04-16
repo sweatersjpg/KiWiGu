@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 75175999668277069}
   - component: {fileID: 2805711118118173575}
   - component: {fileID: 2897597409200127915}
+  - component: {fileID: 804236855210305869}
   m_Layer: 0
   m_Name: HumanJump
   m_TagString: Untagged
@@ -95,6 +96,19 @@ MeshCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 4
-  m_Convex: 0
+  m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: -8637855221240566462, guid: c4d4396308b562b4ab6c942c8d738338, type: 3}
+--- !u!65 &804236855210305869
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4462819934013200978}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 4, y: 1, z: 0.95301056}
+  m_Center: {x: -2, y: 0.5, z: -5.164356}
