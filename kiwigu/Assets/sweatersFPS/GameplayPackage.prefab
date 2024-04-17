@@ -924,6 +924,7 @@ MonoBehaviour:
   battleStemTwo: {fileID: 8300000, guid: dc806500cf969054e817838d836c67bc, type: 3}
   battleTrigger: 0
   voiceLineSource: {fileID: 5852021742123942909}
+  isEnemyBarking: 0
 --- !u!82 &5852021742123942909
 AudioSource:
   m_ObjectHideFlags: 0
@@ -1496,6 +1497,10 @@ PrefabInstance:
     - target: {fileID: 3293893498595684211, guid: cbb06f0e6cdf74cf0b9c73b2af08aeb7, type: 3}
       propertyPath: m_IsActive
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4619342294562106003, guid: cbb06f0e6cdf74cf0b9c73b2af08aeb7, type: 3}
+      propertyPath: m_CullingMask.m_Bits
+      value: 1015573
       objectReference: {fileID: 0}
     - target: {fileID: 4619342294706443279, guid: cbb06f0e6cdf74cf0b9c73b2af08aeb7, type: 3}
       propertyPath: m_RootOrder
