@@ -628,7 +628,11 @@ public class MoveHook : MonoBehaviour
             sweatersController player = sweatersController.instance;
 
             // if (hookTarget.tether && hookTarget.info) Destroy(hookTarget.gameObject);
-            if (hookTarget.tether) player.maxSpeed = player.airSpeed * 0.75f;
+            if (hookTarget.tether)
+            {
+                player.maxSpeed = player.airSpeed * 0.75f;
+                SlowMo.SlowTime(0.5f, 0.5f);
+            }
             else player.maxSpeed = player.airSpeed * 0.5f;
             player.velocity = Vector3.ClampMagnitude(player.velocity, player.maxSpeed);
 
