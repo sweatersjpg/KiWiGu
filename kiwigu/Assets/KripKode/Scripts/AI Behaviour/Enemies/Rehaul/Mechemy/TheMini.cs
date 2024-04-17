@@ -159,7 +159,7 @@ public class TheMini : MonoBehaviour
         targetRotation.x = 0;
         targetRotation.z = 0;
 
-        transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 1.75f);
+        transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 2.5f);
 
         RotateGunObjectExitPoint(detectedPlayer.transform.position);
     }
