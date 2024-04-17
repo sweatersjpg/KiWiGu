@@ -173,7 +173,7 @@ public class PauseSystem : MonoBehaviour
 
         SaveSetting(nameof(musicVol));
 
-        Debug.Log(value + " = " + musicVol);
+        //Debug.Log(value + " = " + musicVol);
     }
 
     public void UpdateMasterVolume(float value)

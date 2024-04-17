@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -77,15 +78,31 @@ public class PistolGrunt : MonoBehaviour
 
     private float lastPunchTime;
     private float punchCooldown = 1.0f;
+    public string enemyGender;
 
     private void Awake()
     {
+        ChooseVoiceGender();
+
         ht = GetComponentInChildren<HookTarget>();
 
         if (ht)
         {
             isHoldingGun = true;
             ht.info = gunInfo;
+        }
+    }
+
+    private void ChooseVoiceGender()
+    {
+        int random = Random.Range(0, 2);
+        if (random == 0)
+        {
+            enemyGender = "Male";
+        }
+        else
+        {
+            enemyGender = "Female";
         }
     }
 
@@ -153,6 +170,7 @@ public class PistolGrunt : MonoBehaviour
 
     public virtual void TakeGun()
     {
+        GlobalAudioManager.instance.PlayEnemyBark(transform, "Take Gun", enemyGender);
         isHoldingGun = false;
         isShooting = false;
         gotHit = true;
@@ -270,6 +288,9 @@ public class PistolGrunt : MonoBehaviour
             {
                 animator.SetBool("run", true);
             }
+
+            if (!detectedPlayer)
+                return;
 
             Vector3 playerPosition = detectedPlayer.transform.position;
             Vector3 directionToPlayer = playerPosition - transform.position;
@@ -459,8 +480,9 @@ public class PistolGrunt : MonoBehaviour
         int layerMask3 = LayerMask.GetMask("Shield");
         int layerMask4 = LayerMask.GetMask("GunHand");
         int layerMask5 = LayerMask.GetMask("EnergyWall");
+        int layerMask6 = LayerMask.GetMask("Backpack");
 
-        int combinedLayerMask = layerMask | layerMask2 | layerMask3 | layerMask4 | layerMask5;
+        int combinedLayerMask = layerMask | layerMask2 | layerMask3 | layerMask4 | layerMask5 | layerMask6;
 
 
         foreach (Collider hitCollider in hitColliders)
@@ -521,11 +543,6 @@ public class PistolGrunt : MonoBehaviour
             return;
 
         EnemyShoot();
-    }
-
-    IEnumerator ShootFloat()
-    {
-        yield return new WaitForSeconds(EnemyShoot());
     }
 
     public void BackpackDamage(float bulletDamage)
@@ -641,12 +658,63 @@ public class PistolGrunt : MonoBehaviour
                 isShooting = false;
             }
 
+            SendDeathSignal();
             agent.SetDestination(transform.position);
             Destroy(ragdollInstance, 15f);
             Destroy(gameObject);
         }
     }
 
+    public void CommunicateDeath(Transform transForm, string gender)
+    {
+        Debug.Log("sent");
+        GlobalAudioManager.instance.PlayEnemyBark(transForm, "Death Alert", gender);
+    }
+
+    private void SendDeathSignal()
+    {
+        GameObject[] allObjects = GameObject.FindGameObjectsWithTag("Enemy");
+
+        List<float> distances = new List<float>();
+        List<GameObject> nearbyObjects = new List<GameObject>();
+
+        foreach (GameObject obj in allObjects)
+        {
+            if (obj == gameObject || obj.transform.IsChildOf(transform))
+            {
+                continue;
+            }
+
+            PistolGrunt pistolGruntScript = obj.GetComponent<PistolGrunt>();
+            HellfireEnemy hellfireScript = obj.GetComponent<HellfireEnemy>();
+
+            if (pistolGruntScript != null || hellfireScript != null)
+            {
+                float distance = Vector3.Distance(transform.position, obj.transform.position);
+                if (distance <= seekRange)
+                {
+                    distances.Add(distance);
+                    nearbyObjects.Add(obj);
+                }
+            }
+        }
+
+        if (nearbyObjects.Count > 0)
+        {
+            float minDistance = Mathf.Min(distances.ToArray());
+            int minIndex = distances.IndexOf(minDistance);
+            GameObject closestObject = nearbyObjects[minIndex];
+
+            if (closestObject.GetComponent<PistolGrunt>() != null)
+            {
+                closestObject.GetComponent<PistolGrunt>().CommunicateDeath(closestObject.transform, closestObject.GetComponent<PistolGrunt>().enemyGender);
+            }
+            else if (closestObject.GetComponent<HellfireEnemy>() != null)
+            {
+                closestObject.GetComponent<HellfireEnemy>().CommunicateDeath(closestObject.transform, closestObject.GetComponent<HellfireEnemy>().enemyGender);
+            }
+        }
+    }
 
     private void EnableHookTargetsRecursively(Transform parent)
     {

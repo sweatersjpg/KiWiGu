@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -82,15 +83,30 @@ public class HellfireEnemy : MonoBehaviour
     private float currentRotationTime;
     private bool isRotating;
     private bool isLeaping;
+    public string enemyGender;
 
     private void Awake()
     {
+        ChooseVoiceGender();
+
         ht = GetComponentInChildren<HookTarget>();
 
         if (ht)
         {
             isHoldingGun = true;
             ht.info = gunInfo;
+        }
+    }
+    private void ChooseVoiceGender()
+    {
+        int random = Random.Range(0, 2);
+        if (random == 0)
+        {
+            enemyGender = "Male";
+        }
+        else
+        {
+            enemyGender = "Female";
         }
     }
 
@@ -547,6 +563,7 @@ public class HellfireEnemy : MonoBehaviour
 
     public virtual void TakeGun()
     {
+        GlobalAudioManager.instance.PlayEnemyBark(transform, "Take Gun", enemyGender);
         isHoldingGun = false;
         isShooting = false;
         enemyState = EnemyState.Wandering;
@@ -663,12 +680,66 @@ public class HellfireEnemy : MonoBehaviour
                 isHoldingGun = false;
                 isShooting = false;
             }
-            agent.SetDestination(transform.position);
 
+            SendDeathSignal();
+            agent.SetDestination(transform.position);
             Destroy(Ragdollerino, 15f);
             Destroy(gameObject);
         }
     }
+
+    public void CommunicateDeath(Transform transForm, string gender)
+    {
+        Debug.Log("sent");
+
+        GlobalAudioManager.instance.PlayEnemyBark(transForm, "Death Alert", gender);
+    }
+
+    private void SendDeathSignal()
+    {
+        GameObject[] allObjects = GameObject.FindGameObjectsWithTag("Enemy");
+
+        List<float> distances = new List<float>();
+        List<GameObject> nearbyObjects = new List<GameObject>();
+
+        foreach (GameObject obj in allObjects)
+        {
+            if (obj == gameObject || obj.transform.IsChildOf(transform))
+            {
+                continue;
+            }
+
+            PistolGrunt pistolGruntScript = obj.GetComponent<PistolGrunt>();
+            HellfireEnemy hellfireScript = obj.GetComponent<HellfireEnemy>();
+
+            if (pistolGruntScript != null || hellfireScript != null)
+            {
+                float distance = Vector3.Distance(transform.position, obj.transform.position);
+                if (distance <= seekRange)
+                {
+                    distances.Add(distance);
+                    nearbyObjects.Add(obj);
+                }
+            }
+        }
+
+        if (nearbyObjects.Count > 0)
+        {
+            float minDistance = Mathf.Min(distances.ToArray());
+            int minIndex = distances.IndexOf(minDistance);
+            GameObject closestObject = nearbyObjects[minIndex];
+
+            if (closestObject.GetComponent<PistolGrunt>() != null)
+            {
+                closestObject.GetComponent<PistolGrunt>().CommunicateDeath(closestObject.transform, closestObject.GetComponent<PistolGrunt>().enemyGender);
+            }
+            else if (closestObject.GetComponent<HellfireEnemy>() != null)
+            {
+                closestObject.GetComponent<HellfireEnemy>().CommunicateDeath(closestObject.transform, closestObject.GetComponent<HellfireEnemy>().enemyGender);
+            }
+        }
+    }
+
 
     private void EnableHookTargetsRecursively(Transform parent)
     {

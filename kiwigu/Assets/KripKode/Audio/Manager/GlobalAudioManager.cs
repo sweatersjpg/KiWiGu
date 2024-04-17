@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.Audio;
 
@@ -26,6 +27,12 @@ public class GlobalAudioManager : MonoBehaviour
     public AudioClip[] bulletHitFleshSFX;
     public AudioClip[] bulletHitArmorSFX;
 
+    [Space(10)]
+    public AudioClip[] gruntStolenSoundsMale;
+    public AudioClip[] gruntStolenSoundsFemale;
+    public AudioClip[] gruntDeathSoundsMale;
+    public AudioClip[] gruntDeathSoundsFemale;
+
     // Variables
     [Space(10)]
     public AudioSource battleSourceA;
@@ -35,6 +42,8 @@ public class GlobalAudioManager : MonoBehaviour
     public bool battleTrigger = false;
 
     public AudioSource voiceLineSource;
+
+    public bool isEnemyBarking = false;
 
     private void Awake()
     {
@@ -56,11 +65,17 @@ public class GlobalAudioManager : MonoBehaviour
         PlayBattleMusic();
     }
 
-    private void PlaySound(Transform location, AudioClip clip, float volume, float pitch, float range, string reference)
+    private void PlaySound(Transform location, AudioClip clip, float volume, float pitch, float range, string reference, bool followTPosition)
     {
         GameObject soundObject = new GameObject(reference);
         soundObject.transform.position = location.position;
         soundObject.transform.parent = transform;
+
+        if (followTPosition)
+        {
+            FollowTransform followTransform = soundObject.AddComponent<FollowTransform>();
+            followTransform.targetTransform = location;
+        }
 
         AudioSource audioSource = soundObject.AddComponent<AudioSource>();
         audioSource.outputAudioMixerGroup = globalMixer.FindMatchingGroups("SFX")[0];
@@ -77,21 +92,57 @@ public class GlobalAudioManager : MonoBehaviour
         Destroy(soundObject, clip.length);
     }
 
+    private IEnumerator PlayEnemyBarkCoroutine(Transform location, AudioClip clip, float volume, float pitch, float range, string reference, bool followTPosition)
+    {
+        GameObject soundObject = new GameObject(reference);
+        soundObject.transform.position = location.position;
+        soundObject.transform.parent = transform;
+
+        if (followTPosition)
+        {
+            FollowTransform followTransform = soundObject.AddComponent<FollowTransform>();
+            followTransform.targetTransform = location;
+        }
+
+        AudioSource audioSource = soundObject.AddComponent<AudioSource>();
+        audioSource.outputAudioMixerGroup = globalMixer.FindMatchingGroups("SFX")[0];
+        audioSource.spatialBlend = 1;
+        audioSource.clip = clip;
+        audioSource.volume = volume;
+        audioSource.pitch = pitch;
+        audioSource.maxDistance = range;
+        audioSource.rolloffMode = AudioRolloffMode.Custom;
+        audioSource.dopplerLevel = 0;
+
+        audioSource.Play();
+
+        yield return new WaitForSeconds(clip.length);
+
+        Destroy(soundObject);
+        isEnemyBarking = false;
+    }
+
+    private void PlayEnemyBark(Transform location, AudioClip clip, float volume, float pitch, float range, string reference, bool followTPosition)
+    {
+        StartCoroutine(PlayEnemyBarkCoroutine(location, clip, volume, pitch, range, reference, followTPosition));
+    }
+
+
     public void PlayHeadshotSFX(Transform location)
     {
-        PlaySound(location, headshotSFX, 1, 1, 50, "headshotSFX");
+        PlaySound(location, headshotSFX, 1, 1, 50, "headshotSFX", true);
     }
 
     public void PlayGunFire(Transform location, GunInfo info)
     {
         if (info.shootSound == null) return;
-        PlaySound(location, info.shootSound, 0.5f, Random.Range(0.9f, 1.05f), 50, "shootSFX");
+        PlaySound(location, info.shootSound, 0.5f, Random.Range(0.9f, 1.05f), 50, "shootSFX", true);
     }
 
     public void PlayGunEmpty(Transform location, GunInfo info)
     {
         if (info.emptyMagSFX == null) return;
-        PlaySound(location, info.emptyMagSFX, 1, 0.5f, 25, "emptyGunSFX");
+        PlaySound(location, info.emptyMagSFX, 1, 0.5f, 25, "emptyGunSFX", true);
     }
 
     public void PlayExplosion(Transform location, string explosionType)
@@ -99,18 +150,18 @@ public class GlobalAudioManager : MonoBehaviour
         switch (explosionType)
         {
             case "Retract":
-                PlaySound(location, bulwarkRetractSFX, 1, 1, 50, "explosionSFX");
+                PlaySound(location, bulwarkRetractSFX, 1, 1, 50, "explosionSFX", false);
                 break;
             case "Bulwark":
-                PlaySound(location, bulwarkExplosionSFX, 1, 1, 50, "explosionSFX");
-                PlaySound(location, bulwarkExtendSFX, 1, 1, 50, "explosionSFX");
+                PlaySound(location, bulwarkExplosionSFX, 1, 1, 50, "explosionSFX", false);
+                PlaySound(location, bulwarkExtendSFX, 1, 1, 50, "explosionSFX", false); ;
                 break;
             case "Interceptor":
-                PlaySound(location, interceptorExplosionSFX, 1, 1, 50, "explosionSFX");
+                PlaySound(location, interceptorExplosionSFX, 1, 1, 50, "explosionSFX", false);
                 break;
             case "Normal":
                 AudioClip explosionSFX = explosionsSFX[Random.Range(0, explosionsSFX.Length)];
-                PlaySound(location, explosionSFX, 1, 1, 50, "explosionSFX");
+                PlaySound(location, explosionSFX, 1, 1, 50, "explosionSFX", false);
                 break;
         }
     }
@@ -120,33 +171,33 @@ public class GlobalAudioManager : MonoBehaviour
         switch (actionReference)
         {
             case "Throw":
-                PlaySound(location, hookThrowSFX, 1, 1, 50, "hookThrowSFX");
+                PlaySound(location, hookThrowSFX, 1, 1, 50, "hookThrowSFX", false);
                 break;
             case "Snatched":
-                PlaySound(location, hookSnatchedSFX, 1, 1, 50, "hookSnatchedSFX");
+                PlaySound(location, hookSnatchedSFX, 1, 1, 50, "hookSnatchedSFX", false);
                 break;
             case "Tug":
-                PlaySound(location, hookTugSFX, 1, 1, 50, "hookTugSFX");
+                PlaySound(location, hookTugSFX, 1, 1, 50, "hookTugSFX", false);
                 break;
             case "Bounce":
-                PlaySound(location, hookBounceSFX, 1, Random.Range(0.9f, 1.05f), 50, "hookBounceSFX");
+                PlaySound(location, hookBounceSFX, 0.55f, Random.Range(0.9f, 1.05f), 50, "hookBounceSFX", false);
                 break;
             case "Whip Back":
-                PlaySound(location, hookWhipBackSFX, 1, 1, 50, "hookWhipBackSFX");
+                PlaySound(location, hookWhipBackSFX, 1, 1, 50, "hookWhipBackSFX", false);
                 break;
             case "Launch":
-                PlaySound(location, grappleLaunchSFX, 1, 1, 50, "grappleLaunchSFX");
+                PlaySound(location, grappleLaunchSFX, 1, 1, 50, "grappleLaunchSFX", false);
                 break;
             case "Hit":
                 AudioClip hookHitSFX = hookHitSFXs[Random.Range(0, hookHitSFXs.Length)];
-                PlaySound(location, hookHitSFX, 1, 1, 50, "hookHitSFX");
+                PlaySound(location, hookHitSFX, 1, 1, 50, "hookHitSFX", false);
                 break;
         }
     }
 
     public void PlayKick(Transform location)
     {
-        PlaySound(location, kickSFX[Random.Range(0, kickSFX.Length)], 1, 1, 50, "kickSFX");
+        PlaySound(location, kickSFX[Random.Range(0, kickSFX.Length)], 1, 1, 50, "kickSFX", false);
 
     }
 
@@ -155,16 +206,16 @@ public class GlobalAudioManager : MonoBehaviour
         switch (type)
         {
             case "Flesh":
-                PlaySound(location, bulletHitFleshSFX[Random.Range(0, bulletHitFleshSFX.Length)], 0.4f, 1, 50, "hitFleshSFX");
+                PlaySound(location, bulletHitFleshSFX[Random.Range(0, bulletHitFleshSFX.Length)], 0.4f, 1, 50, "hitFleshSFX", false);
                 break;
             case "Armor":
-                PlaySound(location, bulletHitArmorSFX[Random.Range(0, bulletHitArmorSFX.Length)], 1, 1, 50, "hitArmorSFX");
+                PlaySound(location, bulletHitArmorSFX[Random.Range(0, bulletHitArmorSFX.Length)], 1, 1, 50, "hitArmorSFX", false);
                 break;
             case "Headshot":
                 PlayHeadshotSFX(location);
                 break;
             default:
-                PlaySound(location, bulletHitSFX[Random.Range(0, bulletHitSFX.Length)], 1, 1, 30, "bulletHitSFX");
+                PlaySound(location, bulletHitSFX[Random.Range(0, bulletHitSFX.Length)], 1, 1, 30, "bulletHitSFX", false);
                 break;
         }
     }
@@ -195,5 +246,62 @@ public class GlobalAudioManager : MonoBehaviour
             battleTrigger = true;
         else
             battleTrigger = false;
+    }
+
+    public void PlayEnemyBark(Transform location, string barkType, string genderType)
+    {
+        if (isEnemyBarking) return;
+
+        if (Random.Range(0, 2) == 0) return;
+
+        switch (barkType)
+        {
+            case "Death Alert":
+
+                isEnemyBarking = true;
+
+                switch (genderType)
+                {
+                    case "Male":
+                        PlayEnemyBark(location, gruntDeathSoundsMale[Random.Range(0, gruntDeathSoundsMale.Length)], 1, 1, 50, "DeathAlertSFX", true);
+                        break;
+                    case "Female":
+                        PlayEnemyBark(location, gruntDeathSoundsFemale[Random.Range(0, gruntDeathSoundsFemale.Length)], 1, 1, 50, "DeathAlertSFX", true);
+                        break;
+                }
+                break;
+            case "Take Gun":
+
+                isEnemyBarking = true;
+
+                switch (genderType)
+                {
+                    case "Male":
+                        PlayEnemyBark(location, gruntStolenSoundsMale[Random.Range(0, gruntStolenSoundsMale.Length)], 1, 1, 50, "StolenGunSFX", true);
+                        break;
+                    case "Female":
+                        PlayEnemyBark(location, gruntStolenSoundsFemale[Random.Range(0, gruntStolenSoundsFemale.Length)], 1, 1, 50, "StolenGunSFX", true);
+                        break;
+                }
+                break;
+        }
+    }
+}
+
+public class FollowTransform : MonoBehaviour
+{
+    public Transform targetTransform;
+
+    private void Update()
+    {
+        if (targetTransform != null)
+        {
+            transform.position = targetTransform.position;
+
+            if (targetTransform == null)
+            {
+                Destroy(gameObject);
+            }
+        }
     }
 }
