@@ -606,6 +606,8 @@ public class MoveHook : MonoBehaviour
                 Transform parent = GetRootParent(hookTarget.transform);
                 TakeHookTarget();
                 if(parent != hookTarget.transform) Destroy(parent.gameObject);
+
+                SlowMo.SlowTime(1f, 0.6f);
             }
 
             float t = hookTarget.maxResistance - hookTarget.resistance;
@@ -715,7 +717,7 @@ public class MoveHook : MonoBehaviour
         {
             PullbackWithForce(0, 1);
             isGrapplnig = false;
-            SlowMo.SlowTime(0.5f, 0.5f);
+            SlowMo.SlowTime(0.5f, 0.6f);
             return;
         }
 
@@ -723,7 +725,7 @@ public class MoveHook : MonoBehaviour
         {
             isGrapplnig = false;
             PullbackWithForce(0, 1);
-            SlowMo.SlowTime(0.5f, 0.5f);
+            SlowMo.SlowTime(0.5f, 0.6f);
             return;
         }
 
