@@ -338,6 +338,7 @@ public class MoveHook : MonoBehaviour
         {            
             if(hit.transform.gameObject.layer == LayerMask.NameToLayer("Water"))
             {
+                FishingRipple(hit.transform);
                 StartFishing();
                 return;
             }
@@ -359,6 +360,12 @@ public class MoveHook : MonoBehaviour
         }
 
         // gameObject.AddComponent<sFishing>();
+    }
+
+    void FishingRipple(Transform location)
+    {
+        if (location.GetComponent<RippleManager>())
+            location.GetComponent<RippleManager>().AddRipple(location);
     }
 
     void HookGun()
