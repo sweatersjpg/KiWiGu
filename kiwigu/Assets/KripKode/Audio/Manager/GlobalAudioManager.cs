@@ -180,7 +180,7 @@ public class GlobalAudioManager : MonoBehaviour
                 PlaySound(location, hookTugSFX, 1, 1, 50, "hookTugSFX", false);
                 break;
             case "Bounce":
-                PlaySound(location, hookBounceSFX, 1, Random.Range(0.9f, 1.05f), 50, "hookBounceSFX", false);
+                PlaySound(location, hookBounceSFX, 0.55f, Random.Range(0.9f, 1.05f), 50, "hookBounceSFX", false);
                 break;
             case "Whip Back":
                 PlaySound(location, hookWhipBackSFX, 1, 1, 50, "hookWhipBackSFX", false);
