@@ -372,7 +372,7 @@ public class Mechemy : MonoBehaviour
         targetRotation.x = 0;
         targetRotation.z = 0;
 
-        agent.transform.rotation = Quaternion.Slerp(agent.transform.rotation, targetRotation, Time.deltaTime * 1.75f);
+        agent.transform.rotation = Quaternion.Slerp(agent.transform.rotation, targetRotation, Time.deltaTime * 2.5f);
 
         RotateGunObjectExitPoint(detectedPlayer.transform.position);
     }
