@@ -13,7 +13,7 @@ public class RippleManager : MonoBehaviour
 
     // [Private Variables]
     private Dictionary<string, GameObject> rippleDictionary = new Dictionary<string, GameObject>();
-    private float defaultRippleSize = 1.0f;
+    private float defaultRippleSize = 2.0f;
     private RenderTexture CurrRT, PrevRT, TempRT;
     private Material RippleMat, AddMat;
 
