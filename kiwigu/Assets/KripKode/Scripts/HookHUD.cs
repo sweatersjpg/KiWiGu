@@ -78,7 +78,7 @@ public class HookHUD : MonoBehaviour
 
     private void UpdateIconProperties(Vector3 hit)
     {
-        Debug.Log("hook targetted!!!");
+        //Debug.Log("hook targetted!!!");
 
         Vector3 screenPos = Camera.main.WorldToScreenPoint(hit);
         // reticleIcon.rectTransform.position = screenPos + new Vector3(0, 10f, 0);
