@@ -86,7 +86,7 @@ public class DirectionalAttack : MonoBehaviour
             {
                 Transform root = GetRootParent(hit.transform);
 
-                if (alreadyHit.Contains(root.gameObject)) return;
+                if (alreadyHit.Contains(root.gameObject)) continue;
                 alreadyHit.Add(root.gameObject);
 
                 ArmorPiece armor = hit.transform.gameObject.GetComponent<ArmorPiece>();
@@ -150,7 +150,7 @@ public class DirectionalAttack : MonoBehaviour
             }
             else if (hit.attachedRigidbody != null)
             {
-                if (alreadyHit.Contains(hit.gameObject)) return;
+                if (alreadyHit.Contains(hit.gameObject)) continue;
                 alreadyHit.Add(hit.gameObject);
 
                 //hit.attachedRigidbody.AddExplosionForce(force, transform.position, radius);
