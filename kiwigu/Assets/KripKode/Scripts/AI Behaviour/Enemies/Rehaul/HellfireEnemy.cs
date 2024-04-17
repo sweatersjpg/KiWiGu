@@ -602,7 +602,11 @@ public class HellfireEnemy : MonoBehaviour
 
         if (currentShield < shield)
         {
+            float overflow = (currentShield + bulletDamage) - shield;
+
             currentShield = Mathf.Min(currentShield + bulletDamage, shield);
+
+            if (overflow > 0) TakeDamage(overflow, false);
 
             shieldObjectMetal.GetComponent<MeshRenderer>().materials[0].SetFloat("_DamagePercent", currentShield / shield);
         }

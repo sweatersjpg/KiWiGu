@@ -70,7 +70,8 @@ public class Explosion : MonoBehaviour
             }
             else if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Shield") && hit.transform.gameObject.CompareTag("Armor"))
             {
-                Transform root = GetRootParent(hit.transform);
+                //Transform root = GetRootParent(hit.transform);
+                Transform root = hit.transform.parent ? hit.transform.parent : hit.transform;
 
                 if(alreadyHit.Contains(root.gameObject)) continue;
                 alreadyHit.Add(root.gameObject);
