@@ -12,7 +12,7 @@ public class WumboMove : MonoBehaviour
     {
         rb = GetComponentInParent<Rigidbody>();
 
-        rb.useGravity = false;
+        // rb.useGravity = false;
     }
 
     // Update is called once per frame
@@ -20,6 +20,6 @@ public class WumboMove : MonoBehaviour
     {
         if (transform.childCount > 0) rb.velocity = Vector3.zero;
 
-        rb.AddForce(Vector3.down * gravityScale);
+        // rb.AddForce(Vector3.down * gravityScale);
     }
 }
