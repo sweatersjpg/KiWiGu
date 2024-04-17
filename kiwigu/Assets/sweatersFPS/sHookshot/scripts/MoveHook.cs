@@ -434,8 +434,8 @@ public class MoveHook : MonoBehaviour
 
     public void TakeThrownGun(GameObject target)
     {
-        caughtGun = target.transform.GetComponent<ThrownGun>().info;
-        caughtGunAmmo = target.transform.GetComponent<ThrownGun>().ammo;
+        caughtGun = target.transform.GetComponentInParent<ThrownGun>().info;
+        caughtGunAmmo = target.transform.GetComponentInParent<ThrownGun>().ammo;
 
         target.transform.parent = transform;
         target.transform.localPosition = new();
@@ -588,6 +588,7 @@ public class MoveHook : MonoBehaviour
 
     public void PullbackWithForce(float force, float vScale)
     {
+        
         isFishing = false;
         sFishing s = GetComponent<sFishing>();
         if (s)
@@ -598,6 +599,15 @@ public class MoveHook : MonoBehaviour
 
         if (hookTarget)
         {
+            if (hookTarget.tether && hookTarget.info)
+            {
+                transform.parent = null;
+
+                Transform parent = GetRootParent(hookTarget.transform);
+                TakeHookTarget();
+                if(parent != hookTarget.transform) Destroy(parent.gameObject);
+            }
+
             float t = hookTarget.maxResistance - hookTarget.resistance;
 
             if (t < 0.4) // perfect hook
@@ -617,6 +627,7 @@ public class MoveHook : MonoBehaviour
 
             sweatersController player = sweatersController.instance;
 
+            // if (hookTarget.tether && hookTarget.info) Destroy(hookTarget.gameObject);
             if (hookTarget.tether) player.maxSpeed = player.airSpeed * 0.75f;
             else player.maxSpeed = player.airSpeed * 0.5f;
             player.velocity = Vector3.ClampMagnitude(player.velocity, player.maxSpeed);
@@ -790,4 +801,5 @@ public class MoveHook : MonoBehaviour
         player.velocity = v;
 
     }
+
 }
