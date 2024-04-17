@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting.Antlr3.Runtime;
 using UnityEngine;
 
 public class GunHand : MonoBehaviour
@@ -35,6 +36,7 @@ public class GunHand : MonoBehaviour
     //public Transform parent;
 
     float deltaTime = 0;
+    bool paused = false;
 
     [HideInInspector] public bool outOfAmmo = false;
 
@@ -69,10 +71,18 @@ public class GunHand : MonoBehaviour
     // Update is called once per frame
     void LateUpdate()
     {
-        if (PauseSystem.paused) deltaTime = 0;
+        if (PauseSystem.paused) paused = true;
+
+        if (mouseButton == 0 && (Input.GetButtonUp("LeftShoot")))
+        {
+            paused = false;
+        }
+        if (mouseButton == 1 && !PauseSystem.paused) paused = false;
+
+        if (paused) deltaTime = 0;
         else deltaTime = Time.deltaTime;
 
-        if (PauseSystem.paused) return;
+        if (paused) return;
 
         //if (Input.GetMouseButtonDown(1)) ToggleDownSights();
         //if (Input.GetMouseButtonDown(0)) AnimateShoot();

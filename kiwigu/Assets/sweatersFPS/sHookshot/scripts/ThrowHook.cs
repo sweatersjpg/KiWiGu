@@ -31,6 +31,8 @@ public class ThrowHook : MonoBehaviour
 
     bool keyPressed = false;
 
+    bool paused = false;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -75,15 +77,25 @@ public class ThrowHook : MonoBehaviour
     // Update is called once per frame
     void LateUpdate()
     {
-        if (PauseSystem.paused) return;
+       
+        if (PauseSystem.paused) paused = true;
+
+        if (mouseButton == 0 && (Input.GetButtonUp("LeftShoot")) )
+        {
+            paused = false;
+        }
+        if (mouseButton == 1 && !PauseSystem.paused) paused = false;
+
+        if (paused) return;
 
         if (!hasHook && hook == null)
         {
             Destroy(gameObject);
             return;
         }
-        
+
         // ObstacleAvoidance();
+
         string[] shootButtons = { "LeftShoot", "RightShoot" };
         string shootButton = shootButtons[mouseButton];
 
