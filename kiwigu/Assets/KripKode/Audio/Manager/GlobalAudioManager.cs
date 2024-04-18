@@ -8,6 +8,9 @@ public class GlobalAudioManager : MonoBehaviour
     public AudioMixer globalMixer;
 
     // Sounds
+    public AudioClip[] waterFootstepSounds;
+    private bool isWaterPlaying = false;
+    
     public AudioClip headshotSFX;
     public AudioClip[] explosionsSFX;
     public AudioClip hookThrowSFX;
@@ -285,6 +288,26 @@ public class GlobalAudioManager : MonoBehaviour
                 }
                 break;
         }
+    }
+
+    public void PlayWaterSFX(Transform location)
+    {
+        if (!isWaterPlaying)
+        {
+            AudioClip waterClip = waterFootstepSounds[Random.Range(0, waterFootstepSounds.Length)];
+            StartCoroutine(PlayWaterCoroutine(location, waterClip));
+        }
+    }
+
+    private IEnumerator PlayWaterCoroutine(Transform location, AudioClip clip)
+    {
+        isWaterPlaying = true;
+
+        PlaySound(location, clip, 1, 1, 15, "waterFootstepSFX", true);
+
+        yield return new WaitForSeconds(clip.length - 0.25f);
+
+        isWaterPlaying = false;
     }
 }
 

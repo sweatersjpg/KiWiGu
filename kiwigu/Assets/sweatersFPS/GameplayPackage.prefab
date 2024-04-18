@@ -866,6 +866,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   globalMixer: {fileID: 24100000, guid: b866e23533bde0b4aadf5ef05de545bc, type: 2}
+  waterFootstepSounds:
+  - {fileID: 8300000, guid: 8eab35a275aa1bb458b1de4063a70be4, type: 3}
+  - {fileID: 8300000, guid: 6067ff419006c924ab76c808a9a615b5, type: 3}
+  - {fileID: 8300000, guid: 2420ac9077d291f458102405778fdcd6, type: 3}
+  - {fileID: 8300000, guid: 95c4fbe194e75b14d9995a8430f62c0f, type: 3}
+  - {fileID: 8300000, guid: e8cd593dbe1d57b419bf68d93558ee85, type: 3}
+  - {fileID: 8300000, guid: 8fdd4114b6bb8ac47b7e9ebbcbdec5cb, type: 3}
+  - {fileID: 8300000, guid: a1a5a0f135b55294da5c725b36dd57b0, type: 3}
+  - {fileID: 8300000, guid: 2100c94616b61104abbdd9541440f499, type: 3}
   headshotSFX: {fileID: 8300000, guid: 74ae7bd2a573ac54b8809c02399f1948, type: 3}
   explosionsSFX:
   - {fileID: 8300000, guid: 8c7ec7b3c08a60f4fbaba98c0599e4ed, type: 3}
@@ -1490,6 +1499,10 @@ PrefabInstance:
       propertyPath: hookIconRight
       value: 
       objectReference: {fileID: 7422171564269347275}
+    - target: {fileID: 1265740310501830929, guid: cbb06f0e6cdf74cf0b9c73b2af08aeb7, type: 3}
+      propertyPath: waterLayer.m_Bits
+      value: 16
+      objectReference: {fileID: 0}
     - target: {fileID: 1697414143520033043, guid: cbb06f0e6cdf74cf0b9c73b2af08aeb7, type: 3}
       propertyPath: m_Enabled
       value: 0
