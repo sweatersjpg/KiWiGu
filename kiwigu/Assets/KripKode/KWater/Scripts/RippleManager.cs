@@ -5,6 +5,9 @@ using UnityEngine;
 public class RippleManager : MonoBehaviour
 {
     // [Public Variables]
+    public float waterWaveSpeed = 0.1f;
+    public float waterWaveDisplacement = 0.9f;
+
     public Camera waterCamera;
     public Transform waterObject;
     public GameObject ripplePrefab;
@@ -17,14 +20,40 @@ public class RippleManager : MonoBehaviour
     private RenderTexture CurrRT, PrevRT, TempRT;
     private Material RippleMat, AddMat;
 
-    void Awake()
+    private void OnDrawGizmos()
     {
-        waterObject.localScale = new Vector3(waterObject.localScale.x, 1, waterObject.localScale.x);
+        if (waterObject == null)
+            return;
 
         float waterScale = waterObject.localScale.x * 5f;
         waterCamera.orthographicSize = waterScale;
 
-        waterObject.GetComponent<MeshRenderer>().material.SetFloat("_FoamScale", waterObject.localScale.x * 2.5f);
+        Material material = waterObject.GetComponent<MeshRenderer>().sharedMaterial;
+        if (material != null)
+        {
+            material.SetFloat("_Wave", waterWaveSpeed);
+            material.SetFloat("_WaveDisplacement", waterWaveDisplacement);
+            material.SetFloat("_SurfaceDensity", waterScale);
+            material.SetFloat("_FoamScale", waterScale * 0.5f);
+        }
+
+        Gizmos.color = Color.blue;
+        Gizmos.DrawWireCube(waterObject.position, waterObject.localScale);
+    }
+
+    private void Awake()
+    {
+        if (waterObject == null)
+            return;
+
+        waterObject.localScale = new Vector3(waterObject.localScale.x, 1, waterObject.localScale.x);
+
+        Material material = waterObject.GetComponent<MeshRenderer>().sharedMaterial;
+        if (material != null)
+        {
+            material.SetFloat("_Wave", waterWaveSpeed);
+            material.SetFloat("_WaveDisplacement", waterWaveDisplacement);
+        }
     }
 
     void Start()
