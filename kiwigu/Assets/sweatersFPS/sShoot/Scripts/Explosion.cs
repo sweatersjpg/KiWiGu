@@ -51,12 +51,12 @@ public class Explosion : MonoBehaviour
 
     void CheckRadius(float radius)
     {
-        Collider[] hits = Physics.OverlapSphere(transform.position, radius);
+        Collider[] hits = Physics.OverlapSphere(transform.position, radius, ~LayerMask.GetMask("Default", "GunHand"));
 
         // prioritize shields
         foreach (Collider hit in hits)
         {
-            if (alreadyHit.Contains(hit.gameObject)) return;
+            if (alreadyHit.Contains(hit.gameObject)) continue;
 
             if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Shield") && hit.transform.gameObject.CompareTag("Shield"))
             {
@@ -70,9 +70,10 @@ public class Explosion : MonoBehaviour
             }
             else if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Shield") && hit.transform.gameObject.CompareTag("Armor"))
             {
-                Transform root = GetRootParent(hit.transform);
+                //Transform root = GetRootParent(hit.transform);
+                Transform root = hit.transform.parent ? hit.transform.parent : hit.transform;
 
-                if(alreadyHit.Contains(root.gameObject)) return;
+                if(alreadyHit.Contains(root.gameObject)) continue;
                 alreadyHit.Add(root.gameObject);
 
                 ArmorPiece armor = hit.transform.gameObject.GetComponent<ArmorPiece>();
@@ -83,7 +84,7 @@ public class Explosion : MonoBehaviour
 
         foreach (Collider hit in hits)
         {
-            if (alreadyHit.Contains(hit.gameObject)) return;
+            if (alreadyHit.Contains(hit.gameObject)) continue;
 
             if (hit.transform.CompareTag("TakeDamage"))
             {
@@ -104,6 +105,8 @@ public class Explosion : MonoBehaviour
             }
             else if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Player"))
             {
+                Debug.Log("Hit player with explosino");
+                
                 // rocket jumping uwu
                 Vector3 direction = (transform.position - sweatersController.instance.playerCamera.transform.position);
                 hit.transform.GetComponent<PlayerHealth>().DealDamage(damageDealt / 2, direction.normalized); // half damage

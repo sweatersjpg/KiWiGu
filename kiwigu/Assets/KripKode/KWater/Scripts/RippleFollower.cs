@@ -12,7 +12,7 @@ public class RippleFollower : MonoBehaviour
     {
         previousPosition = objectReference.transform.position;
     }
-
+     
     private void Update()
     {
         if (objectReference == null)
