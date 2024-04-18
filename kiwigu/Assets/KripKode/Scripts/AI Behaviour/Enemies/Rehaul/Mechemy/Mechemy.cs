@@ -14,6 +14,7 @@ public class Mechemy : MonoBehaviour
     [SerializeField] private Transform headPos;
     [SerializeField] private GameObject HeadshotIndicator;
     [SerializeField] private GameObject ExplosionX;
+    [SerializeField] private GameObject Ragdoll;
     [SerializeField] private GameObject FireWarningSFX;
     [SerializeField] private Transform spineBone;
     private bool isDead;
@@ -225,6 +226,9 @@ public class Mechemy : MonoBehaviour
             isDead = true;
 
             Instantiate(ExplosionX, headPos.transform.position, transform.rotation);
+            GameObject rag = Instantiate(Ragdoll, transform);
+            rag.transform.parent = null;
+            Destroy(rag, 4);
 
             agent.SetDestination(transform.position);
 

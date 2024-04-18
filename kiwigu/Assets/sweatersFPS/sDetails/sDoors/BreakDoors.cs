@@ -52,12 +52,18 @@ public class BreakDoors : MonoBehaviour
         {
             GameObject door = doors[i];
 
+            door.layer = LayerMask.NameToLayer("PhysicsObject");
+
             door.transform.parent = null;
 
             door.tag = "Untagged";
 
             Rigidbody rb = door.AddComponent<Rigidbody>();
             door.AddComponent<DespawnTimer>().lifetime = 1;
+
+            door.GetComponent<PhysicsHit>().enabled = true;
+
+            rb.mass = 5;
 
             rb.AddForceAtPosition(direction.normalized * breakForce, point, ForceMode.Impulse);
         }
