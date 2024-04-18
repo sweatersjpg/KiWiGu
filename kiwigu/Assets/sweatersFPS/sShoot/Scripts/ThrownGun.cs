@@ -20,6 +20,7 @@ public class ThrownGun : MonoBehaviour
 
     public bool hasView = true;
     public bool explodeOnContact = true;
+    public bool customCollider = false;
 
     void Start()
     {
@@ -28,7 +29,7 @@ public class ThrownGun : MonoBehaviour
         rb.AddForce(transform.forward * throwForce, ForceMode.Impulse);
         rb.AddTorque(transform.right * 20);
 
-        rb.velocity += sweatersController.instance.GetRelativity();
+        rb.AddForce(sweatersController.instance.GetRelativity(), ForceMode.VelocityChange);
 
         if(ammo.capacity == 0) ammo = new Ammunition(info.capacity);
 
@@ -40,6 +41,16 @@ public class ThrownGun : MonoBehaviour
         {
             GameObject gun = Instantiate(gunView.gameObject, transform);
             gun.transform.localPosition = new();
+
+            if(customCollider)
+            {
+                Collider[] colliders = gun.GetComponentsInChildren<Collider>();
+                for(int i = 0; i < colliders.Length; i++)
+                {
+                    colliders[i].enabled = true;
+                    colliders[i].gameObject.layer = LayerMask.NameToLayer("PhysicsObject");
+                }
+            }
 
             SetLayerRecursively(gun);
 
