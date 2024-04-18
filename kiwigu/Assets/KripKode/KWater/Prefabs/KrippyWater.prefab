@@ -29,7 +29,7 @@ Transform:
   m_GameObject: {fileID: 7579045068740090733}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -58.3, y: -0.17, z: 38.2}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 3, y: 1, z: 3}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7579045069764790167}
@@ -111,6 +111,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 641f186b052441343ac6701a3ccfd88b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  resolution: 512
   waterWaveSpeed: 0
   waterWaveDisplacement: 0
   waterCamera: {fileID: 7579045069764790165}
@@ -179,7 +180,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 5
+  orthographic size: 15
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2

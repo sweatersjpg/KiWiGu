@@ -58,6 +58,11 @@ public class PlayerFootsteps : MonoBehaviour
 
     void PlayFootstep()
     {
+        if(Physics.OverlapSphere(transform.position, 0.1f, LayerMask.GetMask("Water")).Length > 0)
+        {
+            GlobalAudioManager.instance.PlayWaterSFX(transform);
+            return;
+        }
         audioSource.clip = footsteps[Random.Range(0, footsteps.Length)];
 
         // audioSource.pitch = Random.Range(-pitchRange, pitchRange);
@@ -66,6 +71,11 @@ public class PlayerFootsteps : MonoBehaviour
 
     void PlayLandSound()
     {
+        if (Physics.OverlapSphere(transform.position, 0.1f, LayerMask.GetMask("Water")).Length > 0)
+        {
+            GlobalAudioManager.instance.PlayWaterSFX(transform);
+            return;
+        }
         audioSource.clip = landSounds[Random.Range(1, landSounds.Length)];
         audioSource.volume = 1f;
         // audioSource.pitch = Random.Range(-pitchRange, pitchRange);
@@ -74,6 +84,11 @@ public class PlayerFootsteps : MonoBehaviour
 
     void PlayJumpSound()
     {
+        if (Physics.OverlapSphere(transform.position, 0.1f, LayerMask.GetMask("Water")).Length > 0)
+        {
+            GlobalAudioManager.instance.PlayWaterSFX(transform);
+            return;
+        }
         audioSource.clip = landSounds[0];
         audioSource.pitch = 0.8f + Random.Range(-pitchRange, pitchRange);
         audioSource.volume = 0.2f;

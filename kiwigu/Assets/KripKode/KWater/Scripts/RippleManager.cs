@@ -5,6 +5,7 @@ using UnityEngine;
 public class RippleManager : MonoBehaviour
 {
     // [Public Variables]
+    public int resolution = 512;
     public float waterWaveSpeed = 0.1f;
     public float waterWaveDisplacement = 0.9f;
 
@@ -58,9 +59,9 @@ public class RippleManager : MonoBehaviour
 
     void Start()
     {
-        CurrRT = new RenderTexture(4096, 4096, 0, RenderTextureFormat.RFloat);
-        PrevRT = new RenderTexture(4096, 4096, 0, RenderTextureFormat.RFloat);
-        TempRT = new RenderTexture(4096, 4096, 0, RenderTextureFormat.RFloat);
+        CurrRT = new RenderTexture(resolution, resolution, 0, RenderTextureFormat.RFloat);
+        PrevRT = new RenderTexture(resolution, resolution, 0, RenderTextureFormat.RFloat);
+        TempRT = new RenderTexture(resolution, resolution, 0, RenderTextureFormat.RFloat);
         RippleMat = new Material(RippleShader);
         AddMat = new Material(AddShader);
 
