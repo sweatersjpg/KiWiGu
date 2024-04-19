@@ -242,7 +242,7 @@ public class PistolGrunt : MonoBehaviour
         if (enemyState == EnemyState.Seek)
         {
             agent.speed = seekSpeed;
-            animator.speed = seekSpeed * 0.25f;
+            animator.speed = seekSpeed * 0.45f;
 
             if (agent.velocity.magnitude >= 0.1f)
             {
