@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 2318708098515741410}
   - component: {fileID: 8394609283484125225}
   - component: {fileID: 7131654657658137319}
+  - component: {fileID: -1282082549767343668}
   m_Layer: 0
   m_Name: OilParticles
   m_TagString: Untagged
@@ -4879,7 +4880,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2318708098515741408}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 709033181b8d23d429330b04c0a98429, type: 3}
   m_Name: 
@@ -4902,3 +4903,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lifetime: 2
+--- !u!114 &-1282082549767343668
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2318708098515741408}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8e7215995f5203468b60d6a809aabb7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minRadius: 0.05
+  maxRadius: 1
+  height: 0.5
+  decalDuration: 60
+  bloodDecalPrefab: {fileID: 8396836052048715948, guid: 91a8f6110cfdc814ca997539546667b6, type: 3}
