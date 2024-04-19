@@ -161,7 +161,7 @@ public class PistolGrunt : MonoBehaviour
         {
             if (angleToPlayer <= 90)
             {
-                Vector3 offsetTargetPosition = detectedPlayer.transform.position + new Vector3(5f, 1f, 0);
+                Vector3 offsetTargetPosition = detectedPlayer.transform.position + new Vector3(3.5f, 1f, 0);
                 spineBone.LookAt(offsetTargetPosition);
             }
             return;
