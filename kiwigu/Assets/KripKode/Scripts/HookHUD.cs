@@ -1,8 +1,13 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class HookHUD : MonoBehaviour
 {
+    [SerializeField]
+    private Dialog dialog;
+    static bool shownBlockDialog = false;
+
     public RectTransform reticleIcon;
     public Image leftHook;
     public Image rightHook;
@@ -16,7 +21,6 @@ public class HookHUD : MonoBehaviour
     public GameObject hookIconLeft;
     public GameObject hookIconRight;
 
-    static bool shownBlockDialog = false;
 
     private void Update()
     {
@@ -86,7 +90,38 @@ public class HookHUD : MonoBehaviour
 
     private void DoBlockDialog()
     {
-        Debug.Log("blocked dialog goes here");
+        if ((((dialog.characterIDs[0] == 2) || (dialog.characterIDs[0] == 3)) && (dialog.priority <= DialogManager.instance.currentDialogPriority))
+                    || (dialog.priority < DialogManager.instance.currentDialogPriority)) return;
+        DialogManager.instance.currentDialogPriority = dialog.priority;
+
+        List<string> lines = new List<string>();
+        List<float> lineDurations = new List<float>();
+
+        switch (dialog.type)
+        {
+            case Dialog.DialogType.Sequence:
+                for (int i = 0; i < dialog.displayText.Length; i++)
+                {
+                    lines.Add(dialog.displayText[i]);
+                    lineDurations.Add(dialog.lineDurations[i]);
+                }
+                break;
+            case Dialog.DialogType.Random:
+                int randomIndex = Random.Range(0, dialog.displayText.Length);
+                lines.Add(dialog.displayText[randomIndex]);
+                lineDurations.Add(dialog.lineDurations[randomIndex]);
+                break;
+            case Dialog.DialogType.Repeat:
+                dialog.dialogIndex++;
+                lines.Add(dialog.displayText[dialog.dialogIndex % dialog.displayText.Length]);
+                lineDurations.Add(dialog.lineDurations[dialog.dialogIndex % dialog.lineDurations.Count]);
+                break;
+        }
+
+        if (dialog.audioClips.Length > 0)
+            GlobalAudioManager.instance.PlayVoiceLine(dialog.audioClips[dialog.dialogIndex]);
+
+        DialogManager.instance.StartDialog(lines, lineDurations);
     }
 
     private void UpdateIconProperties(Vector3 hit)
