@@ -10,7 +10,7 @@ public class GlobalAudioManager : MonoBehaviour
     // Sounds
     public AudioClip[] waterFootstepSounds;
     private bool isWaterPlaying = false;
-    
+
     public AudioClip headshotSFX;
     public AudioClip[] explosionsSFX;
     public AudioClip hookThrowSFX;
@@ -35,6 +35,14 @@ public class GlobalAudioManager : MonoBehaviour
     public AudioClip[] gruntStolenSoundsFemale;
     public AudioClip[] gruntDeathSoundsMale;
     public AudioClip[] gruntDeathSoundsFemale;
+
+    [Space(10)]
+    public AudioClip[] mechStolenGunSFX;
+    public AudioClip[] mechDetectedSFX;
+
+    [Space(10)]
+    public AudioClip rockSFX;
+    public AudioClip doorBreakSFX;
 
     // Variables
     [Space(10)]
@@ -65,7 +73,7 @@ public class GlobalAudioManager : MonoBehaviour
 
     private void Update()
     {
-        if(sweatersController.instance != null) PlayBattleMusic();
+        if (sweatersController.instance != null) PlayBattleMusic();
     }
 
     private void PlaySound(Transform location, AudioClip clip, float volume, float pitch, float range, string reference, bool followTPosition)
@@ -121,7 +129,7 @@ public class GlobalAudioManager : MonoBehaviour
 
         yield return new WaitForSeconds(clip.length);
 
-        if(soundObject != null)
+        if (soundObject != null)
             Destroy(soundObject);
 
         isEnemyBarking = false;
@@ -236,13 +244,15 @@ public class GlobalAudioManager : MonoBehaviour
     {
         if (battleTrigger)
         {
-            battleSourceA.volume = Mathf.Clamp(battleSourceA.volume - Time.deltaTime * 0.5f, 0, 0.5f);
-            battleSourceB.volume = Mathf.Clamp(battleSourceB.volume + Time.deltaTime * 0.5f, 0, 0.5f);
+            // Fading out audio source A and fading in audio source B quickly during battle
+            battleSourceA.volume = Mathf.Lerp(battleSourceA.volume, 0f, Time.deltaTime * 5f);
+            battleSourceB.volume = Mathf.Lerp(battleSourceB.volume, 0.5f, Time.deltaTime * 5f);
         }
         else
         {
-            battleSourceA.volume = Mathf.Clamp(battleSourceA.volume + Time.deltaTime * 0.15f, 0, 0.5f);
-            battleSourceB.volume = Mathf.Clamp(battleSourceB.volume - Time.deltaTime * 0.15f, 0, 0.5f);
+            // Fading out audio source B and fading in audio source A slowly when not in battle
+            battleSourceA.volume = Mathf.Lerp(battleSourceA.volume, 0.1f, Time.deltaTime * 0.15f);
+            battleSourceB.volume = Mathf.Lerp(battleSourceB.volume, 0f, Time.deltaTime * 0.15f);
         }
 
         Transform playerTransform = sweatersController.instance.transform;
@@ -255,9 +265,20 @@ public class GlobalAudioManager : MonoBehaviour
 
     public void PlayEnemyBark(Transform location, string barkType, string genderType)
     {
+        switch (barkType)
+        {
+            case "MechStoleGun":
+                PlayEnemyBark(location, mechStolenGunSFX[Random.Range(0, mechStolenGunSFX.Length)], 1, 1, 100, "mechStoleGunSFX", true);
+                break;
+            case "MechDetected":
+                PlayEnemyBark(location, mechDetectedSFX[Random.Range(0, mechDetectedSFX.Length)], 1, 1, 100, "mechDetectedSFX", true);
+                break;
+        }
+
         if (isEnemyBarking) return;
 
-        if (Random.Range(0, 2) == 0) return;
+       
+        if (Random.Range(0, 100) > 25) return;
 
         switch (barkType)
         {
@@ -310,6 +331,19 @@ public class GlobalAudioManager : MonoBehaviour
         yield return new WaitForSeconds(clip.length - 0.25f);
 
         isWaterPlaying = false;
+    }
+
+    public void PlayAmbianceSound(Transform location, string type)
+    {
+        switch (type)
+        {
+            case "Rock":
+                PlaySound(location, rockSFX, 1, 1, 100, "rockSFX", false);
+                break;
+            case "Door":
+                PlaySound(location, doorBreakSFX, 1, 1, 100, "doorSFX", false);
+                break;
+        }
     }
 }
 

@@ -84,6 +84,7 @@ public class BreakDoors : MonoBehaviour
             mh.PullbackWithForce(0, 1);
         }
 
+        GlobalAudioManager.instance.PlayAmbianceSound(transform, "Door");
         Destroy(gameObject);
     }
 }

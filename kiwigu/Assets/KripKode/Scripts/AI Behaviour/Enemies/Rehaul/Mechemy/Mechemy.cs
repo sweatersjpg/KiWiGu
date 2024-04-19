@@ -68,6 +68,7 @@ public class Mechemy : MonoBehaviour
     private bool isCrushing;
     private float splatoodRadius = 5;
     public GameObject splatoodFX;
+    bool communicated;
 
     private void Awake()
     {
@@ -87,6 +88,12 @@ public class Mechemy : MonoBehaviour
     {
         if (isDead)
             return;
+
+        if (!communicated && detectedPlayer)
+        {
+            GlobalAudioManager.instance.PlayEnemyBark(headPos.transform, "MechDetected", "Male");
+            communicated = true;
+        }
 
         StateManager();
         RememberPlayer();
@@ -120,12 +127,14 @@ public class Mechemy : MonoBehaviour
 
         if (leftGun == null && !checkedLeftGun)
         {
+            GlobalAudioManager.instance.PlayEnemyBark(headPos.transform, "MechStoleGun", "Male");
             holdingLeftGun = false;
             checkedLeftGun = true;
         }
 
         if (rightGun == null && !checkedRightGun)
         {
+            GlobalAudioManager.instance.PlayEnemyBark(headPos.transform, "MechStoleGun", "Male");
             holdingRightGun = false;
             checkedRightGun = true;
         }

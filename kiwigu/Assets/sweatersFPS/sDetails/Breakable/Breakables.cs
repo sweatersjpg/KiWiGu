@@ -31,6 +31,7 @@ public class Breakables : MonoBehaviour
 
         if (health <= 0)
         {
+            GlobalAudioManager.instance.PlayAmbianceSound(transform, "Rock");
             particles.transform.parent = null;
             particles.SetActive(true);
 

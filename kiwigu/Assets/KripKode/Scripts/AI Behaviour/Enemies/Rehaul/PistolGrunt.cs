@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.Analytics;
 
 public class PistolGrunt : MonoBehaviour
 {
@@ -132,7 +133,13 @@ public class PistolGrunt : MonoBehaviour
     private void Update()
     {
         if (PauseSystem.paused)
-            return;
+        //    return;
+
+        //if (!communicated && detectedPlayer)
+        //{
+        //    GlobalAudioManager.instance.PlayEnemyBark(transform, "ComunicatePlayer", enemyGender);
+        //    communicated = true;
+        //}
 
         if (lerpingShield)
         {
