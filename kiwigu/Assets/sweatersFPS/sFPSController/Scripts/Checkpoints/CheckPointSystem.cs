@@ -33,7 +33,11 @@ public class CheckPointSystem : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown((KeyCode)49 + index))
+        int i = index;
+
+        if (Input.GetKey(KeyCode.Alpha0)) i -= 9;
+        
+        if (Input.GetKeyDown((KeyCode)49 + i))
         {
             if(timer > 0)
             {
