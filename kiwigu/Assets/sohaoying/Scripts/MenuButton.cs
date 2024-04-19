@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class MenuButton : MonoBehaviour
 {
@@ -15,7 +16,8 @@ public class MenuButton : MonoBehaviour
     public void ButtonPressed()
     {
         if (PauseSystem.paused) return;
-        credits.SetActive(true);
+        //credits.SetActive(true);
+        SceneManager.LoadScene(4);
     }
 
     public void Quit()

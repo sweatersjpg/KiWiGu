@@ -66,9 +66,13 @@ public class ArmorPiece : MonoBehaviour
             }
 
             if (breakableMat != null)
-                Instantiate(breakSFX, GetComponent<SkinnedMeshRenderer>().bounds.center, Quaternion.identity);
-            else
-                Instantiate(breakSFX, GetComponent<MeshRenderer>().bounds.center, Quaternion.identity);
+            {
+                if (GetComponent<SkinnedMeshRenderer>())
+                    Instantiate(breakSFX, GetComponent<SkinnedMeshRenderer>().bounds.center, Quaternion.identity);
+
+                if (GetComponent<MeshRenderer>())
+                    Instantiate(breakSFX, transform.position, Quaternion.identity);
+            }
 
             if (isTop)
             {
