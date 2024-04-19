@@ -15,7 +15,7 @@ public class Mechemy : MonoBehaviour
     [SerializeField] private GameObject HeadshotIndicator;
     [SerializeField] private GameObject ExplosionX;
     [SerializeField] private GameObject Ragdoll;
-    [SerializeField] private GameObject FireWarningSFX;
+        [SerializeField] private GameObject FireWarningSFX;
     [SerializeField] private Transform spineBone;
     private bool isDead;
     private float currentHealth;
