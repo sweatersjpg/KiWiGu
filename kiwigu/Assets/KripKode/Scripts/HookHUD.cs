@@ -45,12 +45,6 @@ public class HookHUD : MonoBehaviour
     {
         bool hitHookTarget = CheckForHookTarget(out Vector3 hit);
 
-        if(hitHookTarget && !shownBlockDialog)
-        {
-            DoBlockDialog();
-            shownBlockDialog = true;
-        }
-
         if (hitHookTarget)
         {
             UpdateIconProperties(hit);
@@ -77,6 +71,12 @@ public class HookHUD : MonoBehaviour
         rightHook.sprite = hook;
         if (ht && ht.blockSteal)
         {
+            if (!shownBlockDialog && Vector3.Distance(sweatersController.instance.playerCamera.transform.position, hit) < maxDistance)
+            {
+                DoBlockDialog();
+                shownBlockDialog = true;
+            }
+
             leftHook.sprite = noHook;
             rightHook.sprite = noHook;
         }
