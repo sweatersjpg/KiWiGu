@@ -101,7 +101,6 @@ public class DialogTrigger : MonoBehaviour
                 dialog.dialogIndex++;
                 lines.Add(dialog.displayText[dialog.dialogIndex % dialog.displayText.Length]);
                 lineDurations.Add(dialog.lineDurations[dialog.dialogIndex % dialog.lineDurations.Count]);
-                print("DUDE" + dialog.dialogIndex % dialog.displayText.Length);
                 break;
         }
 
