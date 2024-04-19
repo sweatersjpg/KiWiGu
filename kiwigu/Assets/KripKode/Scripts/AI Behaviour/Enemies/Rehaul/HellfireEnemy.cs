@@ -165,7 +165,7 @@ public class HellfireEnemy : MonoBehaviour
 
     private void LateUpdate()
     {
-        if (isDead || !detectedPlayer)
+        if (!detectedPlayer)
             return;
 
         Vector3 directionToPlayer = detectedPlayer.transform.position - transform.position;
@@ -173,7 +173,8 @@ public class HellfireEnemy : MonoBehaviour
 
         if (angleToPlayer <= 90)
         {
-            spineBone.LookAt(detectedPlayer.transform.position);
+            Vector3 offsetTargetPosition = detectedPlayer.transform.position + new Vector3(0, 1f, 0);
+            spineBone.LookAt(offsetTargetPosition);
         }
         else if (detectedPlayer && Vector3.Distance(transform.position, detectedPlayer.transform.position) > seekRange)
         {

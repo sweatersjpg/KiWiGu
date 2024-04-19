@@ -17,7 +17,7 @@ public class RippleManager : MonoBehaviour
 
     // [Private Variables]
     private Dictionary<string, GameObject> rippleDictionary = new Dictionary<string, GameObject>();
-    private float defaultRippleSize = 2.0f;
+    private float defaultRippleSize = 2.5f;
     private RenderTexture CurrRT, PrevRT, TempRT;
     private Material RippleMat, AddMat;
 
@@ -48,13 +48,6 @@ public class RippleManager : MonoBehaviour
             return;
 
         waterObject.localScale = new Vector3(waterObject.localScale.x, 1, waterObject.localScale.x);
-
-        Material material = waterObject.GetComponent<MeshRenderer>().sharedMaterial;
-        if (material != null)
-        {
-            material.SetFloat("_Wave", waterWaveSpeed);
-            material.SetFloat("_WaveDisplacement", waterWaveDisplacement);
-        }
     }
 
     void Start()
@@ -108,6 +101,9 @@ public class RippleManager : MonoBehaviour
     // These are public in case we want to add ripples from other scripts... rn it only works with collision trigger
     public void AddRipple(Transform location)
     {
+        if (rippleDictionary.ContainsKey(location.GetInstanceID().ToString()))
+            return;
+
         GameObject ripple = Instantiate(ripplePrefab, location.position, Quaternion.identity);
         ripple.transform.localScale = new Vector3(defaultRippleSize, defaultRippleSize, defaultRippleSize);
         ripple.GetComponent<RippleFollower>().objectReference = location.gameObject;

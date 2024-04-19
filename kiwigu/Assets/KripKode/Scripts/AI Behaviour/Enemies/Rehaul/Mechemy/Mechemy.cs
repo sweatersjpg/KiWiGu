@@ -97,7 +97,7 @@ public class Mechemy : MonoBehaviour
 
     private void LateUpdate()
     {
-        if (isDead || !detectedPlayer)
+        if (!detectedPlayer)
             return;
 
         Vector3 directionToPlayer = detectedPlayer.transform.position - transform.position;
@@ -105,14 +105,14 @@ public class Mechemy : MonoBehaviour
 
         if (angleToPlayer <= 90)
         {
-            spineBone.LookAt(detectedPlayer.transform.position);
+            Vector3 offsetTargetPosition = detectedPlayer.transform.position + new Vector3(0, 1f, 0);
+            spineBone.LookAt(offsetTargetPosition);
         }
         else if (detectedPlayer && Vector3.Distance(transform.position, detectedPlayer.transform.position) > detectionRange)
         {
             spineBone.rotation = Quaternion.Euler(Vector3.zero);
         }
     }
-
 
     private void StateManager()
     {
@@ -317,40 +317,40 @@ public class Mechemy : MonoBehaviour
             if (isShooting)
                 return;
 
-                if (!detectedPlayer)
-                    return;
+            if (!detectedPlayer)
+                return;
 
-                if (holdingRightGun && holdingLeftGun)
-                {
-                    if (Random.Range(0, 2) == 0)
-                    {
-                        infoHT = rightGun.info;
-                        BulletExitPoint = rightGunExitPoint;
-                    }
-                    else
-                    {
-                        infoHT = leftGun.info;
-                        BulletExitPoint = leftGunExitPoint;
-                    }
-                }
-                else if (holdingRightGun)
+            if (holdingRightGun && holdingLeftGun)
+            {
+                if (Random.Range(0, 2) == 0)
                 {
                     infoHT = rightGun.info;
                     BulletExitPoint = rightGunExitPoint;
                 }
-                else if (holdingLeftGun)
+                else
                 {
                     infoHT = leftGun.info;
                     BulletExitPoint = leftGunExitPoint;
                 }
+            }
+            else if (holdingRightGun)
+            {
+                infoHT = rightGun.info;
+                BulletExitPoint = rightGunExitPoint;
+            }
+            else if (holdingLeftGun)
+            {
+                infoHT = leftGun.info;
+                BulletExitPoint = leftGunExitPoint;
+            }
 
-                if (!holdingRightGun && !holdingLeftGun)
-                {
-                    return;
-                }
+            if (!holdingRightGun && !holdingLeftGun)
+            {
+                return;
+            }
 
-                BulletShooter bs = BulletExitPoint.GetComponentInChildren<BulletShooter>();
-                bs.isShooting = Time.time % 4 > 2;
+            BulletShooter bs = BulletExitPoint.GetComponentInChildren<BulletShooter>();
+            bs.isShooting = Time.time % 4 > 2;
         }
     }
 
