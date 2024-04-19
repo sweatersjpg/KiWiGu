@@ -99,7 +99,7 @@ public class GlobalAudioManager : MonoBehaviour
     {
         GameObject soundObject = new GameObject(reference);
         soundObject.transform.position = location.position;
-        soundObject.transform.parent = transform;
+        soundObject.transform.parent = location;
 
         if (followTPosition)
         {
@@ -121,7 +121,9 @@ public class GlobalAudioManager : MonoBehaviour
 
         yield return new WaitForSeconds(clip.length);
 
-        Destroy(soundObject);
+        if(soundObject != null)
+            Destroy(soundObject);
+
         isEnemyBarking = false;
     }
 
