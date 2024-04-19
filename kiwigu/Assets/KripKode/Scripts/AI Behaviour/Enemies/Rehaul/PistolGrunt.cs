@@ -154,9 +154,18 @@ public class PistolGrunt : MonoBehaviour
     {
         if (!detectedPlayer)
             return;
-
         Vector3 directionToPlayer = detectedPlayer.transform.position - transform.position;
         float angleToPlayer = Vector3.Angle(transform.forward, directionToPlayer);
+
+        if (enemyState == EnemyState.Punch && isDefense)
+        {
+            if (angleToPlayer <= 90)
+            {
+                Vector3 offsetTargetPosition = detectedPlayer.transform.position + new Vector3(5f, 1f, 0);
+                spineBone.LookAt(offsetTargetPosition);
+            }
+            return;
+        }
 
         if (angleToPlayer <= 90)
         {
@@ -283,12 +292,11 @@ public class PistolGrunt : MonoBehaviour
         if (enemyState == EnemyState.Punch)
         {
             agent.speed = punchSpeed;
-            animator.speed = punchSpeed * 0.15f;
+            animator.speed = punchSpeed * 0.1f;
+            animator.SetBool("run", true);
 
-            if (agent.velocity.magnitude >= 0.1f)
-            {
-                animator.SetBool("run", true);
-            }
+            if (!animator.GetCurrentAnimatorStateInfo(0).IsTag("Run"))
+                return;
 
             if (!detectedPlayer)
                 return;
