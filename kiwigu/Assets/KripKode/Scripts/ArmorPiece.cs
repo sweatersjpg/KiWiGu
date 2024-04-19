@@ -24,6 +24,9 @@ public class ArmorPiece : MonoBehaviour
     {
         if (GetComponent<SkinnedMeshRenderer>())
             breakableMat = GetComponent<SkinnedMeshRenderer>().material;
+
+        if (GetComponent<MeshRenderer>())
+            breakableMat = GetComponent<MeshRenderer>().material;
     }
 
     public void Hit(float damage)
