@@ -51,7 +51,7 @@ public class Explosion : MonoBehaviour
 
     void CheckRadius(float radius)
     {
-        Collider[] hits = Physics.OverlapSphere(transform.position, radius, ~LayerMask.GetMask("Default", "GunHand"));
+        Collider[] hits = Physics.OverlapSphere(transform.position, radius, ~LayerMask.GetMask("GunHand"));
 
         // prioritize shields
         foreach (Collider hit in hits)
@@ -93,6 +93,8 @@ public class Explosion : MonoBehaviour
                     new object[] { hit.ClosestPoint(transform.position), direction, damageDealt });
 
                 alreadyHit.Add(hit.gameObject);
+
+                Debug.Log("hit " + hit.gameObject.name);
             }
             else if (hit.transform.gameObject.layer == LayerMask.NameToLayer("EnergyWall"))
             {
