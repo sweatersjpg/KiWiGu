@@ -40,6 +40,7 @@ public class TheMini : MonoBehaviour
     private bool checkedRightGun;
 
     private bool isDead;
+    bool communicated;
 
     private void Awake()
     {
@@ -49,14 +50,22 @@ public class TheMini : MonoBehaviour
 
     private void Update()
     {
+        if (!communicated && detectedPlayer)
+        {
+            GlobalAudioManager.instance.PlayEnemyBark(spineBone.transform, "MechDetected", "Male");
+            communicated = true;
+        }
+
         if (leftGun == null && !checkedLeftGun)
         {
+            GlobalAudioManager.instance.PlayEnemyBark(spineBone.transform, "MechStoleGun", "Male");
             holdingLeftGun = false;
             checkedLeftGun = true;
         }
 
         if (rightGun == null && !checkedRightGun)
         {
+            GlobalAudioManager.instance.PlayEnemyBark(spineBone.transform, "MechStoleGun", "Male");
             holdingRightGun = false;
             checkedRightGun = true;
         }
