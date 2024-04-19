@@ -22,8 +22,16 @@ public class BreakDoors : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (CheckDoubleHooked()) dhTimer = 0.3f;
+        if (CheckDoubleHooked())
+        {
+            dhTimer = 0.3f;
+
+            for (int i = 0; i < doors.Length; i++) doors[i].layer = LayerMask.NameToLayer("PhysicsObject");
+
+        }
         else dhTimer = Mathf.Max(0, dhTimer - Time.deltaTime);
+
+        if(dhTimer <= 0) for (int i = 0; i < doors.Length; i++) doors[i].layer = LayerMask.NameToLayer("Default");
     }
 
     void TakeDamage(object[] args)
@@ -53,10 +61,11 @@ public class BreakDoors : MonoBehaviour
             GameObject door = doors[i];
 
             door.layer = LayerMask.NameToLayer("PhysicsObject");
+            door.tag = "RigidTarget";
 
             door.transform.parent = null;
 
-            door.tag = "Untagged";
+            //door.tag = "Untagged";
 
             Rigidbody rb = door.AddComponent<Rigidbody>();
             door.AddComponent<DespawnTimer>().lifetime = 1;

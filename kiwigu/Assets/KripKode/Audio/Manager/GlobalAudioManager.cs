@@ -65,7 +65,7 @@ public class GlobalAudioManager : MonoBehaviour
 
     private void Update()
     {
-        PlayBattleMusic();
+        if(sweatersController.instance != null) PlayBattleMusic();
     }
 
     private void PlaySound(Transform location, AudioClip clip, float volume, float pitch, float range, string reference, bool followTPosition)
