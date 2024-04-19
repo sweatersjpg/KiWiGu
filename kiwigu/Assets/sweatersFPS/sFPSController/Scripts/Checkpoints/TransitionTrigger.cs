@@ -10,6 +10,13 @@ public class TransitionTrigger : MonoBehaviour
     {
         if (collision.gameObject.layer == LayerMask.NameToLayer("Player"))
         {
+            HookEnsure[] es = sweatersController.instance.gameObject.GetComponentsInChildren<HookEnsure>();
+
+            for(int i = 0; i < es.Length; i++)
+            {
+                es[i].StoreGuns();
+            }
+            
             CheckPointSystem.spawnPoint = new();
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
         }
