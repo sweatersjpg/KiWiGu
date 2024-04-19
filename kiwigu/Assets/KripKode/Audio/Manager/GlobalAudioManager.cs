@@ -245,8 +245,8 @@ public class GlobalAudioManager : MonoBehaviour
         if (battleTrigger)
         {
             // Fading out audio source A and fading in audio source B quickly during battle
-            battleSourceA.volume = Mathf.Lerp(battleSourceA.volume, 0f, Time.deltaTime * 5f);
-            battleSourceB.volume = Mathf.Lerp(battleSourceB.volume, 0.5f, Time.deltaTime * 5f);
+            battleSourceA.volume = Mathf.Lerp(battleSourceA.volume, 0f, Time.deltaTime * 1f);
+            battleSourceB.volume = Mathf.Lerp(battleSourceB.volume, 0.5f, Time.deltaTime * 1f);
         }
         else
         {
