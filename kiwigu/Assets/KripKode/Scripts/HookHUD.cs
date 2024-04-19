@@ -16,6 +16,8 @@ public class HookHUD : MonoBehaviour
     public GameObject hookIconLeft;
     public GameObject hookIconRight;
 
+    static bool shownBlockDialog = false;
+
     private void Update()
     {
         if (PauseSystem.paused)
@@ -42,6 +44,12 @@ public class HookHUD : MonoBehaviour
     private void UpdateHookIcon()
     {
         bool hitHookTarget = CheckForHookTarget(out Vector3 hit);
+
+        if(hitHookTarget && !shownBlockDialog)
+        {
+            DoBlockDialog();
+            shownBlockDialog = true;
+        }
 
         if (hitHookTarget)
         {
@@ -74,6 +82,11 @@ public class HookHUD : MonoBehaviour
         }
 
         return Vector3.Distance(sweatersController.instance.playerCamera.transform.position, hit) < maxDistance;
+    }
+
+    private void DoBlockDialog()
+    {
+        Debug.Log("blocked dialog goes here");
     }
 
     private void UpdateIconProperties(Vector3 hit)
